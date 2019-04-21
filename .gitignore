@@ -1,0 +1,9 @@
+.terraform/
+bluedata_demo.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+public-ip-gateway.txt
+post_provision_steps.sh
+output.log
+controller_rsa.prv
+hostdetails.txt

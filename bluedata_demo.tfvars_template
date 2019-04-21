@@ -1,0 +1,42 @@
+#
+# select an appropriate region and availability zone
+#
+
+region             = "eu-west-2"
+az                 = "eu-west-2a"
+
+#
+# set this to something meaningful.  it is used as a tag in aws 
+#
+
+project_id         = "csnow-scratch"
+user               = "csnow"
+
+#
+# before setting the vpc cidr block, manually verify the vpc cidr doesn't already exist in your region
+#
+
+vpc_cidr_block     = "10.1.0.0/16"
+subnet_cidr_block  = "10.1.0.0/24"
+client_cidr_block  = "x.x.x.x/32" # change to your IP address - http://whatismyip.com
+check_client_ip    = "true" # check the client_ip is inside the client_cidr_block
+
+#
+# gateway, controller and workers all share the same ami and ssh pubic key
+#
+
+ec2_ami            = "ami-00846a67" # this is valid for the London region, change if required
+ssh_pub_key        = "ssh-rsa xxxxxxxx xxxx@xxx"
+
+# the path to your ssh private key on your local machine
+# user double \\ for windows paths
+ssh_prv_key_path   = "..\\.ssh\\id_rsa" 
+
+#
+# software download url
+#
+
+epic_dl_url          = "enter url"
+epic_precheck_dl_url = "enter url"
+epic_rpm_dl_url      = "enter url"
+
