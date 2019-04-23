@@ -161,9 +161,9 @@ resource "aws_default_security_group" "main" {
 /******************* Subnet ********************/
 
 resource "aws_subnet" "main" {
-  vpc_id     = "${aws_vpc.main.id}"
-  cidr_block = "${var.subnet_cidr_block}"
-  availability_zone_id = "${data.aws_availability_zone.main.zone_id}"
+  vpc_id                  = "${aws_vpc.main.id}"
+  cidr_block              = "${var.subnet_cidr_block}"
+  availability_zone_id    = "${data.aws_availability_zone.main.zone_id}"
   map_public_ip_on_launch = true
 
   tags = {
@@ -217,11 +217,11 @@ resource "aws_key_pair" "main" {
 /******************* Instance: Gateway ********************/
 
 resource "aws_instance" "gateway" {
-  ami           = "${var.ec2_ami}"
-  instance_type = "m4.2xlarge"
-  key_name      = "${aws_key_pair.main.key_name}"
+  ami                    = "${var.ec2_ami}"
+  instance_type          = "m4.2xlarge"
+  key_name               = "${aws_key_pair.main.key_name}"
   vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
-  subnet_id     = "${aws_subnet.main.id}"
+  subnet_id              = "${aws_subnet.main.id}"
 
   root_block_device {
     volume_type = "gp2"
@@ -256,11 +256,11 @@ output "gateway_public_dns" {
 //////////////////// Instance: Controller /////////////////////
 
 resource "aws_instance" "controller" {
-  ami           = "${var.ec2_ami}"
-  instance_type = "m4.2xlarge"
-  key_name      = "${aws_key_pair.main.key_name}"
+  ami                    = "${var.ec2_ami}"
+  instance_type          = "m4.2xlarge"
+  key_name               = "${aws_key_pair.main.key_name}"
   vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
-  subnet_id     = "${aws_subnet.main.id}"
+  subnet_id              = "${aws_subnet.main.id}"
 
   root_block_device {
     volume_type = "gp2"
@@ -329,12 +329,12 @@ output "controller public ip" {
 //////////////////// Instance: Workers /////////////////////
 
 resource "aws_instance" "workers" {
-  count         = 3
-  ami           = "${var.ec2_ami}"
-  instance_type = "m4.2xlarge"
-  key_name      = "${aws_key_pair.main.key_name}"
+  count                  = 3
+  ami                    = "${var.ec2_ami}"
+  instance_type          = "m4.2xlarge"
+  key_name               = "${aws_key_pair.main.key_name}"
   vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
-  subnet_id     = "${aws_subnet.main.id}"
+  subnet_id              = "${aws_subnet.main.id}"
 
   root_block_device {
     volume_type = "gp2"
@@ -484,8 +484,8 @@ resource "null_resource" "gateway_setup" {
 resource "null_resource" "controller_precheck" {
 
   depends_on = [ 
-	"aws_instance.controller",
-	"aws_instance.gateway",
+	      "aws_instance.controller",
+      	"aws_instance.gateway",
         "null_resource.gateway_setup"
 	]
 
