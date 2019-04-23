@@ -20,7 +20,11 @@ variable "epic_rpm_dl_url" { }
 /******************* verify client ip ********************/
 
 data "external" "example1" {
- program = ["python3", "${path.module}/verify_client_ip.py", "${var.client_cidr_block}", "${var.check_client_ip}" ]
+ program = [ "python3", "${path.module}/verify_client_ip.py", "${var.client_cidr_block}", "${var.check_client_ip}" ]
+}
+
+output "client_cidr_block" {
+ value = "${var.client_cidr_block}"
 }
 
 /******************* setup region and az ********************/
@@ -417,7 +421,8 @@ resource "null_resource" "create_controller_public_key" {
 
   provisioner "local-exec" {
     command = <<EOF
-	ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "if [ ! -f ~/.ssh/id_rsa ]; then ssh-keygen -t rsa -N \"\" -f ~/.ssh/id_rsa; fi" 
+	# FIXME nasty hack, waiting before creating key
+	ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "sleep 60; if [ ! -f ~/.ssh/id_rsa ]; then ssh-keygen -t rsa -N \"\" -f ~/.ssh/id_rsa; fi" 
 EOF
   }
 }
@@ -447,7 +452,7 @@ EOF
   }
 }
 
-////////////////////////////////// gateway precheck ////////////////////////////////// 
+////////////////////////////////// gateway setup ////////////////////////////////// 
 
 resource "null_resource" "gateway_setup" {
 
@@ -467,7 +472,12 @@ resource "null_resource" "gateway_setup" {
       "curl -s ${var.epic_rpm_dl_url} | grep proxy | awk '{print $3}' | sed -r \"s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\\S+)(-.*)/\\1\\2\\3/\" | xargs sudo yum install -y 2>&1 > ~/install_rpm.log",
     ]
   }
+  provisioner "local-exec" {
+    # FIXME see https://github.com/hashicorp/terraform/issues/17844#issuecomment-446674465
+    command = "aws ec2 reboot-instances --instance-ids ${aws_instance.gateway.id}"
+  }
 }
+
 
 ////////////////////////////////// controller precheck ////////////////////////////////// 
 
@@ -488,7 +498,19 @@ resource "null_resource" "controller_precheck" {
     inline = [
       # install RPMs
       "curl -s ${var.epic_rpm_dl_url} | grep ctrl | awk '{print $3}' | sed -r \"s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\\S+)(-.*)/\\1\\2\\3/\" | xargs sudo yum install -y 2>&1 > ~/install_rpm.log",
-
+    ]
+  }
+  provisioner "local-exec" {
+    # FIXME see https://github.com/hashicorp/terraform/issues/17844#issuecomment-446674465
+    command = "aws ec2 reboot-instances --instance-ids ${aws_instance.controller.id}"
+  }
+  provisioner "remote-exec" {
+    connection {
+      type  = "ssh"
+      user  = "centos"
+      host  = "${aws_instance.controller.public_ip}"
+    }
+    inline = [
       # install precheck scripts
       "curl -s -o bluedata-prechecks-epic-entdoc-3.7.bin ${var.epic_precheck_dl_url}",
       "chmod +x bluedata-prechecks-epic-entdoc-3.7.bin",
@@ -521,7 +543,19 @@ resource "null_resource" "worker_precheck" {
     inline = [
       # install RPMs
       "curl -s ${var.epic_rpm_dl_url} | grep \"wrkr \" | awk '{print $3}' | sed -r \"s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\\S+)(-.*)/\\1\\2\\3/\" | xargs sudo yum install -y 2>&1 > ~/install.rpm.log",
-
+    ]
+  }
+  provisioner "local-exec" {
+    # FIXME see https://github.com/hashicorp/terraform/issues/17844#issuecomment-446674465
+    command = "aws ec2 reboot-instances --instance-ids ${element(aws_instance.workers.*.id, count.index)}"
+  }
+  provisioner "remote-exec" {
+    connection {
+      type  = "ssh"
+      user  = "centos"
+      host  = "${element(aws_instance.workers.*.public_ip, count.index)}" 
+    }
+    inline = [
       # install precheck scripts
       "curl -s -o bluedata-prechecks-epic-entdoc-3.7.bin ${var.epic_precheck_dl_url}",
       "chmod +x bluedata-prechecks-epic-entdoc-3.7.bin",
@@ -596,7 +630,6 @@ resource "null_resource" "gateway_agent" {
 resource "null_resource" "worker_agent" {
 
   count = "${var.worker_count}"
-
   depends_on = [ "null_resource.install_controller" ]
 
   provisioner "remote-exec" {
