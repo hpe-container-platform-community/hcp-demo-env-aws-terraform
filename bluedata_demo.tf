@@ -58,37 +58,19 @@ resource "aws_default_network_acl" "default" {
   default_network_acl_id = "${aws_vpc.main.default_network_acl_id}"
   subnet_ids = [ "${aws_subnet.main.id}" ]
 
+  # allow client machine to have full access to all hosts
   ingress {
-    protocol   = "tcp"
+    protocol   = "-1"
     rule_no    = 100
     action     = "allow"
     cidr_block = "${var.client_cidr_block}"
-    from_port  = 22
-    to_port    = 22
+    from_port  = 0
+    to_port    = 0
   }
 
-  ingress {
-    // controller admin console
-    protocol   = "tcp"
-    rule_no    = 105
-    action     = "allow"
-    cidr_block = "${var.client_cidr_block}"
-    from_port  = 80
-    to_port    = 80
-  }
 
+  # allow internet access from instances 
   ingress {
-    // controller admin console
-    protocol   = "tcp"
-    rule_no    = 106
-    action     = "allow"
-    cidr_block = "${var.client_cidr_block}"
-    from_port  = 443
-    to_port    = 443
-  }
-
-  ingress {
-    // allow internet access from instances
     protocol   = "tcp"
     rule_no    = 110
     action     = "allow"
@@ -97,6 +79,7 @@ resource "aws_default_network_acl" "default" {
     to_port    = 65535
   }
 
+  # allow response traffic from hosts to internet
   egress {
     protocol   = "-1"
     rule_no    = 100
@@ -118,27 +101,15 @@ resource "aws_default_network_acl" "default" {
 resource "aws_default_security_group" "main" {
   vpc_id      = "${aws_vpc.main.id}"
 
+  # allow client machine to have full access
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = [ "${var.client_cidr_block}" ]
   }
 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = [ "${var.client_cidr_block}" ]
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [ "${var.client_cidr_block}" ]
-  }
-
+  # allow full host to host access for all hosts within this security group
   ingress {
     from_port   = 0
     to_port     = 0

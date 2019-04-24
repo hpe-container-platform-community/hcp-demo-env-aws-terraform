@@ -7,3 +7,4 @@ post_provision_steps.sh
 output.log
 controller_rsa.prv
 hostdetails.txt
+controller.prv_key
