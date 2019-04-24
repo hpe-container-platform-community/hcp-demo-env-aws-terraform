@@ -25,7 +25,7 @@ terraform init
 terraform apply -var-file=bluedata_demo.tfvars
 
 # or to automatically set client_cidr_block from the client's IP
-terraform apply -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32"
+terraform apply -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -var="continue_on_precheck_fail=\"true\""
 
 # inspect the output for errors if no errors you should see a configuration URL
 

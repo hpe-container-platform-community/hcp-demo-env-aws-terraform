@@ -17,6 +17,8 @@ variable "epic_dl_url" { }
 variable "epic_precheck_dl_url" { } 
 variable "epic_rpm_dl_url" { } 
 
+variable "continue_on_precheck_fail" { default = "false" }
+
 /******************* verify client ip ********************/
 
 data "external" "example1" {
@@ -422,7 +424,12 @@ resource "null_resource" "create_controller_public_key" {
   provisioner "local-exec" {
     command = <<EOF
 	# FIXME nasty hack, waiting before creating key
-	ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "sleep 60; if [ ! -f ~/.ssh/id_rsa ]; then ssh-keygen -t rsa -N \"\" -f ~/.ssh/id_rsa; fi" 
+	ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "if [ ! -f ~/.ssh/id_rsa ]; then ssh-keygen -t rsa -N \"\" -f ~/.ssh/id_rsa; fi" 
+
+  ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "cat ~/.ssh/id_rsa.pub >> /home/centos/.ssh/authorized_keys" 
+
+  # test connection from controller to gateway
+  ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa centos@${aws_instance.controller.private_ip} "echo connected""
 EOF
   }
 }
@@ -435,6 +442,9 @@ resource "null_resource" "copy_controller_public_key_to_gateway" {
     command = <<EOF
 	ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "cat /home/centos/.ssh/id_rsa.pub" | \
 	  ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.gateway.public_ip} "cat >> /home/centos/.ssh/authorized_keys" 
+
+  # test connection from controller to gateway
+  ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa centos@${aws_instance.gateway.private_ip} "echo connected""
 EOF
   }
 }
@@ -448,6 +458,9 @@ resource "null_resource" "copy_controller_public_key_to_workers" {
     command = <<EOF
 	ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "cat /home/centos/.ssh/id_rsa.pub" | \
 	  ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${element(aws_instance.workers.*.public_ip, count.index)} "cat >> /home/centos/.ssh/authorized_keys" 
+
+  # test connection from controller to worker
+  ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa centos@${element(aws_instance.workers.*.private_ip, count.index)} "echo connected""
 EOF
   }
 }
@@ -474,7 +487,8 @@ resource "null_resource" "gateway_setup" {
   }
   provisioner "local-exec" {
     # FIXME see https://github.com/hashicorp/terraform/issues/17844#issuecomment-446674465
-    command = "aws ec2 reboot-instances --instance-ids ${aws_instance.gateway.id}"
+    # command = "aws ec2 reboot-instances --instance-ids ${aws_instance.gateway.id}"
+    command = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.gateway.public_ip} '(sleep 2; sudo reboot)&'"
   }
 }
 
@@ -502,7 +516,8 @@ resource "null_resource" "controller_precheck" {
   }
   provisioner "local-exec" {
     # FIXME see https://github.com/hashicorp/terraform/issues/17844#issuecomment-446674465
-    command = "aws ec2 reboot-instances --instance-ids ${aws_instance.controller.id}"
+    # command = "aws ec2 reboot-instances --instance-ids ${aws_instance.controller.id}"
+    command = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} '(sleep 2; sudo reboot)&'"
   }
   provisioner "remote-exec" {
     connection {
@@ -516,7 +531,7 @@ resource "null_resource" "controller_precheck" {
       "chmod +x bluedata-prechecks-epic-entdoc-3.7.bin",
 
       # run precheck
-      "sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -c --controller-ip ${aws_instance.controller.private_ip} --gateway-node-ip ${aws_instance.gateway.public_ip} --gateway-node-hostname ${aws_instance.gateway.public_dns} 2>&1 > /home/centos/bluedata-precheck.log"
+      "sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -c --controller-ip ${aws_instance.controller.private_ip} --gateway-node-ip ${aws_instance.gateway.private_ip} --gateway-node-hostname ${aws_instance.gateway.private_dns} 2>&1 > /home/centos/bluedata-precheck.log"
     ]
   }
 }
@@ -527,7 +542,8 @@ resource "null_resource" "worker_precheck" {
 
   count = "${var.worker_count}"
 
-  depends_on = [ 
+  depends_on = [
+    "null_resource.gateway_setup",
     "null_resource.copy_controller_public_key_to_gateway",
     "null_resource.copy_controller_public_key_to_workers",
     "aws_volume_attachment.worker-volume-attachment-sdb",
@@ -547,7 +563,8 @@ resource "null_resource" "worker_precheck" {
   }
   provisioner "local-exec" {
     # FIXME see https://github.com/hashicorp/terraform/issues/17844#issuecomment-446674465
-    command = "aws ec2 reboot-instances --instance-ids ${element(aws_instance.workers.*.id, count.index)}"
+    # command = "aws ec2 reboot-instances --instance-ids ${element(aws_instance.workers.*.id, count.index)}"
+    command = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${element(aws_instance.workers.*.public_ip, count.index)} '(sleep 2; sudo reboot)&'"
   }
   provisioner "remote-exec" {
     connection {
@@ -563,7 +580,8 @@ resource "null_resource" "worker_precheck" {
       # run precheck
       "while ! mountpoint -x /dev/xvdb; do sleep 1; done",
       "while ! mountpoint -x /dev/xvdc; do sleep 1; done",
-      "sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -w --worker-primary-ip ${element(aws_instance.workers.*.private_ip, count.index)} --controller-ip ${aws_instance.controller.private_ip} --gateway-node-ip ${aws_instance.gateway.public_ip} --gateway-node-hostname ${aws_instance.gateway.public_dns} 2>&1 > /home/centos/bluedata-precheck.log"
+      "if [ ${var.continue_on_precheck_fail} == 'true' ]; then sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -w --worker-primary-ip ${element(aws_instance.workers.*.private_ip, count.index)} --controller-ip ${aws_instance.controller.private_ip} --gateway-node-ip ${aws_instance.gateway.public_ip} --gateway-node-hostname ${aws_instance.gateway.public_dns} || true 2>&1 > /home/centos/bluedata-precheck.log; fi",
+      "if [ ${var.continue_on_precheck_fail} != 'true' ]; then sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -w --worker-primary-ip ${element(aws_instance.workers.*.private_ip, count.index)} --controller-ip ${aws_instance.controller.private_ip} --gateway-node-ip ${aws_instance.gateway.public_ip} --gateway-node-hostname ${aws_instance.gateway.public_dns} 2>&1 > /home/centos/bluedata-precheck.log; fi"
     ]
   }
 }
@@ -589,7 +607,7 @@ resource "null_resource" "install_controller" {
       "chmod +x bluedata-epic-entdoc-minimal-release-3.7-2207.bin",
 
       # install EPIC 
-      "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -s -i -c ${aws_instance.controller.private_ip} --user centos --group centos" # --worker-agent-install"
+      "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -s -i -c ${aws_instance.controller.private_ip} --user centos --group centos"
     ]
   }
 }
