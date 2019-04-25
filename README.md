@@ -44,9 +44,12 @@ terraform output display_configuration_url
 
 In the BlueData configuration screen, insert the gateway private ip address (terraform output gateway_private_ip)
 
-Add workers and gateway
-run `terraform output` to see all variables
+ 1. At the login screen, use 'admin/admin123'
+ 2. Navigate to Installation tab
 
+Then ...
+
+ 1. run `terraform output` to see all variables
  1. Add workers private ip 
  2. Add gateway private ip and dns
  3. Download contoller ssh key (see output variable retrive_controller_ssh for command to run locally)
