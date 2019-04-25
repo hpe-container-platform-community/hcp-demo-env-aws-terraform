@@ -9,6 +9,7 @@ The following installed locally:
  - python3
  - ssh client
  - ssh key pair (ssh-keygen -t rsa)
+ - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html)
 
 Script has only been tested on Linux machine
 
@@ -26,7 +27,7 @@ cp ./bluedata_demo.tfvars_template to ./bluedata_demo.tfvars
 # edit to reflect your requirements
 vi ./bluedata_demo.tfvars 
 
-# install terraform - https://learn.hashicorp.com/terraform/getting-started/install.html
+# initialise terraform
 terraform init
 
 # deploy BlueData to AWS
