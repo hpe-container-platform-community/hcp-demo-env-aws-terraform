@@ -2,9 +2,17 @@
 
 This project is a work-in-progress.
 
-### Instructions
+### Pre-requisites
 
-<!-- language: bash -->
+The following installed locally:
+
+ - python3
+ - ssh client
+ - ssh key pair (ssh-keygen -t rsa)
+
+Script has only been tested on Linux machine
+
+### Instructions
 
 ```
 # ensure you have setup your aws credentials
@@ -35,22 +43,14 @@ terraform apply -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s
 # Add workers and gateway
 # 1. Add workers private ip
 # 2. Add gateway private ip and dns
-# 3. Retrive contoller ssh key: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa centos@XXXXXX "cat ~/.ssh/id_rsa" > controller.prv_key
+# 3. Retrive contoller ssh key - see `terraform output`
 # 4. Set ssh key
 
-ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa centos@35.176.105.120 "cat ~/.ssh/id_rsa" > controller.prv_key
-
 # destroy environment when finished
-terraform destroy -var-file=bluedata_demo.tfvars
+terraform destroy -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
 ```
 
 ### TODO - shutdown ec2 instances when not in use
 
 See https://groups.google.com/forum/#!topic/terraform-tool/hEESOVOgL_Q
 
-### Destroy and Apply
-
-```
-terraform destroy -var-file=bluedata_demo.tfvars -auto-approve && terraform apply -var-file=bluedata_demo.tfvars -auto-approve
-```
-# bluedata-demo-env-aws-terraform
