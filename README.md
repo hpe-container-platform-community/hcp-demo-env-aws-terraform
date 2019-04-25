@@ -73,7 +73,7 @@ terraform apply -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s
 ### destroy environment when finished
 
 ```
-terraform destroy -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" var="continue_on_precheck_fail=\"true\""
+terraform destroy -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -var="continue_on_precheck_fail=\"true\""
 ```
 
 ### TODO - shutdown ec2 instances when not in use
