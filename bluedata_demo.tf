@@ -578,7 +578,13 @@ resource "null_resource" "install_controller" {
       "chmod +x bluedata-epic-entdoc-minimal-release-3.7-2207.bin",
 
       # install EPIC 
-      "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -s -i -c ${aws_instance.controller.private_ip} --user centos --group centos"
+      "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -s -i -c ${aws_instance.controller.private_ip} --user centos --group centos",
+
+      # install  application workbench
+      "sudo yum install -y python-pip",
+      "sudo pip install --upgrade pip",
+      "sudo pip install --upgrade setuptools",
+      "sudo pip install --upgrade bdworkbench"
     ]
   }
 }
@@ -651,5 +657,8 @@ resource "null_resource" "install_controller" {
 ////////////////////////////////// Display configuration URL ////////////////////////////////// 
 
 output "display_configuration_url" {
-  value = "Open a browser to the following URL to configure: https://${aws_instance.controller.public_ip}"
+  value = "Controller Configuration URL: http://${aws_instance.controller.public_ip}"
+}
+output "retrive_controller_ssh" {
+  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} 'cat ~/.ssh/id_rsa' > controller.prv_key"
 }

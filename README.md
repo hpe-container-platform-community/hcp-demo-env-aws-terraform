@@ -53,7 +53,14 @@ Then ...
  1. Add workers private ip 
  2. Add gateway private ip and private dns
  3. Download contoller ssh key (see output variable retrive_controller_ssh for command to run locally)
- 4. Set ssh key
+ 4. Upload controller.prv_key
+ 5. Click Add hosts (enter site lock down when prompted)
+
+After a few minutes, you should see Gateway 'Installed' and Workers 'Bundle completed'
+
+ 1. Select each Worker
+ 2. Click 'Install'
+ 3. Wait a few minutes
 
 ### destroy environment when finished
 
