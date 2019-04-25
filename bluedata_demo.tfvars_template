@@ -37,6 +37,6 @@ ssh_prv_key_path   = "..\\.ssh\\id_rsa"
 #
 
 epic_dl_url          = "enter url"
-epic_precheck_dl_url = "enter url"
-epic_rpm_dl_url      = "enter url"
+epic_precheck_dl_url = "https://s3.amazonaws.com/bluedata-releases/3.7/bluedata-prechecks-epic-entdoc-3.7.bin"
+epic_rpm_dl_url      = "https://s3.amazonaws.com/bluedata-releases/3.7/repos/EPIC-Centos-7.x-RPM-list.txt" 
 
