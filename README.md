@@ -15,6 +15,8 @@ Script has only been tested on Linux machine
 
 ### Instructions
 
+#### Setup AWS Env and Install BlueData
+
 ```
 # ensure you have setup your aws credentials
 vi ~/.aws/credentials
@@ -36,19 +38,22 @@ terraform apply -var-file=bluedata_demo.tfvars
 # or to automatically set client_cidr_block from the client's IP
 terraform apply -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -var="continue_on_precheck_fail=\"true\""
 
-# inspect the output for errors if no errors you should see a configuration URL
+# inspect the output for errors if no errors you should see a configuration URL variable from the command below 'display_configuration_url' 
+terraform output display_configuration_url
+```
 
-# Config
-# 1. Insert the gateway private ip address
+In the BlueData configuration screen, insert the gateway private ip address (terraform output gateway_private_ip)
 
 # Add workers and gateway
-# 1. Add workers private ip
+# 1. Add workers private ip (run terraform output to see all variables)
 # 2. Add gateway private ip and dns
 # 3. Retrive contoller ssh key - see `terraform output`
 # 4. Set ssh key
 
-# destroy environment when finished
-terraform destroy -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
+### destroy environment when finished
+
+```
+terraform destroy -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" var="continue_on_precheck_fail=\"true\""
 ```
 
 ### TODO - shutdown ec2 instances when not in use
