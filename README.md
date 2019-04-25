@@ -62,6 +62,14 @@ After a few minutes, you should see Gateway 'Installed' and Workers 'Bundle comp
  2. Click 'Install'
  3. Wait a few minutes
 
+### Client IP changed?
+
+Re-run to update the AWS network ACL and security groups
+
+```
+terraform apply -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -var="continue_on_precheck_fail=\"true\""
+```
+
 ### destroy environment when finished
 
 ```
