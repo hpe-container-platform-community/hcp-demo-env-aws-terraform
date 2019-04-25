@@ -49,7 +49,7 @@ run `terraform output` to see all variables
 
  1. Add workers private ip 
  2. Add gateway private ip and dns
- 3. Retrive contoller ssh key - see `terraform output`
+ 3. Download contoller ssh key (see variable retrive_controller_ssh for command to run locally)
  4. Set ssh key
 
 ### destroy environment when finished
