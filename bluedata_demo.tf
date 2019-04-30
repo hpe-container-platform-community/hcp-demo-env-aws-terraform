@@ -395,6 +395,8 @@ resource "null_resource" "create_controller_public_key" {
   provisioner "local-exec" {
     command = <<EOF
 	# FIXME nasty hack, waiting before creating key
+        sleep 60
+
 	ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "if [ ! -f ~/.ssh/id_rsa ]; then ssh-keygen -t rsa -N \"\" -f ~/.ssh/id_rsa; fi" 
 
   ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip} "cat ~/.ssh/id_rsa.pub >> /home/centos/.ssh/authorized_keys" 
@@ -579,7 +581,7 @@ resource "null_resource" "install_controller" {
 
       # install EPIC 
       "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -s -i -c ${aws_instance.controller.private_ip} --user centos --group centos",
-
+      
       # install  application workbench
       "sudo yum install -y python-pip",
       "sudo pip install --upgrade pip",
