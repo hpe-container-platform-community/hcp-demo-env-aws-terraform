@@ -75,6 +75,8 @@ terraform apply -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s
 
 ### destroy environment when finished
 
+Note: sometimes destroy gets stuck in a loop - I think this is a terraform bug.  If this happens, manually terminate the instances and re-run the destroy operation.
+
 ```
 terraform destroy -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -var="continue_on_precheck_fail=\"true\""
 ```
