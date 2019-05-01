@@ -13,6 +13,10 @@ variable "ec2_ami" { }
 variable "ssh_prv_key_path" {}
 variable "worker_count" { default = 3 }
 
+variable "gtw_instance_type" { default = "m4.2xlarge" }
+variable "ctr_instance_type" { default = "m4.2xlarge" }
+variable "wkr_instance_type" { default = "m4.2xlarge" }
+
 variable "epic_dl_url" { }
 variable "epic_precheck_dl_url" { } 
 variable "epic_rpm_dl_url" { } 
@@ -191,7 +195,7 @@ resource "aws_key_pair" "main" {
 
 resource "aws_instance" "gateway" {
   ami                    = "${var.ec2_ami}"
-  instance_type          = "m4.2xlarge"
+  instance_type          = "${var.gtw_instance_type}"
   key_name               = "${aws_key_pair.main.key_name}"
   vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
   subnet_id              = "${aws_subnet.main.id}"
@@ -230,7 +234,7 @@ output "gateway_public_dns" {
 
 resource "aws_instance" "controller" {
   ami                    = "${var.ec2_ami}"
-  instance_type          = "m4.2xlarge"
+  instance_type          = "${var.ctr_instance_type}"
   key_name               = "${aws_key_pair.main.key_name}"
   vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
   subnet_id              = "${aws_subnet.main.id}"
@@ -304,7 +308,7 @@ output "controller public ip" {
 resource "aws_instance" "workers" {
   count                  = 3
   ami                    = "${var.ec2_ami}"
-  instance_type          = "m4.2xlarge"
+  instance_type          = "${var.wkr_instance_type}"
   key_name               = "${aws_key_pair.main.key_name}"
   vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
   subnet_id              = "${aws_subnet.main.id}"
