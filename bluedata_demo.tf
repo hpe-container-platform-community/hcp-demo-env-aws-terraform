@@ -269,6 +269,9 @@ resource "aws_volume_attachment" "controller-volume-attachment-sdb" {
   device_name = "/dev/sdb"
   volume_id   = "${aws_ebs_volume.controller-ebs-sdb.id}"
   instance_id = "${aws_instance.controller.id}"
+
+  # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
+  force_detach = true
 }
 
 # /dev/sdc
@@ -289,6 +292,9 @@ resource "aws_volume_attachment" "controller-volume-attachment-sdc" {
   device_name = "/dev/sdc"
   volume_id   = "${aws_ebs_volume.controller-ebs-sdc.id}"
   instance_id = "${aws_instance.controller.id}"
+
+  # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
+  force_detach = true
 }
 
 # print controller ssh command
@@ -302,6 +308,7 @@ output "controller_ssh_command" {
 output "controller public ip" {
   value = "${aws_instance.controller.public_ip}"
 }
+
 
 //////////////////// Instance: Workers /////////////////////
 
@@ -557,7 +564,11 @@ resource "null_resource" "worker_precheck" {
       # run precheck
       "while ! mountpoint -x /dev/xvdb; do sleep 1; done",
       "while ! mountpoint -x /dev/xvdc; do sleep 1; done",
+
+      # ignore failures with the precheck and continue with the setup anyway
       "if [ ${var.continue_on_precheck_fail} == 'true' ]; then sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -w --worker-primary-ip ${element(aws_instance.workers.*.private_ip, count.index)} --controller-ip ${aws_instance.controller.private_ip} --gateway-node-ip ${aws_instance.gateway.public_ip} --gateway-node-hostname ${aws_instance.gateway.public_dns} || true 2>&1 > /home/centos/bluedata-precheck.log; fi",
+
+      # if there is a failure with the precheck, don't continue the setup
       "if [ ${var.continue_on_precheck_fail} != 'true' ]; then sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -w --worker-primary-ip ${element(aws_instance.workers.*.private_ip, count.index)} --controller-ip ${aws_instance.controller.private_ip} --gateway-node-ip ${aws_instance.gateway.public_ip} --gateway-node-hostname ${aws_instance.gateway.public_dns} 2>&1 > /home/centos/bluedata-precheck.log; fi"
     ]
   }
