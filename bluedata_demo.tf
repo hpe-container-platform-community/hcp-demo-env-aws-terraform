@@ -561,7 +561,7 @@ resource "null_resource" "worker_precheck" {
       "curl -s -o bluedata-prechecks-epic-entdoc-3.7.bin ${var.epic_precheck_dl_url}",
       "chmod +x bluedata-prechecks-epic-entdoc-3.7.bin",
 
-      # run precheck
+      # ensure drives are mounted before pre-checking
       "while ! mountpoint -x /dev/xvdb; do sleep 1; done",
       "while ! mountpoint -x /dev/xvdc; do sleep 1; done",
 
