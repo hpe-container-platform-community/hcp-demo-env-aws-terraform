@@ -19,3 +19,5 @@ if check_client_ip == 'true':
     else:
       print(json.dumps({"ok": "true"}))
 
+else:
+    print(json.dumps({"ok": "true"}))
