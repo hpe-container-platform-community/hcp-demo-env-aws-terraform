@@ -45,7 +45,6 @@ terraform apply -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s
 terraform output display_configuration_url
 ```
 
-In the BlueData configuration screen, insert the gateway private ip address (terraform output gateway_private_ip)
 
  1. At the login screen, use 'admin/admin123'
  2. Navigate to Installation tab

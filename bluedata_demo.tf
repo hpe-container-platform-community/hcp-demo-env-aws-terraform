@@ -8,9 +8,9 @@ variable "client_cidr_block" {  }
 variable "check_client_ip" { default = "true" }
 variable "vpc_cidr_block" { }
 variable "subnet_cidr_block" { }
-variable "ssh_pub_key" { }
 variable "ec2_ami" { }
 variable "ssh_prv_key_path" {}
+variable "ssh_pub_key_path" {}
 variable "worker_count" { default = 3 }
 
 variable "gtw_instance_type" { default = "m4.2xlarge" }
@@ -22,6 +22,13 @@ variable "epic_precheck_dl_url" { }
 variable "epic_rpm_dl_url" { } 
 
 variable "continue_on_precheck_fail" { default = "false" }
+
+
+/******************* ssh pub key content ********************/
+
+data "local_file" "ssh_pub_key" {
+    filename = "${var.ssh_pub_key_path}"
+}
 
 /******************* verify client ip ********************/
 
@@ -188,7 +195,7 @@ resource "aws_internet_gateway" "main" {
 
 resource "aws_key_pair" "main" {
   key_name   = "${var.project_id}-keypair"
-  public_key = "${var.ssh_pub_key}"
+  public_key = "${data.local_file.ssh_pub_key.content}"
 }
 
 /******************* Instance: Gateway ********************/
@@ -583,6 +590,16 @@ resource "null_resource" "install_controller" {
 	"null_resource.worker_precheck"
 	]
 
+  provisioner "file" {
+    connection {
+      type  = "ssh"
+      user  = "centos"
+      host  = "${aws_instance.controller.public_ip}"
+    }
+    source      = "initial_bluedata_config.py"
+    destination = "/home/centos/initial_bluedata_config.py"
+  }
+
   provisioner "remote-exec" {
     connection {
       type  = "ssh"
@@ -597,79 +614,19 @@ resource "null_resource" "install_controller" {
       # install EPIC 
       "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -s -i -c ${aws_instance.controller.private_ip} --user centos --group centos",
       
-      # install  application workbench
+      # install application workbench
       "sudo yum install -y python-pip",
       "sudo pip install --upgrade pip",
       "sudo pip install --upgrade setuptools",
-      "sudo pip install --upgrade bdworkbench"
+      "sudo pip install --upgrade bdworkbench",
+
+      # initial configuration
+      "sudo pip install beautifulsoup4",
+      "sudo pip install lxml",
+      "python /home/centos/initial_bluedata_config.py"
     ]
   }
 }
-
-# FIXME We have to manually configure gateway and workers using controller UI for now until the code below is fixed
-
-// ////////////////////////////////// gateway agent ////////////////////////////////// 
-// 
-// resource "null_resource" "gateway_agent" {
-// 
-//   depends_on = [ "null_resource.install_controller" ]
-// 
-//   provisioner "remote-exec" {
-//     connection {
-//       type  = "ssh"
-//       user  = "centos"
-//       host  = "${aws_instance.gateway.public_ip}"
-//     }
-//     inline = [
-//       # agent-install-worker.parms
-//       "curl -s -o /tmp/agent-install-worker.parms https://s3.amazonaws.com/bluedata-releases/3.7/agent-install-worker.parms",
-//       "sed -i s/^#HAENABLED=false.*$/HAENABLED=false/g /tmp/agent-install-worker.parms",
-//       "sed -i s/^#CONTROLLER=.*$/CONTROLLER=${aws_instance.controller.private_ip}/g /tmp/agent-install-worker.parms",
-//       "sed -i s/^#CONTROLLER_HOSTNAME=.*$/CONTROLLER_HOSTNAME=${aws_instance.controller.private_dns}/g /tmp/agent-install-worker.parms",
-//       "sed -i s/^#BLUEDATA_USER=.*$/BLUEDATA_USER=centos/g /tmp/agent-install-worker.parms",
-//       "sed -i s/^#BLUEDATA_GROUP=.*$/BLUEDATA_GROUP=centos/g /tmp/agent-install-worker.parms",
-// 
-//       # download EPIC
-//       "curl -s -o bluedata-epic-entdoc-minimal-release-3.7-2207.bin ${var.epic_dl_url}",
-//       "chmod +x bluedata-epic-entdoc-minimal-release-3.7-2207.bin",
-// 
-//       # install agent
-//       "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin --params /tmp/agent-install-worker.parms --nodetype proxy --gateway-node-ip ${aws_instance.gateway.private_ip} --gateway-node-hostname ${aws_instance.gateway.private_dns}"
-//     ]
-//   }
-// }
-// 
-// ////////////////////////////////// worker agent ////////////////////////////////// 
-// 
-// resource "null_resource" "worker_agent" {
-// 
-//   count = "${var.worker_count}"
-//   depends_on = [ "null_resource.install_controller" ]
-// 
-//   provisioner "remote-exec" {
-//     connection {
-//       type  = "ssh"
-//       user  = "centos"
-//       host  = "${element(aws_instance.workers.*.public_ip, count.index)}"
-//     }
-//     inline = [
-//       # agent-install-worker.parms
-//       "curl -s -o /tmp/agent-install-worker.parms https://s3.amazonaws.com/bluedata-releases/3.7/agent-install-worker.parms",
-//       "sed -i s/^#HAENABLED=false.*$/HAENABLED=false/g /tmp/agent-install-worker.parms",
-//       "sed -i s/^#CONTROLLER=.*$/CONTROLLER=${aws_instance.controller.private_ip}/g /tmp/agent-install-worker.parms",
-//       "sed -i s/^#CONTROLLER_HOSTNAME=.*$/CONTROLLER_HOSTNAME=${aws_instance.controller.private_dns}/g /tmp/agent-install-worker.parms",
-//       "sed -i s/^#BLUEDATA_USER=.*$/BLUEDATA_USER=centos/g /tmp/agent-install-worker.parms",
-//       "sed -i s/^#BLUEDATA_GROUP=.*$/BLUEDATA_GROUP=centos/g /tmp/agent-install-worker.parms",
-// 
-//       # download EPIC
-//       "curl -s -o bluedata-epic-entdoc-minimal-release-3.7-2207.bin ${var.epic_dl_url}",
-//       "chmod +x bluedata-epic-entdoc-minimal-release-3.7-2207.bin",
-// 
-//       # run precheck
-//       "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin --params /tmp/agent-install-worker.parms --nodetype worker --worker ${element(aws_instance.workers.*.private_ip, count.index)} --workerhostname ${element(aws_instance.workers.*.private_dns, count.index)}"
-//     ]
-//   }
-// }
 
 ////////////////////////////////// Display configuration URL ////////////////////////////////// 
 

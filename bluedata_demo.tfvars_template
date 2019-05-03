@@ -26,7 +26,6 @@ check_client_ip    = "true" # check the client_ip is inside the client_cidr_bloc
 #
 
 ec2_ami            = "ami-00846a67" # this is valid for the London region, change if required
-ssh_pub_key        = "ssh-rsa xxxxxxxx xxxx@xxx"
 
 gtw_instance_type  = "m4.2xlarge"
 ctr_instance_type  = "m4.2xlarge"
@@ -34,7 +33,9 @@ wkr_instance_type  = "m4.2xlarge"
 
 # the path to your ssh private key on your local machine
 # user double \\ for windows paths
-ssh_prv_key_path   = "..\\.ssh\\id_rsa" 
+
+ssh_prv_key_path   = "/home/snowch/.ssh/id_rsa" 
+ssh_pub_key_path   = "/home/snowch/.ssh/id_rsa.pub" 
 
 #
 # software download url
