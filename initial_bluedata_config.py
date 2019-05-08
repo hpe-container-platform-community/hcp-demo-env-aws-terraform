@@ -31,21 +31,11 @@ client = requests.session()
 URL='http://localhost/bdswebui/admininstall/'
 
 r = client.get(URL)
-#if 'csrftoken' in client.cookies:
-#    # Django 1.6 and up
-#    csrftoken = client.cookies['csrftoken']
-#else:
-#    # older versions
-#    csrftoken = client.cookies['csrf']
 
 html_bytes = r.text
 soup = bs4(html_bytes, 'lxml')
-
 csrf_token = soup.find('input', {'name':'csrfmiddlewaretoken'})['value'] 
 
-print(csrf_token)
-
-#client.cookies['csrftoken'] = csrf_token
 
 headers = {}
 headers['cookie'] = 'csrftoken=' + csrf_token
