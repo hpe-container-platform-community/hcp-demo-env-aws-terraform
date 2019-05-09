@@ -358,6 +358,9 @@ resource "aws_volume_attachment" "worker-volume-attachment-sdb" {
   device_name = "/dev/sdb"
   volume_id   = "${aws_ebs_volume.worker-ebs-volumes-sdb.*.id[count.index]}"
   instance_id = "${aws_instance.workers.*.id[count.index]}"
+
+  # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
+  force_detach = true
 }
 
 # /dev/sdc
@@ -380,6 +383,9 @@ resource "aws_volume_attachment" "worker-volume-attachment-sdc" {
   device_name = "/dev/sdc"
   volume_id   = "${aws_ebs_volume.worker-ebs-volumes-sdc.*.id[count.index]}"
   instance_id = "${aws_instance.workers.*.id[count.index]}"
+
+  # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
+  force_detach = true
 }
 
 # TODO - terraform 0.12 has a 'for' operator to fix this hardcoding
