@@ -54,7 +54,8 @@ Then ...
  1. run `terraform output` to see all variables
  1. Add workers private ip 
  2. Add gateway private ip and private dns
- 3. Download contoller ssh key (see output variable retrive_controller_ssh for command to run locally)
+ 3. Download contoller ssh key (see output variable retrive_controller_ssh for command to run locally) 
+    This will be something like: `ssh -o StrictHostKeyChecking=no -i /home/snowch/.ssh/id_rsa centos@18.130.217.53 'cat ~/.ssh/id_rsa' > controller.prv_key`
  4. Upload controller.prv_key
  5. Click Add hosts (enter site lock down when prompted)
 
