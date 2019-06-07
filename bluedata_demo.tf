@@ -310,12 +310,15 @@ output "controller_ssh_command" {
   value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip}"
 }
 
-# print public IP address
+# print IP address
 
-output "controller public ip" {
+output "controller_public_ip" {
   value = "${aws_instance.controller.public_ip}"
 }
 
+output "controller_private_ip" {
+  value = "${aws_instance.controller.private_ip}"
+}
 
 //////////////////// Instance: Workers /////////////////////
 
