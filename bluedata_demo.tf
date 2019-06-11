@@ -323,7 +323,7 @@ output "controller_private_ip" {
 //////////////////// Instance: Workers /////////////////////
 
 resource "aws_instance" "workers" {
-  count                  = 3
+  count                  = "${var.worker_count}"
   ami                    = "${var.ec2_ami}"
   instance_type          = "${var.wkr_instance_type}"
   key_name               = "${aws_key_pair.main.key_name}"
@@ -345,7 +345,7 @@ resource "aws_instance" "workers" {
 # /dev/sdb
 
 resource "aws_ebs_volume" "worker-ebs-volumes-sdb" {
-  count             = "${aws_instance.workers.count}"
+  count             = "${var.worker_count}"
   availability_zone = "${var.az}"
   size              = 1024
   type              = "gp2"
@@ -357,7 +357,7 @@ resource "aws_ebs_volume" "worker-ebs-volumes-sdb" {
 }
 
 resource "aws_volume_attachment" "worker-volume-attachment-sdb" {
-  count       = "${aws_instance.workers.count}"
+  count       = "${var.worker_count}"
   device_name = "/dev/sdb"
   volume_id   = "${aws_ebs_volume.worker-ebs-volumes-sdb.*.id[count.index]}"
   instance_id = "${aws_instance.workers.*.id[count.index]}"
@@ -369,7 +369,7 @@ resource "aws_volume_attachment" "worker-volume-attachment-sdb" {
 # /dev/sdc
 
 resource "aws_ebs_volume" "worker-ebs-volumes-sdc" {
-  count             = "${aws_instance.workers.count}"
+  count             = "${var.worker_count}"
   availability_zone = "${var.az}"
   size              = 1024
   type              = "gp2"
@@ -382,7 +382,7 @@ resource "aws_ebs_volume" "worker-ebs-volumes-sdc" {
 }
 
 resource "aws_volume_attachment" "worker-volume-attachment-sdc" {
-  count       = "${aws_instance.workers.count}"
+  count       = "${var.worker_count}"
   device_name = "/dev/sdc"
   volume_id   = "${aws_ebs_volume.worker-ebs-volumes-sdc.*.id[count.index]}"
   instance_id = "${aws_instance.workers.*.id[count.index]}"
