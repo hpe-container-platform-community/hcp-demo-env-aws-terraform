@@ -479,17 +479,23 @@ resource "null_resource" "gateway_setup" {
       type  = "ssh"
       user  = "centos"
       host  = "${aws_instance.gateway.public_ip}"
+      timeout = "10m"
+      private_key = "${file(var.ssh_prv_key_path)}"
+      agent = false
     }
     inline = [
       # install RPMs
       "curl -s ${var.epic_rpm_dl_url} | grep proxy | awk '{print $3}' | sed -r \"s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\\S+)(-.*)/\\1\\2\\3/\" | xargs sudo yum install -y 2>&1 > ~/install_rpm.log",
+      #"sudo reboot &",
     ]
   }
+
   provisioner "local-exec" {
     # FIXME see https://github.com/hashicorp/terraform/issues/17844#issuecomment-446674465
     # command = "aws ec2 reboot-instances --instance-ids ${aws_instance.gateway.id}"
     command = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.gateway.public_ip} '(sleep 2; sudo reboot)&'"
   }
+
 }
 
 
@@ -508,6 +514,9 @@ resource "null_resource" "controller_precheck" {
       type  = "ssh"
       user  = "centos"
       host  = "${aws_instance.controller.public_ip}"
+      timeout = "10m"
+      private_key = "${file(var.ssh_prv_key_path)}"
+      agent = false
     }
     inline = [
       # install RPMs
@@ -524,6 +533,9 @@ resource "null_resource" "controller_precheck" {
       type  = "ssh"
       user  = "centos"
       host  = "${aws_instance.controller.public_ip}"
+      timeout = "10m"
+      private_key = "${file(var.ssh_prv_key_path)}"
+      agent = false
     }
     inline = [
       # install precheck scripts
@@ -555,6 +567,9 @@ resource "null_resource" "worker_precheck" {
       type  = "ssh"
       user  = "centos"
       host  = "${element(aws_instance.workers.*.public_ip, count.index)}" 
+      timeout = "10m"
+      private_key = "${file(var.ssh_prv_key_path)}"
+      agent = false
     }
     inline = [
       # install RPMs
@@ -571,6 +586,9 @@ resource "null_resource" "worker_precheck" {
       type  = "ssh"
       user  = "centos"
       host  = "${element(aws_instance.workers.*.public_ip, count.index)}" 
+      timeout = "10m"
+      private_key = "${file(var.ssh_prv_key_path)}"
+      agent = false
     }
     inline = [
       # install precheck scripts
@@ -614,6 +632,9 @@ resource "null_resource" "install_controller" {
       type  = "ssh"
       user  = "centos"
       host  = "${aws_instance.controller.public_ip}"
+      timeout = "10m"
+      private_key = "${file(var.ssh_prv_key_path)}"
+      agent = false
     }
     inline = [
       # download EPIC
