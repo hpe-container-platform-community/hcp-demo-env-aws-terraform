@@ -622,6 +622,9 @@ resource "null_resource" "install_controller" {
       type  = "ssh"
       user  = "centos"
       host  = "${aws_instance.controller.public_ip}"
+      timeout = "10m"
+      private_key = "${file(var.ssh_prv_key_path)}"
+      agent = false
     }
     source      = "initial_bluedata_config.py"
     destination = "/home/centos/initial_bluedata_config.py"
