@@ -391,11 +391,11 @@ resource "aws_volume_attachment" "worker-volume-attachment-sdc" {
   force_detach = true
 }
 
-# TODO - terraform 0.12 has a 'for' operator to fix this hardcoding
 output "workers_ssh" {
-  value = [ "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.workers.0.public_ip}",
-            "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.workers.1.public_ip}",
-            "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.workers.2.public_ip}" ]
+  value = {
+    for instance in aws_instance.workers:
+    instance.id => "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${instance.public_ip}" 
+  }
 }
 
 output "workers_public_ip" {
