@@ -81,7 +81,9 @@ Note: sometimes destroy gets stuck in a loop - I think this is a terraform bug. 
 terraform destroy -var-file=bluedata_demo.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -var="continue_on_precheck_fail=\"true\""
 ```
 
-### TODO - shutdown ec2 instances when not in use
+### Shutdown ec2 instances when not in use
 
-See https://groups.google.com/forum/#!topic/terraform-tool/hEESOVOgL_Q
+For now, you can just use the AWS Management Console or CLI to stop/start your BlueData EC2 instances.  After restarting your instancesm re-run the script in the section [client-ip-changed](#client-ip-changed)
+
+TODO: https://groups.google.com/forum/#!topic/terraform-tool/hEESOVOgL_Q
 
