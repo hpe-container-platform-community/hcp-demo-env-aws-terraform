@@ -248,8 +248,6 @@ done
 # Install Controller
 ###############################################################################
 
-scp -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} initial_bluedata_config.py centos@${CTRL_PUB_IP}:/home/centos/initial_bluedata_config.py
-
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
    curl -s -o bluedata-epic-entdoc-minimal-release-3.7-2207.bin ${EPIC_DL_URL}
    chmod +x bluedata-epic-entdoc-minimal-release-3.7-2207.bin
@@ -269,6 +267,7 @@ ENDSSH
 # Manually configure Controller with Workers and Gateway
 ###############################################################################
 
+echo "--"
 echo "** BlueData installation completed successfully.  You now need to configure it **"
 echo "Controller URL: http://${CTRL_PUB_IP}"
 echo "--"
