@@ -86,10 +86,13 @@ done
 # Gateway
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} << ENDSSH
    curl -s -f ${EPIC_RPM_DL_URL} | grep proxy | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
-   sudo reboot
+
+   # wrap reboot to prevent ssh thinking the session aborted due to an error
+   (sudo reboot)&
 ENDSSH
 
 echo 'Waiting for Gateway to restart '
-while ! nc -w5 -z ${GATW_PUB_IP} 22; do echo -n '.'; done
+while ! nc -w5 -z ${GATW_PUB_IP} 22; do printf "." -n ; done;
+echo 'Gateway has restarted'
 
  
