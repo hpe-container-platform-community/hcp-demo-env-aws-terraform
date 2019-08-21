@@ -12,6 +12,7 @@ LOCAL_SSH_PRV_KEY_PATH=$(cat output.json | python3 -c 'import json,sys;obj=json.
 
 CLIENT_CIDR_BLOCK=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["client_cidr_block"]["value"])') 
 
+EPIC_DL_URL=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_dl_url"]["value"])') 
 EPIC_RPM_DL_URL=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_rpm_dl_url"]["value"])') 
 EPIC_PRECHECK_DL_URL=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_precheck_dl_url"]["value"])') 
 
@@ -64,6 +65,10 @@ else
 fi
 ENDSSH
 
+#
+# Controller -> Gateway
+#
+
 # We have password SSH access from our local machines to EC2, so we can utiise this to copy the Controller SSH key to the Gateway
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "cat >> /home/centos/.ssh/authorized_keys" 
@@ -73,6 +78,16 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
 echo CONTROLLER: Connecting to GATEWAY ${GATW_PUB_IP}...
 ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -T centos@${GATW_PRV_IP} "echo Connected!"
 ENDSSH
+
+#
+# Controller -> Workers
+#
+
+# We have password SSH access from our local machines to EC2, so we can utiise this to copy the Controller SSH key to each Worker
+for WRKR in ${WRKR_PUB_IPS[@]}; do 
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
+  ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "cat >> /home/centos/.ssh/authorized_keys"
+done
 
 # test passwordless SSH connection from Controller to Workers
 for WRKR in ${WRKR_PRV_IPS[@]}; do 
@@ -97,9 +112,9 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PU
    (sudo reboot)&
 ENDSSH
 
-echo 'Waiting for Gateway to restart '
+echo 'Waiting for Gateway to reboot '
 while ! nc -w5 -z ${GATW_PUB_IP} 22; do printf "." -n ; done;
-echo 'Gateway has restarted'
+echo 'Gateway has reboot'
 
 #
 # Controller
@@ -112,9 +127,9 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    (sudo reboot)&
 ENDSSH
 
-echo 'Waiting for Controller to restart '
+echo 'Waiting for Controller to reboot '
 while ! nc -w5 -z ${CTRL_PUB_IP} 22; do printf "." -n ; done;
-echo 'Controller has restarted'
+echo 'Controller has reboot'
 
 #
 # Workers
@@ -128,9 +143,9 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} <
    (sudo reboot)&
 ENDSSH
 
-echo "Waiting for Worker ${WRKR} to restart "
+echo "Waiting for Worker ${WRKR} to reboot "
 while ! nc -w5 -z ${WRKR} 22; do printf "." -n ; done;
-echo 'Worker has restarted'
+echo 'Worker has reboot'
 done
 
 ###############################################################################
@@ -158,5 +173,82 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
         --gateway-node-hostname ${GATW_PRV_DNS} || exit 1 2>&1 > /home/centos/bluedata-precheck.log
    fi
 ENDSSH
+
+# Workers
+
+IGNORE_WRKR_PRECHECK_FAIL=true
+
+for INDEX in ${!WRKR_PUB_IPS[@]}; do 
+
+WRKR_PUB_IP=${WRKR_PUB_IPS[$INDEX]}
+WRKR_PRV_IP=${WRKR_PRV_IPS[$INDEX]}
+
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR_PUB_IP} << ENDSSH
+ 
+   # ensure drives are mounted before pre-checking
+   while ! mountpoint -x /dev/xvdb; do sleep 1; done
+   while ! mountpoint -x /dev/xvdc; do sleep 1; done
+
+   curl -s -o bluedata-prechecks-epic-entdoc-3.7.bin ${EPIC_PRECHECK_DL_URL}
+   chmod +x bluedata-prechecks-epic-entdoc-3.7.bin
+
+   if [ "$IGNORE_WRKR_PRECHECK_FAIL" == 'true' ];
+   then
+      sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -w \
+        --worker-primary-ip ${WRKR_PRV_IP} \
+        --controller-ip ${CTRL_PRV_IP} \
+        --gateway-node-ip ${GATW_PRV_IP} \
+        --gateway-node-hostname ${GATW_PRV_DNS} || true 2>&1 > /home/centos/bluedata-precheck.log
+   else
+      sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -w \
+        --worker-primary-ip ${WRKR_PRV_IP} \
+        --controller-ip ${CTRL_PRV_IP} \
+        --gateway-node-ip ${GATW_PRV_IP} \
+        --gateway-node-hostname ${GATW_PRV_DNS} || exit 1 2>&1 > /home/centos/bluedata-precheck.log
+   fi
+ENDSSH
+done
+
+###############################################################################
+# Install Controller
+###############################################################################
+
+    #   "curl -s -o bluedata-epic-entdoc-minimal-release-3.7-2207.bin ${var.epic_dl_url}",
+    #   "chmod +x bluedata-epic-entdoc-minimal-release-3.7-2207.bin",
+
+    #   # install EPIC 
+    #   "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -s -i -c ${aws_instance.controller.private_ip} --user centos --group centos",
+      
+    #   # install application workbench
+    #   "sudo yum install -y python-pip",
+    #   "sudo pip install --upgrade pip",
+    #   "sudo pip install --upgrade setuptools",
+    #   "sudo pip install --upgrade bdworkbench",
+
+    #   # initial configuration
+    #   "sudo pip install beautifulsoup4",
+    #   "sudo pip install lxml",
+    #   "python /home/centos/initial_bluedata_config.py"
+
+#  1. At the login screen, use 'admin/admin123'
+#  2. Navigate to Installation tab
+
+# Then ...
+
+#  1. run `terraform output` to see all variables
+#  1. Add workers private ip 
+#  2. Add gateway private ip and private dns
+#  3. Download contoller ssh key (see output variable retrive_controller_ssh for command to run locally) 
+#     This will be something like: `ssh -o StrictHostKeyChecking=no -i /home/snowch/.ssh/id_rsa centos@18.130.217.53 'cat ~/.ssh/id_rsa' > controller.prv_key`
+#  4. Upload controller.prv_key
+#  5. Click Add hosts (enter site lock down when prompted)
+
+# After a few minutes, you should see Gateway 'Installed' and Workers 'Bundle completed'
+
+#  1. Select each Worker
+#  2. Click 'Install'
+#  3. Wait a few minutes
+
+
 
 echo 'Done!'
