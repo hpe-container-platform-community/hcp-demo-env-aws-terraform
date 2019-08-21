@@ -293,5 +293,7 @@ cat << EOF
    5. Select each Worker
    6. Click 'Install'
    7. Wait a few minutes
+
+   
 EOF
 
