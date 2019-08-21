@@ -25,10 +25,12 @@ echo CTRL_PUB_IP=$CTRL_PUB_IP
 GATW_PRV_IP=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_private_ip"]["value"])') 
 GATW_PUB_IP=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_public_ip"]["value"])') 
 GATW_PRV_DNS=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_private_dns"]["value"])') 
+GATW_PUB_DNS=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_public_dns"]["value"])') 
 
 echo GATW_PRV_IP=$GATW_PRV_IP
 echo GATW_PUB_IP=$GATW_PUB_IP
 echo GATW_PRV_DNS=$GATW_PRV_DNS
+echo GATW_PUB_DNS=$GATW_PUB_DNS
 
 WRKR_PRV_IPS=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_private_ip"]["value"][0], sep=" ")') 
 WRKR_PUB_IPS=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_public_ip"]["value"][0], sep=" ")') 
@@ -253,7 +255,6 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    chmod +x bluedata-epic-entdoc-minimal-release-3.7-2207.bin
 
    # install EPIC
-   echo "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -f -s -i -c ${CTRL_PRV_IP} --user centos --group centos"
    sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -f -s -i -c ${CTRL_PRV_IP} --user centos --group centos
 
    # install application workbench
@@ -262,13 +263,6 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    sudo pip install --upgrade pip
    sudo pip install --upgrade setuptools
    sudo pip install --upgrade bdworkbench
-
-   # automate initial configuration screen
-   sudo pip install beautifulsoup4
-   sudo pip install lxml
-
-   # Accept the defaults on the first configuration screen after installing BlueData
-   python /home/centos/initial_bluedata_config.py
 ENDSSH
 
 ###############################################################################
@@ -276,21 +270,22 @@ ENDSSH
 ###############################################################################
 
 echo "** BlueData installation completed successfully.  You now need to configure it **"
-echo "Controller URL: http://${CTRL_PUB_IP} - login: admin/admin123"
-echo "Worker IPs: ${WRKR_PRV_IP[@]}"
-echo "Gateway IP: ${GATW_PRV_IP}"   # should this be the public IP?
-echo "Gateway DNS: ${GATW_PRV_DNS}" # should this be the public DNS?
-
+echo "Controller URL: http://${CTRL_PUB_IP}"
+echo "--"
 echo "Downloading Controller SSH Private key to 'controller.prv_key' ** PLEASE KEEP IT SECURE **"
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > controller.prv_key
 
 cat << EOF
-Instructions:
+*********************************************************
+* Instructions for completing the BlueData installation *
+*********************************************************
 
-1. At the login screen, use 'admin/admin123'
-2. Navigate to Installation tab
-   1. Add workers private ip ${WRKR_PRV_IP[@]} 
-   2. Add gateway private ip and private dns ${GATW_PRV_IP} | ${GATW_PRV_DNS}
+1. At the setup screen, click 'Submit'
+2. At the login screen, use 'admin/admin123'
+3. Navigate to Installation tab:
+
+   1. Add workers private ips "$(echo ${WRKR_PRV_IPS[@]} | sed -e 's/ /,/g')"
+   2. Add gateway private ip "${GATW_PRV_IP}" and public dns "${GATW_PUB_DNS}"
    3. Upload controller.prv_key
    4. Click Add hosts (enter site lock down when prompted)
 
