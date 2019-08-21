@@ -26,6 +26,7 @@ check_client_ip    = "true" # check the client_ip is inside the client_cidr_bloc
 #
 
 ec2_ami            = "ami-00846a67" # this is valid for the London region, change if required
+                                    # Ireland: ami-3548444c
 
 gtw_instance_type  = "m4.2xlarge"
 ctr_instance_type  = "m4.2xlarge"

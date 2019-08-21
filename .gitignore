@@ -1,5 +1,5 @@
 .terraform/
-bluedata_demo.tfvars
+bluedata_infra.tfvars
 terraform.tfstate
 terraform.tfstate.backup
 public-ip-gateway.txt
@@ -8,3 +8,4 @@ output.log
 controller_rsa.prv
 hostdetails.txt
 controller.prv_key
+output.json

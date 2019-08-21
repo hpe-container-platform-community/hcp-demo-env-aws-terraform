@@ -40,6 +40,32 @@ echo WRKR_PRV_IPS=${WRKR_PRV_IPS[@]}
 echo WRKR_PUB_IPS=${WRKR_PUB_IPS[@]}
 
 ###############################################################################
+# Setup error handling for debugging purposes
+###############################################################################
+
+error() {
+
+cat << EOF
+*******************************************
+** AN ERROR OCCURRED RUNNING THIS SCRIPT ** 
+*******************************************
+
+You can SSH into the EC2 instances for debugging:  
+
+CTRL SSH: ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${CTRL_PUB_IP} 
+GATW SSH: ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${GATW_PUB_IP} 
+EOF
+
+  for WRKR in ${WRKR_PUB_IPS[@]}; do 
+   echo WRKR [$WRKR] SSH: ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR}
+  done
+
+  echo
+  exit "1"
+}
+trap 'error ${LINENO}' ERR
+
+###############################################################################
 # Test SSH connectivity to EC2 instances from local machine
 ###############################################################################
 
@@ -61,8 +87,11 @@ then
    echo CONTROLLER: Found existing ~/.ssh/id.rsa so moving on...
 else
    ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
-   echo CONTROLLER: Created ~/.ssh/id.rsa
+   echo CONTROLLER: Created ~/.ssh/id_rsa
 fi
+
+# BlueData controller installer requires this
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ENDSSH
 
 #
@@ -107,10 +136,10 @@ done
 
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} << ENDSSH
    curl -s -f ${EPIC_RPM_DL_URL} | grep proxy | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
-
-   # wrap reboot to prevent ssh thinking the session aborted due to an error
-   (sudo reboot)&
 ENDSSH
+# if the reboot causes ssh to terminate with an error, ignore it
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "nohup sudo reboot </dev/null &" || true
+
 
 #
 # Controller
@@ -118,10 +147,9 @@ ENDSSH
 
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
    curl -s -f ${EPIC_RPM_DL_URL} | grep ctrl | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
-
-   # wrap reboot to prevent ssh thinking the session aborted due to an error
-   (sudo reboot)&
 ENDSSH
+# if the reboot causes ssh to terminate with an error, ignore it
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "nohup sudo reboot </dev/null &" || true
 
 #
 # Workers
@@ -130,10 +158,9 @@ ENDSSH
 for WRKR in ${WRKR_PUB_IPS[@]}; do 
    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} << ENDSSH
     curl -s -f ${EPIC_RPM_DL_URL} | grep wrkr | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
-
-    # wrap reboot to prevent ssh thinking the session aborted due to an error
-    (sudo reboot)&
 ENDSSH
+# if the reboot causes ssh to terminate with an error, ignore it
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
 done
 
 #
@@ -226,7 +253,8 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    chmod +x bluedata-epic-entdoc-minimal-release-3.7-2207.bin
 
    # install EPIC
-   sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -s -i -c ${CTRL_PRV_IP} --user centos --group centos
+   echo "sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -f -s -i -c ${CTRL_PRV_IP} --user centos --group centos"
+   sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -f -s -i -c ${CTRL_PRV_IP} --user centos --group centos
 
    # install application workbench
    sudo yum install -y epel-release
@@ -235,7 +263,7 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    sudo pip install --upgrade setuptools
    sudo pip install --upgrade bdworkbench
 
-   # initial configuration
+   # automate initial configuration screen
    sudo pip install beautifulsoup4
    sudo pip install lxml
 
@@ -243,8 +271,12 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    python /home/centos/initial_bluedata_config.py
 ENDSSH
 
+###############################################################################
+# Manually configure Controller with Workers and Gateway
+###############################################################################
+
 echo "** BlueData installation completed successfully.  You now need to configure it **"
-echo "Controller URL: http://${CTRL_PUB_IP - login: admin/admin123"
+echo "Controller URL: http://${CTRL_PUB_IP} - login: admin/admin123"
 echo "Worker IPs: ${WRKR_PRV_IP[@]}"
 echo "Gateway IP: ${GATW_PRV_IP}"   # should this be the public IP?
 echo "Gateway DNS: ${GATW_PRV_DNS}" # should this be the public DNS?
