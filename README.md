@@ -11,7 +11,7 @@ The following installed locally:
  - ssh key pair (ssh-keygen -t rsa)
  - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html)
 
-Script has only been tested on Linux machine
+Script has only been tested on Linux and OSX machines
 
 ### Instructions
 
