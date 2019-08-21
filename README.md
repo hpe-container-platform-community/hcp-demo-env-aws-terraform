@@ -32,18 +32,19 @@ vi ./bluedata_infra.tfvars
 # initialise terraform
 terraform init
 
-
-# to automatically the infastructure setting the client_cidr_block from the client's IP
+# to automatically create the infastructure with the client_cidr_block for the network rules automatically set from the client's IP address
 terraform apply -var-file=bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
 
-# NOTE: if the above command returns an error like `invalid CIDR address: /32`, check curl actually returns an IP address
+   # NOTE: if the above command returns an error like `invalid CIDR address: /32`, check curl actually returns an IP address
 
 # At this point, you have the AWS infrastructure ready for a BlueData installation.  
 # If you would like to stop at this point and manually install BlueData, you can retrieve the AWS environment details with
 # the command: `terraform output`
 
+# export the infrastructure details so we can access them from the bluedata_install.sh script
 terraform output -json > output.json
 
+# automated installation of BlueData environment
 ./bluedata_install.sh
 
 # finally, follow instructions output by script
