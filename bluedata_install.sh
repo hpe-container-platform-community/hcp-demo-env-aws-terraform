@@ -86,52 +86,52 @@ done
 # Install RPMS
 ###############################################################################
 
-# #
-# # Gateway
-# #
+#
+# Gateway
+#
 
-# ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} << ENDSSH
-#    curl -s -f ${EPIC_RPM_DL_URL} | grep proxy | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} << ENDSSH
+   curl -s -f ${EPIC_RPM_DL_URL} | grep proxy | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
 
-#    # wrap reboot to prevent ssh thinking the session aborted due to an error
-#    (sudo reboot)&
-# ENDSSH
+   # wrap reboot to prevent ssh thinking the session aborted due to an error
+   (sudo reboot)&
+ENDSSH
 
-# echo 'Waiting for Gateway to restart '
-# while ! nc -w5 -z ${GATW_PUB_IP} 22; do printf "." -n ; done;
-# echo 'Gateway has restarted'
+echo 'Waiting for Gateway to restart '
+while ! nc -w5 -z ${GATW_PUB_IP} 22; do printf "." -n ; done;
+echo 'Gateway has restarted'
 
-# #
-# # Controller
-# #
+#
+# Controller
+#
 
-# ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
-#    curl -s -f ${EPIC_RPM_DL_URL} | grep ctrl | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
+   curl -s -f ${EPIC_RPM_DL_URL} | grep ctrl | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
 
-#    # wrap reboot to prevent ssh thinking the session aborted due to an error
-#    (sudo reboot)&
-# ENDSSH
+   # wrap reboot to prevent ssh thinking the session aborted due to an error
+   (sudo reboot)&
+ENDSSH
 
-# echo 'Waiting for Controller to restart '
-# while ! nc -w5 -z ${CTRL_PUB_IP} 22; do printf "." -n ; done;
-# echo 'Controller has restarted'
+echo 'Waiting for Controller to restart '
+while ! nc -w5 -z ${CTRL_PUB_IP} 22; do printf "." -n ; done;
+echo 'Controller has restarted'
 
-# #
-# # Workers
-# #
+#
+# Workers
+#
 
-# for WRKR in ${WRKR_PUB_IPS[@]}; do 
-# ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} << ENDSSH
-#    curl -s -f ${EPIC_RPM_DL_URL} | grep wrkr | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
+for WRKR in ${WRKR_PUB_IPS[@]}; do 
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} << ENDSSH
+   curl -s -f ${EPIC_RPM_DL_URL} | grep wrkr | awk '{print \$3}' | sed -r "s/([a-zA-Z0-9_+]*)(-[a-zA-Z0-9]+)?(-\S+)(-.*)/\1\2\3/" | xargs sudo yum install -y 
 
-#    # wrap reboot to prevent ssh thinking the session aborted due to an error
-#    (sudo reboot)&
-# ENDSSH
+   # wrap reboot to prevent ssh thinking the session aborted due to an error
+   (sudo reboot)&
+ENDSSH
 
-# echo "Waiting for Worker ${WRKR} to restart "
-# while ! nc -w5 -z ${WRKR} 22; do printf "." -n ; done;
-# echo 'Worker has restarted'
-# done
+echo "Waiting for Worker ${WRKR} to restart "
+while ! nc -w5 -z ${WRKR} 22; do printf "." -n ; done;
+echo 'Worker has restarted'
+done
 
 ###############################################################################
 # Prechecks
