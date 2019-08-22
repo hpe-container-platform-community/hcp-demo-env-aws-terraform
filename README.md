@@ -1,6 +1,14 @@
 ### Overview
 
-This project is a work-in-progress.
+This project consists of two main parts:
+
+ - A terraform configuration [bluedata_infra.tf](./bluedata_infr.tf) to set up AWS infrastructure for a BlueData deployment
+ - A bash script [bluedata_install.sh](./bluedata_install.sh) to automate the installation of BlueData inside the AWS environment
+
+The goals of this project are:
+
+ - Provide the ability for users wishing to manually install BlueData to easily create the required AWS infrastructure.  These users will use the terraform configuration but not the bash script.
+ - Provide the ability for users to quickly automate a BlueData install but also have full control of the deployment source code so that they can modify the deployment as they desire.
 
 ### Pre-requisites
 
@@ -11,7 +19,7 @@ The following installed locally:
  - ssh key pair (ssh-keygen -t rsa)
  - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html)
 
-Script has only been tested on Linux and OSX machines
+Script has been tested on Linux and OSX client machines
 
 ### Instructions
 
