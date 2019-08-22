@@ -17,7 +17,7 @@ The following installed locally:
  - python3
  - ssh client
  - ssh key pair (ssh-keygen -t rsa)
- - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html)
+ - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html
 
 Script has been tested on Linux and OSX client machines
 
@@ -26,12 +26,14 @@ Script has been tested on Linux and OSX client machines
 #### Setup AWS Env and Install BlueData
 
 ```
-# ensure you have setup your aws credentials
+# ensure you have setup your aws credentials (alternatively use 'aws configure' https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 vi ~/.aws/credentials
 
+# clone this project
 git clone https://github.com/snowch-bluedata/bluedata-demo-env-aws-terraform
 cd bluedata-demo-env-aws-terraform
 
+# create a copy 
 cp ./bluedata_infra.tfvars_template to ./bluedata_infra.tfvars
 
 # edit to reflect your requirements
@@ -41,13 +43,17 @@ vi ./bluedata_infra.tfvars
 terraform init
 
 # to automatically create the infastructure with the client_cidr_block for the network rules automatically set from the client's IP address
+
+echo MY_IP=$(curl -s http://ifconfig.me/ip)
 terraform apply -var-file=bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
 
-   # NOTE: if the above command returns an error like `invalid CIDR address: /32`, check curl actually returns an IP address
+   # *NOTE*
+   # If the terraform apply command returns an error like `invalid CIDR address: /32`, 
+   # check curl actually returned an IP address
 
-# At this point, you have the AWS infrastructure ready for a BlueData installation.  
+# At this point if the apply command finished successfully, you have the AWS infrastructure ready for a BlueData installation.  
 # If you would like to stop at this point and manually install BlueData, you can retrieve the AWS environment details with
-# the command: `terraform output`
+# the command: `terraform output` and then proceed to manually install BlueData inside that environment.
 
 # export the infrastructure details so we can access them from the bluedata_install.sh script
 terraform output -json > output.json
@@ -55,7 +61,7 @@ terraform output -json > output.json
 # automated installation of BlueData environment
 ./bluedata_install.sh
 
-# finally, follow instructions output by script
+# finally, follow instructions output by the above script
 ```
 
 ### Client IP changed?
