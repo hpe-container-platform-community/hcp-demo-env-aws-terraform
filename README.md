@@ -88,7 +88,6 @@ terraform destroy -var-file=bluedata_infra.tfvars \
 
 ### Shutdown ec2 instances when not in use
 
-For now, you can just use the AWS Management Console or CLI to stop/start your BlueData EC2 instances.  After restarting your instancesm re-run the script in the section [client-ip-changed](#client-ip-changed)
+For now, you can just use the AWS Management Console or CLI to stop/start your BlueData EC2 instances.  After restarting your instances, re-run the script in the section [client-ip-changed](#client-ip-changed)
 
-TODO: https://groups.google.com/forum/#!topic/terraform-tool/hEESOVOgL_Q
 
