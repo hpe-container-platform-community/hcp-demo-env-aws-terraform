@@ -47,7 +47,8 @@ terraform init
 # automatically set from the client's IP address
 
 echo MY_IP=$(curl -s http://ifconfig.me/ip)
-terraform apply -var-file=bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
+terraform apply -var-file=bluedata_infra.tfvars \
+   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
 
    # *NOTE*
    # If the terraform apply command returns an error like `invalid CIDR address: /32`, 
@@ -72,7 +73,8 @@ terraform output -json > output.json
 Re-run to update the AWS network ACL and security groups
 
 ```
-terraform apply -var-file=bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
+terraform apply -var-file=bluedata_infra.tfvars \
+   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
 ```
 
 ### destroy environment when finished
@@ -80,7 +82,8 @@ terraform apply -var-file=bluedata_infra.tfvars -var="client_cidr_block=$(curl -
 Note: sometimes destroy gets stuck in a loop - I think this is a terraform bug.  If this happens, manually terminate the instances and re-run the destroy operation.
 
 ```
-terraform destroy -var-file=bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
+terraform destroy -var-file=bluedata_infra.tfvars \
+   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
 ```
 
 ### Shutdown ec2 instances when not in use
