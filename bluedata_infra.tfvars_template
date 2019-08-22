@@ -1,25 +1,37 @@
 #
-# select an appropriate region and availability zone
+# Select an appropriate region and availability zone
 #
 
 region             = "eu-west-2"
 az                 = "eu-west-2a"
 
 #
-# set this to something meaningful.  it is used as a tag in aws 
+# Set this to something meaningful.  it is used as a tag in aws 
 #
 
 project_id         = "csnow-scratch"
 user               = "csnow"
 
 #
-# before setting the vpc cidr block, manually verify the vpc cidr doesn't already exist in your region
+# Before setting the vpc cidr block, manually verify the vpc cidr doesn't already exist in your region
 #
 
 vpc_cidr_block     = "10.1.0.0/16"
 subnet_cidr_block  = "10.1.0.0/24"
-client_cidr_block  = "x.x.x.x/32" # change to your IP address - http://whatismyip.com
-check_client_ip    = "true" # check the client_ip is inside the client_cidr_block
+
+# The aws network requires your a cidr block to be set to allow access to the network from your client machine
+# Most users will set the cidr block to using the terraform CLI, e.g.
+# `terraform apply ... -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" ...`
+# The above approach retrieves the internet IP of your gateway connection to the internet.
+# The benefit of using the CLI is that if you change networks frequently (e.g. mobile users), you can simply
+# run the `terraform apply ...` command again and it will update the AWS network ACL with your new address.
+# If your client is always on the same network and you don't wish to set your client cidr block with the CLI,
+# you can set this address below.
+
+# client_cidr_block  = "x.x.x.x/32"
+
+
+check_client_ip    = "true" # always check the client_ip is inside the client_cidr_block
 
 #
 # gateway, controller and workers all share the same ami and ssh pubic key
