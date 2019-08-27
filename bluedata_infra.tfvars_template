@@ -63,4 +63,4 @@ epic_rpm_dl_url      = "https://s3.amazonaws.com/bluedata-releases/3.7/repos/EPI
 #
 
 ec2_shutdown_schedule_expression = "cron(0 20 ? * MON-FRI *)" # UTC time
-ec2_shutdown_schedule_is_enabled = false
+ec2_shutdown_schedule_is_enabled = true
