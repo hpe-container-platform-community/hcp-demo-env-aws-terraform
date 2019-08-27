@@ -24,7 +24,7 @@ variable "epic_rpm_dl_url" { }
 variable "continue_on_precheck_fail" { default = "false" }
 
 variable "ec2_shutdown_schedule_expression" { default = "cron(0 20 ? * MON-FRI *)" } # UTC time
-variable "ec2_shutdown_is_enabled" { default = false }
+variable "ec2_shutdown_schedule_is_enabled" { default = false }
 
 output "ssh_pub_key_path" {
   value = "${var.ssh_pub_key_path}"
