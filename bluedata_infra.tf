@@ -527,6 +527,8 @@ resource "aws_iam_role_policy_attachment" "ec2_access_scheduler" {
 resource "aws_cloudwatch_event_rule" "stop_instances_event_rule" {
   name = "stop_instances_event_rule"
   description = "Stops running EC2 instances"
+
+  # note schedules are UTC time zone - https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
   schedule_expression = "cron(0 20 ? * MON-FRI *)"
   is_enabled = true
   depends_on = ["aws_lambda_function.ec2_stop_scheduler_lambda"]
