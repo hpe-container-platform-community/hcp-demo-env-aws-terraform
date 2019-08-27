@@ -434,7 +434,7 @@ output "workers_ssh" {
 
 # data "aws_caller_identity" "current" {}
 
-
+/*
 
 # create a lambda script for stopping the EC2 instances created by this terraform script
 
@@ -528,6 +528,7 @@ resource "aws_cloudwatch_event_rule" "stop_instances_event_rule" {
   name = "stop_instances_event_rule"
   description = "Stops running EC2 instances"
   schedule_expression = "cron(0 20 ? * MON-FRI *)"
+  is_enabled = true
   depends_on = ["aws_lambda_function.ec2_stop_scheduler_lambda"]
 }
 
@@ -546,3 +547,5 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_stop_scheduler" {
   principal = "events.amazonaws.com"
   source_arn = "${aws_cloudwatch_event_rule.stop_instances_event_rule.arn}"
 }
+
+*/
