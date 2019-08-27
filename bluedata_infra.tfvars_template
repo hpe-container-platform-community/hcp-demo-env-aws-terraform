@@ -38,7 +38,12 @@ check_client_ip    = "true" # always check the client_ip is inside the client_ci
 #
 
 ec2_ami            = "ami-00846a67" # this is valid for the London region, change if required
-                                    # Ireland: ami-3548444c
+                                    #
+                                    # Ireland    : ami-3548444c
+                                    # N.Virginia : ami-02eac2c0129f6376b ?
+                                    # Ohio       : ami-e1496384 ?
+                                    # 
+
 
 gtw_instance_type  = "m4.2xlarge"
 ctr_instance_type  = "m4.2xlarge"
