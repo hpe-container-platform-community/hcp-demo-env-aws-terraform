@@ -23,6 +23,9 @@ variable "epic_rpm_dl_url" { }
 
 variable "continue_on_precheck_fail" { default = "false" }
 
+variable "ec2_shutdown_schedule_expression" { default = "cron(0 20 ? * MON-FRI *)" } # UTC time
+variable "ec2_shutdown_is_enabled" { default = false }
+
 output "ssh_pub_key_path" {
   value = "${var.ssh_pub_key_path}"
 }
@@ -432,10 +435,6 @@ output "workers_ssh" {
 
 // Adapted from: https://gist.github.com/picadoh/815c11361d1a88419ea16b14fe044e85
 
-# data "aws_caller_identity" "current" {}
-
-/*
-
 # create a lambda script for stopping the EC2 instances created by this terraform script
 
 resource "local_file" "stop_instances" {
@@ -529,8 +528,8 @@ resource "aws_cloudwatch_event_rule" "stop_instances_event_rule" {
   description = "Stops running EC2 instances"
 
   # note schedules are UTC time zone - https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
-  schedule_expression = "cron(0 20 ? * MON-FRI *)"
-  is_enabled = true
+  schedule_expression = "${var.ec2_shutdown_schedule_expression}"
+  is_enabled = "${var.ec2_shutdown_schedule_is_enabled}"
   depends_on = ["aws_lambda_function.ec2_stop_scheduler_lambda"]
 }
 
@@ -549,5 +548,3 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_stop_scheduler" {
   principal = "events.amazonaws.com"
   source_arn = "${aws_cloudwatch_event_rule.stop_instances_event_rule.arn}"
 }
-
-*/
