@@ -468,6 +468,12 @@ resource "aws_lambda_function" "ec2_stop_scheduler_lambda" {
   runtime = "python2.7"
   timeout = 300
   source_code_hash = "${data.archive_file.stop_scheduler.output_base64sha256}"
+
+  tags = {
+    Name = "${var.project_id}-aws-lambda-function"
+    Project = "${var.project_id}"
+    user = "${var.user}"
+  }
 }
 
 ### IAM Role and Policy - allows Lambda function to describe and stop EC2 instances
@@ -489,6 +495,12 @@ resource "aws_iam_role" "ec2_stop_scheduler" {
   ]
 }
 EOF
+
+  tags = {
+    Name = "${var.project_id}-aws-iam-role"
+    Project = "${var.project_id}"
+    user = "${var.user}"
+  }
 }
 
 data "aws_iam_policy_document" "ec2_stop_scheduler" {
@@ -529,6 +541,12 @@ resource "aws_cloudwatch_event_rule" "stop_instances_event_rule" {
   schedule_expression = "${var.ec2_shutdown_schedule_expression}"
   is_enabled = "${var.ec2_shutdown_schedule_is_enabled}"
   depends_on = ["aws_lambda_function.ec2_stop_scheduler_lambda"]
+
+  tags = {
+    Name = "${var.project_id}-aws-cloudwatch-event-rule"
+    Project = "${var.project_id}"
+    user = "${var.user}"
+  }
 }
 
 resource "aws_cloudwatch_event_target" "stop_instances_event_target" {
