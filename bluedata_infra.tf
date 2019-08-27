@@ -434,22 +434,22 @@ output "workers_ssh" {
 
 # data "aws_caller_identity" "current" {}
 
-/*
+
 
 # create a lambda script for stopping the EC2 instances created by this terraform script
 
 resource "local_file" "stop_instances" {
   filename = "${path.module}/generated/stop_instances.py"
-  content =<<EOF
-import boto3
+  content = <<-EOF
+  import boto3
 
-# Boto Connection
-ec2 = boto3.resource('ec2', '${var.region}')
+  # Boto Connection
+  ec2 = boto3.resource('ec2', '${var.region}')
 
-def lambda_handler(event, context):
-  instance_ids = ["${aws_instance.controller.id}","${aws_instance.gateway.id}","${join("\",\"", aws_instance.workers.*.id)}"]
-  stopping_instances = ec2.instances.filter(InstanceIds=instance_ids).stop()
-EOF
+  def lambda_handler(event, context):
+    instance_ids = ["${aws_instance.controller.id}","${aws_instance.gateway.id}","${join("\",\"", aws_instance.workers.*.id)}"]
+    stopping_instances = ec2.instances.filter(InstanceIds=instance_ids).stop()
+  EOF
 }
 
 # lambda requires the script to be uploaded in a zip file
@@ -546,5 +546,3 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_stop_scheduler" {
   principal = "events.amazonaws.com"
   source_arn = "${aws_cloudwatch_event_rule.stop_instances_event_rule.arn}"
 }
-
-*/
