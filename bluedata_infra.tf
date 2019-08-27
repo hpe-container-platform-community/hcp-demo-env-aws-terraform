@@ -546,3 +546,11 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_stop_scheduler" {
   principal = "events.amazonaws.com"
   source_arn = "${aws_cloudwatch_event_rule.stop_instances_event_rule.arn}"
 }
+
+output "ec2_shutdown_schedule_expression" {
+  value = "${var.ec2_shutdown_schedule_expression}"
+}
+
+output "ec2_shutdown_schedule_is_enabled" {
+  value = "${var.ec2_shutdown_schedule_is_enabled}"
+}
