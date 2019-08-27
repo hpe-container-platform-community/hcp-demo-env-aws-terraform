@@ -427,3 +427,124 @@ output "workers_ssh" {
     instance.id => "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${instance.public_ip}" 
   }
 }
+
+//////////////////// Cloudwatch /////////////////////
+
+// Adapted from: https://gist.github.com/picadoh/815c11361d1a88419ea16b14fe044e85
+
+# data "aws_caller_identity" "current" {}
+
+/*
+
+# create a lambda script for stopping the EC2 instances created by this terraform script
+
+resource "local_file" "stop_instances" {
+  filename = "${path.module}/generated/stop_instances.py"
+  content =<<EOF
+import boto3
+
+# Boto Connection
+ec2 = boto3.resource('ec2', '${var.region}')
+
+def lambda_handler(event, context):
+  instance_ids = ["${aws_instance.controller.id}","${aws_instance.gateway.id}","${join("\",\"", aws_instance.workers.*.id)}"]
+  stopping_instances = ec2.instances.filter(InstanceIds=instance_ids).stop()
+EOF
+}
+
+# lambda requires the script to be uploaded in a zip file
+
+data "archive_file" "stop_scheduler" {
+  type        = "zip"
+  depends_on  = ["local_file.stop_instances"]
+  source_file = "${path.module}/generated/stop_instances.py"
+  output_path = "${path.module}/generated/stop_instances.zip"
+}
+
+resource "aws_lambda_function" "ec2_stop_scheduler_lambda" {
+  filename = "${data.archive_file.stop_scheduler.output_path}"
+  function_name = "stop_instances"
+  role = "${aws_iam_role.ec2_stop_scheduler.arn}"
+  handler = "stop_instances.lambda_handler"
+  runtime = "python2.7"
+  timeout = 300
+  source_code_hash = "${data.archive_file.stop_scheduler.output_base64sha256}"
+}
+
+### IAM Role and Policy - allows Lambda function to describe and stop EC2 instances
+
+resource "aws_iam_role" "ec2_stop_scheduler" {
+  name = "ec2_stop_scheduler"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+data "aws_iam_policy_document" "ec2_stop_scheduler" {
+  statement {
+      effect = "Allow"
+      actions = [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      resources = [ "arn:aws:logs:*:*:*" ]
+  }
+  statement {
+      effect = "Allow"
+      actions = ["ec2:Describe*","ec2:Stop*"]
+      resources = [ "*" ]
+  }
+}
+
+resource "aws_iam_policy" "ec2_stop_scheduler" {
+  name = "ec2_access_scheduler"
+  path = "/"
+  policy = "${data.aws_iam_policy_document.ec2_stop_scheduler.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_access_scheduler" {
+  role       = "${aws_iam_role.ec2_stop_scheduler.name}"
+  policy_arn = "${aws_iam_policy.ec2_stop_scheduler.arn}"
+}
+
+### Cloudwatch Events ###
+
+# Runs at 8pm during working days
+
+resource "aws_cloudwatch_event_rule" "stop_instances_event_rule" {
+  name = "stop_instances_event_rule"
+  description = "Stops running EC2 instances"
+  schedule_expression = "cron(0 20 ? * MON-FRI *)"
+  depends_on = ["aws_lambda_function.ec2_stop_scheduler_lambda"]
+}
+
+resource "aws_cloudwatch_event_target" "stop_instances_event_target" {
+  target_id = "stop_instances_lambda_target"
+  rule = "${aws_cloudwatch_event_rule.stop_instances_event_rule.name}"
+  arn = "${aws_lambda_function.ec2_stop_scheduler_lambda.arn}"
+}
+
+# AWS Lambda Permissions: Allow CloudWatch to execute the Lambda Functions
+
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_stop_scheduler" {
+  statement_id = "AllowExecutionFromCloudWatch"
+  action = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.ec2_stop_scheduler_lambda.function_name}"
+  principal = "events.amazonaws.com"
+  source_arn = "${aws_cloudwatch_event_rule.stop_instances_event_rule.arn}"
+}
+
+*/

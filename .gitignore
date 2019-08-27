@@ -9,3 +9,4 @@ controller_rsa.prv
 hostdetails.txt
 controller.prv_key
 output.json
+generated/
