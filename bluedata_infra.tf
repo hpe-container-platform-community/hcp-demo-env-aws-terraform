@@ -521,8 +521,6 @@ resource "aws_iam_role_policy_attachment" "ec2_access_scheduler" {
 
 ### Cloudwatch Events ###
 
-# Runs at 8pm during working days
-
 resource "aws_cloudwatch_event_rule" "stop_instances_event_rule" {
   name = "stop_instances_event_rule"
   description = "Stops running EC2 instances"
