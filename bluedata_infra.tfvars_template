@@ -19,9 +19,11 @@ user               = "csnow"
 vpc_cidr_block     = "10.1.0.0/16"
 subnet_cidr_block  = "10.1.0.0/24"
 
-# The aws network requires your a cidr block to be set to allow access to the network from your client machine
-# Most users will set the cidr block to using the terraform CLI, e.g.
+# This project requirs a client cidr block to be set to allow access to the aws vpc from your client machine
+# Most users will set the client cidr block automatically using the terraform CLI, e.g.
+#
 # `terraform apply ... -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" ...`
+#
 # The above approach retrieves the internet IP of your gateway connection to the internet.
 # The benefit of using the CLI is that if you change networks frequently (e.g. mobile users), you can simply
 # run the `terraform apply ...` command again and it will update the AWS network ACL with your new address.
@@ -31,7 +33,10 @@ subnet_cidr_block  = "10.1.0.0/24"
 # client_cidr_block  = "x.x.x.x/32"
 
 
-check_client_ip    = "true" # always check the client_ip is inside the client_cidr_block
+# Set the check_client_ip to true to check if the current client_ip is inside the client_cidr_block
+# If the client_ip isn't inside the client_cidr_block, you won't be able to connect to the VPN from your client machine.
+
+check_client_ip  = "true" 
 
 #
 # gateway, controller and workers all share the same ami and ssh pubic key
