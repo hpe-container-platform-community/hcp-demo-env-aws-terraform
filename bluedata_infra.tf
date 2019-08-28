@@ -464,9 +464,9 @@ data "archive_file" "stop_scheduler" {
 
 resource "aws_lambda_function" "ec2_stop_scheduler_lambda" {
   filename = "${data.archive_file.stop_scheduler.output_path}"
-  function_name = "stop_instances"
+  function_name = "stop_instances_lambda"
   role = "${aws_iam_role.ec2_stop_scheduler.arn}"
-  handler = "stop_instances.lambda_handler"
+  handler = "stop_instances_lambda.lambda_handler"
   runtime = "python2.7"
   timeout = 300
   source_code_hash = "${data.archive_file.stop_scheduler.output_base64sha256}"
@@ -579,15 +579,27 @@ output "ec2_shutdown_schedule_is_enabled" {
 
 resource "local_file" "cli_stop_ec2_instances" {
   filename = "${path.module}/generated/cli_stop_ec2_instances.sh"
-  content = "aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
+  content =  <<-EOF
+    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}
+    echo "Potential IP address changes - you must re-run:"
+    echo "    terraform apply ..."
+    echo "    terraform output -json > output.json"
+  EOF
 }
 
 resource "local_file" "cli_start_ec2_instances" {
   filename = "${path.module}/generated/cli_start_ec2_instances.sh"
-  content = "aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
+  content = <<-EOF
+    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}
+    echo "Potential IP addresses changes - you must re-run:"
+    echo "    terraform apply ..."
+    echo "    terraform output -json > output.json"
+  EOF
 }
 
 resource "local_file" "cli_running_ec2_instances" {
   filename = "${path.module}/generated/cli_running_ec2_instances.sh"
-  content = "aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running"
+  content = <<-EOF
+    aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running
+  EOF  
 }
