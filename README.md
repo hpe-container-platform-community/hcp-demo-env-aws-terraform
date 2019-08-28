@@ -18,6 +18,7 @@ The following installed locally:
  - ssh client
  - ssh key pair (ssh-keygen -t rsa)
  - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html
+ - curl client
 
 Script has been tested on Linux and OSX client machines
 
