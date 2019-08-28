@@ -1,5 +1,6 @@
 // Usage: terraform <action> -var-file="bluedata_infra.tfvars"
 
+variable "profile" { default = "default" }
 variable "region" { }
 variable "az" { }
 variable "project_id" { }
@@ -65,7 +66,8 @@ output "client_cidr_block" {
 /******************* setup region and az ********************/
 
 provider "aws" {
-  region = "${var.region}"
+  profile = "${var.profile}"
+  region  = "${var.region}"
 }
 
 data "aws_availability_zone" "main" {
@@ -437,8 +439,8 @@ output "workers_ssh" {
 
 # create a lambda script for stopping the EC2 instances created by this terraform script
 
-resource "local_file" "stop_instances" {
-  filename = "${path.module}/generated/stop_instances.py"
+resource "local_file" "stop_instances_lambda" {
+  filename = "${path.module}/generated/stop_instances_lambda.py"
   content = <<-EOF
   import boto3
 
@@ -455,9 +457,9 @@ resource "local_file" "stop_instances" {
 
 data "archive_file" "stop_scheduler" {
   type        = "zip"
-  depends_on  = ["local_file.stop_instances"]
-  source_file = "${path.module}/generated/stop_instances.py"
-  output_path = "${path.module}/generated/stop_instances.zip"
+  depends_on  = ["local_file.stop_instances_lambda"]
+  source_file = "${path.module}/generated/stop_instances_lambda.py"
+  output_path = "${path.module}/generated/stop_instances_lambda.zip"
 }
 
 resource "aws_lambda_function" "ec2_stop_scheduler_lambda" {
@@ -571,4 +573,21 @@ output "ec2_shutdown_schedule_expression" {
 
 output "ec2_shutdown_schedule_is_enabled" {
   value = "${var.ec2_shutdown_schedule_is_enabled}"
+}
+
+//////////////////// Utility - start/stop instances /////////////////////
+
+resource "local_file" "cli_stop_ec2_instances" {
+  filename = "${path.module}/generated/cli_stop_ec2_instances.sh"
+  content = "aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
+}
+
+resource "local_file" "cli_start_ec2_instances" {
+  filename = "${path.module}/generated/cli_start_ec2_instances.sh"
+  content = "aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
+}
+
+resource "local_file" "cli_running_ec2_instances" {
+  filename = "${path.module}/generated/cli_running_ec2_instances.sh"
+  content = "aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running"
 }

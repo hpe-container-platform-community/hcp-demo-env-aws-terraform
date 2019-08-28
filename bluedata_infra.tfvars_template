@@ -2,6 +2,7 @@
 # Select an appropriate region and availability zone
 #
 
+profile            = "default"
 region             = "eu-west-2"
 az                 = "eu-west-2a"
 
