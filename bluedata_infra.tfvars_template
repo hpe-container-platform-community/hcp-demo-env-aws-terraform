@@ -44,6 +44,8 @@ ec2_ami            = "ami-00846a67" # this is valid for the London region, chang
                                     # Ohio       : ami-e1496384 ?
                                     # 
 
+# you may need to change the instance types if the ones
+# listed below are not available in your region
 
 gtw_instance_type  = "m4.2xlarge"
 ctr_instance_type  = "m4.2xlarge"
