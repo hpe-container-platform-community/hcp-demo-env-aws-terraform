@@ -16,6 +16,9 @@ EPIC_DL_URL=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.st
 EPIC_RPM_DL_URL=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_rpm_dl_url"]["value"])') 
 EPIC_PRECHECK_DL_URL=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_precheck_dl_url"]["value"])') 
 
+EPIC_FILENAME=$(echo "${EPIC_DL_URL##*/}")
+EPIC_PRECHECK_FILENAME=$(echo "${EPIC_PRECHECK_DL_URL##*/}")
+
 CTRL_PRV_IP=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_private_ip"]["value"])') 
 CTRL_PUB_IP=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_public_ip"]["value"])') 
 
@@ -192,17 +195,20 @@ done
 IGNORE_CTRL_PRECHECK_FAIL=true
 
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
-   curl -s -o bluedata-prechecks-epic-entdoc-3.7.bin ${EPIC_PRECHECK_DL_URL}
-   chmod +x bluedata-prechecks-epic-entdoc-3.7.bin
+
+   curl -s -o ${EPIC_PRECHECK_FILENAME} ${EPIC_PRECHECK_DL_URL}
+   chmod +x ${EPIC_PRECHECK_FILENAME}
 
    if [ "$IGNORE_CTRL_PRECHECK_FAIL" == 'true' ];
    then
-      sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -c \
+      sudo ./${EPIC_PRECHECK_FILENAME} -c \
+        --prechecks-only \
         --controller-ip ${CTRL_PRV_IP} \
         --gateway-node-ip ${GATW_PRV_IP} \
         --gateway-node-hostname ${GATW_PRV_DNS} || true 2>&1 > /home/centos/bluedata-precheck.log
    else
-      sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -c \
+      sudo ./${EPIC_PRECHECK_FILENAME} -c \
+        --prechecks-only \
         --controller-ip ${CTRL_PRV_IP} \
         --gateway-node-ip ${GATW_PRV_IP} \
         --gateway-node-hostname ${GATW_PRV_DNS} || exit 1 2>&1 > /home/centos/bluedata-precheck.log
@@ -224,18 +230,20 @@ for INDEX in ${!WRKR_PUB_IPS[@]}; do
     while ! mountpoint -x /dev/xvdb; do sleep 1; done
     while ! mountpoint -x /dev/xvdc; do sleep 1; done
 
-    curl -s -o bluedata-prechecks-epic-entdoc-3.7.bin ${EPIC_PRECHECK_DL_URL}
-    chmod +x bluedata-prechecks-epic-entdoc-3.7.bin
+    curl -s -o ${EPIC_PRECHECK_FILENAME} ${EPIC_PRECHECK_DL_URL}
+    chmod +x ${EPIC_PRECHECK_FILENAME}
 
     if [ "$IGNORE_WRKR_PRECHECK_FAIL" == 'true' ];
     then
-        sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -w \
+        sudo ./${EPIC_PRECHECK_FILENAME} -w \
+            --prechecks-only \
             --worker-primary-ip ${WRKR_PRV_IP} \
             --controller-ip ${CTRL_PRV_IP} \
             --gateway-node-ip ${GATW_PRV_IP} \
             --gateway-node-hostname ${GATW_PRV_DNS} || true 2>&1 > /home/centos/bluedata-precheck.log
     else
-        sudo ./bluedata-prechecks-epic-entdoc-3.7.bin -w \
+        sudo ./${EPIC_PRECHECK_FILENAME}.bin -w \
+            --prechecks-only \
             --worker-primary-ip ${WRKR_PRV_IP} \
             --controller-ip ${CTRL_PRV_IP} \
             --gateway-node-ip ${GATW_PRV_IP} \
@@ -249,11 +257,12 @@ done
 ###############################################################################
 
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
-   curl -s -o bluedata-epic-entdoc-minimal-release-3.7-2207.bin ${EPIC_DL_URL}
-   chmod +x bluedata-epic-entdoc-minimal-release-3.7-2207.bin
+
+   curl -s -o ${EPIC_FILENAME} ${EPIC_DL_URL}
+   chmod +x ${EPIC_FILENAME}
 
    # install EPIC
-   sudo ./bluedata-epic-entdoc-minimal-release-3.7-2207.bin -f -s -i -c ${CTRL_PRV_IP} --user centos --group centos
+   sudo ./${EPIC_FILENAME} -f -s -i -c ${CTRL_PRV_IP} --user centos --group centos
 
    # install application workbench
    sudo yum install -y epel-release
@@ -294,6 +303,6 @@ cat << EOF
    6. Click 'Install'
    7. Wait a few minutes
 
-   
+
 EOF
 
