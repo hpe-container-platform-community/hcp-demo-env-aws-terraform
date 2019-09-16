@@ -481,7 +481,7 @@ resource "aws_lambda_function" "ec2_stop_scheduler_lambda" {
 ### IAM Role and Policy - allows Lambda function to describe and stop EC2 instances
 
 resource "aws_iam_role" "ec2_stop_scheduler" {
-  name = "ec2_stop_scheduler"
+  name = "${var.project_id}-ec2_stop_scheduler"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -523,7 +523,7 @@ data "aws_iam_policy_document" "ec2_stop_scheduler" {
 }
 
 resource "aws_iam_policy" "ec2_stop_scheduler" {
-  name = "ec2_access_scheduler"
+  name = "${var.project_id}-ec2_access_scheduler"
   path = "/"
   policy = "${data.aws_iam_policy_document.ec2_stop_scheduler.json}"
 }
@@ -536,7 +536,7 @@ resource "aws_iam_role_policy_attachment" "ec2_access_scheduler" {
 ### Cloudwatch Events ###
 
 resource "aws_cloudwatch_event_rule" "stop_instances_event_rule" {
-  name = "stop_instances_event_rule"
+  name = "${var.project_id}-stop_instances_event_rule"
   description = "Stops running EC2 instances"
 
   # note schedules are UTC time zone - https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
