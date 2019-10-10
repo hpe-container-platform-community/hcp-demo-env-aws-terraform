@@ -19,13 +19,13 @@ variable "ctr_instance_type" { default = "m4.2xlarge" }
 variable "wkr_instance_type" { default = "m4.2xlarge" }
 
 variable "epic_dl_url" { }
-variable "epic_precheck_dl_url" { } 
 variable "epic_rpm_dl_url" { } 
-
-variable "continue_on_precheck_fail" { default = "false" }
 
 variable "ec2_shutdown_schedule_expression" { default = "cron(0 20 ? * MON-FRI *)" } # UTC time
 variable "ec2_shutdown_schedule_is_enabled" { default = false }
+
+variable "eip_controller" { }
+variable "eip_gateway" { }
 
 output "ssh_pub_key_path" {
   value = "${var.ssh_pub_key_path}"
@@ -39,12 +39,18 @@ output "epic_rpm_dl_url" {
   value = "${var.epic_rpm_dl_url}"
 }
 
-output "epic_precheck_dl_url" {
-  value = "${var.epic_precheck_dl_url}"
-}
-
 output "epic_dl_url" {
   value = "${var.epic_dl_url}"
+}
+
+/******************* elastic ips ********************/
+
+data "aws_eip" "controller" {
+  public_ip = "${var.eip_controller}"
+}
+
+data "aws_eip" "gateway" {
+  public_ip = "${var.eip_gateway}"
 }
 
 /******************* ssh pub key content ********************/
@@ -203,6 +209,18 @@ resource "aws_route_table_association" "main" {
   route_table_id = "${aws_default_route_table.main.id}"
 }
 
+/******************* Associate EIPs ********************/
+
+resource "aws_eip_association" "eip_assoc_controller" {
+  instance_id   = "${aws_instance.controller.id}"
+  allocation_id = "${data.aws_eip.controller.id}"
+}
+
+resource "aws_eip_association" "eip_assoc_gateway" {
+  instance_id   = "${aws_instance.gateway.id}"
+  allocation_id = "${data.aws_eip.gateway.id}"
+}
+
 /******************* Internet Gateway ********************/
 
 resource "aws_internet_gateway" "main" {
@@ -250,10 +268,10 @@ output "gateway_private_dns" {
   value = "${aws_instance.gateway.private_dns}"
 }
 output "gateway_public_ip" {
-  value = "${aws_instance.gateway.public_ip}"
+  value = "${data.aws_eip.gateway.public_ip}"
 }
 output "gateway_public_dns" {
-  value = "${aws_instance.gateway.public_dns}"
+  value = "${data.aws_eip.gateway.public_dns}"
 }
 
 
@@ -327,7 +345,7 @@ resource "aws_volume_attachment" "controller-volume-attachment-sdc" {
 # print IP address
 
 output "controller_public_ip" {
-  value = "${aws_instance.controller.public_ip}"
+  value = "${data.aws_eip.controller.public_ip}"
 }
 
 output "controller_private_ip" {
@@ -419,11 +437,11 @@ output "workers_private_dns" {
 }
 
 output "controller_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.controller.public_ip}"
+  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${data.aws_eip.controller.public_ip}"
 }
 
 output "gateway_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.gateway.public_ip}"
+  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${data.aws_eip.gateway.public_ip}"
 }
 
 output "workers_ssh" {

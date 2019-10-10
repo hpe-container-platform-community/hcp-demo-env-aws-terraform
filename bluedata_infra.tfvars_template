@@ -40,6 +40,13 @@ subnet_cidr_block  = "10.1.0.0/24"
 check_client_ip  = "true" 
 
 #
+# You need two pre-created elastic IP address.  Add the details here.
+#
+
+eip_controller = "1.2.3.4"
+eip_gateway = "1.2.3.4"
+
+#
 # gateway, controller and workers all share the same ami and ssh pubic key
 #
 
@@ -70,8 +77,7 @@ ssh_pub_key_path   = "/home/snowch/.ssh/id_rsa.pub"
 # ask your BlueData sales contact to provide you with the url
 
 epic_dl_url          = "enter url"
-epic_precheck_dl_url = "https://s3.amazonaws.com/bluedata-releases/3.7/bluedata-prechecks-epic-entdoc-3.7.bin"
-epic_rpm_dl_url      = "https://s3.amazonaws.com/bluedata-releases/3.7/repos/EPIC-Centos-7.x-RPM-list.txt" 
+epic_rpm_dl_url      = "https://dzf8vqv24eqhg.cloudfront.net/userfiles/7467/9720/ckfinder/files/4.0/EPIC40_RPM-List_CentOS-7x.txt" 
 
 #
 # cloudwatch 

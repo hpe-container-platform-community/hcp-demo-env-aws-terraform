@@ -21,7 +21,11 @@ The following installed locally:
  - curl client
  - aws cli (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
-Script has been tested on Linux and OSX client machines
+You also need to:
+
+ - create two AWS EIPs and make a note their IP addresses
+
+This project has been tested on Linux and OSX client machines
 
 ### Instructions
 
@@ -33,11 +37,11 @@ Script has been tested on Linux and OSX client machines
 vi ~/.aws/credentials
 
 # clone this project
-git clone https://github.com/snowch-bluedata/bluedata-demo-env-aws-terraform
+git clone https://github.com/bluedata-community/bluedata-demo-env-aws-terraform
 cd bluedata-demo-env-aws-terraform
 
 # create a copy 
-cp ./bluedata_infra.tfvars_template to ./bluedata_infra.tfvars
+cp ./bluedata_infra.tfvars_template ./bluedata_infra.tfvars
 
 # edit to reflect your requirements
 vi ./bluedata_infra.tfvars 
@@ -70,6 +74,15 @@ terraform output -json > output.json
 # finally, follow instructions output by the above script
 ```
 
+Or, all together ...
+
+```
+echo MY_IP=$(curl -s http://ifconfig.me/ip) && \
+terraform apply -var-file=bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true && \
+terraform output -json > output.json && \
+./bluedata_install.sh
+```
+
 ### Client IP changed?
 
 Re-run to update the AWS network ACL and security groups
@@ -80,8 +93,6 @@ terraform apply -var-file=bluedata_infra.tfvars \
 ```
 
 ### Destroy environment when finished
-
-Note: sometimes destroy gets stuck in a loop - I think this is a terraform bug.  If this happens, manually terminate the instances and re-run the destroy operation.
 
 ```
 terraform destroy -var-file=bluedata_infra.tfvars \
