@@ -93,7 +93,7 @@ terraform apply -var-file=bluedata_infra.tfvars \
 Set the variable `worker_count=` in `bluedata_infra.tfvars` to the desired number.
 
 ```
-# don't forget to approve
+# don't forget to approve when prompted
 terraform apply -var-file=bluedata_infra.tfvars \
    -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
 
