@@ -19,7 +19,6 @@ variable "ctr_instance_type" { default = "m4.2xlarge" }
 variable "wkr_instance_type" { default = "m4.2xlarge" }
 
 variable "epic_dl_url" { }
-variable "epic_rpm_dl_url" { } 
 
 variable "ec2_shutdown_schedule_expression" { default = "cron(0 20 ? * MON-FRI *)" } # UTC time
 variable "ec2_shutdown_schedule_is_enabled" { default = false }
@@ -33,10 +32,6 @@ output "ssh_pub_key_path" {
 
 output "ssh_prv_key_path" {
   value = "${var.ssh_prv_key_path}"
-}
-
-output "epic_rpm_dl_url" {
-  value = "${var.epic_rpm_dl_url}"
 }
 
 output "epic_dl_url" {
