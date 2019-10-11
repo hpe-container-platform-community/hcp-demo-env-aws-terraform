@@ -77,7 +77,6 @@ ssh_pub_key_path   = "/home/snowch/.ssh/id_rsa.pub"
 # ask your BlueData sales contact to provide you with the url
 
 epic_dl_url          = "enter url"
-epic_rpm_dl_url      = "https://dzf8vqv24eqhg.cloudfront.net/userfiles/7467/9720/ckfinder/files/4.0/EPIC40_RPM-List_CentOS-7x.txt" 
 
 #
 # cloudwatch 
