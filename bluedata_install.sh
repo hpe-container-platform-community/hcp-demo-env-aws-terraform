@@ -58,32 +58,6 @@ echo WRKR_PRV_IPS=${WRKR_PRV_IPS[@]}
 echo WRKR_PUB_IPS=${WRKR_PUB_IPS[@]}
 
 ###############################################################################
-# Setup error handling for debugging purposes
-###############################################################################
-
-error() {
-
-cat << EOF
-*******************************************
-** AN ERROR OCCURRED RUNNING THIS SCRIPT ** 
-*******************************************
-
-You can SSH into the EC2 instances for debugging:  
-
-CTRL SSH: ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${CTRL_PUB_IP} 
-GATW SSH: ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${GATW_PUB_IP} 
-EOF
-
-  for WRKR in ${WRKR_PUB_IPS[@]}; do 
-   echo WRKR [$WRKR] SSH: ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR}
-  done
-
-  echo
-  exit "1"
-}
-trap 'error ${LINENO}' ERR
-
-###############################################################################
 # Test SSH connectivity to EC2 instances from local machine
 ###############################################################################
 
