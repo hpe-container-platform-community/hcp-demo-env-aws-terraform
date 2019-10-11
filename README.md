@@ -21,10 +21,6 @@ The following installed locally:
  - curl client
  - aws cli (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
-You also need to:
-
- - create two AWS EIPs and make a note their IP addresses
-
 This project has been tested on Linux and OSX client machines
 
 ### Instructions
