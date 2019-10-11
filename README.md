@@ -88,6 +88,21 @@ terraform apply -var-file=bluedata_infra.tfvars \
    -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
 ```
 
+### Add more workers?
+
+Set the variable `worker_count=` in `bluedata_infra.tfvars` to the desired number.
+
+```
+terraform apply -var-file=bluedata_infra.tfvars \
+   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
+
+# update the json data
+terraform output -json > output.json
+
+# run a script to prepare the worker - follow the prompts and instructions.
+./bluedata_prepare_worker.sh
+```
+
 ### Destroy environment when finished
 
 ```
