@@ -90,3 +90,7 @@ ec2_shutdown_schedule_expression = "cron(0 20-23,0-8 ? * MON-FRI *)" # UTC time
 # set to false to prevent automatic halting of instances
 
 ec2_shutdown_schedule_is_enabled = true
+
+# set to true to enable a nfs server, e.g. for ML OPS
+
+nfs_server_enabled = false

@@ -26,6 +26,8 @@ variable "ec2_shutdown_schedule_is_enabled" { default = false }
 variable "eip_controller" { }
 variable "eip_gateway" { }
 
+variable "nfs_server_enabled" { default = false }
+
 output "ssh_pub_key_path" {
   value = "${var.ssh_pub_key_path}"
 }
@@ -245,6 +247,54 @@ resource "aws_internet_gateway" "main" {
 resource "aws_key_pair" "main" {
   key_name   = "${var.project_id}-keypair"
   public_key = "${data.local_file.ssh_pub_key.content}"
+}
+
+/******************* Instance: NFS Server for ML OPS ********************/
+
+resource "aws_instance" "nfs_server" {
+  ami                    = "${var.ec2_ami}"
+  instance_type          = "${var.gtw_instance_type}"
+  key_name               = "${aws_key_pair.main.key_name}"
+  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
+  subnet_id              = "${aws_subnet.main.id}"
+
+  count = "${var.nfs_server_enabled == true ? 1 : 0}"
+
+  root_block_device {
+    volume_type = "gp2"
+    volume_size = 400
+  }
+
+  tags = {
+    Name = "${var.project_id}-nfs-server"
+    Project = "${var.project_id}"
+    user = "${var.user}"
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      host        = "${aws_instance.nfs_server[0].public_ip}"
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    inline = [
+      "sudo yum -y install nfs-utils",
+      "sudo mkdir /nfsroot",
+      "echo '/nfsroot *(rw,no_root_squash,no_subtree_check)' | sudo tee /etc/exports",
+      "sudo exportfs -r",
+      "sudo systemctl enable nfs-server.service",
+      "sudo systemctl start nfs-server.service"
+    ]
+  }
+}
+
+output "nfs_server_private_ip" {
+  value = "${aws_instance.nfs_server[0].private_ip}"
+}
+
+output "nfs_server_ssh_command" {
+  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.nfs_server[0].public_ip}"
 }
 
 /******************* Instance: Gateway ********************/

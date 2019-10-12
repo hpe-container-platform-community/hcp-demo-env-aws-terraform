@@ -79,6 +79,15 @@ terraform output -json > output.json && \
 ./bluedata_install.sh
 ```
 
+### Setup a NFS server
+
+If you want the terraform script to deploy a NFS server (e.g. for ML OPS projects), set the `nfs_server_enabled=true` in your `bluedata_infra.tfvars` file.
+
+You will need to run `terraform apply ...` after making the update.  
+
+Inspect `terraform output` for the `nfs_server_private_ip`.  The nfs share is set as `/nfsroot`.
+
+
 ### Client IP changed?
 
 Re-run to update the AWS network ACL and security groups
