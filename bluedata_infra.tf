@@ -656,9 +656,6 @@ resource "local_file" "cli_stop_ec2_instances" {
   filename = "${path.module}/generated/cli_stop_ec2_instances.sh"
   content =  <<-EOF
     aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}
-    echo "Potential IP address changes - you must re-run:"
-    echo "    terraform apply ..."
-    echo "    terraform output -json > output.json"
   EOF
 }
 
@@ -666,9 +663,6 @@ resource "local_file" "cli_start_ec2_instances" {
   filename = "${path.module}/generated/cli_start_ec2_instances.sh"
   content = <<-EOF
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}
-    echo "Potential IP addresses changes - you must re-run:"
-    echo "    terraform apply ..."
-    echo "    terraform output -json > output.json"
   EOF
 }
 
