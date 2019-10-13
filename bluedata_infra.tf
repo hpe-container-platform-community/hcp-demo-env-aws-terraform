@@ -17,6 +17,7 @@ variable "worker_count" { default = 3 }
 variable "gtw_instance_type" { default = "m4.2xlarge" }
 variable "ctr_instance_type" { default = "m4.2xlarge" }
 variable "wkr_instance_type" { default = "m4.2xlarge" }
+variable "nfs_instance_type" { default = "t2.small" }
 
 variable "epic_dl_url" { }
 
@@ -253,7 +254,7 @@ resource "aws_key_pair" "main" {
 
 resource "aws_instance" "nfs_server" {
   ami                    = "${var.ec2_ami}"
-  instance_type          = "${var.gtw_instance_type}"
+  instance_type          = "${var.nfs_instance_type}"
   key_name               = "${aws_key_pair.main.key_name}"
   vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
   subnet_id              = "${aws_subnet.main.id}"

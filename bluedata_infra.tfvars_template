@@ -63,6 +63,7 @@ ec2_ami            = "ami-00846a67" # this is valid for the London region, chang
 gtw_instance_type  = "m4.2xlarge"
 ctr_instance_type  = "m4.2xlarge"
 wkr_instance_type  = "m4.2xlarge"
+nfs_instance_type  = "t2.small"
 
 # the path to your ssh private key on your local machine
 # use double \\ for windows paths
