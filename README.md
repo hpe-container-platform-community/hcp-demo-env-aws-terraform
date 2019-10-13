@@ -81,12 +81,34 @@ terraform output -json > output.json && \
 
 ### Setup a NFS server
 
-If you want the terraform script to deploy a NFS server (e.g. for ML OPS projects), set the `nfs_server_enabled=true` in your `bluedata_infra.tfvars` file.
+If you want the terraform script to deploy a NFS server (e.g. for ML OPS projects), set `nfs_server_enabled=true` in your `bluedata_infra.tfvars` file.
 
 You will need to run `terraform apply ...` after making the update.  
 
 Inspect `terraform output` for the `nfs_server_private_ip`.  The nfs share is set as `/nfsroot`.
 
+### Setup an Active Directory server
+
+If you want the terraform script to deploy an AD server, set `ad_server_enabled=true` in your `bluedata_infra.tfvars` file.
+
+You will need to run `terraform apply ...` after making the update.  
+
+Inspect `terraform output` for the `ad_server_private_ip` - you will need this when configuring the BlueData UI.
+
+```
+System Settings -> User Authentication
+   -> Authentication Type: Active Directory
+   -> Security Protocol: LDAPS
+   -> Service Location: ${ad_server_private_ip} -> Port: 636
+   -> Bind Type: Search Bind
+   -> User Attribute: sAMAccountName
+   -> Base DN: CN=Users,DC=samdom,DC=example,DC=com
+   -> Bind DN: cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com
+   -> Bind Password: adpassword
+
+```
+
+TODO: How to add users to Active Directory.  
 
 ### Client IP changed?
 

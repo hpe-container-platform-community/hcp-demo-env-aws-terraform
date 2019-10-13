@@ -64,6 +64,7 @@ gtw_instance_type  = "m4.2xlarge"
 ctr_instance_type  = "m4.2xlarge"
 wkr_instance_type  = "m4.2xlarge"
 nfs_instance_type  = "t2.small"
+ad_instance_type = "t2.small"
 
 # the path to your ssh private key on your local machine
 # use double \\ for windows paths
@@ -95,3 +96,6 @@ ec2_shutdown_schedule_is_enabled = true
 # set to true to enable a nfs server, e.g. for ML OPS
 
 nfs_server_enabled = false
+
+# Experimental functionality
+ad_server_enabled = false

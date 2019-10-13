@@ -18,6 +18,7 @@ variable "gtw_instance_type" { default = "m4.2xlarge" }
 variable "ctr_instance_type" { default = "m4.2xlarge" }
 variable "wkr_instance_type" { default = "m4.2xlarge" }
 variable "nfs_instance_type" { default = "t2.small" }
+variable "ad_instance_type" { default = "t2.small" }
 
 variable "epic_dl_url" { }
 
@@ -28,6 +29,7 @@ variable "eip_controller" { }
 variable "eip_gateway" { }
 
 variable "nfs_server_enabled" { default = false }
+variable "ad_server_enabled" { default = true }
 
 output "ssh_pub_key_path" {
   value = "${var.ssh_pub_key_path}"
@@ -250,7 +252,71 @@ resource "aws_key_pair" "main" {
   public_key = "${data.local_file.ssh_pub_key.content}"
 }
 
-/******************* Instance: NFS Server for ML OPS ********************/
+/******************* Instance: AD Server ********************/
+
+resource "aws_instance" "ad_server" {
+  ami                    = "${var.ec2_ami}"
+  instance_type          = "${var.ad_instance_type}"
+  key_name               = "${aws_key_pair.main.key_name}"
+  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
+  subnet_id              = "${aws_subnet.main.id}"
+
+  count = "${var.ad_server_enabled == true ? 1 : 0}"
+
+  root_block_device {
+    volume_type = "gp2"
+    volume_size = 400
+  }
+
+  tags = {
+    Name = "${var.project_id}-ad-server"
+    Project = "${var.project_id}"
+    user = "${var.user}"
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      host        = "${aws_instance.ad_server[0].public_ip}"
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    inline = [
+      "sudo yum install -y docker, openldap-clients",
+      "sudo service docker start",
+      "sudo systemctl enable docker",
+
+      <<EOT
+      sudo docker run --privileged \
+       -p 53:53 -p 53:53/udp -p 88:88 -p 88:88/udp -p 135:135 -p 137-138:137-138/udp -p 139:139 -p 389:389 \
+       -p 389:389/udp -p 445:445 -p 464:464 -p 464:464/udp -p 636:636 -p 1024-1044:1024-1044 -p 3268-3269:3268-3269 \
+       -e "SAMBA_DOMAIN=samdom" \
+       -e "SAMBA_REALM=samdom.example.com" \
+       -e "SAMBA_ADMIN_PASSWORD=adpassword" \
+       -e "ROOT_PASSWORD=rootpassword" \
+       -e "LDAP_ALLOW_INSECURE=true" \
+       -e "SAMBA_HOST_IP=$(hostname --all-ip-addresses |cut -f 1 -d' ')" \
+       --name samdom --dns 127.0.0.1 -d rsippl/samba-ad-dc
+      EOT
+      ,
+      "echo Done!"
+
+      // To connect ...
+      // LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no -x -H ldaps://IP:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w 'adpassword' -b 'DC=samdom,DC=example,DC=com'
+    ]
+  }
+}
+
+output "ad_server_private_ip" {
+  value = "${aws_instance.ad_server[0].private_ip}"
+}
+
+output "ad_server_ssh_command" {
+  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.ad_server[0].public_ip}"
+}
+
+
+/******************* Instance: NFS Server (e.g. for ML OPS) ********************/
 
 resource "aws_instance" "nfs_server" {
   ami                    = "${var.ec2_ami}"
