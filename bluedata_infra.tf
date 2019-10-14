@@ -266,7 +266,7 @@ resource "aws_instance" "ad_server" {
   }
 
   tags = {
-    Name = "${var.project_id}-ad-server"
+    Name = "${var.project_id}-instance-ad-server"
     Project = "${var.project_id}"
     user = "${var.user}"
   }
@@ -330,7 +330,7 @@ resource "aws_instance" "nfs_server" {
   }
 
   tags = {
-    Name = "${var.project_id}-nfs-server"
+    Name = "${var.project_id}-instance-nfs-server"
     Project = "${var.project_id}"
     user = "${var.user}"
   }
