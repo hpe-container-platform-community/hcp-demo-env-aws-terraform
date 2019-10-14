@@ -25,9 +25,6 @@ variable "epic_dl_url" { }
 variable "ec2_shutdown_schedule_expression" { default = "cron(0 20 ? * MON-FRI *)" } # UTC time
 variable "ec2_shutdown_schedule_is_enabled" { default = false }
 
-variable "eip_controller" { }
-variable "eip_gateway" { }
-
 variable "nfs_server_enabled" { default = false }
 variable "ad_server_enabled" { default = true }
 
@@ -722,20 +719,20 @@ output "ec2_shutdown_schedule_is_enabled" {
 resource "local_file" "cli_stop_ec2_instances" {
   filename = "${path.module}/generated/cli_stop_ec2_instances.sh"
   content =  <<-EOF
-    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${aws_instance.nfs_server[0].id} ${aws_instance.ad_server[0].id} ${join(" ", aws_instance.workers.*.id)} 
+    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} 
   EOF
 }
 
 resource "local_file" "cli_start_ec2_instances" {
   filename = "${path.module}/generated/cli_start_ec2_instances.sh"
   content = <<-EOF
-    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${aws_instance.nfs_server[0].id} ${aws_instance.ad_server[0].id} ${join(" ", aws_instance.workers.*.id)}
+    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)}
   EOF
 }
 
 resource "local_file" "cli_running_ec2_instances" {
   filename = "${path.module}/generated/cli_running_ec2_instances.sh"
   content = <<-EOF
-    aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${aws_instance.nfs_server[0].id} ${aws_instance.ad_server[0].id} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running
+    aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running
   EOF  
 }
