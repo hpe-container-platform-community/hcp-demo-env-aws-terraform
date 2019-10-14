@@ -99,7 +99,7 @@ Inspect `terraform output` for the `ad_server_private_ip` - you will need this w
 System Settings -> User Authentication
    -> Authentication Type: Active Directory
    -> Security Protocol: LDAPS
-   -> Service Location: ${ad_server_private_ip} -> Port: 636
+   -> Service Location: ${ad_server_private_ip} | Port: 636
    -> Bind Type: Search Bind
    -> User Attribute: sAMAccountName
    -> Base DN: CN=Users,DC=samdom,DC=example,DC=com
