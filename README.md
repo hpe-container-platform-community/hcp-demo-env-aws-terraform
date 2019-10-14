@@ -104,11 +104,23 @@ System Settings -> User Authentication
    -> User Attribute: sAMAccountName
    -> Base DN: CN=Users,DC=samdom,DC=example,DC=com
    -> Bind DN: cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com
-   -> Bind Password: adpassword
-
+   -> Bind Password: 5ambaPwd@
 ```
 
-TODO: How to add users to Active Directory.  
+#### Adding an AD user
+
+Sorry, this is a bit long winded ...
+
+- From you client machine run: `terraform output ad_server_ssh_command` 
+- Run the ssh command output above to ssh into the instance
+- Run `sudo docker inspect samdom | grep IPAddress` to get the docker instance IP address
+- Run `ssh root@IPADDR` (replace IPADDR with value output above) with password `R00tPwd@` to ssh into the docker instance
+- Run `samba-tool user create USERNAME` (replace USERNAME with the username you want to create) and enter a password
+
+NOTE: Users created on the environment are not persisted so will be lost if you terminate the instance.
+
+- You can now add the user to your BlueData environment.
+
 
 ### Client IP changed?
 
@@ -138,6 +150,7 @@ terraform output -json > output.json
 ### Destroy environment when finished
 
 ```
+# don't forget to approve when prompted
 terraform destroy -var-file=bluedata_infra.tfvars \
    -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
 ```
