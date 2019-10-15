@@ -39,12 +39,6 @@ subnet_cidr_block  = "10.1.0.0/24"
 
 check_client_ip  = "true" 
 
-#
-# You need two pre-created elastic IP address.  Add the details here.
-#
-
-eip_controller = "1.2.3.4"
-eip_gateway = "1.2.3.4"
 
 #
 # gateway, controller and workers all share the same ami and ssh pubic key
@@ -97,5 +91,8 @@ ec2_shutdown_schedule_is_enabled = true
 
 nfs_server_enabled = false
 
-# Experimental functionality
+# set to true to create an Active Directory server for BlueData
+
 ad_server_enabled = false
+
+
