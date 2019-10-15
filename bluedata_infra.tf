@@ -299,7 +299,7 @@ resource "aws_instance" "ad_server" {
       "echo Done!"
 
       // To connect ...
-      // LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no -x -H ldaps://IP:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w 'adpassword' -b 'DC=samdom,DC=example,DC=com'
+      // LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no -x -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com'
     ]
   }
 }
