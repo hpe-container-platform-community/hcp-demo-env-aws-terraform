@@ -67,7 +67,8 @@ terraform output -json > output.json
 # automated installation of BlueData environment
 ./bluedata_install.sh
 
-# accept the defaults for the initial configuration screen
+# set the defaults for the initial BlueData configuration 
+# if you want to manually perform the initial BlueData configuration, skip this step
 ./bluedata_config.sh 
 
 # finally, follow instructions output by `bluedata_install.sh`
