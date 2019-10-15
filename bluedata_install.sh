@@ -180,11 +180,11 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    ./${EPIC_FILENAME} --skipeula
 
    # install application workbench
-   # sudo yum install -y epel-release
-   # sudo yum install -y python-pip
-   # sudo pip install --upgrade pip
-   # sudo pip install --upgrade setuptools
-   # sudo pip install --upgrade bdworkbench
+   sudo yum install -y epel-release
+   sudo yum install -y python-pip
+   sudo pip install --upgrade pip
+   sudo pip install --upgrade setuptools
+   sudo pip install --upgrade bdworkbench
 ENDSSH
 
 ###############################################################################
