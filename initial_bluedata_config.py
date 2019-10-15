@@ -4,6 +4,7 @@ import sys
 import json
 import requests
 from bs4 import BeautifulSoup as bs4
+from time import sleep
 
 ################################################################################
 # http request/response logging
@@ -16,13 +17,16 @@ try:
 except ImportError:
     # Python 2
     import httplib as http_client
-http_client.HTTPConnection.debuglevel = 1
 
-logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("requests.packages.urllib3")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
+# Uncomment the lines below to turn on debugging
+
+# http_client.HTTPConnection.debuglevel = 1
+
+# logging.basicConfig()
+# logging.getLogger().setLevel(logging.DEBUG)
+# requests_log = logging.getLogger("requests.packages.urllib3")
+# requests_log.setLevel(logging.DEBUG)
+# requests_log.propagate = True
 
 ################################################################################
 
@@ -87,9 +91,17 @@ def get_install_status():
     r = client.post('http://localhost/bdswebui/adminmanage/', data=json.dumps(data), headers=headers)
     return r.json()['install_progress']['install_state']
 
+print('Starting BlueData initial configuration.')
+
 while get_install_status() == 'installing':
+    sys.stdout.write('.')
+    sys.stdout.flush()
     if get_install_status() == 'installed':
         print (json.dumps({"ok": "true"}))
+        print('Finished BlueData initial configuration.')
         sys.exit(0)
+    sleep(30)
 
-    # TODO add timeout
+    # TODO add timeout to prevent never ending loop on error
+
+
