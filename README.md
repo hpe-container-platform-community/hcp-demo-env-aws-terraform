@@ -156,6 +156,7 @@ Tenant Settings
 - Provision a spark cluster (e.g. `bluedata/spark231juphub7x-ssl`) - you only need 1 small Jupyterhub node
 - Click the Jupyterhub URL to launch jupyter
 - Login with AD credentials `user1/5ambaPwd@`
+- SSH into the cluster `ssh user1@THE_IP_ADDR -p THE_PORT` - use your AD password: `5ambaPwd@`
 
 ### Client IP changed?
 
