@@ -51,6 +51,9 @@ ec2_ami            = "ami-00846a67" # this is valid for the London region, chang
                                     # Ohio       : ami-e1496384 ?
                                     # 
 
+# specify how many BlueData workers you want
+worker_count = 3
+
 # you may need to change the instance types if the ones
 # listed below are not available in your region
 
