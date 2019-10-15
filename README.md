@@ -146,14 +146,14 @@ Tenant Settings
   -> External User Groups: CN=Users,CN=Builtin,DC=samdom,DC=example,DC=com | Member
 ```
 
-- Login to BlueData as 'administrator/5ambaPwd@' - you should be taken to the Demo Tenant and have 'Admin' privileges
+- Login to BlueData as `admin1/5ambaPwd@` - you should be taken to the Demo Tenant and have 'Admin' privileges
 - Create a new user (see below)
-- Login to BlueData as 'USERNAME/PASSWORD' - you should be taken to the Demo Tenant and have 'Member' privileges
+- Login to BlueData as `user1/5ambaPwd@` - you should be taken to the Demo Tenant and have 'Member' privileges
 
 #### Provision Cluster
 
 - Login as AD credentials `user1/5ambaPwd@`
-- Provision a spark cluster (e.g. bluedata/spark231juphub7x-ssl) - you only need 1 small Jupyterhub node
+- Provision a spark cluster (e.g. `bluedata/spark231juphub7x-ssl`) - you only need 1 small Jupyterhub node
 - Click the Jupyterhub URL to launch jupyter
 - Login with AD credentials `user1/5ambaPwd@`
 
