@@ -77,6 +77,18 @@ ssh_pub_key_path   = "/home/snowch/.ssh/id_rsa.pub"
 
 epic_dl_url          = "enter url"
 
+# set to true to enable a nfs server, e.g. for ML OPS
+
+nfs_server_enabled = false
+
+# set to true to create an Active Directory server for BlueData
+
+ad_server_enabled = false
+
+/* 
+
+Disabled functionality due to a bug in terraform: https://github.com/hashicorp/terraform/issues/4131
+
 #
 # cloudwatch 
 #
@@ -90,12 +102,4 @@ ec2_shutdown_schedule_expression = "cron(0 20-23,0-8 ? * MON-FRI *)" # UTC time
 
 ec2_shutdown_schedule_is_enabled = true
 
-# set to true to enable a nfs server, e.g. for ML OPS
-
-nfs_server_enabled = false
-
-# set to true to create an Active Directory server for BlueData
-
-ad_server_enabled = false
-
-
+*/

@@ -572,6 +572,8 @@ output "workers_ssh" {
   }
 }
 
+/* Disabling this functinoality due to a bug in terraform: https://github.com/hashicorp/terraform/issues/4131
+
 //////////////////// Cloudwatch /////////////////////
 
 // Adapted from: https://gist.github.com/picadoh/815c11361d1a88419ea16b14fe044e85
@@ -714,7 +716,11 @@ output "ec2_shutdown_schedule_is_enabled" {
   value = "${var.ec2_shutdown_schedule_is_enabled}"
 }
 
-//////////////////// Utility - start/stop instances /////////////////////
+*/
+
+//////////////////// Utility scripts  /////////////////////
+
+/// instance start/stop/status
 
 resource "local_file" "cli_stop_ec2_instances" {
   filename = "${path.module}/generated/cli_stop_ec2_instances.sh"
