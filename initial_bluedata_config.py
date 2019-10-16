@@ -87,9 +87,12 @@ response = client.post('http://localhost/bdswebui/admininstall/', data=data, hea
 #print(response.text)
 
 def get_install_status():
-    data = {"operation":"get_log", "csrfmiddlewaretoken":csrf_token}
-    r = client.post('http://localhost/bdswebui/adminmanage/', data=json.dumps(data), headers=headers)
-    return r.json()['install_progress']['install_state']
+    try:
+       data = {"operation":"get_log", "csrfmiddlewaretoken":csrf_token}
+       r = client.post('http://localhost/bdswebui/adminmanage/', data=json.dumps(data), headers=headers)
+       return r.json()['install_progress']['install_state']
+    except:
+       return 'installing'
 
 print('Starting BlueData initial configuration.')
 
