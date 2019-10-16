@@ -100,8 +100,8 @@ while get_install_status() == 'installing':
     sys.stdout.write('.')
     sys.stdout.flush()
     if get_install_status() == 'installed':
-        print (json.dumps({"ok": "true"}))
         print('Finished BlueData initial configuration.')
+        sys.stdout.flush()
         sys.exit(0)
     sleep(30)
 
