@@ -20,8 +20,8 @@ System Settings -> User Authentication
 
 Two AD users were created automatically when the enviroment was provisioned:
 
-- ad_user1 in the "Users" group
-- ad_admin1 in the "Administrators" group
+- ad_user1 in the "Users" group with password = Passw0rd
+- ad_admin1 in the "Administrators" group with password = Passw0rd
 
 #### Adding an AD user
 
