@@ -18,7 +18,7 @@ System Settings -> User Authentication
    -> Bind Password: 5ambaPwd@
 ```
 
-Two AD users have been created automatically when the enviroment was provisioned:
+Two AD users were created automatically when the enviroment was provisioned:
 
 - ad_user1 in the "Users" group
 - ad_admin1 in the "Administrators" group
