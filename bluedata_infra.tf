@@ -271,6 +271,27 @@ resource "aws_instance" "ad_server" {
     user = "${var.user}"
   }
 
+  provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      host        = "${aws_instance.ad_server[0].public_ip}"
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    destination   = "/home/centos/ad_user_setup.sh"
+    content       = <<-EOT
+     #!/bin/bash
+    
+     # Create user in group Users
+     samba-tool user create ad_user1 Passw0rd
+     samba-tool group addmembers Users ad_user1
+
+     # Create user in group Administrators
+     samba-tool user create ad_admin1 Passw0rd
+     samba-tool group addmembers Administrators ad_admin1
+    EOT
+  }
+
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
@@ -282,7 +303,6 @@ resource "aws_instance" "ad_server" {
       "sudo yum install -y docker openldap-clients",
       "sudo service docker start",
       "sudo systemctl enable docker",
-
       <<EOT
       sudo docker run --privileged --restart=unless-stopped \
        -p 53:53 -p 53:53/udp -p 88:88 -p 88:88/udp -p 135:135 -p 137-138:137-138/udp -p 139:139 -p 389:389 \
@@ -293,7 +313,13 @@ resource "aws_instance" "ad_server" {
        -e "ROOT_PASSWORD=R00tPwd@" \
        -e "LDAP_ALLOW_INSECURE=true" \
        -e "SAMBA_HOST_IP=$(hostname --all-ip-addresses |cut -f 1 -d' ')" \
-       --name samdom --dns 127.0.0.1 -d rsippl/samba-ad-dc
+       -v /home/centos/ad_user_setup.sh:/usr/local/bin/custom.sh \
+       --name samdom \
+       --dns 127.0.0.1 \
+       -d \
+       --entrypoint "/bin/bash" \
+       rsippl/samba-ad-dc \
+       -c "chmod +x /usr/local/bin/custom.sh &&. /init.sh app:start"
       EOT
       ,
       "echo Done!"
