@@ -84,7 +84,7 @@ Tenant Settings
 Sometimes it's useful to browse the AD tree with a graphical interface.  This section describes how to connect with the open source Apache Directory Studio.
 
 - Download and install Apache Director Studio
-- Run `$(terraform output ad_server_ssh_command) -L 1636:localhost:636` - this retrieves from the terraform environment the ssh command required to connect to the AD EC2 instance.  The `-L 1636:localhost:636` command tells ssh to bind to port `1636` on your local machine and forward traffic to the port `636` on the AD EC2 instance. 
+- Run `$(terraform output ad_server_ssh_command) -L 1636:localhost:636` - this retrieves from the terraform environment the ssh command required to connect to the AD EC2 instance.  The `-L 1636:localhost:636` command tells ssh to bind to port `1636` on your local machine and forward traffic to the port `636` on the AD EC2 instance.  Exiting the ssh session will remove the port binding.
 - In Apache Directory Studio, create a new connection:
   - *Connection name:* choose something meaningful
   - *Hostname:* localhost
