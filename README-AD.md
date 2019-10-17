@@ -92,8 +92,8 @@ Sometimes it's useful to browse the AD tree with a graphical interface.  This se
   - *Connection timeout(s):* 30
   - *Encryption method:* No encryption
   - *Provider:* Apache Directory LDAP Client API
-  - Click *Next*
+  - **Click *Next***
   - *Authentication Method:* Simple Authentication
   - *Bind DN or user:* cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com
   - *Bind password:* 5ambaPwd@
-  - Click *Finish*
+  - **Click *Finish***
