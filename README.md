@@ -96,14 +96,6 @@ Run `terraform output nfs_server_private_ip` to get the NFS server ip address.  
 
 See [./README-AD.md](./README-AD.md) for more information.
 
-#### Provision Cluster
-
-- Login as AD credentials `user1/Passw0rd`
-- Provision a spark cluster (e.g. `bluedata/spark231juphub7x-ssl`) - you only need 1 small Jupyterhub node
-- Click the Jupyterhub URL to launch jupyter
-- Login with AD credentials `user1/Passw0rd`
-- SSH into the cluster `ssh user1@THE_IP_ADDR -p THE_PORT` - use your AD password: `Passw0rd`
-
 ### Client IP changed?
 
 Re-run to update the AWS network ACL and security groups
