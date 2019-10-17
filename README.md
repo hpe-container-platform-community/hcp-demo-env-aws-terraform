@@ -94,70 +94,15 @@ Run `terraform output nfs_server_private_ip` to get the NFS server ip address.  
 
 ### Setup an Active Directory (optional)
 
-If you want the terraform script to deploy an AD server, set `ad_server_enabled=true` in your `bluedata_infra.tfvars` file.
-
-You will need to run `terraform apply ...` after making the update.  
-
-Run `terraform output ad_server_private_ip` to get the AD server IP address - you will need this when configuring the BlueData UI.
-
-```
-System Settings -> User Authentication
-   -> Authentication Type: Active Directory
-   -> Security Protocol: LDAPS
-   -> Service Location: ${ad_server_private_ip} | Port: 636
-   -> Bind Type: Search Bind
-   -> User Attribute: sAMAccountName
-   -> Base DN: CN=Users,DC=samdom,DC=example,DC=com
-   -> Bind DN: cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com
-   -> Bind Password: 5ambaPwd@
-```
-#### Adding an AD user
-
-SSH into AD server instance host:
-
-- From you client machine run: `terraform output ad_server_ssh_command` 
-- Run the ssh command output above to ssh into the instance
-- Run `IPADDR=$(sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' samdom)` to get the docker instance IP address
-
-SSH into the AD docker instance:
-
-- Run `ssh -o StrictHostKeyChecking=no root@$IPADDR` with password `R00tPwd@` to ssh into the docker instance
-
-Create a user in the group 'Users':
-
-- Run `samba-tool user create user1` enter a password `5ambaPwd@`
-- Run `samba-tool group addmembers "Users" user1`
-
-Create a user in the group 'Administrators':
-
-- Run `samba-tool user create admin1` enter a password `5ambaPwd@`
-- Run `samba-tool group addmembers "Administrators" admin1`
-
-NOTE: Users created on the environment are not persisted so they will be lost if you terminate the instance.
-
-#### Tenant Setup
-
-Recommended reading: http://docs.bluedata.com/40_authentication-groups
-
-E.g. Demo Tenant 
-
-```
-Tenant Settings
-  -> External User Groups: CN=Administrators,CN=Builtin,DC=samdom,DC=example,DC=com | Admin
-  -> External User Groups: CN=Users,CN=Builtin,DC=samdom,DC=example,DC=com | Member
-```
-
-- Login to BlueData as `admin1/5ambaPwd@` - you should be taken to the Demo Tenant and have 'Admin' privileges
-- Create a new user (see below)
-- Login to BlueData as `user1/5ambaPwd@` - you should be taken to the Demo Tenant and have 'Member' privileges
+See [./README-AD.md](./README-AD.md) for more information.
 
 #### Provision Cluster
 
-- Login as AD credentials `user1/5ambaPwd@`
+- Login as AD credentials `user1/Passw0rd`
 - Provision a spark cluster (e.g. `bluedata/spark231juphub7x-ssl`) - you only need 1 small Jupyterhub node
 - Click the Jupyterhub URL to launch jupyter
-- Login with AD credentials `user1/5ambaPwd@`
-- SSH into the cluster `ssh user1@THE_IP_ADDR -p THE_PORT` - use your AD password: `5ambaPwd@`
+- Login with AD credentials `user1/Passw0rd`
+- SSH into the cluster `ssh user1@THE_IP_ADDR -p THE_PORT` - use your AD password: `Passw0rd`
 
 ### Client IP changed?
 
