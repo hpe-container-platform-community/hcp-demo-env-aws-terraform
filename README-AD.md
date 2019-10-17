@@ -18,6 +18,11 @@ System Settings -> User Authentication
    -> Bind Password: 5ambaPwd@
 ```
 
+Two AD users have been created automatically when the enviroment was provisioned:
+
+- ad_user1 in the "Users" group
+- ad_admin1 in the "Administrators" group
+
 #### Adding an AD user
 
 To add an additional users, on your client machine open a shell session inside your cloned repo directory and paste the following command:
