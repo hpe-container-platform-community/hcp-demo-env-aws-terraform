@@ -79,3 +79,21 @@ Tenant Settings
 - Login with AD credentials `user1/Passw0rd`
 - SSH into the cluster `ssh user1@THE_IP_ADDR -p THE_PORT` - use your AD password: `Passw0rd`
 
+### Directory Browser
+
+Sometimes it's useful to browse the AD tree with a graphical interface.  This section describes how to connect with the open source Apache Directory Studio.
+
+- Download and install Apache Director Studio
+- Run `$(terraform output ad_server_ssh_command) -L 1636:localhost:636` - this retrieves from the terraform environment the ssh command required to connect to the AD EC2 instance.  The `-L 1636:localhost:636` command tells ssh to bind to port `1636` on your local machine and forward traffic to the port `636` on the AD EC2 instance. 
+- In Apache Directory Studio, create a new connection:
+  - *Connection name:* choose something meaningful
+  - *Hostname:* localhost
+  - *Port:* 1636
+  - *Connection timeout(s):* 30
+  - *Encryption method:* No encryption
+  - *Provider:* Apache Directory LDAP Client API
+  - Click *Next*
+  - *Authentication Method:* Simple Authentication
+  - *Bind DN or user:* cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com
+  - *Bind password:* 5ambaPwd@
+  - Click *Finish*
