@@ -18,39 +18,29 @@ System Settings -> User Authentication
    -> Bind Password: 5ambaPwd@
 ```
 
-Two AD users were created automatically when the enviroment was provisioned:
+Two AD groups and two AD users were created automatically when the enviroment was provisioned:
 
-- ad_user1 in the "Users" group with password = Passw0rd
-- ad_admin1 in the "Administrators" group with password = Passw0rd
+- `DemoTenantAdmins` group
+- `DemoTenantUsers` group
+- `ad_user1` in the `DemoTenantUsers` group with password `Passw0rd`
+- `ad_admin1` in the `DemoTenantAdmins` group with password `Passw0rd`
 
 #### Adding an AD user
 
 To add an additional users, on your client machine open a shell session inside your cloned repo directory and paste the following command:
 
 ```
-function create_user {
-   # Set USERNAME, PASSWORD and GROUP as required
-   USERNAME=$1
-   PASSWORD=$2
+# Retrieve the SSH command to access the AD instance
+SSH_CMD=$(terraform output ad_server_ssh_command)
 
-   # Administrators | Users
-   GROUP=$3
+# Add a new AD group
+$SSH_CMD sudo docker exec samdom samba-tool group add DemoTenantAdmins
 
-   # SSH Command String
-   SSH_CMD=$(terraform output ad_server_ssh_command)
+# Create the user
+$SSH_CMD sudo docker exec samdom samba-tool user create demo_user Passw0rd
 
-   # Create the user
-   $SSH_CMD sudo docker exec samdom samba-tool user create $USERNAME $PASSWORD
-
-   # Add user to the group
-   $SSH_CMD sudo docker exec samdom samba-tool group addmembers "$GROUP" $USERNAME
-}
-
-# create a user in the "Users" group
-create_user user1 Passw0rd Users
-
-# create a user in the "Administrators" group
-create_user admin1 Passw0rd Administrators
+# Add user to the group
+$SSH_CMD sudo docker exec samdom samba-tool group addmembers DemoTenantAdmins demo_user
 ```
 
 NOTE: Users created on the environment are not persisted so they will be lost if you terminate the instance.
@@ -63,8 +53,8 @@ E.g. Demo Tenant
 
 ```
 Tenant Settings
-  -> External User Groups: CN=Administrators,CN=Builtin,DC=samdom,DC=example,DC=com | Admin
-  -> External User Groups: CN=Users,CN=Builtin,DC=samdom,DC=example,DC=com | Member
+  -> External User Groups: CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com | Admin
+  -> External User Groups: CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com | Member
 ```
 
 - Login to BlueData as `admin1/Passw0rd` - you should be taken to the Demo Tenant and have 'Admin' privileges
@@ -73,11 +63,17 @@ Tenant Settings
 
 #### Provision Cluster
 
-- Login as AD credentials `user1/Passw0rd`
+- Login as AD credentials `ad_user1/Passw0rd`
 - Provision a spark cluster (e.g. `bluedata/spark231juphub7x-ssl`) - you only need 1 small Jupyterhub node
 - Click the Jupyterhub URL to launch jupyter
-- Login with AD credentials `user1/Passw0rd`
-- SSH into the cluster `ssh user1@THE_IP_ADDR -p THE_PORT` - use your AD password: `Passw0rd`
+- Login with AD credentials `ad_user1/Passw0rd`
+- SSH into the cluster `ssh ad_user1@THE_IP_ADDR -p THE_PORT` - use your AD password: `Passw0rd` 
+  - try `groups` to list your AD groups 
+  - try `sudo ls /` you should be denied after entering your password
+- SSH into the cluster `ssh ad_admin1@THE_IP_ADDR -p THE_PORT` - use your AD password: `Passw0rd` 
+  - try `groups` to list your AD groups
+  - try `sudo ls /` you should be allowed to sudo due to the Tentant setting
+
 
 ### Directory Browser
 
