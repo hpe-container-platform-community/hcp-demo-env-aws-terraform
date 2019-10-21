@@ -282,13 +282,15 @@ resource "aws_instance" "ad_server" {
     content       = <<-EOT
      #!/bin/bash
     
-     # Create user in group Users
+     # Create DemoTenantUsers group and a user ad_user1
+     samba-tool group add DemoTenantUsers
      samba-tool user create ad_user1 Passw0rd
-     samba-tool group addmembers Users ad_user1
+     samba-tool group addmembers DemoTenantUsers ad_user1
 
-     # Create user in group Administrators
+     # Create DemoTenantAdmins group and a user ad_admin1
+     samba-tool group add DemoTenantAdmins
      samba-tool user create ad_admin1 Passw0rd
-     samba-tool group addmembers Administrators ad_admin1
+     samba-tool group addmembers DemoTenantAdmins ad_admin1
     EOT
   }
 
