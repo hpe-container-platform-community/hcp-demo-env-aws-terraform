@@ -57,9 +57,9 @@ worker_count = 3
 # you may need to change the instance types if the ones
 # listed below are not available in your region
 
-gtw_instance_type  = "m4.2xlarge"
-ctr_instance_type  = "m4.2xlarge"
-wkr_instance_type  = "m4.2xlarge"
+gtw_instance_type  = "m4.4xlarge"
+ctr_instance_type  = "m4.4xlarge"
+wkr_instance_type  = "m4.4xlarge"
 nfs_instance_type  = "t2.small"
 ad_instance_type = "t2.small"
 
