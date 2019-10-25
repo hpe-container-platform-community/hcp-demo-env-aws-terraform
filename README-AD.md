@@ -22,8 +22,8 @@ Two AD groups and two AD users were created automatically when the enviroment wa
 
 - `DemoTenantAdmins` group
 - `DemoTenantUsers` group
-- `ad_user1` in the `DemoTenantUsers` group with password `Passw0rd`
-- `ad_admin1` in the `DemoTenantAdmins` group with password `Passw0rd`
+- `ad_user1` in the `DemoTenantUsers` group with password `pass123`
+- `ad_admin1` in the `DemoTenantAdmins` group with password `pass123`
 
 #### Adding an AD user
 
@@ -37,7 +37,7 @@ SSH_CMD=$(terraform output ad_server_ssh_command)
 $SSH_CMD sudo docker exec samdom samba-tool group add DemoTenantAdmins
 
 # Create the user
-$SSH_CMD sudo docker exec samdom samba-tool user create demo_user Passw0rd
+$SSH_CMD sudo docker exec samdom samba-tool user create demo_user pass123
 
 # Add user to the group
 $SSH_CMD sudo docker exec samdom samba-tool group addmembers DemoTenantAdmins demo_user
@@ -57,20 +57,20 @@ Tenant Settings
   -> External User Groups: CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com | Member
 ```
 
-- Login to BlueData as `admin1/Passw0rd` - you should be taken to the Demo Tenant and have 'Admin' privileges
+- Login to BlueData as `admin1/pass123` - you should be taken to the Demo Tenant and have 'Admin' privileges
 - Create a new user (see below)
-- Login to BlueData as `user1/Passw0rd` - you should be taken to the Demo Tenant and have 'Member' privileges
+- Login to BlueData as `user1/pass123` - you should be taken to the Demo Tenant and have 'Member' privileges
 
 #### Provision Cluster
 
-- Login as AD credentials `ad_user1/Passw0rd`
+- Login as AD credentials `ad_user1/pass123`
 - Provision a spark cluster (e.g. `bluedata/spark231juphub7x-ssl`) - you only need 1 small Jupyterhub node
 - Click the Jupyterhub URL to launch jupyter
-- Login with AD credentials `ad_user1/Passw0rd`
-- SSH into the cluster `ssh ad_user1@THE_IP_ADDR -p THE_PORT` - use your AD password: `Passw0rd` 
+- Login with AD credentials `ad_user1/pass123`
+- SSH into the cluster `ssh ad_user1@THE_IP_ADDR -p THE_PORT` - use your AD password: `pass123` 
   - try `groups` to list your AD groups 
   - try `sudo ls /` you should be denied after entering your password
-- SSH into the cluster `ssh ad_admin1@THE_IP_ADDR -p THE_PORT` - use your AD password: `Passw0rd` 
+- SSH into the cluster `ssh ad_admin1@THE_IP_ADDR -p THE_PORT` - use your AD password: `pass123` 
   - try `groups` to list your AD groups
   - try `sudo ls /` you should be allowed to sudo due to the Tentant setting
 

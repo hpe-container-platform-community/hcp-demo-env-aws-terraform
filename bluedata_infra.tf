@@ -281,15 +281,18 @@ resource "aws_instance" "ad_server" {
     destination   = "/home/centos/ad_user_setup.sh"
     content       = <<-EOT
      #!/bin/bash
+
+     # allow weak passwords - easier to demo
+     samba-tool domain passwordsettings set --complexity=off
     
      # Create DemoTenantUsers group and a user ad_user1
      samba-tool group add DemoTenantUsers
-     samba-tool user create ad_user1 Passw0rd
+     samba-tool user create ad_user1 pass123
      samba-tool group addmembers DemoTenantUsers ad_user1
 
      # Create DemoTenantAdmins group and a user ad_admin1
      samba-tool group add DemoTenantAdmins
-     samba-tool user create ad_admin1 Passw0rd
+     samba-tool user create ad_admin1 pass123
      samba-tool group addmembers DemoTenantAdmins ad_admin1
     EOT
   }
