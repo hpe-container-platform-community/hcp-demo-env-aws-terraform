@@ -25,7 +25,7 @@ This project has been tested on Linux and OSX client machines
 
 ### Instructions
 
-#### Setup AWS Env and Install BlueData
+#### Setup variables and terraform
 
 ```
 # ensure you have setup your aws credentials (alternatively use 'aws configure' 
