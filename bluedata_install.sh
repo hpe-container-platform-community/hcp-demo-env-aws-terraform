@@ -133,7 +133,7 @@ done
 # Gateway
 #
 
-if [[ "$SELINUX_DISABLED" eq "True" ]];
+if [[ "$SELINUX_DISABLED" == "True" ]];
 then
    echo 'Disabling SELINUX on the Gateway host'
    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
@@ -149,7 +149,7 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PU
 #
 
 
-if [[ "$SELINUX_DISABLED" eq "True" ]];
+if [[ "$SELINUX_DISABLED" == "True" ]];
 then
    echo 'Disabling SELINUX on the Controller host'
    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
@@ -164,7 +164,7 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
 #
 
 for WRKR in ${WRKR_PUB_IPS[@]}; do 
-   if [[ "$SELINUX_DISABLED" eq "True" ]];
+   if [[ "$SELINUX_DISABLED" == "True" ]];
    then
       echo "Disabling SELINUX on the worker host $WRKR"
       ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
