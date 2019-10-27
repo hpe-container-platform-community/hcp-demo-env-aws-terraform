@@ -21,12 +21,17 @@ variable "nfs_instance_type" { default = "t2.small" }
 variable "ad_instance_type" { default = "t2.small" }
 
 variable "epic_dl_url" { }
+variable "selinux_disabled" { default = false }
 
 variable "ec2_shutdown_schedule_expression" { default = "cron(0 20 ? * MON-FRI *)" } # UTC time
 variable "ec2_shutdown_schedule_is_enabled" { default = false }
 
 variable "nfs_server_enabled" { default = false }
 variable "ad_server_enabled" { default = true }
+
+output "selinux_disabled" {
+  value = "${var.selinux_disabled}"
+}
 
 output "ssh_pub_key_path" {
   value = "${var.ssh_pub_key_path}"

@@ -13,13 +13,20 @@ LOCAL_SSH_PRV_KEY_PATH=$(cat output.json | python3 -c 'import json,sys;obj=json.
 [ "$LOCAL_SSH_PUB_KEY_PATH" ] || ( echo "ERROR: LOCAL_SSH_PUB_KEY_PATH is empty" && exit 1 )
 [ "$LOCAL_SSH_PRV_KEY_PATH" ] || ( echo "ERROR: LOCAL_SSH_PRV_KEY_PATH is empty" && exit 1 )
 
-# CLIENT_CIDR_BLOCK=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["client_cidr_block"]["value"])') 
+EPIC_DL_URL="$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_dl_url"]["value"])')"
+EPIC_FILENAME="$(echo ${EPIC_DL_URL##*/} | cut -d? -f1)"
 
-EPIC_DL_URL=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_dl_url"]["value"])') 
-EPIC_FILENAME=$(echo "${EPIC_DL_URL##*/}")
+echo EPIC_DL_URL=$EPIC_DL_URL
+echo EPIC_FILENAME=$EPIC_FILENAME
 
 [ "$EPIC_DL_URL" ] || ( echo "ERROR: EPIC_DL_URL is empty" && exit 1 )
 [ "$EPIC_FILENAME" ] || ( echo "ERROR: EPIC_FILENAME is empty" && exit 1 )
+
+
+SELINUX_DISABLED="$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["selinux_disabled"]["value"])')"
+echo SELINUX_DISABLED=$SELINUX_DISABLED
+[ "$SELINUX_DISABLED" ] || ( echo "ERROR: SELINUX_DISABLED is empty" && exit 1 )
+
 
 CTRL_PRV_IP=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_private_ip"]["value"])') 
 CTRL_PUB_IP=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_public_ip"]["value"])') 
@@ -126,6 +133,12 @@ done
 # Gateway
 #
 
+if [[ "$SELINUX_DISABLED" eq "True" ]];
+then
+   echo 'Disabling SELINUX on the Gateway host'
+   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
+fi
+
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "sudo yum update -y"
 # if the reboot causes ssh to terminate with an error, ignore it
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "nohup sudo reboot </dev/null &" || true
@@ -134,6 +147,13 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PU
 #
 # Controller
 #
+
+
+if [[ "$SELINUX_DISABLED" eq "True" ]];
+then
+   echo 'Disabling SELINUX on the Controller host'
+   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
+fi
 
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "sudo yum update -y"
 # if the reboot causes ssh to terminate with an error, ignore it
@@ -144,6 +164,12 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
 #
 
 for WRKR in ${WRKR_PUB_IPS[@]}; do 
+   if [[ "$SELINUX_DISABLED" eq "True" ]];
+   then
+      echo "Disabling SELINUX on the worker host $WRKR"
+      ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
+   fi
+
    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "sudo yum update -y"
    # if the reboot causes ssh to terminate with an error, ignore it
    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
@@ -173,7 +199,7 @@ done
 
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
 
-   curl -s -o ${EPIC_FILENAME} ${EPIC_DL_URL}
+   curl -s -o ${EPIC_FILENAME} "${EPIC_DL_URL}"
    chmod +x ${EPIC_FILENAME}
 
    # install EPIC
