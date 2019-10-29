@@ -46,6 +46,12 @@ vi ./bluedata_infra.tfvars
 terraform init
 ```
 
+If you are working with BD 5x we need a different initial configuration:
+
+```
+ln -s ./initial_bluedata_config_5x.py ./initial_bluedata_config.py
+```
+
 We are now ready to go ...
 
 ```
