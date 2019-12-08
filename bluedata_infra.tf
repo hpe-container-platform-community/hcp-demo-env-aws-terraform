@@ -393,6 +393,10 @@ output "nfs_server_private_ip" {
   value = "${aws_instance.nfs_server[0].private_ip}"
 }
 
+output "nfs_server_folder" {
+  value = "/nfsroot"
+}
+
 output "nfs_server_ssh_command" {
   value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.nfs_server[0].public_ip}"
 }
@@ -778,3 +782,21 @@ resource "local_file" "cli_running_ec2_instances" {
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running
   EOF  
 }
+
+
+resource "local_file" "ssh_controller" {
+  filename = "${path.module}/generated/ssh_controller.sh"
+  content = <<-EOF
+     #!/bin/bash
+     ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.controller.public_ip} "$@"
+  EOF
+}
+
+resource "local_file" "ssh_gateway" {
+  filename = "${path.module}/generated/ssh_gateway.sh"
+  content = <<-EOF
+     #!/bin/bash
+     ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.gateway.public_ip} "$@"
+  EOF
+}
+
