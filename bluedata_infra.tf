@@ -779,7 +779,10 @@ resource "local_file" "cli_start_ec2_instances" {
 resource "local_file" "cli_running_ec2_instances" {
   filename = "${path.module}/generated/cli_running_ec2_instances.sh"
   content = <<-EOF
-    aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running
+    echo Running: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Starting: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=pending --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Stopping: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopping --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Stopped: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopped --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
   EOF  
 }
 
