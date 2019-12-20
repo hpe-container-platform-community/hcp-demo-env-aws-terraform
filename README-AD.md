@@ -57,9 +57,9 @@ Tenant Settings
   -> External User Groups: CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com | Member
 ```
 
-- Login to BlueData as `admin1/pass123` - you should be taken to the Demo Tenant and have 'Admin' privileges
+- Login to BlueData as `ad_admin1/pass123` - you should be taken to the Demo Tenant and have 'Admin' privileges
 - Create a new user (see below)
-- Login to BlueData as `user1/pass123` - you should be taken to the Demo Tenant and have 'Member' privileges
+- Login to BlueData as `ad_user1/pass123` - you should be taken to the Demo Tenant and have 'Member' privileges
 
 #### Provision Cluster
 
