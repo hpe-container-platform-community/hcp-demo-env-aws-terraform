@@ -53,7 +53,8 @@ ec2_ami            = "ami-00846a67" # this is valid for the London region, chang
                                     #
                                     # Frankfurt  : ami-dd3c0f36 ?
                                     # Ireland    : ami-3548444c
-                                    # Paris      : ami-262e9f5b ?
+                                    # London     : ami-00846a67
+                                    # Paris      : ami-262e9f5b
                                     # Stockholm  : ami-b133bccf ?
                                     # 
 
