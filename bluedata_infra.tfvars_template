@@ -49,6 +49,8 @@ ec2_ami            = "ami-00846a67" # this is valid for the London region, chang
                                     # Ireland    : ami-3548444c
                                     # N.Virginia : ami-02eac2c0129f6376b ?
                                     # Ohio       : ami-e1496384 ?
+                                    # Paris      : ami-262e9f5b ?
+                                    # Stockholm  : ami-b133bccf ?
                                     # 
 
 # specify how many BlueData workers you want
