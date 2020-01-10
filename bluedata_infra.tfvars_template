@@ -46,9 +46,13 @@ check_client_ip  = "true"
 
 ec2_ami            = "ami-00846a67" # this is valid for the London region, change if required
                                     #
-                                    # Ireland    : ami-3548444c
-                                    # N.Virginia : ami-02eac2c0129f6376b ?
+                                    # N.Virginia : ami-9887c6e7 ?
                                     # Ohio       : ami-e1496384 ?
+                                    # N.Calif.   : ami-4826c22b ?
+                                    # Oregon     : ami-3ecc8f46 ?
+                                    #
+                                    # Frankfurt  : ami-dd3c0f36 ?
+                                    # Ireland    : ami-3548444c
                                     # Paris      : ami-262e9f5b ?
                                     # Stockholm  : ami-b133bccf ?
                                     # 
