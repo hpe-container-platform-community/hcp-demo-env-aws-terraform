@@ -289,6 +289,9 @@ resource "aws_instance" "ad_server" {
 
      # allow weak passwords - easier to demo
      samba-tool domain passwordsettings set --complexity=off
+     
+     # set password expiration to highest possible value, default is 43
+     samba-tool domain passwordsettings set --max-pwd-age=999
     
      # Create DemoTenantUsers group and a user ad_user1
      samba-tool group add DemoTenantUsers
