@@ -95,11 +95,11 @@ epic_dl_url          = "enter url"
 
 #selinux_disabled     = true
 
-# set to true to enable a nfs server, e.g. for ML OPS
+# set to true to enable a nfs server, required for ML OPS
 
 nfs_server_enabled = false
 
-# set to true to create an Active Directory server for BlueData
+# set to true to create an Active Directory server for BlueData, required for ML OPS
 
 ad_server_enabled = false
 
