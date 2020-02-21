@@ -103,6 +103,11 @@ nfs_server_enabled = false
 
 ad_server_enabled = false
 
+# Allow access to SSH instances from anywhere 
+# ** WARNING - only do this if you have strong authentication controls such as strong ssh keys **
+
+allow_ssh_from_world = false
+
 /* 
 
 Disabled functionality due to a bug in terraform: https://github.com/hashicorp/terraform/issues/4131

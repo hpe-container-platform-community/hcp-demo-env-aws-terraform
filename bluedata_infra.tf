@@ -29,6 +29,8 @@ variable "ec2_shutdown_schedule_is_enabled" { default = false }
 variable "nfs_server_enabled" { default = false }
 variable "ad_server_enabled" { default = true }
 
+variable "allow_ssh_from_world" { default = false }
+
 output "selinux_disabled" {
   value = "${var.selinux_disabled}"
 }
@@ -123,7 +125,6 @@ resource "aws_default_network_acl" "default" {
     to_port    = 0
   }
 
-
   # allow internet access from instances 
   ingress {
     protocol   = "tcp"
@@ -149,6 +150,19 @@ resource "aws_default_network_acl" "default" {
     Project = "${var.project_id}"
     user = "${var.user}"
   }
+}
+
+resource "aws_network_acl_rule" "allow_ssh_from_world" {
+
+  count = var.allow_ssh_from_world ? 1 : 0
+  network_acl_id = "${aws_default_network_acl.default.id}"
+
+  rule_number    = 200
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  from_port      = 22
+  to_port        = 22
 }
 
 /******************* Security Group ********************/
@@ -185,6 +199,20 @@ resource "aws_default_security_group" "main" {
     user = "${var.user}"
   }
 }
+
+resource "aws_security_group_rule" "allow_ssh_from_world" {
+
+  count = var.allow_ssh_from_world ? 1 : 0
+  security_group_id = "${aws_default_security_group.main.id}"
+
+  type            = "ingress"
+  from_port       = 0
+  to_port         = 22
+  protocol        = "tcp"
+  cidr_blocks     = [ "0.0.0.0/0" ]
+
+}
+
 
 /******************* Subnet ********************/
 
