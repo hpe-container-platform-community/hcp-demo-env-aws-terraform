@@ -220,7 +220,7 @@ ENDSSH
 # retrive controller ssh private key and save it locally
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > generated/controller.prv_key
 
-cat << EOF
+cat <<EOF>bluedata_install_output.txt
 
 
 *********************************************************
@@ -251,6 +251,9 @@ INSTRUCTIONS for completing the BlueData installation ...
    6. Click 'Install'
    7. Wait a few minutes
 
+** These instructions have been saved to "bluedata_install_output.txt" **
+
 
 EOF
+cat bluedata_install_output.txt
 
