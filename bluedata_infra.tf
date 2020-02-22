@@ -29,8 +29,6 @@ variable "ec2_shutdown_schedule_is_enabled" { default = false }
 variable "nfs_server_enabled" { default = false }
 variable "ad_server_enabled" { default = true }
 
-variable "allow_ssh_from_world" { default = false }
-
 output "selinux_disabled" {
   value = "${var.selinux_disabled}"
 }
@@ -114,6 +112,38 @@ resource "aws_vpc" "main" {
 resource "aws_default_network_acl" "default" {
   default_network_acl_id = "${aws_vpc.main.default_network_acl_id}"
   subnet_ids = [ "${aws_subnet.main.id}" ]
+
+  # allow client machine to have full access to all hosts
+  ingress {
+    protocol   = "-1"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "${var.client_cidr_block}"
+    from_port  = 0
+    to_port    = 0
+  }
+
+
+  # allow internet access from instances 
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  # allow response traffic from hosts to internet
+  egress {
+    protocol   = "-1"
+    rule_no    = 100
+    action     = "allow"
+    from_port  = 0
+    to_port    = 0
+    cidr_block = "0.0.0.0/0"
+  }
+
   tags = {
     Name = "${var.project_id}-default-network-acl"
     Project = "${var.project_id}"
@@ -121,109 +151,40 @@ resource "aws_default_network_acl" "default" {
   }
 }
 
-resource "aws_network_acl_rule" "client_ip_full_access" {
-
-  network_acl_id = "${aws_default_network_acl.default.id}"
-  protocol    = "-1"
-  rule_number = 100
-  rule_action = "allow"
-  cidr_block  = "${var.client_cidr_block}"
-  from_port   = 0
-  to_port     = 0
-}
-
-resource "aws_network_acl_rule" "internet_access_from_hosts" {
-
-  network_acl_id = "${aws_default_network_acl.default.id}"
-  protocol     = "tcp"
-  rule_number  = 110
-  rule_action  = "allow"
-  cidr_block   = "0.0.0.0/0"
-  from_port    = 1024
-  to_port      = 65535
-}
-
-resource "aws_network_acl_rule" "response_from_hosts" {
-
-  network_acl_id = "${aws_default_network_acl.default.id}"
-  egress      = "true"
-  protocol    = "-1"
-  rule_number = 100
-  rule_action = "allow"
-  from_port   = 0
-  to_port     = 0
-  cidr_block  = "0.0.0.0/0"
-}
-
-resource "aws_network_acl_rule" "allow_ssh_from_world" {
-
-  count = var.allow_ssh_from_world ? 1 : 0
-  network_acl_id = "${aws_default_network_acl.default.id}"
-
-  protocol       = "tcp"
-  rule_number    = 200
-  rule_action    = "allow"
-  cidr_block     = "0.0.0.0/0"
-  from_port      = 22
-  to_port        = 22
-}
-
 /******************* Security Group ********************/
 
 resource "aws_default_security_group" "main" {
   vpc_id      = "${aws_vpc.main.id}"
+
+  # allow client machine to have full access
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [ "${var.client_cidr_block}" ]
+  }
+
+  # allow full host to host access for all hosts within this security group
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+
   tags = {
     Name = "${var.project_id}-default-security-group"
     Project = "${var.project_id}"
     user = "${var.user}"
   }
 }
-
-resource "aws_security_group_rule" "client_ip_full_access" {
-
-  security_group_id = "${aws_default_security_group.main.id}"
-
-  type        = "ingress" 
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-  cidr_blocks = [ "${var.client_cidr_block}" ]
-}
-
-resource "aws_security_group_rule" "host_to_host_traffic" {
-
-  security_group_id = "${aws_default_security_group.main.id}"
-  
-  type        = "ingress"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-  self        = true
-}
-
-resource "aws_security_group_rule" "response_traffic" {
-
-  security_group_id = "${aws_default_security_group.main.id}"
-  
-  type            = "egress"
-  from_port       = 0
-  to_port         = 0
-  protocol        = "-1"
-  cidr_blocks     = ["0.0.0.0/0"]
-}
-
-resource "aws_security_group_rule" "allow_ssh_from_world" {
-
-  count = var.allow_ssh_from_world ? 1 : 0
-  security_group_id = "${aws_default_security_group.main.id}"
-
-  type            = "ingress"
-  from_port       = 22
-  to_port         = 22
-  protocol        = "tcp"
-  cidr_blocks     = [ "0.0.0.0/0" ]
-}
-
 
 /******************* Subnet ********************/
 
@@ -844,4 +805,3 @@ resource "local_file" "ssh_gateway" {
      ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.gateway.public_ip} "$@"
   EOF
 }
-
