@@ -3,6 +3,8 @@
 set -e # abort on error
 set -u # abort on undefined variable
 
+[[ -f bluedata_install_output.txt ]] && mv -f bluedata_install_output.txt bluedata_install_output.txt.old
+
 ###############################################################################
 # Set variables from terraform output
 ###############################################################################
