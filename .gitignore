@@ -11,3 +11,4 @@ output.json
 generated/
 tmp/
 log/
+.DS_Store
