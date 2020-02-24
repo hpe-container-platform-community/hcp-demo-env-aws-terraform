@@ -201,6 +201,11 @@ done
 
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
 
+   if [[ $(curl -o -I -L -s -w "%{http_code}" $EPIC_DL_URL) -ne 200 ]]; then
+     echo "$EPIC_DL_URL returned non 200 HTTP.  Quitting."
+     exit 1
+   fi
+     
    curl -s -o ${EPIC_FILENAME} "${EPIC_DL_URL}"
    chmod +x ${EPIC_FILENAME}
 
