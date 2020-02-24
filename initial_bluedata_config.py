@@ -1,1 +1,0 @@
-initial_bluedata_config_4x.py

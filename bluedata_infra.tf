@@ -1,5 +1,9 @@
 // Usage: terraform <action> -var-file="bluedata_infra.tfvars"
 
+terraform {
+  required_version = ">= 0.12.0"
+}
+
 variable "profile" { default = "default" }
 variable "region" { }
 variable "az" { }
@@ -45,6 +49,23 @@ output "epic_dl_url" {
   value = "${var.epic_dl_url}"
 }
 
+
+/******************* module ********************/
+
+module "nfs_server" {
+  source = "./modules/module-nfs-server"
+  project_id = var.project_id
+  user = var.user
+  ssh_prv_key_path = var.ssh_prv_key_path
+  nfs_ec2_ami = var.ec2_ami
+  nfs_instance_type = var.nfs_instance_type
+  nfs_server_enabled = var.nfs_server_enabled
+  key_name = aws_key_pair.main.key_name
+  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
+  subnet_id = aws_subnet.main.id
+}
+
+
 /******************* elastic ips ********************/
 
 resource "aws_eip" "controller" {
@@ -76,7 +97,7 @@ data "local_file" "ssh_pub_key" {
 /******************* verify client ip ********************/
 
 data "external" "example1" {
- program = [ "python3", "${path.module}/verify_client_ip.py", "${var.client_cidr_block}", "${var.check_client_ip}" ]
+ program = [ "python3", "${path.module}/scripts/verify_client_ip.py", "${var.client_cidr_block}", "${var.check_client_ip}" ]
 }
 
 output "client_cidr_block" {
@@ -351,59 +372,6 @@ output "ad_server_ssh_command" {
   value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.ad_server[0].public_ip}"
 }
 
-
-/******************* Instance: NFS Server (e.g. for ML OPS) ********************/
-
-resource "aws_instance" "nfs_server" {
-  ami                    = "${var.ec2_ami}"
-  instance_type          = "${var.nfs_instance_type}"
-  key_name               = "${aws_key_pair.main.key_name}"
-  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
-  subnet_id              = "${aws_subnet.main.id}"
-
-  count = "${var.nfs_server_enabled == true ? 1 : 0}"
-
-  root_block_device {
-    volume_type = "gp2"
-    volume_size = 400
-  }
-
-  tags = {
-    Name = "${var.project_id}-instance-nfs-server"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-  }
-
-  provisioner "remote-exec" {
-    connection {
-      type        = "ssh"
-      user        = "centos"
-      host        = "${aws_instance.nfs_server[0].public_ip}"
-      private_key = file("${var.ssh_prv_key_path}")
-    }
-    inline = [
-      "sudo yum -y install nfs-utils",
-      "sudo mkdir /nfsroot",
-      "echo '/nfsroot *(rw,no_root_squash,no_subtree_check)' | sudo tee /etc/exports",
-      "sudo exportfs -r",
-      "sudo systemctl enable nfs-server.service",
-      "sudo systemctl start nfs-server.service"
-    ]
-  }
-}
-
-output "nfs_server_private_ip" {
-  value = "${aws_instance.nfs_server[0].private_ip}"
-}
-
-output "nfs_server_folder" {
-  value = "/nfsroot"
-}
-
-output "nfs_server_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.nfs_server[0].public_ip}"
-}
-
 /******************* Instance: Gateway ********************/
 
 resource "aws_instance" "gateway" {
@@ -615,152 +583,6 @@ output "workers_ssh" {
   }
 }
 
-/* Disabling this functinoality due to a bug in terraform: https://github.com/hashicorp/terraform/issues/4131
-
-//////////////////// Cloudwatch /////////////////////
-
-// Adapted from: https://gist.github.com/picadoh/815c11361d1a88419ea16b14fe044e85
-
-# create a lambda script for stopping the EC2 instances created by this terraform script
-
-resource "local_file" "stop_instances_lambda" {
-  filename = "${path.module}/generated/stop_instances_lambda.py"
-  content = <<-EOF
-  import boto3
-
-  # Boto Connection
-  ec2 = boto3.resource('ec2', '${var.region}')
-
-  def lambda_handler(event, context):
-    instance_ids = ["${aws_instance.controller.id}","${aws_instance.gateway.id}","${join("\",\"", aws_instance.workers.*.id)}"]
-    stopping_instances = ec2.instances.filter(InstanceIds=instance_ids).stop()
-  EOF
-}
-
-# lambda requires the script to be uploaded in a zip file
-
-data "archive_file" "stop_scheduler" {
-  type        = "zip"
-  depends_on  = ["local_file.stop_instances_lambda"]
-  source_file = "${path.module}/generated/stop_instances_lambda.py"
-  output_path = "${path.module}/generated/stop_instances_lambda.zip"
-}
-
-resource "aws_lambda_function" "ec2_stop_scheduler_lambda" {
-  filename = "${data.archive_file.stop_scheduler.output_path}"
-  function_name = "stop_instances_lambda"
-  role = "${aws_iam_role.ec2_stop_scheduler.arn}"
-  handler = "stop_instances_lambda.lambda_handler"
-  runtime = "python2.7"
-  timeout = 300
-  source_code_hash = "${data.archive_file.stop_scheduler.output_base64sha256}"
-
-  tags = {
-    Name = "${var.project_id}-aws-lambda-function"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-  }
-}
-
-### IAM Role and Policy - allows Lambda function to describe and stop EC2 instances
-
-resource "aws_iam_role" "ec2_stop_scheduler" {
-  name = "${var.project_id}-ec2_stop_scheduler"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-
-  tags = {
-    Name = "${var.project_id}-aws-iam-role"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-  }
-}
-
-data "aws_iam_policy_document" "ec2_stop_scheduler" {
-  statement {
-      effect = "Allow"
-      actions = [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ]
-      resources = [ "arn:aws:logs:*:*:*" ]
-  }
-  statement {
-      effect = "Allow"
-      actions = ["ec2:Describe*","ec2:Stop*"]
-      resources = [ "*" ]
-  }
-}
-
-resource "aws_iam_policy" "ec2_stop_scheduler" {
-  name = "${var.project_id}-ec2_access_scheduler"
-  path = "/"
-  policy = "${data.aws_iam_policy_document.ec2_stop_scheduler.json}"
-}
-
-resource "aws_iam_role_policy_attachment" "ec2_access_scheduler" {
-  role       = "${aws_iam_role.ec2_stop_scheduler.name}"
-  policy_arn = "${aws_iam_policy.ec2_stop_scheduler.arn}"
-}
-
-### Cloudwatch Events ###
-
-resource "aws_cloudwatch_event_rule" "stop_instances_event_rule" {
-  name = "${var.project_id}-stop_instances_event_rule"
-  description = "Stops running EC2 instances"
-
-  # note schedules are UTC time zone - https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
-  schedule_expression = "${var.ec2_shutdown_schedule_expression}"
-  is_enabled = "${var.ec2_shutdown_schedule_is_enabled}"
-  depends_on = ["aws_lambda_function.ec2_stop_scheduler_lambda"]
-
-  tags = {
-    Name = "${var.project_id}-aws-cloudwatch-event-rule"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-  }
-}
-
-resource "aws_cloudwatch_event_target" "stop_instances_event_target" {
-  target_id = "stop_instances_lambda_target"
-  rule = "${aws_cloudwatch_event_rule.stop_instances_event_rule.name}"
-  arn = "${aws_lambda_function.ec2_stop_scheduler_lambda.arn}"
-}
-
-# AWS Lambda Permissions: Allow CloudWatch to execute the Lambda Functions
-
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_stop_scheduler" {
-  statement_id = "AllowExecutionFromCloudWatch"
-  action = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.ec2_stop_scheduler_lambda.function_name}"
-  principal = "events.amazonaws.com"
-  source_arn = "${aws_cloudwatch_event_rule.stop_instances_event_rule.arn}"
-}
-
-output "ec2_shutdown_schedule_expression" {
-  value = "${var.ec2_shutdown_schedule_expression}"
-}
-
-output "ec2_shutdown_schedule_is_enabled" {
-  value = "${var.ec2_shutdown_schedule_is_enabled}"
-}
-
-*/
-
 //////////////////// Utility scripts  /////////////////////
 
 /// instance start/stop/status
@@ -768,24 +590,24 @@ output "ec2_shutdown_schedule_is_enabled" {
 resource "local_file" "cli_stop_ec2_instances" {
   filename = "${path.module}/generated/cli_stop_ec2_instances.sh"
   content =  <<-EOF
-    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} 
+    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} 
   EOF
 }
 
 resource "local_file" "cli_start_ec2_instances" {
   filename = "${path.module}/generated/cli_start_ec2_instances.sh"
   content = <<-EOF
-    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)}
+    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)}
   EOF
 }
 
 resource "local_file" "cli_running_ec2_instances" {
   filename = "${path.module}/generated/cli_running_ec2_instances.sh"
   content = <<-EOF
-    echo Running: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
-    echo Starting: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=pending --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
-    echo Stopping: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopping --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
-    echo Stopped: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.nfs_server.*.id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopped --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Running: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Starting: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=pending --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Stopping: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopping --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Stopped: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopped --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
   EOF  
 }
 

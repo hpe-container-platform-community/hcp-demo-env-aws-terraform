@@ -1,13 +1,13 @@
 .terraform/
-bluedata_infra.tfvars
+etc/bluedata_infra.tfvars
 terraform.tfstate
 terraform.tfstate.backup
 public-ip-gateway.txt
 post_provision_steps.sh
-output.log
 controller_rsa.prv
 hostdetails.txt
 controller.prv_key
 output.json
 generated/
-bluedata_install_output.txt
+tmp/
+log/

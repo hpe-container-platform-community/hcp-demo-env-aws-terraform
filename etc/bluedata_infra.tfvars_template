@@ -103,26 +103,3 @@ nfs_server_enabled = false
 
 ad_server_enabled = false
 
-# Allow access to SSH instances from anywhere 
-# ** WARNING - only do this if you have strong authentication controls such as strong ssh keys **
-
-allow_ssh_from_world = false
-
-/* 
-
-Disabled functionality due to a bug in terraform: https://github.com/hashicorp/terraform/issues/4131
-
-#
-# cloudwatch 
-#
-
-# check every hour between 8pm to 8am MON to FRI for any running EC2 instances
-# that were started by this terraform project and halt them
-
-ec2_shutdown_schedule_expression = "cron(0 20-23,0-8 ? * MON-FRI *)" # UTC time
-
-# set to false to prevent automatic halting of instances
-
-ec2_shutdown_schedule_is_enabled = true
-
-*/
