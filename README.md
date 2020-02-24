@@ -124,7 +124,7 @@ Run `terraform output nfs_server_private_ip` to get the NFS server ip address.  
 
 ### Setup an Active Directory (optional)
 
-See [./README-AD.md](./README-AD.md) for more information.
+See [./docs/README-AD.md](./docs/README-AD.md) for more information.
 
 ### Client IP changed?
 
