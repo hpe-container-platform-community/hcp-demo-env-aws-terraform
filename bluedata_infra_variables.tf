@@ -25,9 +25,7 @@ variable "EC2_CENTOS7_AMIS" {
   } 
 } 
 // USAGE:
-// var.ec2_ami = var.EC2_CENTOS7_AMIS[var.region]
-
-variable "ec2_ami" { }
+// ec2_ami = var.EC2_CENTOS7_AMIS[var.region]
 
 variable "ssh_prv_key_path" {}
 variable "ssh_pub_key_path" {}

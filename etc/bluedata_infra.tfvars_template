@@ -39,29 +39,6 @@ subnet_cidr_block  = "10.1.0.0/24"
 
 check_client_ip  = "true" 
 
-
-#
-# gateway, controller and workers all share the same ami and ssh pubic key
-#
-
-ec2_ami            = "ami-00846a67" # this is valid for the London region, change if required
-                                    #
-                                    # N.Virginia : ami-9887c6e7 ?
-                                    # Ohio       : ami-e1496384 ?
-                                    # N.Calif.   : ami-4826c22b ?
-                                    # Oregon     : ami-3ecc8f46 ?
-                                    #
-                                    # Singapore  : ami-8e0205f2
-                                    #
-                                    # Frankfurt  : ami-dd3c0f36 ?
-                                    # Ireland    : ami-3548444c
-                                    # London     : ami-00846a67
-                                    # Paris      : ami-262e9f5b
-                                    # Stockholm  : ami-b133bccf ?
-                                    # 
-                                    # Find more at: 
-                                    # https://console.aws.amazon.com/ec2/home?region=us-east-1#Images:visibility=public-images;search=aws-marketplace/CentOS%20Linux%207%20x86_64%20HVM%20EBS%20ENA%201805_01-b7ee8a69-ee97-4a49-9e68-afaee216db2e-ami-77ec9308.4
-
 # specify how many BlueData workers you want
 worker_count = 3
 

@@ -20,7 +20,7 @@ resource "aws_instance" "rdp_server" {
   key_name               = var.key_name
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id              = var.subnet_id
-  user_data = data.template_file.userdata_win.rendered
+  user_data              = data.template_file.userdata_win.rendered
 
   count = var.rdp_server_enabled == true ? 1 : 0
 
