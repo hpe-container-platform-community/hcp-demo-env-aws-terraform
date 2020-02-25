@@ -1,7 +1,10 @@
 .terraform/
-etc/bluedata_infra.tfvars
+.terraform*
+
 terraform.tfstate
 terraform.tfstate.backup
+
+etc/bluedata_infra.tfvars
 public-ip-gateway.txt
 post_provision_steps.sh
 controller_rsa.prv

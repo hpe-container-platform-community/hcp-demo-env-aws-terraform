@@ -103,3 +103,5 @@ nfs_server_enabled = false
 
 ad_server_enabled = false
 
+rdp_server_enabled = false
+

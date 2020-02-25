@@ -7,13 +7,13 @@ variable "user" {
 variable "ssh_prv_key_path" {
     type = string
 }
-variable "nfs_ec2_ami" { 
+variable "ad_ec2_ami" { 
     type = string
 }
-variable "nfs_instance_type" { 
+variable "ad_instance_type" { 
     type = string
 }
-variable "nfs_server_enabled" { 
+variable "ad_server_enabled" { 
     type = bool
 }
 variable "key_name" { 

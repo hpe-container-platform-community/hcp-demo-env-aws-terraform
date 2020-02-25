@@ -4,68 +4,6 @@ terraform {
   required_version = ">= 0.12.0"
 }
 
-variable "profile" { default = "default" }
-variable "region" { }
-variable "az" { }
-variable "project_id" { }
-variable "user" { }
-variable "client_cidr_block" {  }
-variable "check_client_ip" { default = "true" }
-variable "vpc_cidr_block" { }
-variable "subnet_cidr_block" { }
-variable "ec2_ami" { }
-variable "ssh_prv_key_path" {}
-variable "ssh_pub_key_path" {}
-variable "worker_count" { default = 3 }
-
-variable "gtw_instance_type" { default = "m4.2xlarge" }
-variable "ctr_instance_type" { default = "m4.2xlarge" }
-variable "wkr_instance_type" { default = "m4.2xlarge" }
-variable "nfs_instance_type" { default = "t2.small" }
-variable "ad_instance_type" { default = "t2.small" }
-
-variable "epic_dl_url" { }
-variable "selinux_disabled" { default = false }
-
-variable "ec2_shutdown_schedule_expression" { default = "cron(0 20 ? * MON-FRI *)" } # UTC time
-variable "ec2_shutdown_schedule_is_enabled" { default = false }
-
-variable "nfs_server_enabled" { default = false }
-variable "ad_server_enabled" { default = true }
-
-output "selinux_disabled" {
-  value = "${var.selinux_disabled}"
-}
-
-output "ssh_pub_key_path" {
-  value = "${var.ssh_pub_key_path}"
-}
-
-output "ssh_prv_key_path" {
-  value = "${var.ssh_prv_key_path}"
-}
-
-output "epic_dl_url" {
-  value = "${var.epic_dl_url}"
-}
-
-
-/******************* module ********************/
-
-module "nfs_server" {
-  source = "./modules/module-nfs-server"
-  project_id = var.project_id
-  user = var.user
-  ssh_prv_key_path = var.ssh_prv_key_path
-  nfs_ec2_ami = var.ec2_ami
-  nfs_instance_type = var.nfs_instance_type
-  nfs_server_enabled = var.nfs_server_enabled
-  key_name = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
-  subnet_id = aws_subnet.main.id
-}
-
-
 /******************* elastic ips ********************/
 
 resource "aws_eip" "controller" {
@@ -98,10 +36,6 @@ data "local_file" "ssh_pub_key" {
 
 data "external" "example1" {
  program = [ "python3", "${path.module}/scripts/verify_client_ip.py", "${var.client_cidr_block}", "${var.check_client_ip}" ]
-}
-
-output "client_cidr_block" {
- value = "${var.client_cidr_block}"
 }
 
 /******************* setup region and az ********************/
@@ -275,102 +209,6 @@ resource "aws_key_pair" "main" {
   public_key = "${data.local_file.ssh_pub_key.content}"
 }
 
-/******************* Instance: AD Server ********************/
-
-resource "aws_instance" "ad_server" {
-  ami                    = "${var.ec2_ami}"
-  instance_type          = "${var.ad_instance_type}"
-  key_name               = "${aws_key_pair.main.key_name}"
-  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
-  subnet_id              = "${aws_subnet.main.id}"
-
-  count = "${var.ad_server_enabled == true ? 1 : 0}"
-
-  root_block_device {
-    volume_type = "gp2"
-    volume_size = 400
-  }
-
-  tags = {
-    Name = "${var.project_id}-instance-ad-server"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-  }
-
-  provisioner "file" {
-    connection {
-      type        = "ssh"
-      user        = "centos"
-      host        = "${aws_instance.ad_server[0].public_ip}"
-      private_key = file("${var.ssh_prv_key_path}")
-    }
-    destination   = "/home/centos/ad_user_setup.sh"
-    content       = <<-EOT
-     #!/bin/bash
-
-     # allow weak passwords - easier to demo
-     samba-tool domain passwordsettings set --complexity=off
-     
-     # set password expiration to highest possible value, default is 43
-     samba-tool domain passwordsettings set --max-pwd-age=999
-    
-     # Create DemoTenantUsers group and a user ad_user1
-     samba-tool group add DemoTenantUsers
-     samba-tool user create ad_user1 pass123
-     samba-tool group addmembers DemoTenantUsers ad_user1
-
-     # Create DemoTenantAdmins group and a user ad_admin1
-     samba-tool group add DemoTenantAdmins
-     samba-tool user create ad_admin1 pass123
-     samba-tool group addmembers DemoTenantAdmins ad_admin1
-    EOT
-  }
-
-  provisioner "remote-exec" {
-    connection {
-      type        = "ssh"
-      user        = "centos"
-      host        = "${aws_instance.ad_server[0].public_ip}"
-      private_key = file("${var.ssh_prv_key_path}")
-    }
-    inline = [
-      "sudo yum install -y docker openldap-clients",
-      "sudo service docker start",
-      "sudo systemctl enable docker",
-      <<EOT
-      sudo docker run --privileged --restart=unless-stopped \
-       -p 53:53 -p 53:53/udp -p 88:88 -p 88:88/udp -p 135:135 -p 137-138:137-138/udp -p 139:139 -p 389:389 \
-       -p 389:389/udp -p 445:445 -p 464:464 -p 464:464/udp -p 636:636 -p 1024-1044:1024-1044 -p 3268-3269:3268-3269 \
-       -e "SAMBA_DOMAIN=samdom" \
-       -e "SAMBA_REALM=samdom.example.com" \
-       -e "SAMBA_ADMIN_PASSWORD=5ambaPwd@" \
-       -e "ROOT_PASSWORD=R00tPwd@" \
-       -e "LDAP_ALLOW_INSECURE=true" \
-       -e "SAMBA_HOST_IP=$(hostname --all-ip-addresses |cut -f 1 -d' ')" \
-       -v /home/centos/ad_user_setup.sh:/usr/local/bin/custom.sh \
-       --name samdom \
-       --dns 127.0.0.1 \
-       -d \
-       --entrypoint "/bin/bash" \
-       rsippl/samba-ad-dc \
-       -c "chmod +x /usr/local/bin/custom.sh &&. /init.sh app:start"
-      EOT
-      ,
-      "echo Done!"
-
-      // To connect ...
-      // LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no -x -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com'
-    ]
-  }
-}
-
-output "ad_server_private_ip" {
-  value = "${aws_instance.ad_server[0].private_ip}"
-}
-
-output "ad_server_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.ad_server[0].public_ip}"
-}
 
 /******************* Instance: Gateway ********************/
 
@@ -392,20 +230,6 @@ resource "aws_instance" "gateway" {
     user = "${var.user}"
   }
 }
-
-output "gateway_private_ip" {
-  value = "${aws_instance.gateway.private_ip}"
-}
-output "gateway_private_dns" {
-  value = "${aws_instance.gateway.private_dns}"
-}
-output "gateway_public_ip" {
-  value = "${aws_eip.gateway.public_ip}"
-}
-output "gateway_public_dns" {
-  value = "${aws_eip.gateway.public_dns}"
-}
-
 
 //////////////////// Instance: Controller /////////////////////
 
@@ -472,16 +296,6 @@ resource "aws_volume_attachment" "controller-volume-attachment-sdc" {
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true
-}
-
-# print IP address
-
-output "controller_public_ip" {
-  value = "${aws_eip.controller.public_ip}"
-}
-
-output "controller_private_ip" {
-  value = "${aws_instance.controller.private_ip}"
 }
 
 //////////////////// Instance: Workers /////////////////////
@@ -555,33 +369,47 @@ resource "aws_volume_attachment" "worker-volume-attachment-sdc" {
   force_detach = true
 }
 
-output "workers_public_ip" {
-  value = ["${aws_instance.workers.*.public_ip}"]
-}
-output "workers_public_dns" {
-  value = ["${aws_instance.workers.*.public_dns}"]
-}
-output "workers_private_ip" {
-  value = ["${aws_instance.workers.*.private_ip}"]
-}
-output "workers_private_dns" {
-  value = ["${aws_instance.workers.*.private_dns}"]
+/******************* modules ********************/
+
+module "nfs_server" {
+  source = "./modules/module-nfs-server"
+  project_id = var.project_id
+  user = var.user
+  ssh_prv_key_path = var.ssh_prv_key_path
+  nfs_ec2_ami = var.ec2_ami
+  nfs_instance_type = var.nfs_instance_type
+  nfs_server_enabled = var.nfs_server_enabled
+  key_name = aws_key_pair.main.key_name
+  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
+  subnet_id = aws_subnet.main.id
 }
 
-output "controller_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.controller.public_ip}"
+module "ad_server" {
+  source = "./modules/module-ad-server"
+  project_id = var.project_id
+  user = var.user
+  ssh_prv_key_path = var.ssh_prv_key_path
+  ad_ec2_ami = var.ec2_ami
+  ad_instance_type = var.ad_instance_type
+  ad_server_enabled = var.ad_server_enabled
+  key_name = aws_key_pair.main.key_name
+  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
+  subnet_id = aws_subnet.main.id
 }
 
-output "gateway_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.gateway.public_ip}"
+module "rdp_server" {
+  source = "./modules/module-rdp-server"
+  project_id = var.project_id
+  user = var.user
+  ssh_prv_key_path = var.ssh_prv_key_path
+  rdp_ec2_ami = var.ec2_ami
+  rdp_instance_type = var.rdp_instance_type
+  rdp_server_enabled = var.rdp_server_enabled
+  key_name = aws_key_pair.main.key_name
+  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
+  subnet_id = aws_subnet.main.id
 }
 
-output "workers_ssh" {
-  value = {
-    for instance in aws_instance.workers:
-    instance.id => "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${instance.public_ip}" 
-  }
-}
 
 //////////////////// Utility scripts  /////////////////////
 
@@ -590,24 +418,24 @@ output "workers_ssh" {
 resource "local_file" "cli_stop_ec2_instances" {
   filename = "${path.module}/generated/cli_stop_ec2_instances.sh"
   content =  <<-EOF
-    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} 
+    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", module.ad_server.instance_id)} ${join(" ", aws_instance.workers.*.id)} 
   EOF
 }
 
 resource "local_file" "cli_start_ec2_instances" {
   filename = "${path.module}/generated/cli_start_ec2_instances.sh"
   content = <<-EOF
-    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)}
+    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", module.ad_server.instance_id)} ${join(" ", aws_instance.workers.*.id)}
   EOF
 }
 
 resource "local_file" "cli_running_ec2_instances" {
   filename = "${path.module}/generated/cli_running_ec2_instances.sh"
   content = <<-EOF
-    echo Running: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
-    echo Starting: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=pending --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
-    echo Stopping: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopping --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
-    echo Stopped: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", aws_instance.ad_server.*.id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopped --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Running: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", module.ad_server.instance_id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=running --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Starting: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", module.ad_server.instance_id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=pending --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Stopping: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", module.ad_server.instance_id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopping --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    echo Stopped: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", module.nfs_server.instance_id)} ${join(" ", module.ad_server.instance_id)} ${join(" ", aws_instance.workers.*.id)} --filter Name=instance-state-name,Values=stopped --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
   EOF  
 }
 
