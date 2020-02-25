@@ -29,7 +29,7 @@ resource "aws_eip" "gateway" {
 /******************* ssh pub key content ********************/
 
 data "local_file" "ssh_pub_key" {
-    filename = "${var.ssh_pub_key_path}"
+    filename = var.ssh_pub_key_path
 }
 
 /******************* verify client ip ********************/
@@ -41,18 +41,18 @@ data "external" "example1" {
 /******************* setup region and az ********************/
 
 provider "aws" {
-  profile = "${var.profile}"
-  region  = "${var.region}"
+  profile = var.profile
+  region  = var.region
 }
 
 data "aws_availability_zone" "main" {
-  name = "${var.az}"
+  name = var.az
 }
 
 /******************* VPC ********************/
 
 resource "aws_vpc" "main" {
-  cidr_block  = "${var.vpc_cidr_block}"
+  cidr_block  = var.vpc_cidr_block
   enable_dns_hostnames = true
 
   tags = {
@@ -65,15 +65,15 @@ resource "aws_vpc" "main" {
 /******************* Network ACL ********************/
 
 resource "aws_default_network_acl" "default" {
-  default_network_acl_id = "${aws_vpc.main.default_network_acl_id}"
-  subnet_ids = [ "${aws_subnet.main.id}" ]
+  default_network_acl_id = aws_vpc.main.default_network_acl_id
+  subnet_ids = [ aws_subnet.main.id ]
 
   # allow client machine to have full access to all hosts
   ingress {
     protocol   = "-1"
     rule_no    = 100
     action     = "allow"
-    cidr_block = "${var.client_cidr_block}"
+    cidr_block = var.client_cidr_block
     from_port  = 0
     to_port    = 0
   }
@@ -109,14 +109,14 @@ resource "aws_default_network_acl" "default" {
 /******************* Security Group ********************/
 
 resource "aws_default_security_group" "main" {
-  vpc_id      = "${aws_vpc.main.id}"
+  vpc_id      = aws_vpc.main.id
 
   # allow client machine to have full access
   ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = [ "${var.client_cidr_block}" ]
+    cidr_blocks = [ var.client_cidr_block ]
   }
 
   # allow full host to host access for all hosts within this security group
@@ -144,9 +144,9 @@ resource "aws_default_security_group" "main" {
 /******************* Subnet ********************/
 
 resource "aws_subnet" "main" {
-  vpc_id                  = "${aws_vpc.main.id}"
-  cidr_block              = "${var.subnet_cidr_block}"
-  availability_zone_id    = "${data.aws_availability_zone.main.zone_id}"
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.subnet_cidr_block
+  availability_zone_id    = data.aws_availability_zone.main.zone_id
   map_public_ip_on_launch = true
 
   tags = {
@@ -159,11 +159,11 @@ resource "aws_subnet" "main" {
 /******************* Route Table ********************/
 
 resource "aws_default_route_table" "main" {
-  default_route_table_id = "${aws_vpc.main.default_route_table_id}"
+  default_route_table_id = aws_vpc.main.default_route_table_id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.main.id}"
+    gateway_id = aws_internet_gateway.main.id
   }
 
   tags = {
@@ -174,26 +174,26 @@ resource "aws_default_route_table" "main" {
 }
 
 resource "aws_route_table_association" "main" {
-  subnet_id      = "${aws_subnet.main.id}"
-  route_table_id = "${aws_default_route_table.main.id}"
+  subnet_id      = aws_subnet.main.id
+  route_table_id = aws_default_route_table.main.id
 }
 
 /******************* Associate EIPs ********************/
 
 resource "aws_eip_association" "eip_assoc_controller" {
-  instance_id   = "${aws_instance.controller.id}"
-  allocation_id = "${aws_eip.controller.id}"
+  instance_id   = aws_instance.controller.id
+  allocation_id = aws_eip.controller.id
 }
 
 resource "aws_eip_association" "eip_assoc_gateway" {
-  instance_id   = "${aws_instance.gateway.id}"
-  allocation_id = "${aws_eip.gateway.id}"
+  instance_id   = aws_instance.gateway.id
+  allocation_id = aws_eip.gateway.id
 }
 
 /******************* Internet Gateway ********************/
 
 resource "aws_internet_gateway" "main" {
-  vpc_id = "${aws_vpc.main.id}"
+  vpc_id = aws_vpc.main.id
 
   tags = {
     Name = "${var.project_id}-internet-gateway"
@@ -213,11 +213,11 @@ resource "aws_key_pair" "main" {
 /******************* Instance: Gateway ********************/
 
 resource "aws_instance" "gateway" {
-  ami                    = "${var.ec2_ami}"
-  instance_type          = "${var.gtw_instance_type}"
-  key_name               = "${aws_key_pair.main.key_name}"
-  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
-  subnet_id              = "${aws_subnet.main.id}"
+  ami                    = var.EC2_CENTOS7_AMIS[var.region]
+  instance_type          = var.gtw_instance_type
+  key_name               = aws_key_pair.main.key_name
+  vpc_security_group_ids = [ aws_default_security_group.main.id ]
+  subnet_id              = aws_subnet.main.id
 
   root_block_device {
     volume_type = "gp2"
@@ -234,11 +234,11 @@ resource "aws_instance" "gateway" {
 //////////////////// Instance: Controller /////////////////////
 
 resource "aws_instance" "controller" {
-  ami                    = "${var.ec2_ami}"
-  instance_type          = "${var.ctr_instance_type}"
-  key_name               = "${aws_key_pair.main.key_name}"
-  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
-  subnet_id              = "${aws_subnet.main.id}"
+  ami                    = var.EC2_CENTOS7_AMIS[var.region]
+  instance_type          = var.ctr_instance_type
+  key_name               = aws_key_pair.main.key_name
+  vpc_security_group_ids = [ aws_default_security_group.main.id ]
+  subnet_id              = aws_subnet.main.id
 
   root_block_device {
     volume_type = "gp2"
@@ -255,7 +255,7 @@ resource "aws_instance" "controller" {
 # /dev/sdb
 
 resource "aws_ebs_volume" "controller-ebs-sdb" {
-  availability_zone = "${var.az}"
+  availability_zone = var.az
   size              = 512
   type              = "gp2"
 
@@ -268,8 +268,8 @@ resource "aws_ebs_volume" "controller-ebs-sdb" {
 
 resource "aws_volume_attachment" "controller-volume-attachment-sdb" {
   device_name = "/dev/sdb"
-  volume_id   = "${aws_ebs_volume.controller-ebs-sdb.id}"
-  instance_id = "${aws_instance.controller.id}"
+  volume_id   = aws_ebs_volume.controller-ebs-sdb.id
+  instance_id = aws_instance.controller.id
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true
@@ -278,7 +278,7 @@ resource "aws_volume_attachment" "controller-volume-attachment-sdb" {
 # /dev/sdc
 
 resource "aws_ebs_volume" "controller-ebs-sdc" {
-  availability_zone = "${var.az}"
+  availability_zone = var.az
   size              = 512
   type              = "gp2"
 
@@ -291,8 +291,8 @@ resource "aws_ebs_volume" "controller-ebs-sdc" {
 
 resource "aws_volume_attachment" "controller-volume-attachment-sdc" {
   device_name = "/dev/sdc"
-  volume_id   = "${aws_ebs_volume.controller-ebs-sdc.id}"
-  instance_id = "${aws_instance.controller.id}"
+  volume_id   = aws_ebs_volume.controller-ebs-sdc.id
+  instance_id = aws_instance.controller.id
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true
@@ -301,12 +301,12 @@ resource "aws_volume_attachment" "controller-volume-attachment-sdc" {
 //////////////////// Instance: Workers /////////////////////
 
 resource "aws_instance" "workers" {
-  count                  = "${var.worker_count}"
-  ami                    = "${var.ec2_ami}"
-  instance_type          = "${var.wkr_instance_type}"
-  key_name               = "${aws_key_pair.main.key_name}"
-  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
-  subnet_id              = "${aws_subnet.main.id}"
+  count                  = var.worker_count
+  ami                    = var.ec2_ami
+  instance_type          = var.wkr_instance_type
+  key_name               = aws_key_pair.main.key_name
+  vpc_security_group_ids = [ aws_default_security_group.main.id ]
+  subnet_id              = aws_subnet.main.id
 
   root_block_device {
     volume_type = "gp2"
@@ -323,8 +323,8 @@ resource "aws_instance" "workers" {
 # /dev/sdb
 
 resource "aws_ebs_volume" "worker-ebs-volumes-sdb" {
-  count             = "${var.worker_count}"
-  availability_zone = "${var.az}"
+  count             = var.worker_count
+  availability_zone = var.az
   size              = 1024
   type              = "gp2"
 
@@ -335,10 +335,10 @@ resource "aws_ebs_volume" "worker-ebs-volumes-sdb" {
 }
 
 resource "aws_volume_attachment" "worker-volume-attachment-sdb" {
-  count       = "${var.worker_count}"
+  count       = var.worker_count
   device_name = "/dev/sdb"
-  volume_id   = "${aws_ebs_volume.worker-ebs-volumes-sdb.*.id[count.index]}"
-  instance_id = "${aws_instance.workers.*.id[count.index]}"
+  volume_id   = aws_ebs_volume.worker-ebs-volumes-sdb.*.id[count.index]
+  instance_id = aws_instance.workers.*.id[count.index]
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true
@@ -347,8 +347,8 @@ resource "aws_volume_attachment" "worker-volume-attachment-sdb" {
 # /dev/sdc
 
 resource "aws_ebs_volume" "worker-ebs-volumes-sdc" {
-  count             = "${var.worker_count}"
-  availability_zone = "${var.az}"
+  count             = var.worker_count
+  availability_zone = var.az
   size              = 1024
   type              = "gp2"
 
@@ -360,10 +360,10 @@ resource "aws_ebs_volume" "worker-ebs-volumes-sdc" {
 }
 
 resource "aws_volume_attachment" "worker-volume-attachment-sdc" {
-  count       = "${var.worker_count}"
+  count       = var.worker_count
   device_name = "/dev/sdc"
-  volume_id   = "${aws_ebs_volume.worker-ebs-volumes-sdc.*.id[count.index]}"
-  instance_id = "${aws_instance.workers.*.id[count.index]}"
+  volume_id   = aws_ebs_volume.worker-ebs-volumes-sdc.*.id[count.index]
+  instance_id = aws_instance.workers.*.id[count.index]
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true
@@ -376,11 +376,11 @@ module "nfs_server" {
   project_id = var.project_id
   user = var.user
   ssh_prv_key_path = var.ssh_prv_key_path
-  nfs_ec2_ami = var.ec2_ami
+  nfs_ec2_ami = var.EC2_CENTOS7_AMIS[var.region]
   nfs_instance_type = var.nfs_instance_type
   nfs_server_enabled = var.nfs_server_enabled
   key_name = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
+  vpc_security_group_ids = [ aws_default_security_group.main.id ]
   subnet_id = aws_subnet.main.id
 }
 
@@ -389,11 +389,11 @@ module "ad_server" {
   project_id = var.project_id
   user = var.user
   ssh_prv_key_path = var.ssh_prv_key_path
-  ad_ec2_ami = var.ec2_ami
+  ad_ec2_ami = var.EC2_CENTOS7_AMIS[var.region]
   ad_instance_type = var.ad_instance_type
   ad_server_enabled = var.ad_server_enabled
   key_name = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
+  vpc_security_group_ids = [ aws_default_security_group.main.id ]
   subnet_id = aws_subnet.main.id
 }
 
@@ -402,11 +402,11 @@ module "rdp_server" {
   project_id = var.project_id
   user = var.user
   ssh_prv_key_path = var.ssh_prv_key_path
-  rdp_ec2_ami = var.ec2_ami
+  rdp_ec2_ami = var.EC2_CENTOS7_AMIS[var.region]
   rdp_instance_type = var.rdp_instance_type
   rdp_server_enabled = var.rdp_server_enabled
   key_name = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ "${aws_default_security_group.main.id}" ]
+  vpc_security_group_ids = [ aws_default_security_group.main.id ]
   subnet_id = aws_subnet.main.id
 }
 
