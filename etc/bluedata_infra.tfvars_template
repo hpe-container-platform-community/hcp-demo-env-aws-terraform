@@ -103,5 +103,10 @@ nfs_server_enabled = false
 
 ad_server_enabled = false
 
+# windows rdp server
+
 rdp_server_enabled = false
+rdp_ec2_ami = "ami-044bb8de8c5a4ebde" # Paris
+windows_username = "bluedata"
+windows_password = "changeme"
 

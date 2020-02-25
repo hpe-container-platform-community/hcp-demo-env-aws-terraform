@@ -402,12 +402,14 @@ module "rdp_server" {
   project_id = var.project_id
   user = var.user
   ssh_prv_key_path = var.ssh_prv_key_path
-  rdp_ec2_ami = var.EC2_CENTOS7_AMIS[var.region]
+  rdp_ec2_ami = var.rdp_ec2_ami # TODO: switch to var.EC2_WINDOWS_AMIS[var.region]
   rdp_instance_type = var.rdp_instance_type
   rdp_server_enabled = var.rdp_server_enabled
   key_name = aws_key_pair.main.key_name
   vpc_security_group_ids = [ aws_default_security_group.main.id ]
   subnet_id = aws_subnet.main.id
+  windows_username = var.windows_username
+  windows_password = var.windows_password
 }
 
 

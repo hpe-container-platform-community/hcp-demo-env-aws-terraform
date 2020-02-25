@@ -70,37 +70,37 @@ output "workers_ssh" {
 // NFS Server Output
 
 output "nfs_server_private_ip" {
-  value = module.nfs_server.nfs_server_private_ip
+  value = module.nfs_server.private_ip
 }
 
 output "nfs_server_folder" {
-  value = module.nfs_server.nfs_server_folder
+  value = module.nfs_server.nfs_folder
 }
 
 output "nfs_server_ssh_command" {
-  value = module.nfs_server.nfs_server_ssh_command
+  value = module.nfs_server.ssh_command
 }
 
 // AD Server Output
 
 output "ad_server_private_ip" {
-  value = module.ad_server.ad_server_private_ip
+  value = module.ad_server.private_ip
 }
 
 output "ad_server_ssh_command" {
-  value = module.ad_server.ad_server_ssh_command
+  value = module.ad_server.ssh_command
 }
 
 // RDP Server Output
 
 output "rdp_server_private_ip" {
-  value = module.rdp_server.rdp_server_private_ip
+  value = module.rdp_server.private_ip
 }
 
 output "rdp_server_public_ip" {
-  value = module.rdp_server.rdp_server_public_ip
+  value = module.rdp_server.public_ip
 }
 
 output "rdp_server_ssh_command" {
-  value = module.rdp_server.rdp_server_ssh_command
+  value = module.rdp_server.ssh_command
 }

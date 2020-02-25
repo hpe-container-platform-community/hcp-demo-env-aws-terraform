@@ -10,7 +10,7 @@ variable "subnet_cidr_block" { }
 
 // TODO - EC2_CENTOS7_AMIS is currently unused
 variable "EC2_CENTOS7_AMIS" {
-  # Find more https://console.aws.amazon.com/ec2/home?region=us-east-1#Images:visibility=public-images;search=aws-marketplace/CentOS%20Linux%207%20x86_64%20HVM%20EBS%20ENA%201805_01-b7ee8a69-ee97-4a49-9e68-afaee216db2e-ami-77ec9308.4
+  # Find more at https://console.aws.amazon.com/ec2/home?region=us-east-1#Images:visibility=public-images;search=aws-marketplace/CentOS%20Linux%207%20x86_64%20HVM%20EBS%20ENA%201805_01-b7ee8a69-ee97-4a49-9e68-afaee216db2e-ami-77ec9308.4
   default = { 
     us-east-1      = "ami-9887c6e7" # N.Virginia
     us-east-2      = "ami-e1496384" # Ohio
@@ -45,4 +45,8 @@ variable "selinux_disabled" { default = false }
 
 variable "nfs_server_enabled" { default = false }
 variable "ad_server_enabled" { default = true }
+
 variable "rdp_server_enabled" { default = false }
+variable "rdp_ec2_ami" { }
+variable "windows_username" { }
+variable "windows_password" { }
