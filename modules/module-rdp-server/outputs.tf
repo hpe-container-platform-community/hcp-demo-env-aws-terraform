@@ -1,9 +1,9 @@
 output "private_ip" {
-  value = "${aws_instance.rdp_server[0].private_ip}"
+  value = aws_instance.rdp_server[0].private_ip
 }
 
 output "public_ip" {
-  value = "${aws_instance.rdp_server[0].public_ip}"
+  value = aws_instance.rdp_server[0].public_ip
 }
 
 output "instance_id" {

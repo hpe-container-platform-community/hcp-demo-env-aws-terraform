@@ -87,3 +87,12 @@ rdp_ec2_ami = "ami-044bb8de8c5a4ebde" # Paris
 windows_username = "bluedata"
 windows_password = "changeme"
 
+# If you would like to allow ssh or rdp from any source, set the following variables
+
+# NOTE: 
+# If you receive the error `Error deleting ingress entry: InvalidNetworkAclEntry.NotFound`
+# when running `terraform apply` after changing these variables, run `terraform apply` a 
+# second time
+
+allow_ssh_from_world = false
+allow_rdp_from_world = false

@@ -24,7 +24,7 @@ resource "aws_instance" "nfs_server" {
     connection {
       type        = "ssh"
       user        = "centos"
-      host        = "${aws_instance.nfs_server[0].public_ip}"
+      host        = aws_instance.nfs_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
     }
     inline = [

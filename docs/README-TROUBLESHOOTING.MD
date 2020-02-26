@@ -9,10 +9,4 @@ Error: Error Deleting Network Acl Rule: InvalidNetworkAclEntry.NotFound: no ingr
 
 ```
 
-This may be the terraform state out of sync. You can delete specific states with `terraform state rm ...`.
-
-E.g.:
-
-```
-terraform state rm 'aws_security_group_rule.allow_ssh_from_world[0]'
-```
+This can usually be fixed by running `terraform apply ...` for a second time.

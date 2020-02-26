@@ -48,3 +48,11 @@ variable "rdp_server_enabled" { default = false }
 variable "rdp_ec2_ami" { }
 variable "windows_username" { }
 variable "windows_password" { }
+
+variable "allow_ssh_from_world" {
+  default = false
+}
+
+variable "allow_rdp_from_world" {
+  default = false
+}

@@ -24,7 +24,7 @@ resource "aws_instance" "ad_server" {
     connection {
       type        = "ssh"
       user        = "centos"
-      host        = "${aws_instance.ad_server[0].public_ip}"
+      host        = aws_instance.ad_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
     }
     destination   = "/home/centos/ad_user_setup.sh"
@@ -53,7 +53,7 @@ resource "aws_instance" "ad_server" {
     connection {
       type        = "ssh"
       user        = "centos"
-      host        = "${aws_instance.ad_server[0].public_ip}"
+      host        = aws_instance.ad_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
     }
     inline = [
