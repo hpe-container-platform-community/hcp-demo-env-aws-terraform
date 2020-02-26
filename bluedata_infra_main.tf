@@ -85,7 +85,7 @@ module "rdp_server" {
   project_id = var.project_id
   user = var.user
   ssh_prv_key_path = var.ssh_prv_key_path
-  rdp_ec2_ami = var.rdp_ec2_ami # TODO: switch to var.EC2_WINDOWS_AMIS[var.region]
+  rdp_ec2_ami = var.EC2_WIN_RDP_AMIS[var.region]
   rdp_instance_type = var.rdp_instance_type
   rdp_server_enabled = var.rdp_server_enabled
   key_name = aws_key_pair.main.key_name
