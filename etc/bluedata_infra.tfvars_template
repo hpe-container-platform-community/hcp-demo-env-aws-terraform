@@ -92,7 +92,8 @@ windows_password = "changeme"
 # NOTE: 
 # If you receive the error `Error deleting ingress entry: InvalidNetworkAclEntry.NotFound`
 # when running `terraform apply` after changing these variables, run `terraform apply` a 
-# second time
+# second time.  An issue has been raised for this: 
+# https://github.com/terraform-providers/terraform-provider-aws/issues/12175
 
 allow_ssh_from_world = false
 allow_rdp_from_world = false
