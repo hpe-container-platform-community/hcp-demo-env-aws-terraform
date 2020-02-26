@@ -7,8 +7,6 @@ terraform {
   }
 }
 
-/******************* setup region and az ********************/
-
 provider "aws" {
   profile = var.profile
   region  = var.region
@@ -18,13 +16,9 @@ data "aws_availability_zone" "main" {
   name = var.az
 }
 
-/******************* verify client ip ********************/
-
 data "external" "example1" {
  program = [ "python3", "${path.module}/scripts/verify_client_ip.py", "${var.client_cidr_block}", "${var.check_client_ip}" ]
 }
-
-/******************* ssh pub key content ********************/
 
 data "local_file" "ssh_pub_key" {
     filename = var.ssh_pub_key_path
@@ -74,7 +68,6 @@ module "ad_server" {
   key_name = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     module.network.security_group_allow_all_from_client_ip, 
-    module.network.security_group_allow_all_from_client_ip, 
     module.network.security_group_main_id
   ]
   subnet_id = module.network.subnet_main_id
@@ -89,11 +82,11 @@ module "rdp_server" {
   rdp_instance_type = var.rdp_instance_type
   rdp_server_enabled = var.rdp_server_enabled
   key_name = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ 
+  vpc_security_group_ids = flatten([ 
     module.network.security_group_allow_all_from_client_ip, 
     module.network.security_group_main_id,
-    var.allow_rdp_from_world == true ? module.network.security_group_allow_rdp_from_world_id : module.network.security_group_main_id
-  ]
+    var.allow_rdp_from_world == true ? [ module.network.security_group_allow_rdp_from_world_id ] : []
+  ])
   subnet_id = module.network.subnet_main_id
   windows_username = var.windows_username
   windows_password = var.windows_password

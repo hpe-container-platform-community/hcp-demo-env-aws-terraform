@@ -1,5 +1,3 @@
-
-
 /******************* elastic ips ********************/
 
 resource "aws_eip" "controller" {
@@ -11,6 +9,7 @@ resource "aws_eip" "controller" {
     user = "${var.user}"
   }
 }
+
 // EIP associations
 
 resource "aws_eip_association" "eip_assoc_controller" {
@@ -18,18 +17,17 @@ resource "aws_eip_association" "eip_assoc_controller" {
   allocation_id = aws_eip.controller.id
 }
 
-
 // Instance
 
 resource "aws_instance" "controller" {
   ami                    = var.EC2_CENTOS7_AMIS[var.region]
   instance_type          = var.ctr_instance_type
   key_name               = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ 
+  vpc_security_group_ids = flatten([ 
     module.network.security_group_allow_all_from_client_ip, 
     module.network.security_group_main_id,
-    var.allow_ssh_from_world == true ? module.network.security_group_allow_ssh_from_world_id : module.network.security_group_main_id
-  ]
+    var.allow_ssh_from_world == true ? [ module.network.security_group_allow_ssh_from_world_id ] : []
+  ])
   subnet_id              = module.network.subnet_main_id
 
   root_block_device {
