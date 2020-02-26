@@ -28,7 +28,6 @@ variable "subnet_id" {
 variable "windows_username" {
     type = string
 }
-
 variable "windows_password" {
     type = string
 }

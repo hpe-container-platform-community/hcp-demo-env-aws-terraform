@@ -23,7 +23,10 @@ resource "aws_instance" "gateway" {
   ami                    = var.EC2_CENTOS7_AMIS[var.region]
   instance_type          = var.gtw_instance_type
   key_name               = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ module.network.security_group_main_id ]
+  vpc_security_group_ids = [
+    module.network.security_group_allow_all_from_client_ip,
+    module.network.security_group_main_id
+  ]
   subnet_id              = module.network.subnet_main_id
 
   root_block_device {

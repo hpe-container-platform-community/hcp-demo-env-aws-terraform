@@ -45,8 +45,6 @@ module "network" {
   subnet_cidr_block = var.subnet_cidr_block
   vpc_cidr_block = var.vpc_cidr_block
   aws_zone_id = data.aws_availability_zone.main.zone_id
-  allow_ssh_from_world = var.allow_ssh_from_world
-  allow_rdp_from_world = var.allow_rdp_from_world
 }
 
 module "nfs_server" {
@@ -58,7 +56,10 @@ module "nfs_server" {
   nfs_instance_type = var.nfs_instance_type
   nfs_server_enabled = var.nfs_server_enabled
   key_name = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ module.network.security_group_main_id ]
+  vpc_security_group_ids = [ 
+    module.network.security_group_allow_all_from_client_ip, 
+    module.network.security_group_main_id
+  ]
   subnet_id = module.network.subnet_main_id
 }
 
@@ -71,7 +72,11 @@ module "ad_server" {
   ad_instance_type = var.ad_instance_type
   ad_server_enabled = var.ad_server_enabled
   key_name = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ module.network.security_group_main_id ]
+  vpc_security_group_ids = [
+    module.network.security_group_allow_all_from_client_ip, 
+    module.network.security_group_allow_all_from_client_ip, 
+    module.network.security_group_main_id
+  ]
   subnet_id = module.network.subnet_main_id
 }
 
@@ -84,7 +89,11 @@ module "rdp_server" {
   rdp_instance_type = var.rdp_instance_type
   rdp_server_enabled = var.rdp_server_enabled
   key_name = aws_key_pair.main.key_name
-  vpc_security_group_ids = [ module.network.security_group_main_id ]
+  vpc_security_group_ids = [ 
+    module.network.security_group_allow_all_from_client_ip, 
+    module.network.security_group_main_id,
+    var.allow_rdp_from_world == true ? module.network.security_group_allow_rdp_from_world_id : module.network.security_group_main_id
+  ]
   subnet_id = module.network.subnet_main_id
   windows_username = var.windows_username
   windows_password = var.windows_password

@@ -16,9 +16,3 @@ variable "vpc_cidr_block" {
 variable "subnet_cidr_block" {
     type = string
 }
-variable "allow_ssh_from_world" {
-    type = bool
-}
-variable "allow_rdp_from_world" {
-    type = bool
-}

@@ -89,11 +89,5 @@ windows_password = "changeme"
 
 # If you would like to allow ssh or rdp from any source, set the following variables
 
-# NOTE: 
-# If you receive the error `Error deleting ingress entry: InvalidNetworkAclEntry.NotFound`
-# when running `terraform apply` after changing these variables, run `terraform apply` a 
-# second time.  An issue has been raised for this: 
-# https://github.com/terraform-providers/terraform-provider-aws/issues/12175
-
-allow_ssh_from_world = false
-allow_rdp_from_world = false
+allow_ssh_from_world = true
+allow_rdp_from_world = true
