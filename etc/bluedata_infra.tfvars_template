@@ -88,5 +88,5 @@ windows_password = "changeme"
 
 # If you would like to allow ssh or rdp from any source, set the following variables
 
-allow_ssh_from_world = true
-allow_rdp_from_world = true
+allow_ssh_from_world = false
+allow_rdp_from_world = false
