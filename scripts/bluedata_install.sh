@@ -39,30 +39,48 @@ SELINUX_DISABLED="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.loa
 echo SELINUX_DISABLED=$SELINUX_DISABLED
 [ "$SELINUX_DISABLED" ] || ( echo "ERROR: SELINUX_DISABLED is empty" && exit 1 )
 
-
 CTRL_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_private_ip"]["value"])') 
 CTRL_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_public_ip"]["value"])') 
+CTRL_PRV_DNS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_private_dns"]["value"])') 
+CTRL_PUB_DNS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_public_dns"]["value"])') 
+
+CTRL_PUB_HOST=$(echo $CTRL_PUB_DNS | cut -d"." -f1)
+CTRL_PRV_HOST=$(echo $CTRL_PRV_DNS | cut -d"." -f1)
 
 echo CTRL_PRV_IP=$CTRL_PRV_IP
 echo CTRL_PUB_IP=$CTRL_PUB_IP
+echo CTRL_PRV_DNS=$CTRL_PRV_DNS
+echo CTRL_PUB_DNS=$CTRL_PUB_DNS
+echo CTRL_PUB_HOST=$CTRL_PUB_HOST
+echo CTRL_PRV_HOST=$CTRL_PRV_HOST
 
 [ "$CTRL_PRV_IP" ] || ( echo "ERROR: CTRL_PRV_IP is empty" && exit 1 )
 [ "$CTRL_PUB_IP" ] || ( echo "ERROR: CTRL_PUB_IP is empty" && exit 1 )
+[ "$CTRL_PRV_DNS" ] || ( echo "ERROR: CTRL_PRV_DNS is empty" && exit 1 )
+[ "$CTRL_PUB_DNS" ] || ( echo "ERROR: CTRL_PUB_DNS is empty" && exit 1 )
+[ "$CTRL_PUB_HOST" ] || ( echo "ERROR: CTRL_PUB_HOST is empty" && exit 1 )
+[ "$CTRL_PRV_HOST" ] || ( echo "ERROR: CTRL_PRV_HOST is empty" && exit 1 )
 
 GATW_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_private_ip"]["value"])') 
 GATW_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_public_ip"]["value"])') 
 GATW_PRV_DNS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_private_dns"]["value"])') 
 GATW_PUB_DNS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_public_dns"]["value"])') 
+GATW_PUB_HOST=$(echo $GATW_PUB_DNS | cut -d"." -f1)
+GATW_PRV_HOST=$(echo $GATW_PRV_DNS | cut -d"." -f1)
 
 echo GATW_PRV_IP=$GATW_PRV_IP
 echo GATW_PUB_IP=$GATW_PUB_IP
 echo GATW_PRV_DNS=$GATW_PRV_DNS
 echo GATW_PUB_DNS=$GATW_PUB_DNS
+echo GATW_PUB_HOST=$GATW_PUB_HOST
+echo GATW_PRV_HOST=$GATW_PRV_HOST
 
 [ "$GATW_PRV_IP" ] || ( echo "ERROR: GATW_PRV_IP is empty" && exit 1 )
 [ "$GATW_PUB_IP" ] || ( echo "ERROR: GATW_PUB_IP is empty" && exit 1 )
 [ "$GATW_PRV_DNS" ] || ( echo "ERROR: GATW_PRV_DNS is empty" && exit 1 )
 [ "$GATW_PUB_DNS" ] || ( echo "ERROR: GATW_PUB_DNS is empty" && exit 1 )
+[ "$GATW_PUB_HOST" ] || ( echo "ERROR: GATW_PUB_HOST is empty" && exit 1 )
+[ "$GATW_PRV_HOST" ] || ( echo "ERROR: GATW_PRV_HOST is empty" && exit 1 )
 
 WRKR_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_private_ip"]["value"][0], sep=" ")') 
 WRKR_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_public_ip"]["value"][0], sep=" ")') 
@@ -145,12 +163,6 @@ done
 # Gateway
 #
 
-if [[ "$SELINUX_DISABLED" == "True" ]];
-then
-   echo 'Disabling SELINUX on the Gateway host'
-   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
-fi
-
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "sudo yum update -y"
 # if the reboot causes ssh to terminate with an error, ignore it
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "nohup sudo reboot </dev/null &" || true
@@ -160,14 +172,11 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PU
 # Controller
 #
 
-
-if [[ "$SELINUX_DISABLED" == "True" ]];
-then
-   echo 'Disabling SELINUX on the Controller host'
-   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
-fi
-
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "sudo yum update -y"
+
+# FIXME: Hack to allow HPE CP httpd service to use minica key and cert
+echo 'Disabling SELINUX on the Controller host'
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
 # if the reboot causes ssh to terminate with an error, ignore it
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "nohup sudo reboot </dev/null &" || true
 
@@ -209,23 +218,52 @@ done
 # Install Controller
 ###############################################################################
 
+#cat generated/ssl_cert.pem    | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat >> ~/ssl_cert.pem"
+#cat generated/ssl_prv_key.pem | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat >> ~/ssl_prv_key.pem" 
+
 echo "SSHing into Controller ${CTRL_PUB_IP}"
+
+
 
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
 
+   if [[ -e /home/centos/bd_installed ]]
+   then
+      echo BlueData already installed - quitting
+      exit 0
+   fi
+
    set -e # abort on error
 
-   sudo yum -y install wget
+   sudo yum -y install git wget
+   wget -c --progress=bar -e dotbytes=1M https://dl.google.com/go/go1.13.linux-amd64.tar.gz
+   sudo tar -C /usr/local -xzf go1.13.linux-amd64.tar.gz
+
+   if [[ ! -d minica ]];
+   then
+      git clone https://github.com/jsha/minica.git
+      cd minica/
+      /usr/local/go/bin/go build
+      sudo mv minica /usr/local/bin
+   fi
+
+   # FIXME: Currently this requires SELINUX to be disabled so apache httpd can read the certs
+   rm -rf /home/centos/${CTRL_PUB_DNS}
+   cd /home/centos
+   minica -domains "$CTRL_PUB_DNS,$CTRL_PRV_DNS,$GATW_PUB_DNS,$GATW_PRV_DNS,$CTRL_PUB_HOST,$CTRL_PRV_HOST,$GATW_PUB_HOST,$GATW_PRV_HOST" \
+      -ip-addresses "$CTRL_PUB_IP,$CTRL_PRV_IP,$GATW_PUB_IP,$GATW_PRV_IP"
+
+   openssl x509 -in /home/centos/${CTRL_PUB_DNS}/cert.pem -text
 
    echo "Downloading ${EPIC_DL_URL} to ${EPIC_FILENAME}"
 
-   wget --progress=bar -O ${EPIC_FILENAME} ${EPIC_DL_URL}
+   wget -c --progress=bar -e dotbytes=10M -O ${EPIC_FILENAME} ${EPIC_DL_URL}
    chmod +x ${EPIC_FILENAME}
 
    echo "Running EPIC install"
 
-   # install EPIC
-   ./${EPIC_FILENAME} --skipeula
+   # install EPIC (Note: minica puts the cert and key in a folder named after the first DNS domain)
+   ./${EPIC_FILENAME} --skipeula --ssl-cert /home/centos/${CTRL_PUB_DNS}/cert.pem --ssl-priv-key /home/centos/${CTRL_PUB_DNS}/key.pem
 
    # install application workbench
    sudo yum install -y epel-release
@@ -233,7 +271,14 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    sudo pip install --upgrade pip
    sudo pip install --upgrade setuptools
    sudo pip install --upgrade bdworkbench
+
+   touch /home/centos/bd_installed
 ENDSSH
+
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/minica.pem" > generated/minica.pem
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/minica-key.pem" > generated/minica-key.pem
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/${CTRL_PUB_DNS}/cert.pem" > generated/cert.pem
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/${CTRL_PUB_DNS}/key.pem" > generated/key.pem
 
 ###############################################################################
 # Manually configure Controller with Workers and Gateway

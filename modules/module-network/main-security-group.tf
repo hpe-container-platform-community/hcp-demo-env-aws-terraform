@@ -1,4 +1,13 @@
-// default security group
+# Don't do anything with the default sg except add tags
+resource "aws_default_security_group" "main" {
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.project_id}-default-security-group"
+    Project = "${var.project_id}"
+    user = "${var.user}"
+  }
+}
 
 resource "aws_security_group" "main" {
   vpc_id      = aws_vpc.main.id
@@ -39,7 +48,7 @@ resource "aws_security_group" "allow_all_from_client_ip" {
   depends_on = [ aws_vpc.main ]
 
   tags = {
-    Name = "${var.project_id}-allow-ssh-from-world-security-group"
+    Name = "${var.project_id}-allow-all-from-client-ip-security-group"
     Project = "${var.project_id}"
     user = "${var.user}"
   }

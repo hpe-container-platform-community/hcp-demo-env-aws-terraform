@@ -39,6 +39,14 @@ output "controller_private_ip" {
   value = "${aws_instance.controller.private_ip}"
 }
 
+output "controller_public_dns" {
+  value = "${aws_eip.controller.public_dns}"
+}
+
+output "controller_private_dns" {
+  value = "${aws_instance.controller.private_dns}"
+}
+
 output "workers_public_ip" {
   value = ["${aws_instance.workers.*.public_ip}"]
 }
