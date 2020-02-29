@@ -299,7 +299,7 @@ SSH Private key has been downloaded to 'generated/controller.prv_key'
 
 INSTRUCTIONS for completing the BlueData installation ...
 
-0. In your browser, navigate to the Controller URL: http://${CTRL_PUB_IP}"
+0. In your browser, navigate to the Controller URL: https://${CTRL_PUB_IP}"
 1. At the setup screen, click 'Submit'
 2. At the login screen, use 'admin/admin123'
 3. Naviate to Settings -> License:

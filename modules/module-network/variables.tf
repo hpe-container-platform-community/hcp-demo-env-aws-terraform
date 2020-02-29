@@ -10,6 +10,9 @@ variable "aws_zone_id" {
 variable "client_cidr_block" {
     type = string
 }
+variable "additional_client_ip_list" {
+    type = list
+}
 variable "vpc_cidr_block" {
     type = string
 }

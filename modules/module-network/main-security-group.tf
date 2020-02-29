@@ -39,23 +39,27 @@ resource "aws_security_group_rule" "return_traffic" {
   cidr_blocks     = ["0.0.0.0/0"]
 }
 
-// allow all traffic from client machine
+// allow all traffic from specified ips
 
-resource "aws_security_group" "allow_all_from_client_ip" {
+locals {
+  full_access_sg_ips = concat([var.client_cidr_block], var.additional_client_ip_list)
+}
+
+resource "aws_security_group" "allow_all_from_specified_ips" {
   vpc_id      = aws_vpc.main.id
-  name        = "allow_all_from_client_ip"
-  description = "allow_all_from_client_ip"
+  name        = "allow_all_from_specified_ips"
+  description = "allow_all_from_specified_ips"
   depends_on = [ aws_vpc.main ]
 
   tags = {
-    Name = "${var.project_id}-allow-all-from-client-ip-security-group"
+    Name = "${var.project_id}-allow-all-from-specified-ips-security-group"
     Project = "${var.project_id}"
     user = "${var.user}"
   }
 
   ingress {
     protocol   = "-1"
-    cidr_blocks = [ var.client_cidr_block ]
+    cidr_blocks = local.full_access_sg_ips
     from_port  = 0
     to_port    = 0
   }

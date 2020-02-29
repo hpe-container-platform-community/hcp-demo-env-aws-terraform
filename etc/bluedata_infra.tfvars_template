@@ -37,7 +37,12 @@ subnet_cidr_block  = "10.1.0.0/24"
 # Set the check_client_ip to true to check if the current client_ip is inside the client_cidr_block
 # If the client_ip isn't inside the client_cidr_block, you won't be able to connect to the VPN from your client machine.
 
-check_client_ip  = "true" 
+check_client_ip  = "true"
+
+# If you want to allow other clients to have full network access to this environment, add them here.
+# These IPs need a suffix such as /32 for specific IP address
+
+additional_client_ip_list = []  # E.g. [ "1.1.1.1/24","2.2.2.2/32" ]
 
 # specify how many BlueData workers you want
 worker_count = 3

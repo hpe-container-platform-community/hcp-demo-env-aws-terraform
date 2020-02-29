@@ -48,7 +48,7 @@ resource "aws_instance" "gateway" {
       private_key = file("${var.ssh_prv_key_path}")
     }
     inline = [
-      "echo ***************"
+      "sudo yum update -y"
     ]
   }
 }

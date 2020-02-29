@@ -40,6 +40,18 @@ resource "aws_instance" "controller" {
     Project = "${var.project_id}"
     user = "${var.user}"
   }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      host        = aws_instance.controller.public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    inline = [
+      "sudo yum update -y"
+    ]
+  }
 }
 
 # /dev/sdb

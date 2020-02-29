@@ -5,6 +5,7 @@ variable "project_id" { }
 variable "user" { }
 variable "client_cidr_block" {  }
 variable "check_client_ip" { default = "true" }
+variable "additional_client_ip_list" { default = [] }
 variable "vpc_cidr_block" { }
 variable "subnet_cidr_block" { }
 
