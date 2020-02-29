@@ -68,3 +68,11 @@ variable "allow_ssh_from_world" {
 variable "allow_rdp_from_world" {
   default = false
 }
+
+variable "ca_cert" {
+  type = string
+}
+
+variable "ca_key" {
+  type = string
+}

@@ -25,6 +25,12 @@ LOCAL_SSH_PRV_KEY_PATH=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=jso
 echo LOCAL_SSH_PUB_KEY_PATH=${LOCAL_SSH_PUB_KEY_PATH}
 echo LOCAL_SSH_PRV_KEY_PATH=${LOCAL_SSH_PRV_KEY_PATH}
 
+CA_KEY="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ca_key"]["value"])')"
+CA_CERT="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ca_cert"]["value"])')"
+
+[ "$CA_KEY" ] || ( echo "ERROR: CA_KEY is empty" && exit 1 )
+[ "$CA_CERT" ] || ( echo "ERROR: CA_CERT is empty" && exit 1 )
+
 EPIC_DL_URL="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_dl_url"]["value"])')"
 EPIC_FILENAME="$(echo ${EPIC_DL_URL##*/} | cut -d? -f1)"
 
@@ -218,12 +224,13 @@ done
 # Install Controller
 ###############################################################################
 
-#cat generated/ssl_cert.pem    | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat >> ~/ssl_cert.pem"
-#cat generated/ssl_prv_key.pem | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat >> ~/ssl_prv_key.pem" 
+echo "${CA_CERT}" > generated/ca-cert.pem
+echo "${CA_KEY}" > generated/ca-key.pem
+
+cat generated/ca-cert.pem | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat > ~/minica.pem"
+cat generated/ca-key.pem  | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat > ~/minica-key.pem" 
 
 echo "SSHing into Controller ${CTRL_PUB_IP}"
-
-
 
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
 

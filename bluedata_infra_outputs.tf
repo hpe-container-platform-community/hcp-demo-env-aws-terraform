@@ -10,6 +10,14 @@ output "ssh_prv_key_path" {
   value = "${var.ssh_prv_key_path}"
 }
 
+output "ca_cert" {
+  value = "${var.ca_cert}"
+}
+
+output "ca_key" {
+  value = "${var.ca_key}"
+}
+
 output "epic_dl_url" {
   value = "${var.epic_dl_url}"
 }
