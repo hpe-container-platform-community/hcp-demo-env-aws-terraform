@@ -1,3 +1,15 @@
+
+resource "local_file" "ca-cert" {
+  filename = "${path.module}/generated/ca-cert.pem"
+  content =  var.ca_cert
+}
+
+resource "local_file" "ca-key" {
+  filename = "${path.module}/generated/ca-key.pem"
+  content =  var.ca_key
+}
+
+
 //////////////////// Utility scripts  /////////////////////
 
 /// instance start/stop/status

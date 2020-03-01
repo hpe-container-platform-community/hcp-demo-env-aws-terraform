@@ -224,9 +224,6 @@ done
 # Install Controller
 ###############################################################################
 
-echo "${CA_CERT}" > generated/ca-cert.pem
-echo "${CA_KEY}" > generated/ca-key.pem
-
 cat generated/ca-cert.pem | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat > ~/minica.pem"
 cat generated/ca-key.pem  | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat > ~/minica-key.pem" 
 
@@ -282,8 +279,6 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    touch /home/centos/bd_installed
 ENDSSH
 
-#ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/minica.pem" > generated/minica.pem
-#ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/minica-key.pem" > generated/minica-key.pem
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/${CTRL_PUB_DNS}/cert.pem" > generated/cert.pem
 ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/${CTRL_PUB_DNS}/key.pem" > generated/key.pem
 

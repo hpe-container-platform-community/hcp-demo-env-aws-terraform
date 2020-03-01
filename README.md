@@ -46,12 +46,6 @@ vi ./etc/bluedata_infra.tfvars
 terraform init
 ```
 
-If you are working with BD 5x we need a different initial configuration:
-
-```
-ln -s ./scripts/initial_bluedata_config_5x.py ./scripts/initial_bluedata_config.py
-```
-
 We are now ready to go ...
 
 ```
@@ -96,8 +90,7 @@ terraform apply \
    -auto-approve=true && \
 sleep 60 && \
 terraform output -json > generated/output.json && \
-./scripts/bluedata_install.sh && \
-./scripts/bluedata_config.sh 
+./scripts/bluedata_install.sh 
 ```
 
 TIP: If your epic download url is set for private access, see [./docs/README-TIPS.md](./docs/README-TIPS.md)
