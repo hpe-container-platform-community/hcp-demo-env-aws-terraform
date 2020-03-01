@@ -1,4 +1,4 @@
-**IMPORTANT**
+**OVERVIEW**
 
 This project consists of two main parts:
 
