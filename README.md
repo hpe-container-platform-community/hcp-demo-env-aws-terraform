@@ -102,6 +102,7 @@ terraform output -json > generated/output.json && \
 
 TIP: If your epic download url is set for private access, see [./docs/README-TIPS.md](./docs/README-TIPS.md)
 
+Next install the cert `generated/ca-cert.pem` into your browser.
 
 ### Setup a NFS server (optional)
 
