@@ -51,6 +51,16 @@ resource "local_file" "ssh_controller" {
   EOF
 }
 
+resource "local_file" "mcs_credentials" {
+  filename = "${path.module}/generated/mcs_credentials.sh"
+  content = <<-EOF
+     #!/bin/bash
+     echo
+     echo [MAPR MCS Credentials] admin:$(ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.controller.public_ip} "cat /opt/bluedata/mapr/conf/mapr-admin-pass")
+     echo
+  EOF
+}
+
 resource "local_file" "ssh_gateway" {
   filename = "${path.module}/generated/ssh_gateway.sh"
   content = <<-EOF
