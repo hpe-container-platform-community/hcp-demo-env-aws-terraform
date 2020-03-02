@@ -68,3 +68,11 @@ resource "local_file" "ssh_gateway" {
      ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.gateway.public_ip} "$@"
   EOF
 }
+
+resource "local_file" "restart_auth_proxy" {
+  filename = "${path.module}/generated/restart_auth_proxy.sh"
+  content = <<-EOF
+     #!/bin/bash
+     ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.controller.public_ip} "docker restart epic-auth-proxy-k8s-id-1"
+  EOF
+}
