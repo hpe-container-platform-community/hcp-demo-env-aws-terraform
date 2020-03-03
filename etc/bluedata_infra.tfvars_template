@@ -72,6 +72,13 @@ ssh_pub_key_path   = "/home/snowch/.ssh/id_rsa.pub"
 
 epic_dl_url          = "enter url"
 
+# set this to true if you want to use `aws s3 --presign` to presign the 
+# url, for example if the epic binary is in a private bucket
+#
+# Note: presigning requires epic_dl_url to be s3:// format
+
+epid_dl_url_needs_presign = false 
+
 # EPIC 5x alpha currently requires selinux to be disabled, uncomment 
 # the following to disable selinux.
 

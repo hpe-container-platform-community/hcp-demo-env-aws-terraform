@@ -4,17 +4,18 @@ set -e # abort on error
 set -u # abort on undefined variable
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
-LOG_FILE=${SCRIPT_DIR}/../log/bluedata_install_output.txt
-
-[[ -f $LOG_FILE ]] && mv -f $LOG_FILE ${LOG_FILE}.old
+OUTPUT_JSON=$(cat ${SCRIPT_DIR}/../generated/output.json)
 
 ###############################################################################
 # Set variables from terraform output
 ###############################################################################
 
+PROJECT_DIR=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["project_dir"]["value"])')
+echo PROJECT_DIR=${PROJECT_DIR}
+[ "$PROJECT_DIR" ] || ( echo "ERROR: PROJECT_DIR is empty" && exit 1 )
 
-OUTPUT_JSON=$(cat ${SCRIPT_DIR}/../generated/output.json)
+LOG_FILE=${PROJECT_DIR}/generated/bluedata_install_output.txt
+[[ -f $LOG_FILE ]] && mv -f $LOG_FILE ${LOG_FILE}.old
 
 LOCAL_SSH_PUB_KEY_PATH=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ssh_pub_key_path"]["value"])')
 LOCAL_SSH_PRV_KEY_PATH=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ssh_prv_key_path"]["value"])')
@@ -33,13 +34,22 @@ CA_CERT="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.std
 
 EPIC_DL_URL="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_dl_url"]["value"])')"
 EPIC_FILENAME="$(echo ${EPIC_DL_URL##*/} | cut -d? -f1)"
+EPIC_DL_URL_NEEDS_PRESIGN="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epid_dl_url_needs_presign"]["value"])')"
 
 echo EPIC_DL_URL=$EPIC_DL_URL
 echo EPIC_FILENAME=$EPIC_FILENAME
+echo EPIC_DL_URL_NEEDS_PRESIGN=$EPIC_DL_URL_NEEDS_PRESIGN
 
 [ "$EPIC_DL_URL" ] || ( echo "ERROR: EPIC_DL_URL is empty" && exit 1 )
 [ "$EPIC_FILENAME" ] || ( echo "ERROR: EPIC_FILENAME is empty" && exit 1 )
+[ "$EPIC_DL_URL_NEEDS_PRESIGN" ] || ( echo "ERROR: EPIC_DL_URL_NEEDS_PRESIGN is empty" && exit 1 )
 
+if [[ "${EPIC_DL_URL_NEEDS_PRESIGN}" == "True" ]]
+then
+   echo "Presigning EPIC_DL_URL"
+   EPIC_DL_URL="$(aws s3 presign $EPIC_DL_URL)"
+   echo ${EPIC_DL_URL}
+fi
 
 SELINUX_DISABLED="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["selinux_disabled"]["value"])')"
 echo SELINUX_DISABLED=$SELINUX_DISABLED
@@ -257,11 +267,12 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    minica -domains "$CTRL_PUB_DNS,$CTRL_PRV_DNS,$GATW_PUB_DNS,$GATW_PRV_DNS,$CTRL_PUB_HOST,$CTRL_PRV_HOST,$GATW_PUB_HOST,$GATW_PRV_HOST" \
       -ip-addresses "$CTRL_PUB_IP,$CTRL_PRV_IP,$GATW_PUB_IP,$GATW_PRV_IP"
 
+   # output the ssl details for debugging purposes
    openssl x509 -in /home/centos/${CTRL_PUB_DNS}/cert.pem -text
 
    echo "Downloading ${EPIC_DL_URL} to ${EPIC_FILENAME}"
 
-   wget -c --progress=bar -e dotbytes=10M -O ${EPIC_FILENAME} ${EPIC_DL_URL}
+   wget -c --progress=bar -e dotbytes=10M -O ${EPIC_FILENAME} "${EPIC_DL_URL}"
    chmod +x ${EPIC_FILENAME}
 
    echo "Running EPIC install"
@@ -287,7 +298,7 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
 ###############################################################################
 
 # retrive controller ssh private key and save it locally
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > $SCRIPT_DIR/../generated/controller.prv_key
+ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > generated/controller.prv_key
 
 cat <<EOF>$LOG_FILE
 
@@ -296,7 +307,9 @@ cat <<EOF>$LOG_FILE
 *      BlueData installation completed successfully     *
 *********************************************************
 
-SSH Private key has been downloaded to 'generated/controller.prv_key'
+SSH Private key has been downloaded to:
+"${PROJECT_DIR}/generated/controller.prv_key"
+
 ** PLEASE KEEP IT SECURE **
 
 INSTRUCTIONS for completing the BlueData installation ...
@@ -311,7 +324,7 @@ INSTRUCTIONS for completing the BlueData installation ...
 
    1. Add workers private ips "$(echo ${WRKR_PRV_IPS[@]} | sed -e 's/ /,/g')"
    2. Add gateway private ip "${GATW_PRV_IP}" and public dns "${GATW_PUB_DNS}"
-   3. Upload generated/controller.prv_key
+   3. Upload ${PROJECT_DIR}/generated/controller.prv_key
    4. Click Add hosts (enter site lock down when prompted)
 
    # After a few minutes, you should see Gateway 'Installed' and Workers 'Bundle completed'

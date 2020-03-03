@@ -52,6 +52,7 @@ variable "ad_instance_type" { default = "t2.small" }
 variable "rdp_instance_type" { default = "t2.xlarge" }
 
 variable "epic_dl_url" { }
+variable "epid_dl_url_needs_presign" { default = false }
 variable "selinux_disabled" { default = false }
 
 variable "nfs_server_enabled" { default = false }

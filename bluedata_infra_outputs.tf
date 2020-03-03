@@ -1,3 +1,7 @@
+output "project_dir" {
+  value = "${abspath(path.module)}"
+}
+
 output "selinux_disabled" {
   value = "${var.selinux_disabled}"
 }
@@ -20,6 +24,10 @@ output "ca_key" {
 
 output "epic_dl_url" {
   value = "${var.epic_dl_url}"
+}
+
+output "epid_dl_url_needs_presign" {
+  value = "${var.epid_dl_url_needs_presign}"
 }
 
 output "client_cidr_block" {
