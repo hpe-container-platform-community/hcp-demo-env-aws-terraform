@@ -76,3 +76,11 @@ resource "local_file" "restart_auth_proxy" {
      ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.controller.public_ip} "docker restart epic-auth-proxy-k8s-id-1"
   EOF
 }
+
+resource "local_file" "platform_id" {
+  filename = "${path.module}/generated/platform_id.sh"
+  content = <<-EOF
+     #!/bin/bash
+     curl -s -k https://${aws_eip.controller.public_ip}:8080/api/v1/license | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["uuid"])'
+  EOF
+}
