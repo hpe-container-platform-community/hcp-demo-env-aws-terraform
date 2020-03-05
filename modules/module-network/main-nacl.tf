@@ -1,6 +1,7 @@
 
 // Don't do anything with the default network acl except add tags
 // to identify it with this project
+// See: https://github.com/terraform-providers/terraform-provider-aws/issues/12219#issuecomment-593453391
 resource "aws_default_network_acl" "default" {
   default_network_acl_id = aws_vpc.main.default_network_acl_id
 
