@@ -89,6 +89,10 @@ resource "local_file" "rdp_administrator_password" {
   filename = "${path.module}/generated/rdp_administrator_password.sh"
   content = <<-EOF
      #!/bin/bash
+
+     # TODO: check for -----BEGIN OPENSSH PRIVATE KEY-----
+     #       suggest fix: ssh-keygen -p -N "" -m pem -f /path/to/key
+     
      echo 
      echo ==== RDP Credentials ====
      echo 
