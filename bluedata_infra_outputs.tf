@@ -128,3 +128,10 @@ output "rdp_server_public_ip" {
 output "rdp_server_ssh_command" {
   value = module.rdp_server.ssh_command
 }
+
+/*
+output "rdp_server_administrator_password" {
+  //value = rsadecrypt(base64encode(module.rdp_server.enc_administrator_password), file(var.ssh_prv_key_path))
+  value = base64decode(module.rdp_server.enc_administrator_password)
+}
+*/

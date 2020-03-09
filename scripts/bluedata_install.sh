@@ -4,18 +4,18 @@ set -e # abort on error
 set -u # abort on undefined variable
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-OUTPUT_JSON=$(cat ${SCRIPT_DIR}/../generated/output.json)
+OUTPUT_JSON=$(cat "${SCRIPT_DIR}/../generated/output.json")
 
 ###############################################################################
 # Set variables from terraform output
 ###############################################################################
 
 PROJECT_DIR=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["project_dir"]["value"])')
-echo PROJECT_DIR=${PROJECT_DIR}
+echo PROJECT_DIR="${PROJECT_DIR}"
 [ "$PROJECT_DIR" ] || ( echo "ERROR: PROJECT_DIR is empty" && exit 1 )
 
-LOG_FILE=${PROJECT_DIR}/generated/bluedata_install_output.txt
-[[ -f $LOG_FILE ]] && mv -f $LOG_FILE ${LOG_FILE}.old
+LOG_FILE="${PROJECT_DIR}"/generated/bluedata_install_output.txt
+[[ -f "$LOG_FILE" ]] && mv -f "$LOG_FILE" "${LOG_FILE}".old
 
 LOCAL_SSH_PUB_KEY_PATH=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ssh_pub_key_path"]["value"])')
 LOCAL_SSH_PRV_KEY_PATH=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ssh_prv_key_path"]["value"])')
@@ -114,11 +114,11 @@ echo WRKR_PUB_IPS=${WRKR_PUB_IPS[@]}
 # Test SSH connectivity to EC2 instances from local machine
 ###############################################################################
 
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} 'echo CONTROLLER: $(hostname)'
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} 'echo GATEWAY: $(hostname)'
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} 'echo CONTROLLER: $(hostname)'
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} 'echo GATEWAY: $(hostname)'
 
 for WRKR in ${WRKR_PUB_IPS[@]}; do 
-   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} 'echo WORKER: $(hostname)'
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} 'echo WORKER: $(hostname)'
 done
 
 ###############################################################################
@@ -126,7 +126,7 @@ done
 ###############################################################################
 
 # if ssh key doesn't exist on controller EC instance then create one
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
 if [ -f ~/.ssh/id_rsa ]
 then
    echo CONTROLLER: Found existing ~/.ssh/id.rsa so moving on...
@@ -144,11 +144,11 @@ ENDSSH
 #
 
 # We have password SSH access from our local machines to EC2, so we can utiise this to copy the Controller SSH key to the Gateway
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
-  ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "cat >> /home/centos/.ssh/authorized_keys" 
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
+  ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "cat >> /home/centos/.ssh/authorized_keys" 
 
 # test passwordless SSH connection from Controller to Gateway
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
 echo CONTROLLER: Connecting to GATEWAY ${GATW_PRV_IP}...
 ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -T centos@${GATW_PRV_IP} "echo Connected!"
 ENDSSH
@@ -159,13 +159,13 @@ ENDSSH
 
 # We have password SSH access from our local machines to EC2, so we can utiise this to copy the Controller SSH key to each Worker
 for WRKR in ${WRKR_PUB_IPS[@]}; do 
-    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
-        ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "cat >> /home/centos/.ssh/authorized_keys"
+    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
+        ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "cat >> /home/centos/.ssh/authorized_keys"
 done
 
 # test passwordless SSH connection from Controller to Workers
 for WRKR in ${WRKR_PRV_IPS[@]}; do 
-    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
+    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
         echo CONTROLLER: Connecting to WORKER ${WRKR}...
         ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -T centos@${WRKR} "echo Connected!"
 ENDSSH
@@ -179,22 +179,22 @@ done
 # Gateway
 #
 
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "sudo yum update -y"
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "sudo yum update -y"
 # if the reboot causes ssh to terminate with an error, ignore it
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${GATW_PUB_IP} "nohup sudo reboot </dev/null &" || true
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "nohup sudo reboot </dev/null &" || true
 
 
 #
 # Controller
 #
 
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "sudo yum update -y"
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "sudo yum update -y"
 
 # FIXME: Hack to allow HPE CP httpd service to use minica key and cert
 echo 'Disabling SELINUX on the Controller host'
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
 # if the reboot causes ssh to terminate with an error, ignore it
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "nohup sudo reboot </dev/null &" || true
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "nohup sudo reboot </dev/null &" || true
 
 #
 # Workers
@@ -204,12 +204,12 @@ for WRKR in ${WRKR_PUB_IPS[@]}; do
    if [[ "$SELINUX_DISABLED" == "True" ]];
    then
       echo "Disabling SELINUX on the worker host $WRKR"
-      ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
+      ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
    fi
 
-   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "sudo yum update -y"
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum update -y"
    # if the reboot causes ssh to terminate with an error, ignore it
-   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
 done
 
 #
@@ -234,12 +234,12 @@ done
 # Install Controller
 ###############################################################################
 
-cat generated/ca-cert.pem | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat > ~/minica.pem"
-cat generated/ca-key.pem  | ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat > ~/minica-key.pem" 
+cat generated/ca-cert.pem | ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat > ~/minica.pem"
+cat generated/ca-key.pem  | ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat > ~/minica-key.pem" 
 
 echo "SSHing into Controller ${CTRL_PUB_IP}"
 
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
 
    if [[ -e /home/centos/bd_installed ]]
    then
@@ -290,17 +290,17 @@ ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PU
    touch /home/centos/bd_installed
 ENDSSH
 
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/${CTRL_PUB_DNS}/cert.pem" > generated/cert.pem
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat ~/${CTRL_PUB_DNS}/key.pem" > generated/key.pem
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat ~/${CTRL_PUB_DNS}/cert.pem" > generated/cert.pem
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat ~/${CTRL_PUB_DNS}/key.pem" > generated/key.pem
 
 ###############################################################################
 # Manually configure Controller with Workers and Gateway
 ###############################################################################
 
 # retrive controller ssh private key and save it locally
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > generated/controller.prv_key
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > generated/controller.prv_key
 
-cat <<EOF>$LOG_FILE
+cat <<EOF>"$LOG_FILE"
 
 
 *********************************************************
@@ -324,7 +324,7 @@ INSTRUCTIONS for completing the BlueData installation ...
 
    1. Add workers private ips "$(echo ${WRKR_PRV_IPS[@]} | sed -e 's/ /,/g')"
    2. Add gateway private ip "${GATW_PRV_IP}" and public dns "${GATW_PUB_DNS}"
-   3. Upload ${PROJECT_DIR}/generated/controller.prv_key
+   3. Upload "${PROJECT_DIR}/generated/controller.prv_key"
    4. Click Add hosts (enter site lock down when prompted)
 
    # After a few minutes, you should see Gateway 'Installed' and Workers 'Bundle completed'
@@ -337,5 +337,5 @@ INSTRUCTIONS for completing the BlueData installation ...
 
 
 EOF
-cat $LOG_FILE
+cat "$LOG_FILE"
 

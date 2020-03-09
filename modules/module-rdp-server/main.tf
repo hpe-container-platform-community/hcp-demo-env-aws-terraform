@@ -1,17 +1,25 @@
 /******************* Instance: RDP Server ********************/
 
-
 data "template_file" "userdata_win" {
   template = <<EOF
-<script>
-echo "" > _INIT_STARTED_
-net user ${var.windows_username} /add /y
-net user ${var.windows_username} ${var.windows_password}
-net localgroup administrators ${var.windows_username} /add
-echo "" > _INIT_COMPLETE_
-</script>
+<powershell>
+$SourceURL = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/73.0.1/win64/en-US/Firefox%20Setup%2073.0.1.msi";
+$Installer = $env:TMP + "\firefox.msi"; 
+Invoke-WebRequest $SourceURL -OutFile $Installer;
+Start-Process -FilePath $Installer -Args "/quiet" -Wait; 
+</powershell>
 <persist>false</persist>
 EOF
+
+/*
+Invoke-Expression -Command 'net user ${var.windows_username} /add /y';
+Invoke-Expression -Command 'net user ${var.windows_username} ${var.windows_password}';
+Invoke-Expression -Command 'net localgroup administrators ${var.windows_username} /add';
+
+$password = ConvertTo-SecureString -SecureString "${var.windows_password}"
+New-LocalUser "${var.windows_username}" -Password $password -FullName "${var.windows_username}"
+Add-LocalGroupMember -Group "Administrators" -Member "${var.windows_username}"
+*/
 }
 
 resource "aws_instance" "rdp_server" {
@@ -21,6 +29,7 @@ resource "aws_instance" "rdp_server" {
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id              = var.subnet_id
   user_data              = data.template_file.userdata_win.rendered
+  get_password_data      = true
 
   count = var.rdp_server_enabled == true ? 1 : 0
 

@@ -84,3 +84,23 @@ resource "local_file" "platform_id" {
      curl -s -k https://${aws_eip.controller.public_ip}:8080/api/v1/license | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["uuid"])'
   EOF
 }
+
+resource "local_file" "rdp_administrator_password" {
+  filename = "${path.module}/generated/rdp_administrator_password.sh"
+  content = <<-EOF
+     #!/bin/bash
+     echo 
+     echo ==== RDP Credentials ====
+     echo 
+     echo IP Addr:  ${module.rdp_server.public_ip}
+     echo Username: Administrator
+     echo -n Password:  
+     aws --region ${var.region} \
+        --profile ${var.profile} \
+        ec2 get-password-data \
+        "--instance-id=${module.rdp_server.instance_id}" \
+        --query 'PasswordData' | sed 's/\"\\r\\n//' | sed 's/\\r\\n\"//' | base64 -D | openssl rsautl -inkey "${var.ssh_prv_key_path}" -decrypt
+      echo
+      echo
+  EOF
+}

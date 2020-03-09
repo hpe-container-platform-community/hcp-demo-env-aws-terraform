@@ -86,7 +86,7 @@ echo WRKR_PUB_IPS_TO_ADD=${WRKR_PUB_IPS_TO_ADD[@]}
 ###############################################################################
 
 for WRKR in ${WRKR_PUB_IPS_TO_ADD[@]}; do 
-   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} 'echo WORKER: $(hostname)'
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} 'echo WORKER: $(hostname)'
 done
 
 ###############################################################################
@@ -95,13 +95,13 @@ done
 
 # We have password SSH access from our local machines to EC2, so we can utiise this to copy the Controller SSH key to each Worker
 for WRKR in ${WRKR_PUB_IPS_TO_ADD[@]}; do 
-    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
-        ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "cat >> /home/centos/.ssh/authorized_keys"
+    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
+        ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "cat >> /home/centos/.ssh/authorized_keys"
 done
 
 # test passwordless SSH connection from Controller to Workers
 for WRKR in ${WRKR_PRV_IPS_TO_ADD[@]}; do 
-    ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
+    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
         echo CONTROLLER: Connecting to WORKER ${WRKR}...
         ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -T centos@${WRKR} "echo Connected!"
 ENDSSH
@@ -116,11 +116,11 @@ for WRKR in ${WRKR_PUB_IPS_TO_ADD[@]}; do
    if [[ "$SELINUX_DISABLED" == "True" ]];
    then
       echo "Disabling SELINUX on the worker host $WRKR"
-      ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
+      ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
    fi
-   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "sudo yum update -y"
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum update -y"
    # if the reboot causes ssh to terminate with an error, ignore it
-   ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
 done
 
 #

@@ -17,9 +17,9 @@ CTRL_PUB_IP=$(cat output.json | python3 -c 'import json,sys;obj=json.load(sys.st
 # Configure Controller
 ###############################################################################
 
-scp -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} initial_bluedata_config.py centos@${CTRL_PUB_IP}:~/initial_bluedata_config.py
+scp -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" initial_bluedata_config.py centos@${CTRL_PUB_IP}:~/initial_bluedata_config.py
 
-ssh -o StrictHostKeyChecking=no -i ${LOCAL_SSH_PRV_KEY_PATH} -T centos@${CTRL_PUB_IP} << ENDSSH
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
    sudo pip install --quiet bs4
    ./initial_bluedata_config.py
 ENDSSH
