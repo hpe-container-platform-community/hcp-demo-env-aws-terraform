@@ -94,6 +94,7 @@ resource "local_file" "platform_id" {
 
 resource "local_file" "rdp_credentials" {
   filename = "${path.module}/generated/rdp_credentials.sh"
+  count = var.rdp_server_enabled == true ? 1 : 0
   content = <<-EOF
      #!/bin/bash
 
