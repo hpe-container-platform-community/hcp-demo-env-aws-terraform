@@ -3,7 +3,7 @@ output "private_ip" {
 }
 
 output "ssh_command" {
-  value = var.ad_server_enabled ? "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.ad_server[0].public_ip}" : "ad server not enabled"
+  value = var.ad_server_enabled ? "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${aws_instance.ad_server[0].public_ip}" : "ad server not enabled"
 }
 
 output "instance_id" {

@@ -11,5 +11,5 @@ output "instance_id" {
 }
 
 output "ssh_command" {
-  value = var.nfs_server_enabled ? "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.nfs_server[0].public_ip}" : "nfs server not enabled"
+  value = var.nfs_server_enabled ? "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${aws_instance.nfs_server[0].public_ip}" : "nfs server not enabled"
 }

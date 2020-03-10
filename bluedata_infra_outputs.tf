@@ -77,17 +77,17 @@ output "workers_private_dns" {
 }
 
 output "controller_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.controller.public_ip}"
+  value = "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${aws_eip.controller.public_ip}"
 }
 
 output "gateway_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.gateway.public_ip}"
+  value = "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${aws_eip.gateway.public_ip}"
 }
 
 output "workers_ssh" {
   value = {
     for instance in aws_instance.workers:
-    instance.id => "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${instance.public_ip}" 
+    instance.id => "ssh -o StrictHostKeyChecking=no -i '${var.ssh_prv_key_path}' centos@${instance.public_ip}" 
   }
 }
 

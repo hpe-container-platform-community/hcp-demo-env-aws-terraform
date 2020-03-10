@@ -28,7 +28,10 @@ resource "local_file" "cli_stop_ec2_instances" {
 resource "local_file" "cli_start_ec2_instances" {
   filename = "${path.module}/generated/cli_start_ec2_instances.sh"
   content = <<-EOF
+    #!/bin/bash
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids} 
+
+    terraform output -json > "${path.module}generated/output.json"
   EOF
 }
 
@@ -47,7 +50,7 @@ resource "local_file" "ssh_controller" {
   filename = "${path.module}/generated/ssh_controller.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.controller.public_ip} "$@"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_eip.controller.public_ip} "$@"
   EOF
 }
 
@@ -55,8 +58,12 @@ resource "local_file" "mcs_credentials" {
   filename = "${path.module}/generated/mcs_credentials.sh"
   content = <<-EOF
      #!/bin/bash
-     echo
-     echo [MAPR MCS Credentials] admin:$(ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.controller.public_ip} "cat /opt/bluedata/mapr/conf/mapr-admin-pass")
+     echo 
+     echo ==== MCS Credentials ====
+     echo 
+     echo IP Addr:  ${aws_eip.controller.public_ip}
+     echo Username: admin
+     echo Password: $(ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_eip.controller.public_ip} "cat /opt/bluedata/mapr/conf/mapr-admin-pass")
      echo
   EOF
 }
@@ -65,7 +72,7 @@ resource "local_file" "ssh_gateway" {
   filename = "${path.module}/generated/ssh_gateway.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.gateway.public_ip} "$@"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_eip.gateway.public_ip} "$@"
   EOF
 }
 
@@ -73,7 +80,7 @@ resource "local_file" "restart_auth_proxy" {
   filename = "${path.module}/generated/restart_auth_proxy.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_eip.controller.public_ip} "docker restart epic-auth-proxy-k8s-id-1"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_eip.controller.public_ip} "docker restart epic-auth-proxy-k8s-id-1"
   EOF
 }
 
@@ -85,20 +92,20 @@ resource "local_file" "platform_id" {
   EOF
 }
 
-resource "local_file" "rdp_administrator_password" {
-  filename = "${path.module}/generated/rdp_administrator_password.sh"
+resource "local_file" "rdp_credentials" {
+  filename = "${path.module}/generated/rdp_credentials.sh"
   content = <<-EOF
      #!/bin/bash
 
      # TODO: check for -----BEGIN OPENSSH PRIVATE KEY-----
      #       suggest fix: ssh-keygen -p -N "" -m pem -f /path/to/key
-     
+
      echo 
      echo ==== RDP Credentials ====
      echo 
      echo IP Addr:  ${module.rdp_server.public_ip}
      echo Username: Administrator
-     echo -n Password:  
+     echo -n "Password: "
      aws --region ${var.region} \
         --profile ${var.profile} \
         ec2 get-password-data \

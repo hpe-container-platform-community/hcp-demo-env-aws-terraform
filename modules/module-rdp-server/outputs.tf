@@ -11,7 +11,7 @@ output "instance_id" {
 }
 
 output "ssh_command" {
-  value = var.rdp_server_enabled && length(aws_instance.rdp_server) > 0  ? "ssh -o StrictHostKeyChecking=no -i ${var.ssh_prv_key_path} centos@${aws_instance.rdp_server[0].public_ip}" : "rdp server not enabled"
+  value = var.rdp_server_enabled && length(aws_instance.rdp_server) > 0  ? "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${aws_instance.rdp_server[0].public_ip}" : "rdp server not enabled"
 }
 
 output "enc_administrator_password" {

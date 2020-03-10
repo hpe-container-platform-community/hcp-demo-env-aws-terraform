@@ -7,6 +7,18 @@ $SourceURL = "https://download-installer.cdn.mozilla.net/pub/firefox/releases/73
 $Installer = $env:TMP + "\firefox.msi"; 
 Invoke-WebRequest $SourceURL -OutFile $Installer;
 Start-Process -FilePath $Installer -Args "/quiet" -Wait; 
+Remove-Item $Installer;
+
+$Path = $env:TEMP; 
+$Installer = "chrome_installer.exe"; 
+Invoke-WebRequest "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile $Path$Installer; 
+Start-Process -FilePath $Path$Installer -Args "/silent /install" -Verb RunAs -Wait; 
+Remove-Item $Path$Installer
+
+Install-PackageProvider -Name NuGet -Force;
+Install-Module -Name Posh-SSH -Force;
+
+#https://github.com/darkoperator/Posh-SSH/blob/master/docs/Get-SCPFile.md
 </powershell>
 <persist>false</persist>
 EOF
