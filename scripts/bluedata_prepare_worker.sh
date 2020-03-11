@@ -4,7 +4,7 @@ set -e # abort on error
 set -u # abort on undefined variable
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-OUTPUT_JSON=$(cat ${SCRIPT_DIR}/../generated/output.json)
+OUTPUT_JSON=$(cat "${SCRIPT_DIR}"/../generated/output.json)
 
 ###############################################################################
 # Set variables from terraform output
