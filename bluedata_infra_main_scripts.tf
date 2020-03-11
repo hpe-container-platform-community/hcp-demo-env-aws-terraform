@@ -15,7 +15,7 @@ resource "local_file" "ca-key" {
 /// instance start/stop/status
 
 locals {
-  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
+  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.controller.id} ${module.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
 }
 
 resource "local_file" "cli_stop_ec2_instances" {
@@ -72,7 +72,7 @@ resource "local_file" "ssh_gateway" {
   filename = "${path.module}/generated/ssh_gateway.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_eip.gateway.public_ip} "$@"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.gateway.public_ip} "$@"
   EOF
 }
 

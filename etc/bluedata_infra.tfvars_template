@@ -62,6 +62,12 @@ ad_instance_type   = "t2.small"
 
 create_eip_controller = true
 
+# Whether to create an EIP for the gateway - you may wish to disable this
+# if you are short on EIPs. If you don't create the EIP, you probably need to 
+# enable the RDP server.
+
+create_eip_gateway = true
+
 # the path to your ssh private key on your local machine
 # use double \\ for windows paths
 

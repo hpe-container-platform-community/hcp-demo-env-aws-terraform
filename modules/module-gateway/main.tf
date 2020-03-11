@@ -1,7 +1,7 @@
 
 resource "aws_eip" "gateway" {
   vpc = true
-
+  count = var.create_eip ? 1 : 0
   tags = {
     Name = "${var.project_id}-gateway"
     Project = "${var.project_id}"
@@ -12,22 +12,19 @@ resource "aws_eip" "gateway" {
 // EIP associations
 
 resource "aws_eip_association" "eip_assoc_gateway" {
+  count = var.create_eip ? 1 : 0
   instance_id   = aws_instance.gateway.id
-  allocation_id = aws_eip.gateway.id
+  allocation_id = aws_eip.gateway[0].id
 }
 
 // Instance
 
 resource "aws_instance" "gateway" {
-  ami                    = var.EC2_CENTOS7_AMIS[var.region]
+  ami                    = var.ec2_ami
   instance_type          = var.gtw_instance_type
-  key_name               = aws_key_pair.main.key_name
-  vpc_security_group_ids = flatten([ 
-    module.network.security_group_allow_all_from_client_ip, 
-    module.network.security_group_main_id,
-    var.allow_ssh_from_world == true ? [ module.network.security_group_allow_ssh_from_world_id ] : []
-  ])
-  subnet_id              = module.network.subnet_main_id
+  key_name               = var.key_name
+  vpc_security_group_ids = var.security_group_ids
+  subnet_id              = var.subnet_id
 
   root_block_device {
     volume_type = "gp2"

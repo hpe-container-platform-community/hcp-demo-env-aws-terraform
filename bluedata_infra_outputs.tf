@@ -35,16 +35,16 @@ output "client_cidr_block" {
 }
 
 output "gateway_private_ip" {
-  value = "${aws_instance.gateway.private_ip}"
+  value = "${module.gateway.private_ip}"
 }
 output "gateway_private_dns" {
-  value = "${aws_instance.gateway.private_dns}"
+  value = "${module.gateway.private_dns}"
 }
 output "gateway_public_ip" {
-  value = "${aws_eip.gateway.public_ip}"
+  value = "${module.gateway.public_ip}"
 }
 output "gateway_public_dns" {
-  value = "${aws_eip.gateway.public_dns}"
+  value = "${module.gateway.public_dns}"
 }
 
 output "controller_public_ip" {
@@ -81,7 +81,7 @@ output "controller_ssh_command" {
 }
 
 output "gateway_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${aws_eip.gateway.public_ip}"
+  value = "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${module.gateway.public_ip}"
 }
 
 output "workers_ssh" {
