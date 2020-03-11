@@ -2,7 +2,7 @@
 
 resource "aws_eip" "controller" {
   vpc = true
-
+  //count = var.eip_controller_enabled ? 1 : 0
   tags = {
     Name = "${var.project_id}-controller"
     Project = "${var.project_id}"
@@ -20,15 +20,11 @@ resource "aws_eip_association" "eip_assoc_controller" {
 // Instance
 
 resource "aws_instance" "controller" {
-  ami                    = var.EC2_CENTOS7_AMIS[var.region]
+  ami                    = var.ec2_ami
   instance_type          = var.ctr_instance_type
-  key_name               = aws_key_pair.main.key_name
-  vpc_security_group_ids = flatten([ 
-    module.network.security_group_allow_all_from_client_ip, 
-    module.network.security_group_main_id,
-    var.allow_ssh_from_world == true ? [ module.network.security_group_allow_ssh_from_world_id ] : []
-  ])
-  subnet_id              = module.network.subnet_main_id
+  key_name               = var.key_name
+  vpc_security_group_ids = var.security_group_ids
+  subnet_id              = var.subnet_id
 
   root_block_device {
     volume_type = "gp2"

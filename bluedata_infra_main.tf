@@ -42,6 +42,28 @@ module "network" {
   aws_zone_id = data.aws_availability_zone.main.zone_id
 }
 
+module "controller" {
+  source = "./modules/module-controller"
+  project_id = var.project_id
+  user = var.user
+  ssh_prv_key_path = var.ssh_prv_key_path
+  client_cidr_block = var.client_cidr_block
+  additional_client_ip_list = var.additional_client_ip_list
+  subnet_cidr_block = var.subnet_cidr_block
+  vpc_cidr_block = var.vpc_cidr_block
+  aws_zone_id = data.aws_availability_zone.main.zone_id
+  az = var.az
+  ec2_ami = var.EC2_CENTOS7_AMIS[var.region]
+  ctr_instance_type = var.ctr_instance_type
+  key_name = aws_key_pair.main.key_name
+  security_group_ids = flatten([ 
+    module.network.security_group_allow_all_from_client_ip, 
+    module.network.security_group_main_id,
+    var.allow_ssh_from_world == true ? [ module.network.security_group_allow_ssh_from_world_id ] : []
+  ])
+  subnet_id = module.network.subnet_main_id
+}
+
 module "nfs_server" {
   source = "./modules/module-nfs-server"
   project_id = var.project_id

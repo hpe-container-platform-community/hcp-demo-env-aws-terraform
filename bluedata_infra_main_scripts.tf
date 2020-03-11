@@ -15,7 +15,7 @@ resource "local_file" "ca-key" {
 /// instance start/stop/status
 
 locals {
-  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${aws_instance.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
+  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.controller.id} ${aws_instance.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
 }
 
 resource "local_file" "cli_stop_ec2_instances" {
@@ -50,7 +50,7 @@ resource "local_file" "ssh_controller" {
   filename = "${path.module}/generated/ssh_controller.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_eip.controller.public_ip} "$@"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.controller.public_ip} "$@"
   EOF
 }
 
@@ -61,9 +61,9 @@ resource "local_file" "mcs_credentials" {
      echo 
      echo ==== MCS Credentials ====
      echo 
-     echo IP Addr:  ${aws_eip.controller.public_ip}
+     echo IP Addr:  ${module.controller.public_ip}
      echo Username: admin
-     echo Password: $(ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_eip.controller.public_ip} "cat /opt/bluedata/mapr/conf/mapr-admin-pass")
+     echo Password: $(ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.controller.public_ip} "cat /opt/bluedata/mapr/conf/mapr-admin-pass")
      echo
   EOF
 }
@@ -80,7 +80,7 @@ resource "local_file" "restart_auth_proxy" {
   filename = "${path.module}/generated/restart_auth_proxy.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_eip.controller.public_ip} "docker restart epic-auth-proxy-k8s-id-1"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.controller.public_ip} "docker restart epic-auth-proxy-k8s-id-1"
   EOF
 }
 
@@ -88,7 +88,7 @@ resource "local_file" "platform_id" {
   filename = "${path.module}/generated/platform_id.sh"
   content = <<-EOF
      #!/bin/bash
-     curl -s -k https://${aws_eip.controller.public_ip}:8080/api/v1/license | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["uuid"])'
+     curl -s -k https://${module.controller.public_ip}:8080/api/v1/license | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["uuid"])'
   EOF
 }
 

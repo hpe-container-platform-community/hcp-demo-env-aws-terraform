@@ -48,19 +48,19 @@ output "gateway_public_dns" {
 }
 
 output "controller_public_ip" {
-  value = "${aws_eip.controller.public_ip}"
+  value = "${module.controller.public_ip}"
 }
 
 output "controller_private_ip" {
-  value = "${aws_instance.controller.private_ip}"
+  value = "${module.controller.private_ip}"
 }
 
 output "controller_public_dns" {
-  value = "${aws_eip.controller.public_dns}"
+  value = "${module.controller.public_dns}"
 }
 
 output "controller_private_dns" {
-  value = "${aws_instance.controller.private_dns}"
+  value = "${module.controller.private_dns}"
 }
 
 output "workers_public_ip" {
@@ -77,7 +77,7 @@ output "workers_private_dns" {
 }
 
 output "controller_ssh_command" {
-  value = "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${aws_eip.controller.public_ip}"
+  value = "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${module.controller.public_ip}"
 }
 
 output "gateway_ssh_command" {
