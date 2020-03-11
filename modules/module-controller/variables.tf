@@ -40,3 +40,6 @@ variable "ctr_instance_type" {
 variable "ssh_prv_key_path" {
     type = string
 }
+variable "create_eip" {
+    type = bool
+}

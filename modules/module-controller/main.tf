@@ -2,7 +2,7 @@
 
 resource "aws_eip" "controller" {
   vpc = true
-  //count = var.eip_controller_enabled ? 1 : 0
+  count = var.create_eip ? 1 : 0
   tags = {
     Name = "${var.project_id}-controller"
     Project = "${var.project_id}"
@@ -13,8 +13,9 @@ resource "aws_eip" "controller" {
 // EIP associations
 
 resource "aws_eip_association" "eip_assoc_controller" {
+  count = var.create_eip ? 1 : 0
   instance_id   = aws_instance.controller.id
-  allocation_id = aws_eip.controller.id
+  allocation_id = aws_eip.controller[0].id
 }
 
 // Instance

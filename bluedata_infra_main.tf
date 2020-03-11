@@ -44,6 +44,7 @@ module "network" {
 
 module "controller" {
   source = "./modules/module-controller"
+  create_eip = var.create_eip_controller
   project_id = var.project_id
   user = var.user
   ssh_prv_key_path = var.ssh_prv_key_path

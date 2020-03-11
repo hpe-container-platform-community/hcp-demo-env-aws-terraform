@@ -40,11 +40,11 @@ variable "EC2_WIN_RDP_AMIS" {
   } 
 } 
 
-variable "eip_controller_enabled" { 
+variable "create_eip_controller" { 
   default = true
 }
 
-variable "eip_gateway_enabled" { 
+variable "create_eip_gateway" { 
   default = true
 }
 

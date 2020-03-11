@@ -105,6 +105,7 @@ resource "local_file" "rdp_credentials" {
      echo ==== RDP Credentials ====
      echo 
      echo IP Addr:  ${module.rdp_server.public_ip}
+     echo URL:      "rdp://full%20address=s:${module.rdp_server.public_ip}:3389&username=s:Administrator"
      echo Username: Administrator
      echo -n "Password: "
      aws --region ${var.region} \
