@@ -54,6 +54,66 @@ resource "local_file" "ssh_controller" {
   EOF
 }
 
+resource "local_file" "ssh_gateway" {
+  filename = "${path.module}/generated/ssh_gateway.sh"
+  content = <<-EOF
+     #!/bin/bash
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.gateway.public_ip} "$@"
+  EOF
+}
+
+resource "local_file" "ssh_worker" {
+  count = var.worker_count
+
+  filename = "${path.module}/generated/ssh_worker_${count.index}.sh"
+  content = <<-EOF
+     #!/bin/bash
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_instance.workers[count.index].public_ip} "$@"
+  EOF
+}
+
+resource "local_file" "ssh_workers" {
+  count = var.worker_count
+  filename = "${path.module}/generated/ssh_worker_all.sh"
+  content = <<-EOF
+     #!/bin/bash
+
+     if [[ $# -lt 1 ]]
+     then
+        echo "You must provide a command, e.g. ./generated/ssh_worker_all.sh CMD"
+        exit 1
+     fi
+
+     WORKERS='${join(" ", aws_instance.workers.*.public_ip)}'
+     for WORKER in $WORKERS;
+     do
+      ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$WORKER "$@"
+     done
+  EOF
+}
+
+resource "local_file" "ssh_all" {
+  count = var.worker_count
+  filename = "${path.module}/generated/ssh_all.sh"
+  content = <<-EOF
+     #!/bin/bash
+
+     if [[ $# -lt 1 ]]
+     then
+        echo "You must provide a command, e.g. ./generated/ssh_all.sh CMD"
+        exit 1
+     fi
+
+     WORKERS='${module.controller.public_ip} ${module.gateway.public_ip} ${join(" ", aws_instance.workers.*.public_ip)}'
+     echo $WORKERS
+
+     for WORKER in $WORKERS;
+     do
+      ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$WORKER "$@"
+     done
+  EOF
+}
+
 resource "local_file" "mcs_credentials" {
   filename = "${path.module}/generated/mcs_credentials.sh"
   content = <<-EOF
@@ -65,14 +125,6 @@ resource "local_file" "mcs_credentials" {
      echo Username: admin
      echo Password: $(ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.controller.public_ip} "cat /opt/bluedata/mapr/conf/mapr-admin-pass")
      echo
-  EOF
-}
-
-resource "local_file" "ssh_gateway" {
-  filename = "${path.module}/generated/ssh_gateway.sh"
-  content = <<-EOF
-     #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.gateway.public_ip} "$@"
   EOF
 }
 
