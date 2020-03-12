@@ -117,3 +117,12 @@ resource "local_file" "rdp_credentials" {
       echo
   EOF
 }
+
+resource "local_file" "whatismyip" {
+  filename = "${path.module}/generated/whatismyip.sh"
+
+  content = <<-EOF
+     #!/bin/bash
+     echo $(curl -s http://ifconfig.me/ip)/32
+  EOF
+}
