@@ -15,6 +15,7 @@ The goals of this project are:
 The following installed locally:
 
  - python3
+ - netcat (nc) 
  - ssh client
  - ssh key pair (ssh-keygen -t rsa)
  - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html
