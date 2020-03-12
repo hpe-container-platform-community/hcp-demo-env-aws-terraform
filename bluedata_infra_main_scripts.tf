@@ -80,7 +80,8 @@ resource "local_file" "ssh_workers" {
 
      if [[ $# -lt 1 ]]
      then
-        echo "You must provide a command, e.g. ./generated/ssh_worker_all.sh CMD"
+        echo "You must provide at least one command, e.g."
+        echo "./generated/ssh_worker_all.sh CMD1 CMD2 CMDn"
         exit 1
      fi
 
@@ -100,16 +101,15 @@ resource "local_file" "ssh_all" {
 
      if [[ $# -lt 1 ]]
      then
-        echo "You must provide a command, e.g. ./generated/ssh_all.sh CMD"
+        echo "You must provide at least one command, e.g."
+        echo "./generated/ssh_worker_all.sh CMD1 CMD2 CMDn"
         exit 1
      fi
 
-     WORKERS='${module.controller.public_ip} ${module.gateway.public_ip} ${join(" ", aws_instance.workers.*.public_ip)}'
-     echo $WORKERS
-
-     for WORKER in $WORKERS;
+     HOSTS='${module.controller.public_ip} ${module.gateway.public_ip} ${join(" ", aws_instance.workers.*.public_ip)}'
+     for HOST in $HOSTS;
      do
-      ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$WORKER "$@"
+        ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$HOST "$@"
      done
   EOF
 }
@@ -148,25 +148,32 @@ resource "local_file" "rdp_credentials" {
   filename = "${path.module}/generated/rdp_credentials.sh"
   count = var.rdp_server_enabled == true ? 1 : 0
   content = <<-EOF
-     #!/bin/bash
+    #!/bin/bash
 
-     # TODO: check for -----BEGIN OPENSSH PRIVATE KEY-----
-     #       suggest fix: ssh-keygen -p -N "" -m pem -f /path/to/key
+    if grep -q 'OPENSSH' "${var.ssh_prv_key_path}"
+    then
+      echo "***** ERROR ******"
+      echo "Found OPENSSH key but need RSA key at ${var.ssh_prv_key_path}"
+      echo "You can convert with:"
+      echo "$ ssh-keygen -p -N '' -m pem -f '${var.ssh_prv_key_path}'"
+      echo "******************"
+      exit 1
+    fi
 
-     echo 
-     echo ==== RDP Credentials ====
-     echo 
-     echo IP Addr:  ${module.rdp_server.public_ip}
-     echo URL:      "rdp://full%20address=s:${module.rdp_server.public_ip}:3389&username=s:Administrator"
-     echo Username: Administrator
-     echo -n "Password: "
-     aws --region ${var.region} \
+    echo 
+    echo ==== RDP Credentials ====
+    echo 
+    echo IP Addr:  ${module.rdp_server.public_ip}
+    echo URL:      "rdp://full%20address=s:${module.rdp_server.public_ip}:3389&username=s:Administrator"
+    echo Username: Administrator
+    echo -n "Password: "
+    aws --region ${var.region} \
         --profile ${var.profile} \
         ec2 get-password-data \
         "--instance-id=${module.rdp_server.instance_id}" \
         --query 'PasswordData' | sed 's/\"\\r\\n//' | sed 's/\\r\\n\"//' | base64 -D | openssl rsautl -inkey "${var.ssh_prv_key_path}" -decrypt
-      echo
-      echo
+    echo
+    echo
   EOF
 }
 
