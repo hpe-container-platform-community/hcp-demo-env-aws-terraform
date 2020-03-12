@@ -31,7 +31,7 @@ resource "local_file" "cli_start_ec2_instances" {
     #!/bin/bash
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids} 
 
-    terraform output -json > "${path.module}generated/output.json"
+    terraform output -json > "${path.module}/generated/output.json"
   EOF
 }
 
