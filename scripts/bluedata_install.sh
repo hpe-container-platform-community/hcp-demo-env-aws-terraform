@@ -26,6 +26,15 @@ LOCAL_SSH_PRV_KEY_PATH=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=jso
 echo LOCAL_SSH_PUB_KEY_PATH=${LOCAL_SSH_PUB_KEY_PATH}
 echo LOCAL_SSH_PRV_KEY_PATH=${LOCAL_SSH_PRV_KEY_PATH}
 
+CREATE_EIP_CONTROLLER=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["create_eip_controller"]["value"])')
+CREATE_EIP_GATEWAY=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["create_eip_gateway"]["value"])')
+
+[ "$CREATE_EIP_CONTROLLER" ] || ( echo "ERROR: CREATE_EIP_CONTROLLER is empty" && exit 1 )
+[ "$CREATE_EIP_GATEWAY" ]    || ( echo "ERROR: CREATE_EIP_GATEWAY is empty" && exit 1 )
+
+echo CREATE_EIP_CONTROLLER=${CREATE_EIP_CONTROLLER}
+echo CREATE_EIP_GATEWAY=${CREATE_EIP_GATEWAY}
+
 CA_KEY="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ca_key"]["value"])')"
 CA_CERT="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ca_cert"]["value"])')"
 
@@ -300,6 +309,20 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 # retrive controller ssh private key and save it locally
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > generated/controller.prv_key
 
+if [[ "${CREATE_EIP_GATEWAY}" == "True" ]];
+then
+   CONFIG_GATEWAY_DNS=$GATW_PUB_DNS
+else
+   CONFIG_GATEWAY_DNS=$GATW_PRV_DNS
+fi
+
+if [[ "${CREATE_EIP_CONTROLLER}" == "True" ]];
+then
+   CONFIG_CONTROLLER_IP=$CTRL_PUB_IP
+else
+   CONFIG_CONTROLLER_IP=$CTRL_PRV_IP
+fi
+
 cat <<EOF>"$LOG_FILE"
 
 
@@ -314,7 +337,7 @@ SSH Private key has been downloaded to:
 
 INSTRUCTIONS for completing the BlueData installation ...
 
-0. In your browser, navigate to the Controller URL: https://${CTRL_PUB_IP}"
+0. In your browser, navigate to the Controller URL: https://${CONFIG_CONTROLLER_IP}"
 1. At the setup screen, click 'Submit'
 2. At the login screen, use 'admin/admin123'
 3. Naviate to Settings -> License:
@@ -323,7 +346,7 @@ INSTRUCTIONS for completing the BlueData installation ...
 4. Navigate to Installation tab:
 
    1. Add workers private ips "$(echo ${WRKR_PRV_IPS[@]} | sed -e 's/ /,/g')"
-   2. Add gateway private ip "${GATW_PRV_IP}" and public dns "${GATW_PUB_DNS}"
+   2. Add gateway private ip "${GATW_PRV_IP}" and public dns "${CONFIG_GATEWAY_DNS}"
    3. Upload "${PROJECT_DIR}/generated/controller.prv_key"
    4. Click Add hosts (enter site lock down when prompted)
 
