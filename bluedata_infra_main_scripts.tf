@@ -31,7 +31,10 @@ resource "local_file" "cli_start_ec2_instances" {
     #!/bin/bash
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids} 
 
-    terraform output -json > "${path.module}/generated/output.json"
+    echo "*******************************************************************************"
+    echo "IMPORTANT: You need to run the following command to update changed IP addresses"
+    echo "           ./bin/terraform_appy.sh"
+    echo "*******************************************************************************"
   EOF
 }
 
