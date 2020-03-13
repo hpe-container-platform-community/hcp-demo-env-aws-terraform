@@ -33,7 +33,7 @@ resource "local_file" "cli_start_ec2_instances" {
 
     echo "*******************************************************************************"
     echo "IMPORTANT: You need to run the following command to update changed IP addresses"
-    echo "           ./bin/terraform_appy.sh"
+    echo "           ./bin/terraform_apply.sh"
     echo "*******************************************************************************"
   EOF
 }
