@@ -18,7 +18,6 @@ Remove-Item $Path$Installer
 </powershell>
 <persist>false</persist>
 EOF
-
 }
 
 resource "aws_instance" "rdp_server" {

@@ -65,7 +65,7 @@ resource "local_file" "ssh_gateway" {
 resource "local_file" "ssh_worker" {
   count = var.worker_count
 
-  filename = "${path.module}/generated/ssh_worker_${count.index}.sh"
+  filename = "${path.module}/generated/ssh_worker_${count.index + 1}.sh"
   content = <<-EOF
      #!/bin/bash
      ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_instance.workers[count.index].public_ip} "$@"
