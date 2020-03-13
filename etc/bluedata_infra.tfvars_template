@@ -107,8 +107,6 @@ ad_server_enabled = false
 # windows rdp server
 
 rdp_server_enabled = false
-windows_username = "bluedata"
-windows_password = "changeme"
 
 # If you would like to allow ssh or rdp from any source, set the following variables
 

@@ -15,23 +15,10 @@ Invoke-WebRequest "https://dl.google.com/chrome/install/latest/chrome_installer.
 Start-Process -FilePath $Path$Installer -Args "/silent /install" -Verb RunAs -Wait; 
 Remove-Item $Path$Installer
 
-Install-PackageProvider -Name NuGet -Force;
-Install-Module -Name Posh-SSH -Force;
-
-#https://github.com/darkoperator/Posh-SSH/blob/master/docs/Get-SCPFile.md
 </powershell>
 <persist>false</persist>
 EOF
 
-/*
-Invoke-Expression -Command 'net user ${var.windows_username} /add /y';
-Invoke-Expression -Command 'net user ${var.windows_username} ${var.windows_password}';
-Invoke-Expression -Command 'net localgroup administrators ${var.windows_username} /add';
-
-$password = ConvertTo-SecureString -SecureString "${var.windows_password}"
-New-LocalUser "${var.windows_username}" -Password $password -FullName "${var.windows_username}"
-Add-LocalGroupMember -Group "Administrators" -Member "${var.windows_username}"
-*/
 }
 
 resource "aws_instance" "rdp_server" {
@@ -42,6 +29,10 @@ resource "aws_instance" "rdp_server" {
   subnet_id              = var.subnet_id
   user_data              = data.template_file.userdata_win.rendered
   get_password_data      = true
+
+  lifecycle {
+    ignore_changes = [ user_data, ]
+  }
 
   count = var.rdp_server_enabled == true ? 1 : 0
 

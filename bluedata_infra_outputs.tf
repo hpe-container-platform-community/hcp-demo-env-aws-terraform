@@ -34,6 +34,14 @@ output "client_cidr_block" {
  value = "${var.client_cidr_block}"
 }
 
+output "create_eip_controller" {
+  value = "${var.create_eip_controller}"
+}
+
+output "create_eip_gateway" {
+  value = "${var.create_eip_gateway}"
+}
+
 output "gateway_private_ip" {
   value = "${module.gateway.private_ip}"
 }

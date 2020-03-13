@@ -136,6 +136,4 @@ module "rdp_server" {
     var.allow_rdp_from_world == true ? [ module.network.security_group_allow_rdp_from_world_id ] : []
   ])
   subnet_id = module.network.subnet_main_id
-  windows_username = var.windows_username
-  windows_password = var.windows_password
 }

@@ -67,10 +67,6 @@ variable "nfs_server_enabled" { default = false }
 variable "ad_server_enabled" { default = true }
 
 variable "rdp_server_enabled" { default = false }
-variable "windows_username" { 
-  default = "bluedata"
-}
-variable "windows_password" {}
 
 variable "allow_ssh_from_world" {
   default = false
