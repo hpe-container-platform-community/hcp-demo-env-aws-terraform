@@ -135,7 +135,7 @@ resource "local_file" "restart_auth_proxy" {
   filename = "${path.module}/generated/restart_auth_proxy.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.controller.public_ip} "docker restart epic-auth-proxy-k8s-id-1"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.controller.public_ip} 'docker restart $(docker ps | grep "epic/authproxy" | cut -d " " -f1); docker ps'
   EOF
 }
 
