@@ -59,6 +59,10 @@ output "controller_public_ip" {
   value = "${module.controller.public_ip}"
 }
 
+output "controller_public_url" {
+  value = "https://${module.controller.public_ip}"
+}
+
 output "controller_private_ip" {
   value = "${module.controller.private_ip}"
 }
