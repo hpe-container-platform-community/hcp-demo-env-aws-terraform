@@ -48,6 +48,29 @@ resource "local_file" "cli_running_ec2_instances" {
   EOF  
 }
 
+resource "local_file" "ssh_controller_port_forwards" {
+  filename = "${path.module}/generated/ssh_controller_port_forwards.sh"
+  content = <<-EOF
+    #!/bin/bash
+    if [[ -e "${path.module}/etc/port_forwards.sh" ]]
+    then
+      PORT_FORWARDS=$(cat "${path.module}/etc/port_forwards.sh")
+    else
+      echo ./etc/port_forwards.sh file not found please create it and add your rules, e.g.
+      echo cp ./etc/port_forwards.sh_template ./etc/port_forwards.sh
+      exit 1
+    fi
+    echo Creating port forwards from "${path.module}/etc/port_forwards.sh"
+
+    set -x
+    ssh -o StrictHostKeyChecking=no \
+      -i "${var.ssh_prv_key_path}" \
+      -N \
+      centos@${module.controller.public_ip} \
+      $PORT_FORWARDS \
+      "$@"
+  EOF
+}
 
 resource "local_file" "ssh_controller" {
   filename = "${path.module}/generated/ssh_controller.sh"
