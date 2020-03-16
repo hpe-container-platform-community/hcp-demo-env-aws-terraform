@@ -128,7 +128,24 @@ module "rdp_server" {
   ssh_prv_key_path = var.ssh_prv_key_path
   rdp_ec2_ami = var.EC2_WIN_RDP_AMIS[var.region]
   rdp_instance_type = var.rdp_instance_type
-  rdp_server_enabled = var.rdp_server_enabled
+  rdp_server_enabled = var.rdp_server_enabled && var.rdp_server_operating_system == "WINDOWS"
+  key_name = aws_key_pair.main.key_name
+  vpc_security_group_ids = flatten([ 
+    module.network.security_group_allow_all_from_client_ip, 
+    module.network.security_group_main_id,
+    var.allow_rdp_from_world == true ? [ module.network.security_group_allow_rdp_from_world_id ] : []
+  ])
+  subnet_id = module.network.subnet_main_id
+}
+
+module "rdp_server_linux" {
+  source = "./modules/module-rdp-server-linux"
+  project_id = var.project_id
+  user = var.user
+  ssh_prv_key_path = var.ssh_prv_key_path
+  rdp_ec2_ami = var.EC2_LIN_RDP_AMIS[var.region]
+  rdp_instance_type = var.rdp_instance_type
+  rdp_server_enabled = var.rdp_server_enabled && var.rdp_server_operating_system == "LINUX" 
   key_name = aws_key_pair.main.key_name
   vpc_security_group_ids = flatten([ 
     module.network.security_group_allow_all_from_client_ip, 

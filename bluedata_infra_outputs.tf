@@ -130,20 +130,13 @@ output "ad_server_ssh_command" {
 // RDP Server Output
 
 output "rdp_server_private_ip" {
-  value = module.rdp_server.private_ip
+  value = var.rdp_server_operating_system == "WINDOWS" ? module.rdp_server.private_ip : module.rdp_server_linux.private_ip
 }
 
 output "rdp_server_public_ip" {
-  value = module.rdp_server.public_ip
+  value = var.rdp_server_operating_system == "WINDOWS" ? module.rdp_server.public_ip : module.rdp_server_linux.public_ip
 }
 
-output "rdp_server_ssh_command" {
-  value = module.rdp_server.ssh_command
+output "rdp_server_instance_id" {
+  value = var.rdp_server_operating_system == "WINDOWS" ? module.rdp_server.instance_id : module.rdp_server_linux.instance_id
 }
-
-/*
-output "rdp_server_administrator_password" {
-  //value = rsadecrypt(base64encode(module.rdp_server.enc_administrator_password), file(var.ssh_prv_key_path))
-  value = base64decode(module.rdp_server.enc_administrator_password)
-}
-*/

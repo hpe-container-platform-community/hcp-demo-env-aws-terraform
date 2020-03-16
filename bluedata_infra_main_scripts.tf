@@ -15,7 +15,7 @@ resource "local_file" "ca-key" {
 /// instance start/stop/status
 
 locals {
-  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.controller.id} ${module.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
+  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} ${module.controller.id} ${module.gateway.id} ${join(" ", aws_instance.workers.*.id)}"
 }
 
 resource "local_file" "cli_stop_ec2_instances" {
@@ -179,11 +179,12 @@ resource "local_file" "platform_id" {
   EOF
 }
 
-resource "local_file" "rdp_credentials" {
+resource "local_file" "rdp_windows_credentials" {
   filename = "${path.module}/generated/rdp_credentials.sh"
-  count = var.rdp_server_enabled == true ? 1 : 0
+  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "WINDOWS" ? 1 : 0
   content = <<-EOF
     #!/bin/bash
+    source "${path.module}/scripts/variables.sh"
 
     if grep -q 'OPENSSH' "${var.ssh_prv_key_path}"
     then
@@ -208,6 +209,22 @@ resource "local_file" "rdp_credentials" {
         "--instance-id=${module.rdp_server.instance_id}" \
         --query 'PasswordData' | sed 's/\"\\r\\n//' | sed 's/\\r\\n\"//' | base64 -D | openssl rsautl -inkey "${var.ssh_prv_key_path}" -decrypt
     echo
+    echo
+  EOF
+}
+
+resource "local_file" "rdp_linux_credentials" {
+  filename = "${path.module}/generated/rdp_credentials.sh"
+  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
+  content = <<-EOF
+    #!/bin/bash
+    source "${path.module}/scripts/variables.sh"
+    echo 
+    echo ==== RDP Credentials ====
+    echo 
+    echo IP Addr:  "https://$RDP_PUB_IP"
+    echo Username: ubuntu
+    echo Password: $RDP_INSTANCE_ID
     echo
   EOF
 }

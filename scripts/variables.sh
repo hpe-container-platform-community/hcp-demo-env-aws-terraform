@@ -118,3 +118,7 @@ read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
 
 #echo WRKR_PRV_IPS=${WRKR_PRV_IPS[@]}
 #echo WRKR_PUB_IPS=${WRKR_PUB_IPS[@]}
+
+RDP_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_private_ip"]["value"])') 
+RDP_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_public_ip"]["value"])') 
+RDP_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_instance_id"]["value"])') 

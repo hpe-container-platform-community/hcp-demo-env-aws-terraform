@@ -108,6 +108,10 @@ ad_server_enabled = false
 
 rdp_server_enabled = false
 
+# set to "WINDOWS" or "LINUX"
+
+rdp_server_operating_system = "WINDOWS"
+
 # If you would like to allow ssh or rdp from any source, set the following variables
 
 allow_ssh_from_world = false
