@@ -41,6 +41,7 @@ variable "EC2_WIN_RDP_AMIS" {
 } 
 
 variable "EC2_LIN_RDP_AMIS" {
+  // https://aws.amazon.com/marketplace/pp/B07LBG6YGB?ref=cns_srchrow
   default = { 
     us-east-1      = "ami-08cf3d19c50987ffc" # N.Virginia
     us-east-2      = "ami-022a505199d19fbe4" # Ohio
