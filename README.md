@@ -126,7 +126,7 @@ terraform apply -var-file=etc/bluedata_infra.tfvars \
 terraform output -json > generated/output.json
 
 # run a script to prepare the worker - follow the prompts and instructions.
-./bluedata_prepare_worker.sh
+./scripts/bluedata_prepare_worker.sh
 ```
 
 ### Destroy environment when finished
