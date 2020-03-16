@@ -52,6 +52,9 @@ resource "local_file" "ssh_controller_port_forwards" {
   filename = "${path.module}/generated/ssh_controller_port_forwards.sh"
   content = <<-EOF
     #!/bin/bash
+
+    source "${path.module}/scripts/variables.sh"
+
     if [[ -e "${path.module}/etc/port_forwards.sh" ]]
     then
       PORT_FORWARDS=$(cat "${path.module}/etc/port_forwards.sh")
@@ -66,7 +69,7 @@ resource "local_file" "ssh_controller_port_forwards" {
     ssh -o StrictHostKeyChecking=no \
       -i "${var.ssh_prv_key_path}" \
       -N \
-      centos@${module.controller.public_ip} \
+      centos@$CTRL_PUB_IP \
       $PORT_FORWARDS \
       "$@"
   EOF
@@ -76,7 +79,8 @@ resource "local_file" "ssh_controller" {
   filename = "${path.module}/generated/ssh_controller.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.controller.public_ip} "$@"
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$@"
   EOF
 }
 
@@ -84,7 +88,8 @@ resource "local_file" "ssh_gateway" {
   filename = "${path.module}/generated/ssh_gateway.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.gateway.public_ip} "$@"
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$@"
   EOF
 }
 
@@ -94,7 +99,8 @@ resource "local_file" "ssh_worker" {
   filename = "${path.module}/generated/ssh_worker_${count.index + 1}.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${aws_instance.workers[count.index].public_ip} "$@"
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$${WRKR_PUB_IPS[${count.index}]} "$@"
   EOF
 }
 
@@ -103,7 +109,7 @@ resource "local_file" "ssh_workers" {
   filename = "${path.module}/generated/ssh_worker_all.sh"
   content = <<-EOF
      #!/bin/bash
-
+     source "${path.module}/scripts/variables.sh"
      if [[ $# -lt 1 ]]
      then
         echo "You must provide at least one command, e.g."
@@ -111,10 +117,9 @@ resource "local_file" "ssh_workers" {
         exit 1
      fi
 
-     WORKERS='${join(" ", aws_instance.workers.*.public_ip)}'
-     for WORKER in $WORKERS;
+     for HOST in $${WRKR_PUB_IPS[@]}; 
      do
-      ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$WORKER "$@"
+      ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$HOST "$@"
      done
   EOF
 }
@@ -124,7 +129,7 @@ resource "local_file" "ssh_all" {
   filename = "${path.module}/generated/ssh_all.sh"
   content = <<-EOF
      #!/bin/bash
-
+     source "${path.module}/scripts/variables.sh"
      if [[ $# -lt 1 ]]
      then
         echo "You must provide at least one command, e.g."
@@ -132,8 +137,9 @@ resource "local_file" "ssh_all" {
         exit 1
      fi
 
-     HOSTS='${module.controller.public_ip} ${module.gateway.public_ip} ${join(" ", aws_instance.workers.*.public_ip)}'
-     for HOST in $HOSTS;
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$@"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$GATW_PUB_IP "$@"
+     for HOST in $${WRKR_PUB_IPS[@]};
      do
         ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$HOST "$@"
      done
@@ -144,12 +150,13 @@ resource "local_file" "mcs_credentials" {
   filename = "${path.module}/generated/mcs_credentials.sh"
   content = <<-EOF
      #!/bin/bash
+     source "${path.module}/scripts/variables.sh"
      echo 
      echo ==== MCS Credentials ====
      echo 
-     echo IP Addr:  ${module.controller.public_ip}
+     echo IP Addr:  $CTRL_PUB_IP
      echo Username: admin
-     echo Password: $(ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.controller.public_ip} "cat /opt/bluedata/mapr/conf/mapr-admin-pass")
+     echo Password: $(ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "cat /opt/bluedata/mapr/conf/mapr-admin-pass")
      echo
   EOF
 }
@@ -158,7 +165,8 @@ resource "local_file" "restart_auth_proxy" {
   filename = "${path.module}/generated/restart_auth_proxy.sh"
   content = <<-EOF
      #!/bin/bash
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@${module.controller.public_ip} 'docker restart $(docker ps | grep "epic/authproxy" | cut -d " " -f1); docker ps'
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP 'docker restart $(docker ps | grep "epic/authproxy" | cut -d " " -f1); docker ps'
   EOF
 }
 
@@ -166,7 +174,8 @@ resource "local_file" "platform_id" {
   filename = "${path.module}/generated/platform_id.sh"
   content = <<-EOF
      #!/bin/bash
-     curl -s -k https://${module.controller.public_ip}:8080/api/v1/license | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["uuid"])'
+     source "${path.module}/scripts/variables.sh"
+     curl -s -k https://$CTRL_PUB_IP:8080/api/v1/license | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["uuid"])'
   EOF
 }
 
