@@ -12,7 +12,19 @@ resource "aws_instance" "rdp_server" {
     volume_type = "gp2"
     volume_size = 400
   }
-
+/*
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    inline = [
+      "Not implremented yet",
+    ]
+  }
+*/
   tags = {
     Name = "${var.project_id}-instance-rdp-server-linux"
     Project = "${var.project_id}"

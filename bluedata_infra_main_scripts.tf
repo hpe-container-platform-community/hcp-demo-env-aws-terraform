@@ -229,6 +229,26 @@ resource "local_file" "rdp_linux_credentials" {
   EOF
 }
 
+resource "local_file" "ssh_rdp_linux" {
+  filename = "${path.module}/generated/ssh_rdp_linux_server.sh"
+  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
+  content = <<-EOF
+    #!/bin/bash
+    source "${path.module}/scripts/variables.sh"
+    ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP "$@"    
+  EOF
+}
+
+resource "local_file" "sftp_rdp_linux" {
+  filename = "${path.module}/generated/sftp_rdp_linux_server.sh"
+  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
+  content = <<-EOF
+    #!/bin/bash
+    source "${path.module}/scripts/variables.sh"
+    sftp -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP    
+  EOF
+}
+
 resource "local_file" "whatismyip" {
   filename = "${path.module}/generated/whatismyip.sh"
 
