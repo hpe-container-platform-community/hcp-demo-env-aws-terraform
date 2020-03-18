@@ -21,6 +21,26 @@ locals {
 resource "local_file" "cli_stop_ec2_instances" {
   filename = "${path.module}/generated/cli_stop_ec2_instances.sh"
   content =  <<-EOF
+    #!/bin/bash
+    source "${path.module}/scripts/variables.sh"
+
+    SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=1 -q"
+    CMD='nohup sudo halt -n </dev/null &'
+
+    echo "Sending 'sudo halt -n' to all hosts"
+
+    for HOST in $${WRKR_PUB_IPS[@]};
+    do
+      ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$HOST "$CMD" || true
+    done
+
+    ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$GATW_PUB_IP "$CMD" || true
+    ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$CMD" || true
+
+    echo "Sleeping a few minutes, allowing halt to complete"
+    sleep 120
+
+    echo "Stopping instances"
     aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${local.instance_ids} 
   EOF
 }
