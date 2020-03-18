@@ -3,6 +3,7 @@
 
 terraform.tfstate
 terraform.tfstate.backup
+terraform.tfstate.*.backup
 
 etc/bluedata_infra.tfvars
 etc/port_forwards.sh
