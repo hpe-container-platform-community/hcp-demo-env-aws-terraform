@@ -142,6 +142,7 @@ module "rdp_server_linux" {
   source = "./modules/module-rdp-server-linux"
   project_id = var.project_id
   user = var.user
+  az = var.az
   ssh_prv_key_path = var.ssh_prv_key_path
   rdp_ec2_ami = var.EC2_LIN_RDP_AMIS[var.region]
   rdp_instance_type = var.rdp_instance_type

@@ -10,7 +10,15 @@ resource "aws_instance" "rdp_server" {
 
   root_block_device {
     volume_type = "gp2"
-    volume_size = 400
+    volume_size = 40
+  }
+
+  // ready for hibernation support
+  // note that not yet supported by terraform: https://github.com/terraform-providers/terraform-provider-aws/issues/6638
+  ebs_block_device {
+    device_name = "/dev/sdb"
+    volume_type = "gp2"
+    volume_size = 40
   }
 
   provisioner "remote-exec" {
@@ -28,6 +36,7 @@ resource "aws_instance" "rdp_server" {
       "sudo bash -c 'kubectl completion bash >/etc/bash_completion.d/kubectl'",
       "echo 'alias k=kubectl' >>~/.bashrc",
       "echo 'complete -F __start_kubectl k' >>~/.bashrc",
+      // "nohup sudo fastdd &" # prewarm EBS for faster operation
     ]
   }
 

@@ -2,6 +2,10 @@ output "project_dir" {
   value = "${abspath(path.module)}"
 }
 
+output "aws_region" {
+  value = "${var.region}"
+}
+
 output "selinux_disabled" {
   value = "${var.selinux_disabled}"
 }
@@ -28,6 +32,10 @@ output "epic_dl_url" {
 
 output "epid_dl_url_needs_presign" {
   value = "${var.epid_dl_url_needs_presign}"
+}
+
+output "epic_dl_url_presign_options" {
+  value = "${var.epic_dl_url_presign_options}"
 }
 
 output "client_cidr_block" {

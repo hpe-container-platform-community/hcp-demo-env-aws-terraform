@@ -91,6 +91,10 @@ epic_dl_url          = "enter url"
 
 epid_dl_url_needs_presign = false 
 
+# Add presign options if required
+
+epic_dl_url_presign_options = "" # e.g.  "--region eu-west-1"
+
 # EPIC 5x alpha currently requires selinux to be disabled, uncomment 
 # the following to disable selinux.
 

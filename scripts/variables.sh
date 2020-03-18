@@ -17,6 +17,9 @@ PROJECT_DIR=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.
 LOG_FILE="${PROJECT_DIR}"/generated/bluedata_install_output.txt
 [[ -f "$LOG_FILE" ]] && mv -f "$LOG_FILE" "${LOG_FILE}".old
 
+REGION=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["aws_region"]["value"])')
+[ "$REGION" ] || ( echo "ERROR: REGION is empty" && exit 1 )
+
 LOCAL_SSH_PUB_KEY_PATH=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ssh_pub_key_path"]["value"])')
 LOCAL_SSH_PRV_KEY_PATH=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ssh_prv_key_path"]["value"])')
 
@@ -44,6 +47,7 @@ CA_CERT="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.std
 EPIC_DL_URL="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_dl_url"]["value"])')"
 EPIC_FILENAME="$(echo ${EPIC_DL_URL##*/} | cut -d? -f1)"
 EPIC_DL_URL_NEEDS_PRESIGN="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epid_dl_url_needs_presign"]["value"])')"
+EPIC_DL_URL_PRESIGN_OPTIONS="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_dl_url_presign_options"]["value"])')"
 
 #echo EPIC_DL_URL=$EPIC_DL_URL
 #echo EPIC_FILENAME=$EPIC_FILENAME
@@ -52,11 +56,12 @@ EPIC_DL_URL_NEEDS_PRESIGN="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj
 [ "$EPIC_DL_URL" ] || ( echo "ERROR: EPIC_DL_URL is empty" && exit 1 )
 [ "$EPIC_FILENAME" ] || ( echo "ERROR: EPIC_FILENAME is empty" && exit 1 )
 [ "$EPIC_DL_URL_NEEDS_PRESIGN" ] || ( echo "ERROR: EPIC_DL_URL_NEEDS_PRESIGN is empty" && exit 1 )
+# EPIC_DL_URL_PRESIGN_OPTIONS can be empty
 
 if [[ "${EPIC_DL_URL_NEEDS_PRESIGN}" == "True" ]]
 then
    #echo "Presigning EPIC_DL_URL"
-   EPIC_DL_URL="$(aws s3 presign $EPIC_DL_URL)"
+   EPIC_DL_URL="$(aws s3 presign ${EPIC_DL_URL_PRESIGN_OPTIONS} ${EPIC_DL_URL})"
    #echo ${EPIC_DL_URL}
 fi
 
