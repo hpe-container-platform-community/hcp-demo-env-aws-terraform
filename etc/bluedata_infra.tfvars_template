@@ -55,6 +55,7 @@ ctr_instance_type  = "m4.4xlarge" # Paris: "m5.4xlarge"
 wkr_instance_type  = "m4.4xlarge" # Paris: "m5.4xlarge"
 nfs_instance_type  = "t2.small"
 ad_instance_type   = "t2.small"
+rdp_instance_type  = "t2.xlarge"
 
 # Whether to create an EIP for the controller - you may wish to disable this
 # if you are short on EIPs. If you don't create the EIP, you probably need to 
