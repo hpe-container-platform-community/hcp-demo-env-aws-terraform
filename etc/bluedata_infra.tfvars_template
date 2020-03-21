@@ -118,8 +118,8 @@ rdp_server_operating_system = "WINDOWS"
 
 # If you would like to allow ssh or rdp from any source, set the following variables
 
-allow_ssh_from_world = false
-allow_rdp_from_world = false
+allow_ssh_from_world = false # this variable is no longer used
+allow_rdp_from_world = false # this variable is no longer used
 
 # CA Key for signing the controller certificate - use this or replace with your own
 

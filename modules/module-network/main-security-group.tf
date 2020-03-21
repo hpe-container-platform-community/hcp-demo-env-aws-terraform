@@ -70,7 +70,7 @@ resource "aws_security_group" "allow_all_from_specified_ips" {
 resource "aws_security_group" "allow_ssh_from_world" {
   vpc_id      = aws_vpc.main.id
   name        = "allow_ssh_from_world"
-  description = "allow_ssh_from_world"
+  description = "allow_ssh_from_world - disabled"
   depends_on = [ aws_vpc.main ]
 
   tags = {
@@ -79,12 +79,17 @@ resource "aws_security_group" "allow_ssh_from_world" {
     user = "${var.user}"
   }
 
+  // DISABLED - uncomment to enable, but don't do this without good reason
+  //            due to security exposure
+
+  /*
   ingress {
     protocol   = "tcp"
     cidr_blocks = [ "0.0.0.0/0" ]
     from_port  = 22
     to_port    = 22
   }
+  */
 }
 
 // allow rdp from world security group
@@ -92,7 +97,7 @@ resource "aws_security_group" "allow_ssh_from_world" {
 resource "aws_security_group" "allow_rdp_from_world" {
   vpc_id      = aws_vpc.main.id
   name        = "allow_rdp_from_world"
-  description = "allow_rdp_from_world"
+  description = "allow_rdp_from_world - disabled"
   depends_on = [ aws_vpc.main ]
 
   tags = {
@@ -101,10 +106,15 @@ resource "aws_security_group" "allow_rdp_from_world" {
     user = "${var.user}"
   }
 
+  // DISABLED - uncomment to enable, but don't do this without good reason
+  //            due to security exposure
+  
+  /*
   ingress {
     protocol    = "tcp"
     cidr_blocks = [ "0.0.0.0/0" ]
     from_port   = 3389
     to_port     = 3389
   }
+  */
 }
