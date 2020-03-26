@@ -10,6 +10,25 @@ OUTPUT_JSON=$(cat "${SCRIPT_DIR}/../generated/output.json")
 # Set variables from terraform output
 ###############################################################################
 
+# Ensure python is able to parse the OUTPUT_JSON file
+python3 - <<____HERE
+import json,sys,subprocess
+
+try:
+   with open('${SCRIPT_DIR}/../generated/output.json') as f:
+      json.load(f)
+   print("Terraform output json is valid")
+except: 
+   print(80 * "*")
+   print("ERROR: Can't parse: '${SCRIPT_DIR}/../generated/output.json'")
+   print(80 * "*")
+   sys.exit(1)
+____HERE
+
+###############################################################################
+# Set variables from terraform output
+###############################################################################
+
 PROJECT_DIR=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["project_dir"]["value"])')
 #echo PROJECT_DIR="${PROJECT_DIR}"
 [ "$PROJECT_DIR" ] || ( echo "ERROR: PROJECT_DIR is empty" && exit 1 )
@@ -58,12 +77,6 @@ EPIC_DL_URL_PRESIGN_OPTIONS="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;o
 [ "$EPIC_DL_URL_NEEDS_PRESIGN" ] || ( echo "ERROR: EPIC_DL_URL_NEEDS_PRESIGN is empty" && exit 1 )
 # EPIC_DL_URL_PRESIGN_OPTIONS can be empty
 
-if [[ "${EPIC_DL_URL_NEEDS_PRESIGN}" == "True" ]]
-then
-   #echo "Presigning EPIC_DL_URL"
-   EPIC_DL_URL="$(aws s3 presign ${EPIC_DL_URL_PRESIGN_OPTIONS} ${EPIC_DL_URL})"
-   #echo ${EPIC_DL_URL}
-fi
 
 SELINUX_DISABLED="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["selinux_disabled"]["value"])')"
 #echo SELINUX_DISABLED=$SELINUX_DISABLED

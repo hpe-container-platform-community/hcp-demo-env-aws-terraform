@@ -7,6 +7,13 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/variables.sh"
 
+if [[ "${EPIC_DL_URL_NEEDS_PRESIGN}" == "True" ]]
+then
+   #echo "Presigning EPIC_DL_URL"
+   EPIC_DL_URL="$(aws s3 presign ${EPIC_DL_URL_PRESIGN_OPTIONS} ${EPIC_DL_URL})"
+   #echo ${EPIC_DL_URL}
+fi
+
 echo PROJECT_DIR="${PROJECT_DIR}"
 echo LOCAL_SSH_PUB_KEY_PATH=${LOCAL_SSH_PUB_KEY_PATH}
 echo LOCAL_SSH_PRV_KEY_PATH=${LOCAL_SSH_PRV_KEY_PATH}

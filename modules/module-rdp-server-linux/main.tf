@@ -36,6 +36,10 @@ resource "aws_instance" "rdp_server" {
       "sudo bash -c 'kubectl completion bash >/etc/bash_completion.d/kubectl'",
       "echo 'alias k=kubectl' >>~/.bashrc",
       "echo 'complete -F __start_kubectl k' >>~/.bashrc",
+      "curl -L0 https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip > terraform_0.12.24_linux_amd64.zip",
+      "unzip terraform_0.12.24_linux_amd64.zip",
+      "chmod a+x terraform",
+      "sudo mv terraform /usr/local/bin/"
       // "nohup sudo fastdd &" # prewarm EBS for faster operation
     ]
   }
