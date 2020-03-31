@@ -29,6 +29,7 @@ resource "aws_instance" "rdp_server" {
       private_key = file("${var.ssh_prv_key_path}")
     }
     inline = [
+      "sudo apt update && sudo apt install -y firefox",
       "curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl",
       "chmod +x ./kubectl",
       "sudo mv ./kubectl /usr/local/bin/kubectl",
@@ -39,7 +40,8 @@ resource "aws_instance" "rdp_server" {
       "curl -L0 https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip > terraform_0.12.24_linux_amd64.zip",
       "unzip terraform_0.12.24_linux_amd64.zip",
       "chmod a+x terraform",
-      "sudo mv terraform /usr/local/bin/"
+      "sudo mv terraform /usr/local/bin/",
+      "rm terraform_0.12.24_linux_amd64.zip"
       // "nohup sudo fastdd &" # prewarm EBS for faster operation
     ]
   }
