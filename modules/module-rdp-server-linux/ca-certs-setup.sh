@@ -1,11 +1,18 @@
+#!/bin/bash
+
 #sudo mv /usr/lib/firefox/libnssckbi.so /usr/lib/firefox/libnssckbi.so.bak
 #sudo ln -s /usr/lib/x86_64-linux-gnu/pkcs11/p11-kit-trust.so /usr/lib/firefox/libnssckbi.so
 
+CONTROLLER_PRIVATE_IP=$1
 
+# add HCP CA cert to Ubuntu system certificates
 openssl x509 -outform der -in /home/ubuntu/hcp-ca-cert.pem -out /home/ubuntu/hcp-ca-cert.crt
 sudo cp /home/ubuntu/hcp-ca-cert.crt /usr/share/ca-certificates/
 sudo bash -c 'echo hcp-ca-cert.crt >> /etc/ca-certificates.conf'
 sudo update-ca-certificates
+
+# the rest of this script adds the HCP CA cert to the mozilla user profiles
+# and also setups the homepage to the controller
 
 sudo apt install libnss3-tools
 
@@ -23,10 +30,12 @@ certificateName="HCP CA Cert"
 certDir="/home/${USER}/.mozilla/firefox/${defaultProfileId}.default"
 mkdir -p $certDir
 certutil -A -n "${certificateName}" -t "TCu,Cu,Tu" -i "${certificateFile}" -d "sql:/${certDir}"
+echo "pref(\"browser.startup.homepage\", \"https://${CONTROLLER_PRIVATE_IP}|https://${CONTROLLER_PRIVATE_IP}:8443\");" >> $certDir/user.js
 
 certDir="/home/${USER}/.mozilla/firefox/${releaseProfileId}.default-release"
 mkdir -p $certDir
 certutil -A -n "${certificateName}" -t "TCu,Cu,Tu" -i "${certificateFile}" -d "sql:${certDir}"
+echo "pref(\"browser.startup.homepage\", \"https://${CONTROLLER_PRIVATE_IP}|https://${CONTROLLER_PRIVATE_IP}:8443\");" >> $certDir/user.js
 
 #########
 

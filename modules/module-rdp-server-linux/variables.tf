@@ -31,3 +31,6 @@ variable "az" {
 variable "ca_cert" {
     type = string
 }
+variable "controller_private_ip" {
+    type = string
+}

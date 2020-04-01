@@ -1,3 +1,16 @@
+resource "template_file" "hcp_desktop_link" {
+  template = "${file("${path.module}/Templates/HCP.admin.desktop.tpl")}"
+  vars = {
+    controller_private_ip = var.controller_private_ip
+  }
+}
+
+resource "template_file" "mcs_desktop_link" {
+  template = "${file("${path.module}/Templates/MCS.admin.desktop.tpl")}"
+  vars = {
+    controller_private_ip = var.controller_private_ip
+  }
+}
 
 resource "aws_instance" "rdp_server" {
   ami                    = var.rdp_ec2_ami
@@ -10,7 +23,7 @@ resource "aws_instance" "rdp_server" {
 
   root_block_device {
     volume_type = "gp2"
-    volume_size = 40
+    volume_size = 41
   }
 
   // ready for hibernation support
@@ -43,7 +56,7 @@ resource "aws_instance" "rdp_server" {
       "sudo mv terraform /usr/local/bin/",
       "rm terraform_0.12.24_linux_amd64.zip",
       "mkdir /home/ubuntu/Desktop",
-      // "nohup sudo fastdd &" # prewarm EBS for faster operation
+      "sudo bash -c \"fastdd & disown -h %1\"" # prewarm EBS for faster operation
     ]
   }
 
@@ -54,19 +67,19 @@ resource "aws_instance" "rdp_server" {
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
     }
-    destination   = "/home/ubuntu/Desktop/code.desktop"
-    source        = "${path.module}/Desktop/code.desktop"
+    source        = "${path.module}/Desktop/"
+    destination   = "/home/ubuntu/Desktop"
   }
 
- provisioner "file" {
+    provisioner "file" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
     }
-    destination   = "/home/ubuntu/Desktop/firefox.desktop"
-    source        = "${path.module}/Desktop/firefox.desktop"
+    content        = template_file.mcs_desktop_link.rendered
+    destination   = "/home/ubuntu/Desktop/MCS.admin.desktop"
   }
 
   provisioner "file" {
@@ -76,8 +89,8 @@ resource "aws_instance" "rdp_server" {
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
     }
-    destination   = "/home/ubuntu/Desktop/mate-terminal.desktop"
-    source        = "${path.module}/Desktop/mate-terminal.desktop"
+    content        = template_file.hcp_desktop_link.rendered
+    destination   = "/home/ubuntu/Desktop/HCP.admin.desktop"
   }
 
   // 'enable' desktop icons 
@@ -89,8 +102,10 @@ resource "aws_instance" "rdp_server" {
       private_key = file("${var.ssh_prv_key_path}")
     }
     inline = [
-      "sudo chown ubunutu:ubuntu /home/ubuntu/.local/share/gvfs-metadata/home*",
-      "sudo chmod +x /home/ubuntu/Desktop/*.desktop"
+      //"sudo chown ubuntu:ubuntu /home/ubuntu/.local/share/gvfs-metadata/home*",
+      "sudo chmod +x /home/ubuntu/Desktop/*.desktop",
+      // set firefox to autostart  
+      "sudo cp Desktop/HCP.admin.desktop /etc/xdg/autostart/",
     ]
   }
 
@@ -105,6 +120,17 @@ resource "aws_instance" "rdp_server" {
     content       = var.ca_cert
   }
 
+  provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    source        = "${path.module}/ca-certs-setup.sh"
+    destination   = "/tmp/ca-certs-setup.sh"
+  }
+
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
@@ -112,8 +138,12 @@ resource "aws_instance" "rdp_server" {
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
     }
-    script = "${path.module}/ca-certs-setup.sh"
+    inline = [
+      "chmod +x /tmp/ca-certs-setup.sh",
+      "/tmp/ca-certs-setup.sh ${var.controller_private_ip}",
+    ]
   }
+
 
   tags = {
     Name = "${var.project_id}-instance-rdp-server-linux"
