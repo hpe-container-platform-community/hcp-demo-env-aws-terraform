@@ -1,12 +1,12 @@
 resource "template_file" "hcp_desktop_link" {
-  template = "${file("${path.module}/Templates/HCP.admin.desktop.tpl")}"
+  template = file("${path.module}/Templates/HCP.admin.desktop.tpl")
   vars = {
     controller_private_ip = var.controller_private_ip
   }
 }
 
 resource "template_file" "mcs_desktop_link" {
-  template = "${file("${path.module}/Templates/MCS.admin.desktop.tpl")}"
+  template = file("${path.module}/Templates/MCS.admin.desktop.tpl")
   vars = {
     controller_private_ip = var.controller_private_ip
   }

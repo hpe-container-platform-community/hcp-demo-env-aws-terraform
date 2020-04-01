@@ -245,6 +245,11 @@ resource "local_file" "rdp_linux_credentials" {
     echo IP Addr:  "https://$RDP_PUB_IP"
     echo Username: ubuntu
     echo Password: $RDP_INSTANCE_ID
+    echo 
+    echo TIP: If you have just deployed the rdp server, it is recommended to run the following to
+    echo      improve performance.  You only need to run this once:
+    echo
+    echo ./generated/rdp_post_provision_setup.sh
     echo
   EOF
 }
@@ -254,6 +259,7 @@ resource "local_file" "rdp_post_setup" {
   count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
   content = <<-EOF
     #!/bin/bash
+    source "${path.module}/scripts/variables.sh"
     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP "sudo fastdd"    
   EOF
 }
