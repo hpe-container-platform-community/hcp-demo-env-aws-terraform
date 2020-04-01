@@ -148,6 +148,7 @@ module "rdp_server_linux" {
   rdp_instance_type = var.rdp_instance_type
   rdp_server_enabled = var.rdp_server_enabled && var.rdp_server_operating_system == "LINUX" 
   key_name = aws_key_pair.main.key_name
+  ca_cert = var.ca_cert
   vpc_security_group_ids = flatten([ 
     module.network.security_group_allow_all_from_client_ip, 
     module.network.security_group_main_id,

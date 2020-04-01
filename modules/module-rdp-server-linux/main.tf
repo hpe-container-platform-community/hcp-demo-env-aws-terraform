@@ -41,9 +41,78 @@ resource "aws_instance" "rdp_server" {
       "unzip terraform_0.12.24_linux_amd64.zip",
       "chmod a+x terraform",
       "sudo mv terraform /usr/local/bin/",
-      "rm terraform_0.12.24_linux_amd64.zip"
+      "rm terraform_0.12.24_linux_amd64.zip",
+      "mkdir /home/ubuntu/Desktop",
       // "nohup sudo fastdd &" # prewarm EBS for faster operation
     ]
+  }
+
+  provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    destination   = "/home/ubuntu/Desktop/code.desktop"
+    source        = "${path.module}/Desktop/code.desktop"
+  }
+
+ provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    destination   = "/home/ubuntu/Desktop/firefox.desktop"
+    source        = "${path.module}/Desktop/firefox.desktop"
+  }
+
+  provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    destination   = "/home/ubuntu/Desktop/mate-terminal.desktop"
+    source        = "${path.module}/Desktop/mate-terminal.desktop"
+  }
+
+  // 'enable' desktop icons 
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    inline = [
+      "sudo chown ubunutu:ubuntu /home/ubuntu/.local/share/gvfs-metadata/home*",
+      "sudo chmod +x /home/ubuntu/Desktop/*.desktop"
+    ]
+  }
+
+  provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    destination   = "/home/ubuntu/hcp-ca-cert.pem"
+    content       = var.ca_cert
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    script = "${path.module}/ca-certs-setup.sh"
   }
 
   tags = {

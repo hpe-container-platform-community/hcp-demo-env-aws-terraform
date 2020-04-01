@@ -28,3 +28,6 @@ variable "subnet_id" {
 variable "az" {
     type = string
 }
+variable "ca_cert" {
+    type = string
+}
