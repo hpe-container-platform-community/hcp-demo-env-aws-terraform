@@ -1,11 +1,11 @@
-resource "template_file" "hcp_desktop_link" {
+data "template_file" "hcp_desktop_link" {
   template = file("${path.module}/Templates/HCP.admin.desktop.tpl")
   vars = {
     controller_private_ip = var.controller_private_ip
   }
 }
 
-resource "template_file" "mcs_desktop_link" {
+data "template_file" "mcs_desktop_link" {
   template = file("${path.module}/Templates/MCS.admin.desktop.tpl")
   vars = {
     controller_private_ip = var.controller_private_ip
@@ -78,7 +78,7 @@ resource "aws_instance" "rdp_server" {
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
     }
-    content        = template_file.mcs_desktop_link.rendered
+    content        = data.template_file.mcs_desktop_link.rendered
     destination   = "/home/ubuntu/Desktop/MCS.admin.desktop"
   }
 
@@ -89,7 +89,7 @@ resource "aws_instance" "rdp_server" {
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
     }
-    content        = template_file.hcp_desktop_link.rendered
+    content        = data.template_file.hcp_desktop_link.rendered
     destination   = "/home/ubuntu/Desktop/HCP.admin.desktop"
   }
 
