@@ -2,7 +2,7 @@
 
 This project consists of two main parts:
 
- - A terraform configuration [bluedata_infra.tf](./bluedata_infra.tf) to set up AWS infrastructure for a BlueData 4.x and 5.x deployment
+ - A terraform configuration [bluedata_infra_main.tf](./bluedata_infra_main.tf) to set up AWS infrastructure for a HPE Container Platform 5.x deployment
  - A bash script [scripts/bluedata_install.sh](./scripts/bluedata_install.sh) to automate the installation of BlueData inside the AWS environment
 
 The goals of this project are:
