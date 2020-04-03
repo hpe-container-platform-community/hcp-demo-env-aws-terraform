@@ -190,12 +190,21 @@ resource "local_file" "mcs_credentials" {
   EOF
 }
 
-resource "local_file" "restart_auth_proxy" {
-  filename = "${path.module}/generated/restart_auth_proxy.sh"
+resource "local_file" "fix_restart_auth_proxy" {
+  filename = "${path.module}/generated/fix_restart_auth_proxy.sh"
   content = <<-EOF
      #!/bin/bash
      source "${path.module}/scripts/variables.sh"
      ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP 'docker restart $(docker ps | grep "epic/authproxy" | cut -d " " -f1); docker ps'
+  EOF
+}
+
+resource "local_file" "fix_restart_webhdfs" {
+  filename = "${path.module}/generated/fix_restart_webhdfs.sh"
+  content = <<-EOF
+     #!/bin/bash
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP 'docker restart $(docker ps | grep "epic/webhdfs" | cut -d " " -f1); docker ps'
   EOF
 }
 
