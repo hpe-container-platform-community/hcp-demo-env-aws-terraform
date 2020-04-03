@@ -53,7 +53,7 @@ resource "local_file" "cli_start_ec2_instances" {
 
     echo "*******************************************************************************"
     echo "IMPORTANT: You need to run the following command to update changed IP addresses"
-    echo "           ./bin/terraform_apply.sh"
+    echo "           ./bin/terraform_refresh.sh"
     echo "*******************************************************************************"
   EOF
 }
@@ -101,6 +101,15 @@ resource "local_file" "ssh_controller" {
      #!/bin/bash
      source "${path.module}/scripts/variables.sh"
      ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$@"
+  EOF
+}
+
+resource "local_file" "ssh_controller_private" {
+  filename = "${path.module}/generated/ssh_controller_private.sh"
+  content = <<-EOF
+     #!/bin/bash
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PRV_IP "$@"
   EOF
 }
 
