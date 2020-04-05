@@ -29,23 +29,61 @@ resource "aws_instance" "ad_server" {
     }
     destination   = "/home/centos/ad_user_setup.sh"
     content       = <<-EOT
-     #!/bin/bash
+      #!/bin/bash
 
-     # allow weak passwords - easier to demo
-     samba-tool domain passwordsettings set --complexity=off
-     
-     # set password expiration to highest possible value, default is 43
-     samba-tool domain passwordsettings set --max-pwd-age=999
+      # allow weak passwords - easier to demo
+      samba-tool domain passwordsettings set --complexity=off
+
+      # set password expiration to highest possible value, default is 43
+      samba-tool domain passwordsettings set --max-pwd-age=999
     
-     # Create DemoTenantUsers group and a user ad_user1
-     samba-tool group add DemoTenantUsers
-     samba-tool user create ad_user1 pass123
-     samba-tool group addmembers DemoTenantUsers ad_user1
+      # Create DemoTenantUsers group and a user ad_user1
+      samba-tool group add DemoTenantUsers
+      samba-tool user create ad_user1 pass123
+      samba-tool group addmembers DemoTenantUsers ad_user1
 
-     # Create DemoTenantAdmins group and a user ad_admin1
-     samba-tool group add DemoTenantAdmins
-     samba-tool user create ad_admin1 pass123
-     samba-tool group addmembers DemoTenantAdmins ad_admin1
+      # Create DemoTenantAdmins group and a user ad_admin1
+      samba-tool group add DemoTenantAdmins
+      samba-tool user create ad_admin1 pass123
+      samba-tool group addmembers DemoTenantAdmins ad_admin1
+    EOT
+  }
+
+  provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "centos"
+      host        = aws_instance.ad_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    destination   = "/home/centos/ad_set_posix_classes.sh"
+    content       = <<-EOT
+      # DemoTenantAdmins
+      dn: cn=DemoTenantAdmins,cn=Users,DC=samdom,DC=example,DC=com
+      changetype: modify
+      add:objectclass
+      objectclass: posixGroup
+      -
+      add: gidnumber
+      gidnumber: 10001
+
+      # ad_admin1
+      dn: cn=ad_admin1,cn=Users,DC=samdom,DC=example,DC=com
+      changetype: modify
+      add:objectclass
+      objectclass: posixAccount
+      -
+      add: uidNumber
+      uidNumber: 20001
+      -
+      add: gidnumber
+      gidnumber: 10001
+      -
+      add: unixHomeDirectory
+      unixHomeDirectory: $HomeDir
+      -
+      add: loginShell
+      loginShell: /bin/bash
     EOT
   }
 
@@ -79,10 +117,14 @@ resource "aws_instance" "ad_server" {
        -c "chmod +x /usr/local/bin/custom.sh &&. /init.sh app:start"
       EOT
       ,
+      "sleep 60",
+      "LDAPTLS_REQCERT=never ldapmodify -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -f /home/centos/ad_set_posix_classes.sh -w '5ambaPwd@'",
       "echo Done!"
 
       // To connect ...
       // LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no -x -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com'
+      // or
+      // ldapsearch -o ldif-wrap=no -x -H ldap://localhost:389 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com'
     ]
   }
 }
