@@ -49,6 +49,8 @@ resource "aws_instance" "ad_server" {
     EOT
   }
 
+  // create posixAccount and posixGroup attributes, required for MAPR LDAP auth
+  // see: https://mapr.com/docs/61/SecurityGuide/PAMConfiguration-LDAP.html
   provisioner "file" {
     connection {
       type        = "ssh"
@@ -80,7 +82,34 @@ resource "aws_instance" "ad_server" {
       gidnumber: 10001
       -
       add: unixHomeDirectory
-      unixHomeDirectory: $HomeDir
+      unixHomeDirectory: /home/ad_admin1
+      -
+      add: loginShell
+      loginShell: /bin/bash
+
+      # DemoTenantUsers
+      dn: cn=DemoTenantUsers,cn=Users,DC=samdom,DC=example,DC=com
+      changetype: modify
+      add:objectclass
+      objectclass: posixGroup
+      -
+      add: gidnumber
+      gidnumber: 10002
+
+      # ad_admin1
+      dn: cn=ad_user1,cn=Users,DC=samdom,DC=example,DC=com
+      changetype: modify
+      add:objectclass
+      objectclass: posixAccount
+      -
+      add: uidNumber
+      uidNumber: 20002
+      -
+      add: gidnumber
+      gidnumber: 10002
+      -
+      add: unixHomeDirectory
+      unixHomeDirectory: /home/ad_user1
       -
       add: loginShell
       loginShell: /bin/bash
@@ -118,7 +147,7 @@ resource "aws_instance" "ad_server" {
       EOT
       ,
       "sleep 60",
-      "LDAPTLS_REQCERT=never ldapmodify -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -f /home/centos/ad_set_posix_classes.sh -w '5ambaPwd@'",
+      "LDAPTLS_REQCERT=never ldapmodify -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -f /home/centos/ad_set_posix_classes.sh -w '5ambaPwd@' -c",
       "echo Done!"
 
       // To connect ...
