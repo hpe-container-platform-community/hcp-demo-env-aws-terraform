@@ -30,7 +30,7 @@ authconfig --enableldap --enableldapauth --ldapserver=${AD_PRIVATE_IP} --ldapbas
 
 cat > /etc/sssd/sssd.conf <<EOF
 [domain/${DOMAIN}]
-debug_level = 0xf0
+debug_level = 6
 autofs_provider = ldap
 cache_credentials = True
 id_provider = ldap
@@ -38,13 +38,13 @@ auth_provider = ldap
 chpass_provider = ldap
 access_provider = ldap
 ldap_uri = ldap://${AD_PRIVATE_IP}:389
-#ldap_search_base = ${LDAP_BASE_DN}
+ldap_search_base = ${LDAP_BASE_DN}
 ldap_id_use_start_tls = False
 ldap_tls_cacertdir = /etc/openldap/cacerts
 ldap_tls_reqcert = never
 ldap_user_member_of = memberOf
 ldap_access_order = filter
-ldap_access_filter = ((|memberOf=CN=Users,DC=samdom,DC=example,DC=com))
+ldap_access_filter = (|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))
 ldap_id_mapping = True
 ldap_schema = ad
 ldap_user_gid_number = gidNumber
@@ -68,8 +68,29 @@ ldap_default_authtok = ${LDAP_BIND_PASSWORD}
 ldap_user_fullname = cn
 
 [sssd]
-services = nss, pam
+services = nss, pam, autofs
 domains = ${DOMAIN}
+
+[nss]
+
+homedir_substring = /home
+
+[pam]
+
+[sudo]
+
+[autofs]
+
+[ssh]
+
+[pac]
+
+[ifp]
+
+[secrets]
+
+[session_recording]
+
 EOF
 
 rm -f /var/log/sssd/*.log
@@ -81,9 +102,22 @@ systemctl stop sssd
 systemctl restart sssd
 
 pamtester login ad_user1 open_session
+id ad_user1
+getent passwd ad_user1
+getent group DemoTenantUsers
 
 # Uncomment the following to debug
-# tail /var/log/sssd/**
-# LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no -x -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com'
+tail -f /var/log/sssd/**
+
+# tail -f /opt/mapr/logs/apiserver.log /var/log/sssd/**
+# ldapsearch -o ldif-wrap=no -x -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com' '(cn=ad_user1)'
+
+
+ldapsearch -o ldif-wrap=no -x -D 'cn=ad_admin1,CN=Users,DC=samdom,DC=example,DC=com' -w 'pass123' -b 'DC=samdom,DC=example,DC=com' '(&(cn=ad_admin1)(objectclass=posixAccount)(memberOf=CN=Users,DC=samdom,DC=example,DC=com))'
+
+ldapsearch -o ldif-wrap=no -x -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com' '(&(sAMAccountName=ad_admin1)(objectclass=posixAccount)(objectSID=*))'
+
+
+'[(&(sAMAccountName=ad_admin1)(objectclass=posixAccount)(objectSID=*))][CN=Users,DC=samdom,DC=example,DC=com]'
 
 ```
