@@ -6,12 +6,16 @@ These instructions assume you have deployed the AD server by setting `ad_server_
 
 After `terraform apply`, run `terraform output ad_server_private_ip` to get the AD server IP address.
 
-SSH into the controller, then run:
+SSH into the controller, then run the following to open a shell session in the epic-mapr container:
 
 ```
 # start epic-mapr container: 
 bdmapr --root bash
+```
 
+Next change the AD_PRIVATE_IP address below, and run the whole script from your epic-mapr session:
+
+```
 AD_PRIVATE_IP="10.1.0.234" # populate with output from ad_server_private_ip
 
 ### DONT CHANGE BELOW THIS LINE
@@ -30,7 +34,7 @@ authconfig --enableldap --enableldapauth --ldapserver=${AD_PRIVATE_IP} --ldapbas
 
 cat > /etc/sssd/sssd.conf <<EOF
 [domain/${DOMAIN}]
-debug_level = 6
+debug_level = 3
 autofs_provider = ldap
 cache_credentials = True
 id_provider = ldap
@@ -106,10 +110,5 @@ id ad_user1
 getent passwd ad_user1
 getent group DemoTenantUsers
 
-# Uncomment the following to debug
-tail -f /var/log/sssd/**
-
-# tail -f /opt/mapr/logs/apiserver.log /var/log/sssd/**
-# ldapsearch -o ldif-wrap=no -x -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com' '(cn=ad_user1)'
-
 ```
+
