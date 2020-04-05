@@ -112,12 +112,4 @@ tail -f /var/log/sssd/**
 # tail -f /opt/mapr/logs/apiserver.log /var/log/sssd/**
 # ldapsearch -o ldif-wrap=no -x -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com' '(cn=ad_user1)'
 
-
-ldapsearch -o ldif-wrap=no -x -D 'cn=ad_admin1,CN=Users,DC=samdom,DC=example,DC=com' -w 'pass123' -b 'DC=samdom,DC=example,DC=com' '(&(cn=ad_admin1)(objectclass=posixAccount)(memberOf=CN=Users,DC=samdom,DC=example,DC=com))'
-
-ldapsearch -o ldif-wrap=no -x -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com' '(&(sAMAccountName=ad_admin1)(objectclass=posixAccount)(objectSID=*))'
-
-
-'[(&(sAMAccountName=ad_admin1)(objectclass=posixAccount)(objectSID=*))][CN=Users,DC=samdom,DC=example,DC=com]'
-
 ```
