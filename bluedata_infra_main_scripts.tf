@@ -279,6 +279,7 @@ resource "local_file" "rdp_over_ssh" {
   content = <<-EOF
     #!/bin/bash
     source "${path.module}/scripts/variables.sh"
+    echo "Portforwarding 3389 on 127.0.0.1 to RDP Server [CTRL-C to cancel]"
     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP "$@" -L3389:localhost:3389 -N
   EOF
 }
