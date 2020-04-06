@@ -260,7 +260,8 @@ resource "local_file" "rdp_linux_credentials" {
     echo 
     echo ==== RDP Credentials ====
     echo 
-    echo IP Addr:  "https://$RDP_PUB_IP"
+    echo Web Url:  "https://$RDP_PUB_IP"
+    echo RDP URL:   "rdp://full%20address=s:$RDP_PUB_IP:3389&username=s:ubuntu"
     echo Username: ubuntu
     echo Password: $RDP_INSTANCE_ID
     echo 
@@ -269,6 +270,16 @@ resource "local_file" "rdp_linux_credentials" {
     echo
     echo ./generated/rdp_post_provision_setup.sh
     echo
+  EOF
+}
+
+resource "local_file" "rdp_over_ssh" {
+  filename = "${path.module}/generated/rdp_over_ssh.sh"
+  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
+  content = <<-EOF
+    #!/bin/bash
+    source "${path.module}/scripts/variables.sh"
+    ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP "$@" -L3389:localhost:3389 -N
   EOF
 }
 
