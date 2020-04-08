@@ -1,4 +1,4 @@
-## Instructions for setting up LDAP in MapR
+## Experimental Instructions for setting up LDAP in MapR
 
 See here for more info: http://docs.bluedata.com/50_mapr-control-system
 
@@ -189,8 +189,123 @@ Next we need to define the authorization for the volume.  I have decided to give
 
 ![Set volume authorization](./README-MAPR-LDAP/volume_authorization.png)
 
+Next set the permissions for the new shared volume. 
 
-## Configure POSIX Client on RDP (client) host
+From a ssh session on the controller, open a session on the container:
+
+```
+bdmapr --root bash
+```
+
+Now set the permissions
+
+```
+chown -R ad_admin1:DemoTenantUsers /mapr/mnt/hcp.mapr.cluster/shared/shared-vol
+chmod -R 775 /mapr/mnt/hcp.mapr.cluster/shared/shared-vol
+```
+
+---
+
+## AD client
+
+### Configure AD client on RDP (client) host
+
+Open a ssh session on the RDP host, then run the following:
+
+```
+AD_PRIVATE_IP="10.1.0.158" # populate with output from ad_server_private_ip
+
+### DONT CHANGE BELOW THIS LINE
+
+LDAP_BASE_DN="CN=Users,DC=samdom,DC=example,DC=com"
+LDAP_BIND_DN="cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com" # the ad server in the demo environment has been created with this DN
+LDAP_BIND_PASSWORD="5ambaPwd@"
+LDAP_ACCESS_FILTER="CN=Users,CN=Builtin,DC=samdom,DC=example,DC=com"
+DOMAIN="samdom.example.com"
+
+# Install the auth packages by executing the following command 
+# TODO: really disable pgpcheck??
+sudo apt install -y pamtester sssd 
+
+cat > /tmp/sssd.conf <<EOF
+[domain/${DOMAIN}]
+debug_level = 3
+autofs_provider = ldap
+cache_credentials = True
+id_provider = ldap
+auth_provider = ldap
+chpass_provider = ldap
+access_provider = ldap
+ldap_uri = ldap://${AD_PRIVATE_IP}:389
+ldap_search_base = ${LDAP_BASE_DN}
+ldap_id_use_start_tls = False
+ldap_tls_cacertdir = /etc/openldap/cacerts
+ldap_tls_reqcert = never
+ldap_user_member_of = memberOf
+ldap_access_order = filter
+ldap_access_filter = (|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))
+ldap_id_mapping = True
+ldap_schema = ad
+ldap_user_gid_number = gidNumber
+ldap_group_gid_number = gidNumber
+ldap_user_object_class = posixAccount
+ldap_idmap_range_size = 200000
+ldap_user_gecos = gecos
+fallback_homedir = /home/%u
+ldap_user_home_directory = homeDirectory
+default_shell = /bin/bash
+ldap_group_object_class = posixGroup
+ldap_user_uid_number = uidNumber
+ldap_referrals = False
+ldap_idmap_range_max = 2000200000
+ldap_idmap_range_min = 200000
+ldap_group_name = cn
+ldap_user_name = cn
+ldap_default_bind_dn = ${LDAP_BIND_DN}
+ldap_user_shell = loginShell
+ldap_default_authtok = ${LDAP_BIND_PASSWORD}
+ldap_user_fullname = cn
+
+[sssd]
+services = nss, pam, autofs
+domains = ${DOMAIN}
+
+[nss]
+
+homedir_substring = /home
+
+[pam]
+
+[sudo]
+
+[autofs]
+
+[ssh]
+
+[pac]
+
+[ifp]
+
+[secrets]
+
+[session_recording]
+
+EOF
+sudo mv /tmp/sssd.conf /etc/sssd/sssd.conf
+
+sudo chown root:root /etc/sssd/sssd.conf
+sudo chmod 600 /etc/sssd/sssd.conf
+sudo systemctl enable sssd
+sudo systemctl stop sssd
+sudo systemctl restart sssd
+
+pamtester login ad_user1 open_session
+id ad_user1
+getent passwd ad_user1
+getent group DemoTenantUsers
+```
+
+### Configure MAPR POSIX Client on RDP (client) host
 
 From RDP (client) host 
 
@@ -238,14 +353,9 @@ sudo service mapr-posix-client-basic start
 
 ```
 
-### FIXME
+### Test
 
 ```
 $ ll /mapr/hcp.mapr.cluster/shared
-ls: cannot access '/mapr/hcp.mapr.cluster/shared/shared-vol': Permission denied
-total 1
-drwxrwxrwx  3 mapr mapr  1 Apr  8 15:44 ./
-drwxr-xr-x 11 mapr mapr 10 Apr  8 15:40 ../
-d?????????  ? ?    ?     ?            ? shared-vol/
 ```
 
