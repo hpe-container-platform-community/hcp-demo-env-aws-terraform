@@ -171,7 +171,7 @@ chmod 777 /mapr/mnt/hcp.mapr.cluster/shared
 chown -R mapr:mapr /mapr/mnt/hcp.mapr.cluster/shared
 ```
 
-We can now create a Volume in MCS
+We can now create a Volume in MCS (**ensure you login as the MAPR 'admin' user and not an active directory user**).
 
 ![Volume Menu](./README-MAPR-LDAP/volume_menu.png)
 
@@ -248,3 +248,4 @@ drwxrwxrwx  3 mapr mapr  1 Apr  8 15:44 ./
 drwxr-xr-x 11 mapr mapr 10 Apr  8 15:40 ../
 d?????????  ? ?    ?     ?            ? shared-vol/
 ```
+
