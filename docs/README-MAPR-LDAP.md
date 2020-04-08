@@ -190,6 +190,61 @@ Next we need to define the authorization for the volume.  I have decided to give
 ![Set volume authorization](./README-MAPR-LDAP/volume_authorization.png)
 
 
----
+## Configure POSIX Client on RDP (client) host
 
-More steps coming soon...
+From RDP (client) host 
+
+```
+CTRL_IP="10.1.0.35" # Change this to your controller IP address
+
+sudo bash -c \"echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list\"
+wget -O - https://package.mapr.com/releases/pub/maprgpg.key | sudo apt-key add -
+sudo apt install mapr-posix-client-basic
+sudo modprobe fuse
+
+# Create required mapr:mapr user/group
+sudo groupadd -g 5000 mapr
+sudo useradd -u 5000 -s /bin/bash -d /home/mapr -g 5000 mapr
+
+# Replace IP addresses with HCP controller private IP
+sudo /opt/mapr/server/configure.sh -N hcp.mapr.cluster -C ${CTRL_IP} -Z ${CTRL_IP} -c -secure
+```
+
+Connect to controller and run these commands to get the ssl_truststore from MapR container:
+
+```
+docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .
+```
+
+From RDP (client) host 
+
+```
+scp centos@${CTRL_IP}:~/ssl_truststore .
+sudo cp ssl_truststore /opt/mapr/conf/
+sudo chown root:root /opt/mapr/conf/ssl_truststore
+
+sudo useradd ad_admin1 -s /bin/bash -d /home/mapr -m
+sudo su - ad_admin1
+maprlogin password -user ad_admin1 -cluster hcp.mapr.cluster
+
+# Create service ticket as ad_admin1 (to impersonate)
+maprlogin generateticket -type servicewithimpersonation -user ad_admin1 -out /tmp/maprfuseticket
+
+exit # return to root/local user
+sudo cp /tmp/maprfuseticket /opt/mapr/conf/
+
+sudo mkdir /mapr
+sudo service mapr-posix-client-basic start
+
+```
+
+### FIXME
+
+```
+$ ll /mapr/hcp.mapr.cluster/shared
+ls: cannot access '/mapr/hcp.mapr.cluster/shared/shared-vol': Permission denied
+total 1
+drwxrwxrwx  3 mapr mapr  1 Apr  8 15:44 ./
+drwxr-xr-x 11 mapr mapr 10 Apr  8 15:40 ../
+d?????????  ? ?    ?     ?            ? shared-vol/
+```
