@@ -295,11 +295,14 @@ EOF
 sudo mv /tmp/sssd.conf /etc/sssd/sssd.conf
 ```
 
-We want the user to have a home directory created.  Edit /etc/pam.d/common-session, and add this line directly after `session required pam_unix.so`:
+We want the user to have a home directory created.  Edit `/etc/pam.d/common-session`, and add this line directly after `session required pam_unix.so` : `session    required    pam_mkhomedir.so skel=/etc/skel/ umask=0022`
 
 ```
-session    required    pam_mkhomedir.so skel=/etc/skel/ umask=0022
+if ! grep 'pam_mkhomedir.so' /etc/pam.d/common-session; then
+   sudo sed -i '/^session\s*required\s*pam_unix.so\s*$/a session required    pam_mkhomedir.so skel=/etc/skel/ umask=0022' /etc/pam.d/common-session
+fi
 ```
+
 ```
 sudo chown root:root /etc/sssd/sssd.conf
 sudo chmod 600 /etc/sssd/sssd.conf
@@ -307,7 +310,7 @@ sudo systemctl enable sssd
 sudo systemctl stop sssd
 sudo systemctl restart sssd
 
-pamtester login ad_user1 open_session
+sudo pamtester login ad_user1 open_session
 id ad_user1
 getent passwd ad_user1
 getent group DemoTenantUsers
