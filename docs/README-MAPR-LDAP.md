@@ -186,7 +186,7 @@ Define the settings for the volume
 
 **TIP:** We are creating the volume in the `/data` topology - in practice it is recommended to use a separate topology because `/data` is is used for system objects such as monitoring and tenant storage.
 
-Next we need to define the authorization for the volume.  I have decided to give the **ad_admin1** user full administrative access and the **DemoTenantUsers** read/write access.
+Next we need to define the authorization for the volume.  I have decided to give the **admin** and **ad_admin1** user full administrative access and the groups **DemoTenantAdmins** and **DemoTenantUsers** read/write access.
 
 ![Set volume authorization](./README-MAPR-LDAP/volume_authorization.png)
 
