@@ -253,6 +253,7 @@ ldap_idmap_range_size = 200000
 ldap_user_gecos = gecos
 fallback_homedir = /home/%u
 ldap_user_home_directory = homeDirectory
+override_homedir = /home/%u
 default_shell = /bin/bash
 ldap_group_object_class = posixGroup
 ldap_user_uid_number = uidNumber
@@ -305,6 +306,12 @@ getent passwd ad_user1
 getent group DemoTenantUsers
 ```
 
+We want the user to have a home directory created.  Edit /etc/pam.d/common-session, and add this line directly after `session required pam_unix.so`:
+
+```
+session    required    pam_mkhomedir.so skel=/etc/skel/ umask=0022
+```
+
 ### Configure MAPR POSIX Client on RDP (client) host
 
 From RDP (client) host 
@@ -325,28 +332,27 @@ sudo useradd -u 5000 -s /bin/bash -d /home/mapr -g 5000 mapr
 sudo /opt/mapr/server/configure.sh -N hcp.mapr.cluster -C ${CTRL_IP} -Z ${CTRL_IP} -c -secure
 ```
 
-Connect to controller and run these commands to get the ssl_truststore from MapR container:
-
-```
-docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .
-```
-
 From RDP (client) host 
 
 ```
+# get the ssl_truststore from MapR container
+ssh centos@${CTRL_IP} docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .
 scp centos@${CTRL_IP}:~/ssl_truststore .
 sudo cp ssl_truststore /opt/mapr/conf/
 sudo chown root:root /opt/mapr/conf/ssl_truststore
 
-sudo useradd ad_admin1 -s /bin/bash -d /home/mapr -m
 sudo su - ad_admin1
 maprlogin password -user ad_admin1 -cluster hcp.mapr.cluster
+```
 
+Enter `pass123` at the above prompt.
+
+```
 # Create service ticket as ad_admin1 (to impersonate)
-maprlogin generateticket -type servicewithimpersonation -user ad_admin1 -out /tmp/maprfuseticket
+maprlogin generateticket -type servicewithimpersonation -user ad_admin1 -out maprfuseticket
 
-exit # return to root/local user
-sudo cp /tmp/maprfuseticket /opt/mapr/conf/
+exit # return to ubuntu/local user
+sudo cp /home/ad_admin1/maprfuseticket /opt/mapr/conf/
 
 sudo mkdir /mapr
 sudo service mapr-posix-client-basic start
