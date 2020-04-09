@@ -1,4 +1,4 @@
-## Experimental Instructions for setting up LDAP in MapR
+## Set up LDAP in MapR to expose a Volume to an external posix client
 
 See here for more info: http://docs.bluedata.com/50_mapr-control-system
 
