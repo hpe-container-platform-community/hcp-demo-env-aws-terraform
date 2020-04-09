@@ -327,7 +327,7 @@ CTRL_IP="$(getent hosts controller | awk '{ print $1 ; exit }')" # Change this t
 echo CTRL_IP=$CTRL_IP
 
 sudo bash -c "echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list"
-wget -O - https://package.mapr.com/releases/pub/maprgpg.key | sudo apt-key add -
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BFDDB60966B3F0D6
 sudo apt update
 sudo apt install -y mapr-posix-client-basic openjdk-8-jdk
 sudo modprobe fuse
