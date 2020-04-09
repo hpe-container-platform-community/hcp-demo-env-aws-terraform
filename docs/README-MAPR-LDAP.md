@@ -20,7 +20,8 @@ bdmapr --root bash
 Next change the AD_PRIVATE_IP address below, and run the whole script from your epic-mapr session:
 
 ```
-AD_PRIVATE_IP="10.1.0.234" # populate with output from ad_server_private_ip
+AD_PRIVATE_IP="$(getent hosts ad | awk '{ print $1 ; exit }')" # populate with output from ad_server_private_ip
+echo AD_PRIVATE_IP=$AD_PRIVATE_IP
 
 ### DONT CHANGE BELOW THIS LINE
 
@@ -53,7 +54,7 @@ ldap_tls_reqcert = never
 ldap_user_member_of = memberOf
 ldap_access_order = filter
 ldap_access_filter = (|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))
-ldap_id_mapping = True
+ldap_id_mapping = False
 ldap_schema = ad
 ldap_user_gid_number = gidNumber
 ldap_group_gid_number = gidNumber
@@ -213,7 +214,8 @@ chmod -R 775 /mapr/mnt/hcp.mapr.cluster/shared/shared-vol
 Open a ssh session on the RDP host, then run the following:
 
 ```
-AD_PRIVATE_IP="10.1.0.158" # populate with output from ad_server_private_ip
+AD_PRIVATE_IP="$(getent hosts ad | awk '{ print $1 ; exit }')" # populate with output from ad_server_private_ip
+echo AD_PRIVATE_IP=$AD_PRIVATE_IP
 
 ### DONT CHANGE BELOW THIS LINE
 
@@ -224,7 +226,6 @@ LDAP_ACCESS_FILTER="CN=Users,CN=Builtin,DC=samdom,DC=example,DC=com"
 DOMAIN="samdom.example.com"
 
 # Install the auth packages by executing the following command 
-# TODO: really disable pgpcheck??
 sudo apt install -y pamtester sssd 
 
 cat > /tmp/sssd.conf <<EOF
@@ -244,7 +245,7 @@ ldap_tls_reqcert = never
 ldap_user_member_of = memberOf
 ldap_access_order = filter
 ldap_access_filter = (|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))
-ldap_id_mapping = True
+ldap_id_mapping = False
 ldap_schema = ad
 ldap_user_gid_number = gidNumber
 ldap_group_gid_number = gidNumber
@@ -301,6 +302,7 @@ We want the user to have a home directory created.  Edit `/etc/pam.d/common-sess
 if ! grep 'pam_mkhomedir.so' /etc/pam.d/common-session; then
    sudo sed -i '/^session\s*required\s*pam_unix.so\s*$/a session required    pam_mkhomedir.so skel=/etc/skel/ umask=0022' /etc/pam.d/common-session
 fi
+cat /etc/pam.d/common-session
 ```
 
 ```
@@ -321,11 +323,13 @@ getent group DemoTenantUsers
 From RDP (client) host 
 
 ```
-CTRL_IP="10.1.0.35" # Change this to your controller IP address
+CTRL_IP="$(getent hosts controller | awk '{ print $1 ; exit }')" # Change this to your controller IP address
+echo CTRL_IP=$CTRL_IP
 
-sudo bash -c \"echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list\"
+sudo bash -c "echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list"
 wget -O - https://package.mapr.com/releases/pub/maprgpg.key | sudo apt-key add -
-sudo apt install mapr-posix-client-basic
+sudo apt update
+sudo apt install -y mapr-posix-client-basic openjdk-8-jdk
 sudo modprobe fuse
 
 # Create required mapr:mapr user/group
@@ -340,7 +344,7 @@ From RDP (client) host
 
 ```
 # get the ssl_truststore from MapR container
-ssh centos@${CTRL_IP} docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .
+ssh centos@${CTRL_IP} "docker cp epic-mapr:/opt/mapr/conf/ssl_truststore ."
 scp centos@${CTRL_IP}:~/ssl_truststore .
 sudo cp ssl_truststore /opt/mapr/conf/
 sudo chown root:root /opt/mapr/conf/ssl_truststore
@@ -365,7 +369,10 @@ sudo service mapr-posix-client-basic start
 
 ### Test
 
+Logged in as `ad_admin1`:
+
 ```
-$ ll /mapr/hcp.mapr.cluster/shared
+ll /mapr/hcp.mapr.cluster/shared
+touch /mapr/hcp.mapr.cluster/shared/shared-vol/test
 ```
 
