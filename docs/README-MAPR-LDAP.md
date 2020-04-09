@@ -293,7 +293,14 @@ homedir_substring = /home
 
 EOF
 sudo mv /tmp/sssd.conf /etc/sssd/sssd.conf
+```
 
+We want the user to have a home directory created.  Edit /etc/pam.d/common-session, and add this line directly after `session required pam_unix.so`:
+
+```
+session    required    pam_mkhomedir.so skel=/etc/skel/ umask=0022
+```
+```
 sudo chown root:root /etc/sssd/sssd.conf
 sudo chmod 600 /etc/sssd/sssd.conf
 sudo systemctl enable sssd
@@ -304,12 +311,6 @@ pamtester login ad_user1 open_session
 id ad_user1
 getent passwd ad_user1
 getent group DemoTenantUsers
-```
-
-We want the user to have a home directory created.  Edit /etc/pam.d/common-session, and add this line directly after `session required pam_unix.so`:
-
-```
-session    required    pam_mkhomedir.so skel=/etc/skel/ umask=0022
 ```
 
 ### Configure MAPR POSIX Client on RDP (client) host
