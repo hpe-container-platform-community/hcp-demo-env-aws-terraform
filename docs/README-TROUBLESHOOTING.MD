@@ -16,3 +16,21 @@ dc4cc055ff3e        epic/nagios:2.4                     "/bin/sh -c '/usr/..."  
 ### Running Kube Director Applications not showing after restarting instances
 
 See 'K8S Application Catalog empty after restarting instances'
+
+### Can't connec to AD/LDAP Server
+
+The password has likely expired.  Log into the host where the AD/LDAP is running.
+
+```
+docker ps -a
+```
+to get docker container ID
+
+```
+docker exec -it <container ID> /bin/bash
+```
+
+run the following command
+```
+samba-tool domain passwordsettings set --max-pwd-age=999
+```
