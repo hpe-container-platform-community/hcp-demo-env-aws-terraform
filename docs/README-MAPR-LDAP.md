@@ -369,10 +369,117 @@ sudo service mapr-posix-client-basic start
 
 ### Test
 
-Logged in as `ad_admin1`:
-
 ```
+sudo su - ad_admin1
 ll /mapr/hcp.mapr.cluster/shared
 touch /mapr/hcp.mapr.cluster/shared/shared-vol/test
 ```
 
+## Setup Datatap
+
+TODO these notes have not been verified.
+
+Source: http://docs.bluedata.com/40_using-a-datatap-to-connect-to-a-mapr-fs
+
+```
+    1  cat > /etc/yum.repos.d/maprtech.repo
+    2  wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+    3  sudo rpm -Uvh epel-release-6*.rpm
+    4  sudo rpm --import http://package.mapr.com/releases/pub/maprgpg.key
+    5  sudo yum install mapr-client.x86_64 java-1.7.0-openjdk.x86_64
+    6  mkdir /mapr
+    7  export LD_LIBRARY_PATH=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.131.x86_64/jre/lib/amd64/server/:/opt/mapr/lib
+    8  docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .
+    9  /opt/mapr/server/configure.sh -N mapr -c -secure -C -HS
+
+   11  /opt/mapr/server/configure.sh -N hcp.mapr.cluster -c -secure -C 10.1.0.194 -HS
+   12  CTRL_IP=10.1.0.194
+   13  sudo cp /home/centos/ssl_truststore  /opt/mapr/conf/
+   14  sudo chown root:root /opt/mapr/conf/ssl_truststore
+   15  sudo su - ad_admin1
+   16  maprlogin password -cluster hcp.mapr.cluster -user ad_admin1
+   17  maprlogin generateticket -type service -out /tmp/longlived_ticket -duration 30:0:0 -renewal 90:0:0
+   18  service mapr-posix-client-basic start
+   19  yum install mapr-posix-client-*
+   20  service mapr-posix-client-basic start
+   21  ls /mapr/
+   22  wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/create_dataconn.py
+   23  wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/settings.py
+   24  wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/session.py
+
+   38  cat > ca-cert.pem
+```
+
+Edit settings.py
+
+```
+import os
+
+GLOBAL_SETTINGS = {
+"BASE_URL" : 'https://127.0.0.1:8080',
+...
+"BDS_TENANT_NAME" : "Demo Tenant",
+"BDS_TENANT_ADMIN" : "admin",
+"BDS_TENANT_ADMIN_PASSWORD" : "admin123"
+}
+
+def get_setting(key):
+    env_name = "BD_SETTING_" + key
+    env_val = os.environ.get(env_name)
+    if env_val is None:
+        return GLOBAL_SETTINGS[key]
+    else:
+        return env_val
+```
+
+Edit ...
+
+```
+# grep 'verify=' *.py
+create_dataconn.py:    return requests.post(url, spec, headers=session_header, verify='/root/ca-cert.pem')
+session.py:                response = requests.get(url, headers=headers, timeout=20, verify='/root/ca-cert.pem')
+session.py:                response = requests.put(url, data=data, headers=headers, timeout=20, verify='/root/ca-cert.pem')
+session.py:                response = requests.post(url, data=data, headers=headers, timeout=20, verify='/root/ca-cert.pem')
+session.py:                response = requests.delete(url, headers=headers, timeout=20, verify='/root/ca-cert.pem')
+```
+
+Run script
+
+```
+./create_dataconn.py -n MaprClus1 -p /mapr/hcp.mapr.cluster/ -t file
+```
+
+You should see a new DataTap in HCP UI
+
+### worker
+
+Install mapr client (as above).
+
+## Test Datatap - Spark 2.4 Cluster 
+
+On RDP host add a data set:
+
+```
+sudo su - ad_admin1
+wget https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv
+mv airline-safety.csv /mapr/hcp.mapr.cluster/shared/shared-vol/
+```
+
+Ensure you have setup HCP and EPIC Demo Tenant with LDAP [./README-AD.md](./README-AD.md)
+
+Create a spark 2.4 cluster with 1 controller and 1 jupyterhub.
+
+Login to jupyterhub (ad_admin1/pass123)
+
+Help -> Launch Classic Notebook
+
+In jupyter notebook:
+
+```
+from pyspark.sql import SQLContext
+sqlContext = SQLContext(sc)
+df = sqlContext.read.format('com.databricks.spark.csv').\
+         options(header='true', inferschema='true').\
+        load('dtap://MaprClus1/shared/shared-vol/test')
+df.take(1)
+```
