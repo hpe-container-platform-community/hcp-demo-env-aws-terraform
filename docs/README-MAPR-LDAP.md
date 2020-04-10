@@ -381,35 +381,52 @@ TODO these notes have not been verified.
 
 Source: http://docs.bluedata.com/40_using-a-datatap-to-connect-to-a-mapr-fs
 
-On controller ..
+On controller as root ..
 
 ```
-    1  cat > /etc/yum.repos.d/maprtech.repo
-    2  wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-    3  sudo rpm -Uvh epel-release-6*.rpm
-    4  sudo rpm --import http://package.mapr.com/releases/pub/maprgpg.key
-    5  sudo yum install mapr-client.x86_64 java-1.7.0-openjdk.x86_64
-    6  mkdir /mapr
-    7  export LD_LIBRARY_PATH=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.131.x86_64/jre/lib/amd64/server/:/opt/mapr/lib
-    8  docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .
-    9  /opt/mapr/server/configure.sh -N mapr -c -secure -C -HS
+sudo su -
+cat > /etc/yum.repos.d/maprtech.repo >>EOF
+[maprtech]
+name=MapR Technologies
+baseurl=http://package.mapr.com/releases/v5.1.0/redhat/
+enabled=1
+gpgcheck=0
+protect=1
 
-   11  /opt/mapr/server/configure.sh -N hcp.mapr.cluster -c -secure -C 10.1.0.194 -HS
-   12  CTRL_IP=10.1.0.194
-   13  sudo cp /home/centos/ssl_truststore  /opt/mapr/conf/
-   14  sudo chown root:root /opt/mapr/conf/ssl_truststore
-   15  sudo su - ad_admin1
-   16  maprlogin password -cluster hcp.mapr.cluster -user ad_admin1
-   17  maprlogin generateticket -type service -out /tmp/longlived_ticket -duration 30:0:0 -renewal 90:0:0
-   18  service mapr-posix-client-basic start
-   19  yum install mapr-posix-client-*
-   20  service mapr-posix-client-basic start
-   21  ls /mapr/
-   22  wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/create_dataconn.py
-   23  wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/settings.py
-   24  wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/session.py
+[maprecosystem]
+name=MapR Technologies
+baseurl=http://package.mapr.com/releases/ecosystem-5.x/redhat
+enabled=1
+gpgcheck=0
+protect=1
+EOF
 
-   38  cat > ca-cert.pem
+wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+sudo rpm -Uvh epel-release-6*.rpm
+sudo rpm --import http://package.mapr.com/releases/pub/maprgpg.key
+sudo yum install mapr-client.x86_64 java-1.7.0-openjdk.x86_64
+mkdir /mapr
+export LD_LIBRARY_PATH=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.131.x86_64/jre/lib/amd64/server/:/opt/mapr/lib
+docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .
+
+/opt/mapr/server/configure.sh -N hcp.mapr.cluster -c -secure -C 10.1.0.194 -HS # change to your controller ip
+
+sudo cp /home/centos/ssl_truststore  /opt/mapr/conf/
+sudo chown root:root /opt/mapr/conf/ssl_truststore
+sudo su - ad_admin1
+maprlogin password -cluster hcp.mapr.cluster -user ad_admin1
+maprlogin generateticket -type service -out /tmp/longlived_ticket -duration 30:0:0 -renewal 90:0:0
+service mapr-posix-client-basic start
+yum install mapr-posix-client-*
+service mapr-posix-client-basic start
+ls /mapr/
+wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/create_dataconn.py
+wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/settings.py
+wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/session.py
+
+cat > ca-cert.pem <<EOF
+Your CA Certificate
+EOF
 ```
 
 Edit settings.py
@@ -434,7 +451,7 @@ def get_setting(key):
         return env_val
 ```
 
-Edit ...
+Patch the following scripts to support SSL:
 
 ```
 # grep 'verify=' *.py
@@ -445,7 +462,7 @@ session.py:                response = requests.post(url, data=data, headers=head
 session.py:                response = requests.delete(url, headers=headers, timeout=20, verify='/root/ca-cert.pem')
 ```
 
-Run script
+Run script:
 
 ```
 ./create_dataconn.py -n MaprClus1 -p /mapr/hcp.mapr.cluster/ -t file
