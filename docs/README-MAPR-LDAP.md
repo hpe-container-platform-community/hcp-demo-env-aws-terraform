@@ -416,9 +416,10 @@ sudo chown root:root /opt/mapr/conf/ssl_truststore
 
 maprlogin password -cluster hcp.mapr.cluster -user ad_admin1
 maprlogin generateticket -type service -out /tmp/longlived_ticket -duration 30:0:0 -renewal 90:0:0
-service mapr-posix-client-basic start
+
 yum install mapr-posix-client-*
 service mapr-posix-client-basic start
+
 ls /mapr/
 wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/create_dataconn.py
 wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/settings.py
