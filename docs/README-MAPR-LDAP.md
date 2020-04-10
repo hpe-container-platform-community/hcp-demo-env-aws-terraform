@@ -463,6 +463,7 @@ session.py:                response = requests.delete(url, headers=headers, time
 Run script:
 
 ```
+chmod +x create_dataconn.py
 ./create_dataconn.py -n MaprClus1 -p /mapr/hcp.mapr.cluster/ -t file
 ```
 
