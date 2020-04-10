@@ -51,10 +51,10 @@ resource "local_file" "cli_start_ec2_instances" {
     #!/bin/bash
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids} 
 
-    echo "*******************************************************************************"
-    echo "IMPORTANT: You need to run the following command to update changed IP addresses"
-    echo "           ./bin/terraform_refresh.sh"
-    echo "*******************************************************************************"
+    echo "***********************************************************************************************************"
+    echo "IMPORTANT: You need to run the following command to update changed public IP addresses on the aws instances"
+    echo "           ./bin/terraform_apply.sh"
+    echo "***********************************************************************************************************"
   EOF
 }
 
@@ -290,7 +290,7 @@ resource "local_file" "rdp_post_setup" {
   content = <<-EOF
     #!/bin/bash
     source "${path.module}/scripts/variables.sh"
-    ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP "sudo fastdd"    
+    ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP "sudo fastdd"  
   EOF
 }
 

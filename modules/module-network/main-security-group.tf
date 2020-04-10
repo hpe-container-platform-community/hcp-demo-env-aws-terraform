@@ -15,7 +15,7 @@ resource "aws_security_group" "main" {
   description = "main"
 
   tags = {
-    Name = "${var.project_id}-default-security-group"
+    Name = "${var.project_id}-main-security-group"
     Project = "${var.project_id}"
     user = "${var.user}"
   }
@@ -38,6 +38,15 @@ resource "aws_security_group_rule" "return_traffic" {
   protocol        = "-1"
   cidr_blocks     = ["0.0.0.0/0"]
 }
+
+# resource "aws_security_group_rule" "return_traffic_ipv6" {
+#   security_group_id = aws_security_group.main.id
+#   type            = "egress"
+#   from_port       = 0
+#   to_port         = 0
+#   protocol        = "-1"
+#   ipv6_cidr_blocks     = ["::/0"]
+# }
 
 // allow all traffic from specified ips
 
@@ -63,6 +72,13 @@ resource "aws_security_group" "allow_all_from_specified_ips" {
     from_port  = 0
     to_port    = 0
   }
+
+  # ingress {
+  #   protocol   = "-1"
+  #   ipv6_cidr_blocks = ["2a00:23c7:a32c:4000::107 fd48:3c23:2342::107"] # local.full_access_sg_ips
+  #   from_port  = 0
+  #   to_port    = 0
+  # }
 }
 
 // allow ssh from world security group

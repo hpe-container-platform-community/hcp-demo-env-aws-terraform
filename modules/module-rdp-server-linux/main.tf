@@ -33,6 +33,18 @@ resource "aws_instance" "rdp_server" {
     volume_type = "gp2"
     volume_size = 40
   }
+/*
+  provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    content        = file("${var.ssh_prv_key_path}")
+    destination   = "/home/ubuntu/.ssh/id_rsa"
+  }
+  */
 
   provisioner "remote-exec" {
     connection {
@@ -42,7 +54,13 @@ resource "aws_instance" "rdp_server" {
       private_key = file("${var.ssh_prv_key_path}")
     }
     inline = [
-      "sudo apt update && sudo apt install -y firefox",
+      //"sudo bash -c \"echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list\"",
+      //"sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BFDDB60966B3F0D6",
+      //"wget -O - https://package.mapr.com/releases/pub/maprgpg.key | sudo apt-key add -",
+      "sudo sed -i 's/1/0/g' /etc/apt/apt.conf.d/20auto-upgrades",
+      "sudo apt update",
+      "sudo apt install -y firefox",
+      "sudo snap install gedit",
       "curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl",
       "chmod +x ./kubectl",
       "sudo mv ./kubectl /usr/local/bin/kubectl",
@@ -56,6 +74,7 @@ resource "aws_instance" "rdp_server" {
       "sudo mv terraform /usr/local/bin/",
       "rm terraform_0.12.24_linux_amd64.zip",
       "mkdir /home/ubuntu/Desktop",
+      //"chmod 600 /home/ubuntu/.ssh/id_rsa",
       "sudo bash -c \"fastdd & disown -h %1\"" # prewarm EBS for faster operation
     ]
   }
@@ -71,7 +90,7 @@ resource "aws_instance" "rdp_server" {
     destination   = "/home/ubuntu/Desktop"
   }
 
-    provisioner "file" {
+  provisioner "file" {
     connection {
       type        = "ssh"
       user        = "ubuntu"

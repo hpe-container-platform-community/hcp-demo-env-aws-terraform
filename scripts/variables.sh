@@ -36,6 +36,9 @@ PROJECT_DIR=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.
 LOG_FILE="${PROJECT_DIR}"/generated/bluedata_install_output.txt
 [[ -f "$LOG_FILE" ]] && mv -f "$LOG_FILE" "${LOG_FILE}".old
 
+CLIENT_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["client_cidr_block"]["value"])')
+[ "$CLIENT_CIDR_BLOCK" ] || ( echo "ERROR: CLIENT_CIDR_BLOCK is empty" && exit 1 )
+
 REGION=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["aws_region"]["value"])')
 [ "$REGION" ] || ( echo "ERROR: REGION is empty" && exit 1 )
 
@@ -137,6 +140,25 @@ read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
 #echo WRKR_PRV_IPS=${WRKR_PRV_IPS[@]}
 #echo WRKR_PUB_IPS=${WRKR_PUB_IPS[@]}
 
+AD_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_private_ip"]["value"])') 
+AD_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_public_ip"]["value"])') 
+
 RDP_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_private_ip"]["value"])') 
 RDP_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_public_ip"]["value"])') 
 RDP_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_instance_id"]["value"])') 
+RDP_SERVER_OPERATING_SYSTEM=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_operating_system"]["value"])')
+
+CURR_CLIENT_CIDR_BLOCK="$(curl -s http://ifconfig.me/ip)/32"
+
+if [[ "$CLIENT_CIDR_BLOCK" = "$CURR_CLIENT_CIDR_BLOCK" ]];
+then
+   echo "Your client IP address [${CLIENT_CIDR_BLOCK}] has not changed - no need to update AWS NACL or SG rules"
+else
+   echo "*****************************************************************************************"
+   echo "Your client IP adddress appears to have changed since you last ran ./bin/terraform_apply."
+   echo "You should run the following to update your environment with your new IP address:"
+   echo
+   echo "./bin/terraform_apply.sh"
+   echo "*****************************************************************************************"
+   exit 1
+fi

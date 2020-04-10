@@ -53,19 +53,30 @@ done
 # Setup SSH keys for passwordless SSH
 ###############################################################################
 
-# if ssh key doesn't exist on controller EC instance then create one
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-if [ -f ~/.ssh/id_rsa ]
-then
-   echo CONTROLLER: Found existing ~/.ssh/id.rsa so moving on...
-else
-   ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
-   echo CONTROLLER: Created ~/.ssh/id_rsa
-fi
+cat generated/controller.prv_key | \
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat > ~/.ssh/id_rsa"
 
-# BlueData controller installer requires this - TODO only add if it doesn't already exist
-cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-ENDSSH
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "chmod 600 ~/.ssh/id_rsa"
+
+cat generated/controller.pub_key | \
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat > ~/.ssh/id_rsa.pub"
+
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "chmod 600 ~/.ssh/id_rsa.pub"
+   
+
+# if ssh key doesn't exist on controller EC instance then create one
+# ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+# if [ -f ~/.ssh/id_rsa ]
+# then
+#    echo CONTROLLER: Found existing ~/.ssh/id.rsa so moving on...
+# else
+#    ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+#    echo CONTROLLER: Created ~/.ssh/id_rsa
+# fi
+
+# # BlueData controller installer requires this - TODO only add if it doesn't already exist
+# cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+# ENDSSH
 
 #
 # Controller -> Gateway
@@ -226,7 +237,9 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 ###############################################################################
 
 # retrive controller ssh private key and save it locally
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > generated/controller.prv_key
+#ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > generated/controller.prv_key
+#ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa.pub' > generated/controller.pub_key
+
 
 if [[ "${CREATE_EIP_GATEWAY}" == "True" ]];
 then

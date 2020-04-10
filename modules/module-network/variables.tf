@@ -19,3 +19,15 @@ variable "vpc_cidr_block" {
 variable "subnet_cidr_block" {
     type = string
 }
+variable "dns_zone_name" {
+    type = string
+}
+variable "controller_private_ip" {
+    type = string
+}
+variable "ad_server_enabled" {
+    type = bool
+}
+variable "ad_private_ip" {
+    type = string
+}

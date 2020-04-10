@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=SSH Active Directory
+GenericName=SSH Active Directory
+Exec=mate-terminal --working-directory="/home/ubuntu/"  --command "ssh ad"
+Icon=utilities-terminal
+Type=Application
+Terminal=false
+Categories=System;GTK;Utility;TerminalEmulator;
+StartupNotify=true
+Keywords=MATE;terminal;shell;prompt;command;commandline;

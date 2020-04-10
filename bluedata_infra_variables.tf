@@ -83,6 +83,12 @@ variable "selinux_disabled" { default = false }
 variable "nfs_server_enabled" { default = false }
 variable "ad_server_enabled" { default = true }
 
+variable "dns_zone_name" {
+  default = "samdom.example.com"
+}
+
+variable "enable_route53_private_dns" { default = false }
+
 variable "rdp_server_enabled" { default = false }
 
 terraform {

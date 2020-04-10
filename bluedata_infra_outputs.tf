@@ -107,7 +107,7 @@ output "gateway_ssh_command" {
 output "workers_ssh" {
   value = {
     for instance in aws_instance.workers:
-    instance.id => "ssh -o StrictHostKeyChecking=no -i '${var.ssh_prv_key_path}' centos@${instance.public_ip}" 
+    instance.private_ip => "ssh -o StrictHostKeyChecking=no -i '${var.ssh_prv_key_path}' centos@${instance.public_ip}" 
   }
 }
 
@@ -131,6 +131,10 @@ output "ad_server_private_ip" {
   value = module.ad_server.private_ip
 }
 
+output "ad_server_public_ip" {
+  value = module.ad_server.public_ip
+}
+
 output "ad_server_ssh_command" {
   value = module.ad_server.ssh_command
 }
@@ -147,4 +151,8 @@ output "rdp_server_public_ip" {
 
 output "rdp_server_instance_id" {
   value = var.rdp_server_operating_system == "WINDOWS" ? module.rdp_server.instance_id : module.rdp_server_linux.instance_id
+}
+
+output "rdp_server_operating_system" {
+  value = var.rdp_server_operating_system
 }
