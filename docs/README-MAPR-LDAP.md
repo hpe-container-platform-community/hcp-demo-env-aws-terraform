@@ -385,7 +385,7 @@ On controller as root ..
 
 ```
 sudo su -
-cat > /etc/yum.repos.d/maprtech.repo >>EOF
+cat > /etc/yum.repos.d/maprtech.repo <<EOF
 [maprtech]
 name=MapR Technologies
 baseurl=http://package.mapr.com/releases/v5.1.0/redhat/
