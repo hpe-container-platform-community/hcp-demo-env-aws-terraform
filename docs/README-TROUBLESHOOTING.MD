@@ -17,7 +17,7 @@ dc4cc055ff3e        epic/nagios:2.4                     "/bin/sh -c '/usr/..."  
 
 See 'K8S Application Catalog empty after restarting instances'
 
-### Can't connec to AD/LDAP Server
+### Can't connect to AD/LDAP Server
 
 The password has likely expired.  Log into the host where the AD/LDAP is running.
 
