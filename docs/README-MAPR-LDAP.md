@@ -381,6 +381,8 @@ TODO these notes have not been verified.
 
 Source: http://docs.bluedata.com/40_using-a-datatap-to-connect-to-a-mapr-fs
 
+On controller ..
+
 ```
     1  cat > /etc/yum.repos.d/maprtech.repo
     2  wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
