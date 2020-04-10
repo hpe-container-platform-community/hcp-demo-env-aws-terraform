@@ -468,7 +468,9 @@ Run script:
 ./create_dataconn.py -n MaprClus1 -p /mapr/hcp.mapr.cluster/ -t file
 ```
 
-You should see a new DataTap in HCP UI
+You should see a new DataTap in HCP UI:
+
+![Datatap Browser](./README-MAPR-LDAP/datatap_browser.png)
 
 ### worker
 
@@ -502,3 +504,5 @@ df = sqlContext.read.format('com.databricks.spark.csv').\
         load('dtap://MaprClus1/shared/shared-vol/test')
 df.take(1)
 ```
+
+![Spark Success](./README-MAPR-LDAP/spark_success.png)
