@@ -413,7 +413,7 @@ docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .
 
 sudo cp /home/centos/ssl_truststore  /opt/mapr/conf/
 sudo chown root:root /opt/mapr/conf/ssl_truststore
-sudo su - ad_admin1
+
 maprlogin password -cluster hcp.mapr.cluster -user ad_admin1
 maprlogin generateticket -type service -out /tmp/longlived_ticket -duration 30:0:0 -renewal 90:0:0
 service mapr-posix-client-basic start
@@ -424,9 +424,6 @@ wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/create_dataconn.py
 wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/settings.py
 wget https://bluedata-releases.s3.amazonaws.com/dtap-mapr/session.py
 
-cat > ca-cert.pem <<EOF
-Your CA Certificate
-EOF
 ```
 
 Edit settings.py
@@ -455,11 +452,11 @@ Patch the following scripts to support SSL:
 
 ```
 # grep 'verify=' *.py
-create_dataconn.py:    return requests.post(url, spec, headers=session_header, verify='/root/ca-cert.pem')
-session.py:                response = requests.get(url, headers=headers, timeout=20, verify='/root/ca-cert.pem')
-session.py:                response = requests.put(url, data=data, headers=headers, timeout=20, verify='/root/ca-cert.pem')
-session.py:                response = requests.post(url, data=data, headers=headers, timeout=20, verify='/root/ca-cert.pem')
-session.py:                response = requests.delete(url, headers=headers, timeout=20, verify='/root/ca-cert.pem')
+create_dataconn.py:    return requests.post(url, spec, headers=session_header, verify='/home/centos/minica.pem')
+session.py:                response = requests.get(url, headers=headers, timeout=20, verify='/home/centos/minica.pem')
+session.py:                response = requests.put(url, data=data, headers=headers, timeout=20, verify='/home/centos/minica.pem')
+session.py:                response = requests.post(url, data=data, headers=headers, timeout=20, verify='/home/centos/minica.pem')
+session.py:                response = requests.delete(url, headers=headers, timeout=20, verify='/home/centos/minica.pem')
 ```
 
 Run script:
