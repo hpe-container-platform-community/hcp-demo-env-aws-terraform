@@ -504,7 +504,8 @@ from pyspark.sql import SQLContext
 sqlContext = SQLContext(sc)
 df = sqlContext.read.format('com.databricks.spark.csv').\
          options(header='true', inferschema='true').\
-        load('dtap://MaprClus1/shared/shared-vol/test')
+        load('dtap://MaprClus1/shared/shared-vol/airline-safety.csv')
+)
 df.take(1)
 ```
 
