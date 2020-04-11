@@ -57,11 +57,11 @@ variable "EC2_LIN_RDP_AMIS" {
 } 
 
 variable "create_eip_controller" { 
-  default = true
+  default = false
 }
 
 variable "create_eip_gateway" { 
-  default = true
+  default = false
 }
 
 variable "ssh_prv_key_path" {}

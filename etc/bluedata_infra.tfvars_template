@@ -61,13 +61,13 @@ rdp_instance_type  = "t2.xlarge"
 # if you are short on EIPs. If you don't create the EIP, you probably need to 
 # enable the RDP server.
 
-create_eip_controller = true
+create_eip_controller = false
 
 # Whether to create an EIP for the gateway - you may wish to disable this
 # if you are short on EIPs. If you don't create the EIP, you probably need to 
 # enable the RDP server.
 
-create_eip_gateway = true
+create_eip_gateway = false
 
 # the path to ssh private key on your local machine
 # DO NOT CHANGE THIS
