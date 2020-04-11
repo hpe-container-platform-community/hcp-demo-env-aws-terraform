@@ -1,0 +1,28 @@
+profile            = "default"
+region             = "eu-west-3" # Paris
+az                 = "eu-west-3a" 
+project_id         = "<<your-username>>-hcp"
+user               = "<<your-username>>"
+
+gtw_instance_type = "m5.4xlarge"
+ctr_instance_type = "m5.4xlarge"
+wkr_instance_type = "m5.4xlarge"
+
+worker_count = 2
+
+ssh_prv_key_path   = "./generated/controller.prv_key"
+ssh_pub_key_path   = "./generated/controller.pub_key"
+
+vpc_cidr_block     = "10.1.0.0/16"
+subnet_cidr_block  = "10.1.0.0/24"
+
+
+epic_dl_url = "s3://xxxx/xxxx/bluedata-epic-entdoc-minimal-release-5.0-3006.bin"
+epid_dl_url_needs_presign = true 
+epic_dl_url_presign_options = "--region eu-west-1" # region of the S3 bucket
+
+selinux_disabled = true
+ad_server_enabled = true
+
+rdp_server_enabled = true
+rdp_server_operating_system = "LINUX"
