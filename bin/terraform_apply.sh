@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -e # abort on error
+set -u # abort on undefined variable
+
+./scripts/check_prerequisites.sh
+
 
 if [[ ! -f  "./generated/controller.prv_key" ]]; then
    [[ -d "./generated" ]] || mkdir generated

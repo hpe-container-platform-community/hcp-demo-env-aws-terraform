@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -e # abort on error
+set -u # abort on undefined variable
+
+./scripts/check_prerequisites.sh
+
 source "scripts/variables.sh"
 
 terraform refresh -var-file=etc/bluedata_infra.tfvars \

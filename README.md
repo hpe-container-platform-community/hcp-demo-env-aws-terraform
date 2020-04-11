@@ -1,44 +1,30 @@
 **OVERVIEW**
 
-This project consists of two main parts:
-
- - A terraform configuration [bluedata_infra_main.tf](./bluedata_infra_main.tf) to set up AWS infrastructure for a HPE Container Platform 5.x deployment
- - A bash script [scripts/bluedata_install.sh](./scripts/bluedata_install.sh) to automate the installation of BlueData inside the AWS environment
-
-The goals of this project are:
-
- - Provide the ability for users wishing to manually install BlueData to easily create the required AWS infrastructure.  These users will use the terraform configuration but not the bash script.
- - Provide the ability for users to quickly automate a BlueData install but also have full control of the deployment source code so that they can modify the deployment as they desire.
+This project makes it easy to setup HPE Container Platform demo/trial environments on AWS
 
 ### Pre-requisites
 
 The following installed locally:
 
- - python3
- - netcat (nc) 
- - ssh client
- - ssh key pair (ssh-keygen -t rsa)
  - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html
- - curl client
  - aws cli (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
 This project has been tested on Linux and OSX client machines
 
-### Instructions
+### Quick start
 
-#### Setup variables and terraform
+#### Setup environment
 
 ```
-# ensure you have setup your aws credentials (alternatively use 'aws configure' 
-# https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
-vi ~/.aws/credentials
+# If you haven't already configured the aws CLI with your credentials, run the following:
+aws configure
 
 # clone this project
 git clone https://github.com/bluedata-community/bluedata-demo-env-aws-terraform
 cd bluedata-demo-env-aws-terraform
 
 # create a copy 
-cp ./etc/bluedata_infra.tfvars_template ./etc/bluedata_infra.tfvars
+cp ./etc/bluedata_infra.tfvars_example ./etc/bluedata_infra.tfvars
 
 # edit to reflect your requirements
 vi ./etc/bluedata_infra.tfvars 
@@ -47,102 +33,18 @@ vi ./etc/bluedata_infra.tfvars
 terraform init
 ```
 
-We are now ready to go ...
+We are now ready to automate the environment setup ...
 
 ```
-# create the AWS infastructure with the client_cidr_block for the network access control rules 
-# automatically set from the client's IP address
-
-echo MY_IP=$(curl -s http://ifconfig.me/ip)
-terraform apply -var-file=etc/bluedata_infra.tfvars \
-   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
-
-   # *NOTE*
-   # If the terraform apply command returns an error like `invalid CIDR address: /32`, 
-   # check curl actually returned an IP address
-
-# At this point if the apply command finished successfully, you have the AWS infrastructure 
-# ready for a BlueData installation.  If you would like to stop at this point and manually 
-# install BlueData, you can retrieve the AWS environment details with the command: 
-# `terraform output` and then proceed to manually install BlueData inside that environment.
-
-# export the infrastructure details so we can access them from the scripts/bluedata_install.sh script
-terraform output -json > generated/output.json
-
-# automated installation of BlueData environment
-./scripts/bluedata_install.sh
-
-# finally, follow instructions output by `scripts/bluedata_install.sh`
+./bin/create_new_environment_from_scratch.sh
 ```
 
-Or, all together ...
+If the above script has run without error, you can access your environment with
 
-```
-echo MY_IP=$(curl -s http://ifconfig.me/ip) && \
-terraform apply \
-   -var-file=etc/bluedata_infra.tfvars \
-   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" \
-   -auto-approve=true && \
-sleep 60 && \
-terraform output -json > generated/output.json && \
-./scripts/bluedata_install.sh 
-```
 
-TIP: If your epic download url is set for private access, see [./docs/README-TIPS.md](./docs/README-TIPS.md)
 
-Next install the cert `generated/ca-cert.pem` into your browser.
+## Advanced documentation
 
-### Setup a NFS server (optional)
+See [./docs/README-ADVANCED.md](./docs/README-ADVANCED.md) for information on **stopping**, **starting** from AWS instances and more.
 
-If you want the terraform script to deploy a NFS server (e.g. for ML OPS projects), set `nfs_server_enabled=true` in your `bluedata_infra.tfvars` file.
-
-You will need to run `terraform apply ...` after making the update.  
-
-Run `terraform output nfs_server_private_ip` to get the NFS server ip address.  The nfs share is set as `/nfsroot`.
-
-### Setup an Active Directory (optional)
-
-See [./docs/README-AD.md](./docs/README-AD.md) for more information.
-
-### Client IP changed?
-
-Re-run to update the AWS network ACL and security groups
-
-```
-terraform apply -var-file=etc/bluedata_infra.tfvars \
-   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
-```
-
-### Add more workers?
-
-Set the variable `worker_count=` in `etc/bluedata_infra.tfvars` to the desired number.
-
-```
-# don't forget to approve when prompted
-terraform apply -var-file=etc/bluedata_infra.tfvars \
-   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
-
-# update the json data
-terraform output -json > generated/output.json
-
-# run a script to prepare the worker - follow the prompts and instructions.
-./scripts/bluedata_prepare_worker.sh
-```
-
-### Destroy environment when finished
-
-```
-# don't forget to approve when prompted
-terraform destroy -var-file=etc/bluedata_infra.tfvars \
-   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" 
-```
-
-### Shutdown ec2 instances when not in use
-
-Some scripts were generated by terraform for this:
-
-- `./generated/cli_stop_ec2_instances.sh` to stop your instances
-- `./generated/cli_start_ec2_instances.sh` to start your instances
-- `./generated/cli_running_ec2_instances.sh` to view running instances
-
-------
+See [./docs/README-TROUBLESHOOTING.md](./docs/README-TROUBLESHOOTING.md) for troubleshooting help.
