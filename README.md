@@ -39,7 +39,11 @@ We are now ready to automate the environment setup ...
 ./bin/create_new_environment_from_scratch.sh
 ```
 
-If the above script has run without error, you can access your environment with
+If the above script has run without error, you can retrieve the RDP/brower endpoint and credentials using:
+
+```
+./generated/rdp_credentials.sh
+```
 
 
 
