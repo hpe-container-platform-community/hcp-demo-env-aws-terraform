@@ -1,3 +1,7 @@
+This document is a work-in-progress. Please raise an issue if you encounter an issue or confusion.
+
+----
+
 ## Set up LDAP in MapR to expose a Volume to an external posix client
 
 See here for more info: http://docs.bluedata.com/50_mapr-control-system
