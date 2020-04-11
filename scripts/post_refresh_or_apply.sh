@@ -46,6 +46,9 @@ EOF1
         xdg-mime default gedit.desktop text/plain
 EOF
 
+    cat generated/bluedata_install_output.txt | \
+        ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/Desktop/HCP_INSTALL_INFO.txt"
+
     ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "echo ${WRKR_PRV_IPS[@]} > ~/Desktop/WORKER_HOSTS.txt"
 
     # add private key to AD server to allow passwordless ssh to all other hosts

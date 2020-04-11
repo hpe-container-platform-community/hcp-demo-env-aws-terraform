@@ -263,7 +263,7 @@ cat <<EOF>"$LOG_FILE"
 *********************************************************
 
 SSH Private key has been downloaded to:
-"${PROJECT_DIR}/generated/controller.prv_key"
+"${PROJECT_DIR}/generated/controller.prv_key" (or "Desktop/controller.prv_key" on RDP environments)
 
 ** PLEASE KEEP IT SECURE **
 
@@ -279,7 +279,7 @@ INSTRUCTIONS for completing the BlueData installation ...
 
    1. Add workers private ips "$(echo ${WRKR_PRV_IPS[@]} | sed -e 's/ /,/g')"
    2. Add gateway private ip "${GATW_PRV_IP}" and public dns "${CONFIG_GATEWAY_DNS}"
-   3. Upload "${PROJECT_DIR}/generated/controller.prv_key"
+   3. Upload "${PROJECT_DIR}/generated/controller.prv_key" (or "Desktop/controller.prv_key" on RDP environments)
    4. Click Add hosts (enter site lock down when prompted)
 
    # After a few minutes, you should see Gateway 'Installed' and Workers 'Bundle completed'
