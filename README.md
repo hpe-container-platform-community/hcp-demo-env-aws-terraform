@@ -51,7 +51,7 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 ## Further documentation
 
-[./docs/README-EC2-START-STOP-STATUS.md](./docs/README-EC2-START-STOP-STATUS.md) for **stopping**, **starting** and **viewing the running status** of your AWS instances
+[./docs/README-EC2-START-STOP-STATUS.md](./docs/README-EC2-START-STOP-STATUS.md) for **stopping**, **starting** and **viewing the status** of your EC2 instances
 
 [./docs/README-DESTROY-DEMO-ENV.md](./docs/README-DESTROY-DEMO-ENV.md) for **destroying** your demo environment in AWS
 
