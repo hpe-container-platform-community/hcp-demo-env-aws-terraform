@@ -54,6 +54,11 @@ resource "local_file" "cli_start_ec2_instances" {
     echo "***********************************************************************************************************"
     echo "IMPORTANT: You need to run the following command to update changed public IP addresses on the aws instances"
     echo "           ./bin/terraform_apply.sh"
+    echo 
+    echo "           You should only run ./bin/terraform_apply.sh after all instances are running.  You can check the"
+    echo "           instances status with:"
+    echo 
+    echo "           ./generated/cli_running_ec2_instances.sh"
     echo "***********************************************************************************************************"
   EOF
 }
