@@ -9,7 +9,7 @@ The following installed locally:
  - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html
  - aws cli (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
-This project has been tested on Linux and OSX client machines
+This project has been tested on **Linux** and **OSX** client machines - Windows is unlikely to work.
 
 ### Quick start
 
