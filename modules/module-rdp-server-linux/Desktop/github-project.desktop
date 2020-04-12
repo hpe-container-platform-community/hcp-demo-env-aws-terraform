@@ -1,0 +1,8 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Name=Github Project Page
+Type=Link
+URL=https://github.com/bluedata-community/bluedata-demo-env-aws-terraform
+Icon=firefox
+Exec=firefox -private-window
