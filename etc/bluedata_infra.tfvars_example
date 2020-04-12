@@ -1,8 +1,12 @@
-profile            = "default"
-region             = "eu-west-3" # I'm using Paris.  Ensure you have enough spare VPCs.
-az                 = "eu-west-3a" 
-project_id         = "<<your-username>>-hcp"
-user               = "<<your-username>>"
+profile            = "default"             # You shouldn't need to change this
+region             = "eu-west-3"           # Change to your preferred region - ensure you have enough spare VPCs in your region.
+az                 = "eu-west-3a"          # Change to your preferred AZ
+project_id         = "<<your-name>>-hcp"   # Change your name and project name. E.g. csnow-hcp-demo
+user               = "<<your-name>>"       # Change your name. E.g. csnow
+
+##############################################################
+###### You probably won't need to change anything below ######
+##############################################################
 
 # You may  need to change these types if not available in your AWS region
 gtw_instance_type = "m5.4xlarge" 
