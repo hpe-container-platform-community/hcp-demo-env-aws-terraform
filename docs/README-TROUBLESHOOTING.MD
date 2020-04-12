@@ -15,7 +15,7 @@ dc4cc055ff3e        epic/nagios:2.4                     "/bin/sh -c '/usr/..."  
 
 ### Running Kube Director Applications are not displayed
 
-See 'K8S Application Catalog empty after restarting instances'
+See [above](#k8s-application-catalog-is-empty)
 
 ### Can't login to MCS - Login Denied
 
