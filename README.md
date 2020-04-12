@@ -58,3 +58,5 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 [./docs/README-AD.md](./docs/README-AD.md) for information on setting up HCP with Active Directory/LDAP.
 
 [./docs/README-MAPR-LDAP.md](./docs/README-MAPR-LDAP.md) for information on setting up MAPR  with Active Directory/LDAP.
+
+[./docs/README-DESIGN-PRINCIPLES.md](./docs/README-DESIGN-PRINCIPLES.md) why this project is architected the way it is.
