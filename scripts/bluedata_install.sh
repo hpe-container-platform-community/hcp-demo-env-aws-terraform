@@ -255,6 +255,7 @@ else
    CONFIG_CONTROLLER_IP=$CTRL_PRV_IP
 fi
 
+
 cat <<EOF>"$LOG_FILE"
 
 
@@ -267,7 +268,12 @@ SSH Private key has been downloaded to:
 
 ** PLEASE KEEP IT SECURE **
 
+*********************************************************
+
 INSTRUCTIONS for completing the BlueData installation ...
+
+If you have configured an RDP server in etc/bluedata_infra.tfvars, you will
+
 
 0. In your browser, navigate to the Controller URL: https://${CONFIG_CONTROLLER_IP}"
 1. At the setup screen, click 'Submit'
@@ -292,5 +298,13 @@ INSTRUCTIONS for completing the BlueData installation ...
 
 
 EOF
-cat "$LOG_FILE"
+
+if [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]]; then
+   echo "*****************************************************************"
+   echo "BlueData installation completed successfully with an RDP server"
+   echo "Please run ./generated/rdp_credentials.sh for connection details."
+   echo "*****************************************************************"
+else
+   cat "$LOG_FILE"
+fi
 

@@ -141,6 +141,10 @@ output "ad_server_ssh_command" {
 
 // RDP Server Output
 
+output "rdp_server_enabled" {
+  value = var.rdp_server_enabled
+}
+
 output "rdp_server_private_ip" {
   value = var.rdp_server_operating_system == "WINDOWS" ? module.rdp_server.private_ip : module.rdp_server_linux.private_ip
 }
