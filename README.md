@@ -51,10 +51,10 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 ## Further documentation
 
-See [./docs/README-ADVANCED.md](./docs/README-ADVANCED.md) for information on **stopping** and **starting** AWS instances, **destroying** your demo environment, and **increasing worked node counts**.
+[./docs/README-ADVANCED.md](./docs/README-ADVANCED.md) for information on **stopping** and **starting** AWS instances, **destroying** your demo environment, and **increasing worked node counts**.
 
-See [./docs/README-TROUBLESHOOTING.MD](./docs/README-TROUBLESHOOTING.MD) for troubleshooting help.
+[./docs/README-TROUBLESHOOTING.MD](./docs/README-TROUBLESHOOTING.MD) for troubleshooting help.
 
-See [./docs/README-AD.md](./docs/README-AD.md) for information on setting up HCP with Active Directory/LDAP.
+[./docs/README-AD.md](./docs/README-AD.md) for information on setting up HCP with Active Directory/LDAP.
 
-See [./docs/README-MAPR-LDAP.md](./docs/README-MAPR-LDAP.md) for information on setting up MAPR  with Active Directory/LDAP.
+[./docs/README-MAPR-LDAP.md](./docs/README-MAPR-LDAP.md) for information on setting up MAPR  with Active Directory/LDAP.
