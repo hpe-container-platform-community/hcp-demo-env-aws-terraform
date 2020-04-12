@@ -51,7 +51,12 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 ## Further documentation
 
-[./docs/README-ADVANCED.md](./docs/README-ADVANCED.md) for information on **stopping** and **starting** AWS instances, **destroying** your demo environment, and **increasing worked node counts**.
+[./docs/README-EC2-START-STOP-STATUS.md](./docs/README-EC2-START-STOP-STATUS.md) for **stopping**, **starting** and **viewing the running status** of your AWS instances
+
+[./docs/README-DESTROY-DEMO-ENV.md](./docs/README-DESTROY-DEMO-ENV.md) for **destroying** your demo environment in AWS
+
+[./docs/README-ADDING-MORE-WORKERS.md](./docs/README-ADDING-MORE-WORKERS.md) for **increasing worked node counts**.
+
 
 [./docs/README-TROUBLESHOOTING.MD](./docs/README-TROUBLESHOOTING.MD) for troubleshooting help.
 
