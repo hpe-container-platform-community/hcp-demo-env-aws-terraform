@@ -1,6 +1,6 @@
 ## Advanced
 
-### Add more worker nodes?
+### Add more worker nodes
 
 Set the variable `worker_count=` in `etc/bluedata_infra.tfvars` to the desired number.
 
