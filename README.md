@@ -49,7 +49,7 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 
 
-## Advanced documentation
+## Further documentation
 
 See [./docs/README-ADVANCED.md](./docs/README-ADVANCED.md) for information on **stopping** and **starting** AWS instances and more.
 
