@@ -17,7 +17,6 @@ import json,sys,subprocess
 try:
    with open('${SCRIPT_DIR}/../generated/output.json') as f:
       json.load(f)
-   print("Terraform output json is valid")
 except: 
    print(80 * "*")
    print("ERROR: Can't parse: '${SCRIPT_DIR}/../generated/output.json'")
@@ -146,19 +145,5 @@ AD_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.st
 RDP_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_private_ip"]["value"])') 
 RDP_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_public_ip"]["value"])') 
 RDP_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_instance_id"]["value"])') 
+RDP_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_enabled"]["value"])')
 RDP_SERVER_OPERATING_SYSTEM=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_operating_system"]["value"])')
-
-CURR_CLIENT_CIDR_BLOCK="$(curl -s http://ifconfig.me/ip)/32"
-
-if [[ "$CLIENT_CIDR_BLOCK" = "$CURR_CLIENT_CIDR_BLOCK" ]];
-then
-   echo "Your client IP address [${CLIENT_CIDR_BLOCK}] has not changed - no need to update AWS NACL or SG rules"
-else
-   echo "*****************************************************************************************"
-   echo "Your client IP adddress appears to have changed since you last ran ./bin/terraform_apply."
-   echo "You should run the following to update your environment with your new IP address:"
-   echo
-   echo "./bin/terraform_apply.sh"
-   echo "*****************************************************************************************"
-   exit 1
-fi

@@ -9,7 +9,7 @@ The following installed locally:
  - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html
  - aws cli (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
-This project has been tested on Linux and OSX client machines
+This project has been tested on **Linux** and **OSX** client machines - Windows is unlikely to work.
 
 ### Quick start
 
@@ -49,8 +49,19 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 
 
-## Advanced documentation
+## Further documentation
 
-See [./docs/README-ADVANCED.md](./docs/README-ADVANCED.md) for information on **stopping**, **starting** from AWS instances and more.
+[./docs/README-EC2-START-STOP-STATUS.md](./docs/README-EC2-START-STOP-STATUS.md) for **stopping**, **starting** and **viewing the status** of your EC2 instances
 
-See [./docs/README-TROUBLESHOOTING.md](./docs/README-TROUBLESHOOTING.md) for troubleshooting help.
+[./docs/README-DESTROY-DEMO-ENV.md](./docs/README-DESTROY-DEMO-ENV.md) for **destroying** your demo environment in AWS
+
+[./docs/README-ADDING-MORE-WORKERS.md](./docs/README-ADDING-MORE-WORKERS.md) for **increasing worked node counts**.
+
+
+[./docs/README-TROUBLESHOOTING.MD](./docs/README-TROUBLESHOOTING.MD) for troubleshooting help.
+
+[./docs/README-AD.md](./docs/README-AD.md) for information on setting up HCP with Active Directory/LDAP.
+
+[./docs/README-MAPR-LDAP.md](./docs/README-MAPR-LDAP.md) for information on setting up MAPR  with Active Directory/LDAP.
+
+[./docs/README-DESIGN-PRINCIPLES.md](./docs/README-DESIGN-PRINCIPLES.md) why this project is architected the way it is.
