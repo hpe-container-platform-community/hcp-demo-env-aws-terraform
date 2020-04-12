@@ -1,4 +1,4 @@
-### K8S Application Catalog empty after restarting instances
+### K8S Application Catalog is empty
 
 SSH into the controller and restart the container `epic/authproxy:1.6`.  E.g.
 
@@ -13,9 +13,15 @@ dc4cc055ff3e        epic/nagios:2.4                     "/bin/sh -c '/usr/..."  
 [centos@ip-10-1-0-152 ~]$ docker restart b1023f0753eb
 ```
 
-### Running Kube Director Applications not showing after restarting instances
+### Running Kube Director Applications are not displayed
 
-See 'K8S Application Catalog empty after restarting instances'
+See [above](#k8s-application-catalog-is-empty)
+
+### Can't login to MCS - Login Denied
+
+1. If you have just started your EC2 instances, allow a few minutes for MAPR docker container to fully start
+2. If step 1 fails, ssh into the controller and restart the epic-mapr docker container (docker restart <<epic-mapr container id>>
+3. If step 2 fails, restart the controller EC2 instance
 
 ### Can't connect to AD/LDAP Server
 

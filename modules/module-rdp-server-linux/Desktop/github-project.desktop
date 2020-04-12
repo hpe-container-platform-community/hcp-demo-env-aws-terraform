@@ -1,8 +1,8 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
 Encoding=UTF-8
-Name=HCP Admin Console
+Name=Github Project Page
 Type=Link
-URL=https://${controller_private_ip}/bdswebui/login/
+URL=https://github.com/bluedata-community/bluedata-demo-env-aws-terraform
 Icon=firefox
 Exec=firefox -private-window
