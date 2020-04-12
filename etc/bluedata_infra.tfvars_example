@@ -17,7 +17,8 @@ ssh_pub_key_path   = "./generated/controller.pub_key"
 vpc_cidr_block     = "10.1.0.0/16"
 subnet_cidr_block  = "10.1.0.0/24"
 
-epic_dl_url = "s3://xxxx/xxxx/bluedata-epic-entdoc-minimal-release-5.0-3006.bin"
+# This is a private bucket - only HPE Container Platform Sales Engineers with AWS accounts will be able to access this
+epic_dl_url = "s3://csnow-bins/R2F06-70004/bluedata-epic-entdoc-minimal-release-5.0-3006.bin"
 epid_dl_url_needs_presign = true 
 epic_dl_url_presign_options = "--region eu-west-1" # region of the S3 bucket
 
