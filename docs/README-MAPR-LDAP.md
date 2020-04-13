@@ -38,7 +38,7 @@ From your client machine where the github project is checked out, run:
 
 Run this script every time you add a new worker host to your HCP cluster.
 
-### Test Datatap on a Spark 2.4 Cluster 
+### Test Datatap on an EPIC Spark 2.4 Cluster 
 
 On RDP host add a data set:
 
@@ -50,7 +50,7 @@ mv airline-safety.csv /mapr/hcp.mapr.cluster/tmp/
 
 Ensure you have setup HCP and EPIC Demo Tenant with LDAP - [./README-AD.md](./README-AD.md)
 
-Create a spark 2.4 cluster with 1 controller and 1 jupyterhub.
+Create a spark 2.4 cluster with 1 controller and 1 jupyterhub (both nodes can use the small flavor).
 
 Login to jupyterhub (ad_admin1/pass123) and launch a python 3 Jupyter notebook (not Spark).
 
