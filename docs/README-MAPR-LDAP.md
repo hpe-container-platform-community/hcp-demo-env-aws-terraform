@@ -44,7 +44,7 @@ wget https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safet
 mv airline-safety.csv /mapr/hcp.mapr.cluster/tmp/
 ```
 
-Ensure you have setup HCP and EPIC Demo Tenant with LDAP [./README-AD.md](./README-AD.md)
+Ensure you have setup HCP and EPIC Demo Tenant with LDAP - [./README-AD.md](./README-AD.md)
 
 Create a spark 2.4 cluster with 1 controller and 1 jupyterhub.
 
