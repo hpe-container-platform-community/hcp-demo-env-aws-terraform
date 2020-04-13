@@ -17,7 +17,7 @@ dc4cc055ff3e        epic/nagios:2.4                     "/bin/sh -c '/usr/..."  
 
 See [above](#k8s-application-catalog-is-empty)
 
-### Can't login to MCS - Login Denied
+### Can't login to MCS - Login Failed
 
 1. If you have just started your EC2 instances, allow a few minutes for MAPR docker container to fully start
 2. If step 1 fails, ssh into the controller and restart the epic-mapr docker container (docker restart <<epic-mapr container id>>
