@@ -34,6 +34,8 @@ From your client machine where the github project is checked out, run:
 ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap.sh
 ```
 
+Run this script every time you add a new worker host to your HCP cluster.
+
 ### Test Datatap - Spark 2.4 Cluster 
 
 On RDP host add a data set:
