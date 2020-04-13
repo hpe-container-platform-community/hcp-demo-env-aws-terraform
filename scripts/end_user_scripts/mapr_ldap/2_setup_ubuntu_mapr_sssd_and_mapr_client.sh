@@ -5,7 +5,7 @@ set -u # abort on undefined variable
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-source "$SCRIPT_DIR/../variables.sh"
+source "$SCRIPT_DIR/../../variables.sh"
 
 AD_PRIVATE_IP=$AD_PRV_IP
 LDAP_BASE_DN="CN=Users,DC=samdom,DC=example,DC=com"
@@ -148,22 +148,21 @@ SSH_EOF
 
 ## TODO use maprcli to create user
 
-false && [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
+[[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
 	set -xeu
 
 	sudo su - ad_admin1
-	echo 123 | maprlogin password -user ad_admin1 -cluster hcp.mapr.cluster
-
+	echo pass123 | maprlogin password -user ad_admin1 -cluster hcp.mapr.cluster
 	maprlogin generateticket -type servicewithimpersonation -user ad_admin1 -out maprfuseticket
-
 	exit # return to ubuntu/local user
+	
 	sudo cp /home/ad_admin1/maprfuseticket /opt/mapr/conf/
 
-	sudo mkdir /mapr
+	[[ -d /mapr ]] || sudo mkdir /mapr
 	sudo service mapr-posix-client-basic start
 
 	# Test
 	sudo su - ad_admin1
-	ll /mapr/hcp.mapr.cluster/
+	ls -l /mapr/hcp.mapr.cluster/
 SSH_EOF
