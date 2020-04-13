@@ -20,7 +20,7 @@ From your client machine where the github project is checked out, run:
 ./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
 ```
 
-### RDP client
+### RDP jump host server
 
 From your client machine where the github project is checked out, run:
 
