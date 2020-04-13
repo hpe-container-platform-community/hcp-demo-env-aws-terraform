@@ -5,7 +5,7 @@ set -u # abort on undefined variable
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-source "$SCRIPT_DIR/../variables.sh"
+source "$SCRIPT_DIR/../../variables.sh"
 
 AD_PRIVATE_IP=$AD_PRV_IP
 LDAP_BASE_DN="CN=Users,DC=samdom,DC=example,DC=com"
@@ -14,7 +14,7 @@ LDAP_BIND_PASSWORD="5ambaPwd@"
 LDAP_ACCESS_FILTER="CN=Users,CN=Builtin,DC=samdom,DC=example,DC=com"
 DOMAIN="samdom.example.com"
 
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${CTRL_PUB_IP} <<-SSH_EOF
 	set -xeu
 	
 	CONTAINER_ID=\$(docker ps | grep "epic-mapr" | cut -d " " -f1)
@@ -109,8 +109,19 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		
 	DOCKER_EOF
 
+	# Add Active Directory user and group
+	bdmapr maprcli acl edit \
+			-cluster hcp.mapr.cluster -type cluster -user ad_admin1:fc
+
+	bdmapr maprcli acl edit \
+			-cluster hcp.mapr.cluster -type cluster -group DemoTenantUsers:login,cv
+
+	bdmapr maprcli acl show -type cluster
+
+	# restart the epic-mapr docker instance - we want to test our changes work 
+	# after restarting
 	docker restart \$(docker ps | grep "epic/mapr" | cut -d " " -f1); docker ps
 
-	# give mapr a chance to startup
+	# give mapr a chance to startup inside the container
 	sleep 120 
 SSH_EOF
