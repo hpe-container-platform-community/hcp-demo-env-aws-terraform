@@ -2,7 +2,7 @@ This document is a work-in-progress. Please raise an issue if you encounter an i
 
 ----
 
-## Set up LDAP in MapR to expose a Volume to an external posix client
+## Setup MAPR with LDAP autentication for remote client access and DataTap
 
 See here for more info: http://docs.bluedata.com/50_mapr-control-system
 
@@ -66,3 +66,7 @@ Run this cell - you should see data from the airline-safety.csv file, e.g.
 2020-04-13 13:30:45 WARN  NativeCodeLoader:62 - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 Xiamen Airlines,430462962,9,1,82,2,0,0,0,7,224,11,2,23ccidents_85_99,fatalities_85_99,incidents_00_14,fatal_accidents_00_14,fatalities_00_14
 ```
+
+### Create a Shared Volume in MAPR
+
+TODO ... coming soon
