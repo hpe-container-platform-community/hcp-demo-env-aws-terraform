@@ -45,6 +45,7 @@ On RDP host add a data set:
 ```
 sudo su - ad_admin1
 wget https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv
+sed -i -e "s/\r/\n/g" airline-safety.csv
 mv airline-safety.csv /mapr/hcp.mapr.cluster/tmp/
 ```
 
