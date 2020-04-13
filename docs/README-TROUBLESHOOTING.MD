@@ -40,3 +40,13 @@ run the following command
 ```
 samba-tool domain passwordsettings set --max-pwd-age=999
 ```
+
+### Error creating VPC: VpcLimitExceeded
+
+If you hit this issue, check that you have enough free VPCs in your AWS account and region:
+
+```
+Error: Error creating VPC: VpcLimitExceeded: The maximum number of VPCs has been reached.
+```
+
+By default AWS allows 5 VPCs per region [more info](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html)
