@@ -56,4 +56,9 @@ In the jupyter notebook, create a cell with the following contents:
 ! hadoop fs -cat dtap://MaprClus1/tmp/airline-safety.csv
 ```
  
-Run this cell - you should see data from the airline-safety.csv file.
+Run this cell - you should see data from the airline-safety.csv file, e.g.
+
+```
+2020-04-13 13:30:45 WARN  NativeCodeLoader:62 - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Xiamen Airlines,430462962,9,1,82,2,0,0,0,7,224,11,2,23ccidents_85_99,fatalities_85_99,incidents_00_14,fatal_accidents_00_14,fatalities_00_14
+```
