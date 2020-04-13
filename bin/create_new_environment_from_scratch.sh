@@ -22,9 +22,17 @@ if [[ ! -f  "./generated/controller.prv_key" ]]; then
 fi
 
 
-terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true && \
-sleep 60 && \
-terraform output -json > generated/output.json && \
-./scripts/post_refresh_or_apply.sh && \
+terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
+sleep 60
+
+terraform output -json > generated/output.json
+./scripts/post_refresh_or_apply.sh
 ./scripts/bluedata_install.sh 
+
+sleep 240
+
+./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
+./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
+./scripts/end_user_scripts/mapr_ldap/3_setup_datatap.sh
+
 

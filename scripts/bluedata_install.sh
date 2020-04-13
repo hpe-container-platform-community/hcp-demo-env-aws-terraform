@@ -173,12 +173,27 @@ done
 # Install Controller
 ###############################################################################
 
+if [[ "${CREATE_EIP_GATEWAY}" == "True" ]];
+then
+   CONFIG_GATEWAY_DNS=$GATW_PUB_DNS
+else
+   CONFIG_GATEWAY_DNS=$GATW_PRV_DNS
+fi
+
+if [[ "${CREATE_EIP_CONTROLLER}" == "True" ]];
+then
+   CONFIG_CONTROLLER_IP=$CTRL_PUB_IP
+else
+   CONFIG_CONTROLLER_IP=$CTRL_PRV_IP
+fi
+
 cat generated/ca-cert.pem | ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat > ~/minica.pem"
 cat generated/ca-key.pem  | ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat > ~/minica-key.pem" 
 
 echo "SSHing into Controller ${CTRL_PUB_IP}"
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+   set -xeu
 
    if [[ -e /home/centos/bd_installed ]]
    then
@@ -218,6 +233,31 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
    # install EPIC (Note: minica puts the cert and key in a folder named after the first DNS domain)
    ./${EPIC_FILENAME} --skipeula --ssl-cert /home/centos/${CTRL_PUB_DNS}/cert.pem --ssl-priv-key /home/centos/${CTRL_PUB_DNS}/key.pem
+ENDSSH
+
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+   set -xeu
+
+   # do initial configuration
+   KERB_OPTION="-k no"
+   LOCAL_TENANT_STORAGE=""
+   LOCAL_FS_TYPE=""
+   WORKER_LIST=""
+   CLUSTER_IP=""
+   HA_OPTION=""
+   PROXY_LIST=""
+   FLOATING_IP="--routable no"
+   DOMAIN_NAME="demo.bdlocal"
+   CONTROLLER_IP="-c ${CONFIG_CONTROLLER_IP}"
+   CUSTOM_INSTALL_NAME="--cin demo-hpecp"
+
+   /opt/bluedata/common-install/scripts/start_install.py \$CONTROLLER_IP \
+      \$WORKER_LIST \$PROXY_LIST \$KERB_OPTION \$HA_OPTION \
+      \$FLOATING_IP -t 60 -s docker -d \$DOMAIN_NAME \$CUSTOM_INSTALL_NAME \$LOCAL_TENANT_STORAGE
+ENDSSH
+
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+   set -xeu
 
    # install application workbench
    sudo yum install -y epel-release
@@ -239,22 +279,6 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 # retrive controller ssh private key and save it locally
 #ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > generated/controller.prv_key
 #ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa.pub' > generated/controller.pub_key
-
-
-if [[ "${CREATE_EIP_GATEWAY}" == "True" ]];
-then
-   CONFIG_GATEWAY_DNS=$GATW_PUB_DNS
-else
-   CONFIG_GATEWAY_DNS=$GATW_PRV_DNS
-fi
-
-if [[ "${CREATE_EIP_CONTROLLER}" == "True" ]];
-then
-   CONFIG_CONTROLLER_IP=$CTRL_PUB_IP
-else
-   CONFIG_CONTROLLER_IP=$CTRL_PRV_IP
-fi
-
 
 cat <<EOF>"$LOG_FILE"
 
