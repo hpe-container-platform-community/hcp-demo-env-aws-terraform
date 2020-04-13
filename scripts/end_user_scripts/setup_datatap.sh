@@ -7,8 +7,25 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/../variables.sh"
 
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
+	set -xeu
+	
+	wget -c https://bluedata-releases.s3.amazonaws.com/dtap-mapr/create_dataconn.py
+	wget -c https://bluedata-releases.s3.amazonaws.com/dtap-mapr/settings.py
+	wget -c https://bluedata-releases.s3.amazonaws.com/dtap-mapr/session.py
 
+	sed -i 's#http://localhost:8080#https://127.0.0.1:8080#' settings.py
+	sed -i 's/replace with your tenant name/Demo Tenant/' settings.py
+	sed -i 's/replace with the tenant admin user name/admin/' settings.py
+	sed -i 's/replace with the password of the tenant admin user/admin123/' settings.py
+ 
+	sed -i 's#return requests.post(url, spec, headers=session_header)#return requests.post(url, spec, headers=session_header, verify="/home/centos/minica.pem")#' create_dataconn.py
+	sed -i 's#(url, headers=headers, timeout=20)#(url, headers=headers, timeout=20, verify="/home/centos/minica.pem")#g' session.py
+	sed -i 's#(url, data=data, headers=headers, timeout=20)#(url, data=data, headers=headers, timeout=20, verify="/home/centos/minica.pem")#g' session.py
 
+	chmod +x create_dataconn.py
+	./create_dataconn.py -n MaprClus1 -p /mapr/hcp.mapr.cluster/ -t file
+SSH_EOF
 
 for HOST in $CTRL_PUB_IP ${WRKR_PUB_IPS[@]}; 
 do
@@ -54,8 +71,3 @@ do
 	SSH_EOF
 done
 
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
-	wget -c https://bluedata-releases.s3.amazonaws.com/dtap-mapr/create_dataconn.py
-	wget -c https://bluedata-releases.s3.amazonaws.com/dtap-mapr/settings.py
-	wget -c https://bluedata-releases.s3.amazonaws.com/dtap-mapr/session.py
-SSH_EOF

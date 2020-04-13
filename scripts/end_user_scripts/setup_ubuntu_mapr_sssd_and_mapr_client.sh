@@ -131,7 +131,7 @@ SSH_EOF
 	sudo /opt/mapr/server/configure.sh -N hcp.mapr.cluster -C ${CTRL_PRV_IP} -Z ${CTRL_PRV_IP} -c -secure
 
 	# get the ssl_truststore from MapR container
-	ssh centos@${CTRL_PRV_IP} 'docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .'
+	ssh -o StrictHostKeyChecking=no centos@${CTRL_PRV_IP} 'docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .'
 
 	# UNABLE TO PROCESS OTHER COMMANDS AFTER THE ABOVE STATEMENT, SO CLOSE THIS
 	# SSH SESSION AND OPEN A NEW ONE
@@ -139,13 +139,18 @@ SSH_EOF
 
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
-	set -x
-	set -e
-	set -u
+	set -xeu
 
-	scp centos@${CTRL_PRV_IP}:~/ssl_truststore .
+	scp -o StrictHostKeyChecking=no centos@${CTRL_PRV_IP}:~/ssl_truststore .
 	sudo mv /home/ubuntu/ssl_truststore /opt/mapr/conf/
 	sudo chown root:root /opt/mapr/conf/ssl_truststore
+SSH_EOF
+
+## TODO use maprcli to create user
+
+false && [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
+	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
+	set -xeu
 
 	sudo su - ad_admin1
 	echo 123 | maprlogin password -user ad_admin1 -cluster hcp.mapr.cluster
