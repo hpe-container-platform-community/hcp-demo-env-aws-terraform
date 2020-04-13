@@ -1,4 +1,4 @@
-This document is a work-in-progress. Please raise an issue if you encounter an issue or confusion.
+This document is a work-in-progress. Please raise an issue if you encounter an issue or any confusion.
 
 ----
 
@@ -12,7 +12,7 @@ These instructions assume you have deployed the AD server by setting `ad_server_
 
 After `terraform apply`, run `terraform output ad_server_private_ip` to get the AD server IP address.
 
-### Configure the epic-mapr docker container
+### Configure the epic-mapr docker container for LDAP authentication
 
 From your client machine where the github project is checked out, run:
 
@@ -20,7 +20,7 @@ From your client machine where the github project is checked out, run:
 ./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
 ```
 
-### RDP jump host server
+### Configure the RDP jump host server for LDAP authentication.
 
 From your client machine where the github project is checked out, run:
 
