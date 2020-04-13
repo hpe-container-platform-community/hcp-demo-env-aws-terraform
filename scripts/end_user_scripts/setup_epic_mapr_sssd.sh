@@ -25,9 +25,9 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		yum install -y authconfig openldap openldap-clients pamtester sssd sssd-client --nogpgcheck
 		
 		authconfig --enableldap --enableldapauth --ldapserver=${AD_PRIVATE_IP} \
-		--ldapbasedn="${LDAP_BASE_DN}" --enablemkhomedir --enablecachecreds \
-		--enableldaptls --update --enablelocauthorize --enablesssd --enablesssdauth \
-		--enablemkhomedir --enablecachecreds
+			--ldapbasedn="${LDAP_BASE_DN}" --enablemkhomedir --enablecachecreds \
+			--enableldaptls --update --enablelocauthorize --enablesssd --enablesssdauth \
+			--enablemkhomedir --enablecachecreds
 		
 		cat > /etc/sssd/sssd.conf <<-EOF
 			[domain/${DOMAIN}]
@@ -112,5 +112,5 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	docker restart \$(docker ps | grep "epic/mapr" | cut -d " " -f1); docker ps
 
 	# give mapr a chance to startup
-	sleep 60 
+	sleep 120 
 SSH_EOF
