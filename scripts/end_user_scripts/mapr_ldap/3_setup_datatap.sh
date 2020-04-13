@@ -7,6 +7,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/../../variables.sh"
 
+# Setup steps taken from: http://docs.bluedata.com/40_using-a-datatap-to-connect-to-a-mapr-fs
+
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
 	set -xeu
 
@@ -71,6 +73,9 @@ do
 			maprlogin generateticket -user ad_admin1 -type service -out /tmp/longlived_ticket -duration 30:0:0 -renewal 90:0:0
 
 			sudo yum install -y mapr-posix-client-*
+			
+			sudo bash -c "echo 'fuse.ticketfile.location=/tmp/longlived_ticket' >> /opt/mapr/conf/fuse.conf"
+
 			sudo service mapr-posix-client-basic start
 
 			ls /mapr/
