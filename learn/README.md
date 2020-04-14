@@ -20,7 +20,7 @@ This document containers a recommended path for learning key HPE Container Platf
 - [Teardown demo environment](./HCP_Administration/teardown_demo_environment.md) [30 mins]
 - [Shutdown demo environment](./HCP_Administration/shutdown_demo_environment.md) [15 mins]
 - [Startup demo environment](./HCP_Administration/startup_demo_environment.md) [15 mins]
-- [Get status of demo environment](./HCP_Administration/shutdown_demo_environment.md) [15 mins]
+- [Status of demo environment](./HCP_Administration/status_demo_environment.md) [15 mins]
 
 ### Manual install HCP
 
