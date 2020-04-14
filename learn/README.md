@@ -3,7 +3,7 @@ Recommended Learning Path
 
 ## Overview
 
-This document containers a recommended path for learning key HCP Capabilities
+This document containers a recommended path for learning key HPE Container Platform (HCP) capabilities
 
 ## Pre-requisites
 
@@ -35,6 +35,11 @@ This document containers a recommended path for learning key HCP Capabilities
 
 ### Create an EPIC Tenant
 
+### HCP CLI and API
+
+- [HCP CLIs](./HCP_Administration/hcp_cli.md) [1 hour]
+- [HCP APIs](./HCP_Administration/hcp_api.md) [1 hour]
+
 ## Data Fabric Administration
 
 ## Kubernetes User
@@ -42,3 +47,7 @@ This document containers a recommended path for learning key HCP Capabilities
 ## EPIC User
 
 ## MLOPS User
+
+## Creating an EPIC application image
+
+## Creating a K8S KubeDirector application image
