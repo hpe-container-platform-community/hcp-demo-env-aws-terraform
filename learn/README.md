@@ -38,6 +38,7 @@ This document containers a recommended path for learning key HPE Container Platf
 
 ### Managing EPIC
 
+- [Cluster Security](./HCP_Administration/cluster_security.md) [1 hour]
 - [Creating a Tenant](./HCP_Administration/creating_a_tenant.md) [1 hour]
 - [Tenant authentication](./HCP_Administration/tenant_authentication.md) [1 hour]
 - [Host Management](./HCP_Administration/host_management.md) [1 hour]
@@ -48,6 +49,17 @@ This document containers a recommended path for learning key HPE Container Platf
 - [Creating a Tenant](./HCP_Administration/creating_a_k8s_tenant.md) [1 hour]
 - [Tenant authentication](./HCP_Administration/tenant_authentication.md) [1 hour]
 - [Host Management](./HCP_Administration/k8s_host_management.md) [1 hour]
+
+### Managing MLOPS
+
+- [Pre-requisites](./Managing_MLOPS/prerequisites.md) [1 hour]
+- [MLOPS Images](./Managing_MLOPS/images.md) [1 hour]
+- [Creating MLOPS Tenants](./Managing_MLOPS/creating_tenants.md) [1 hour]
+- [Creating Training Clusters](./Managing_MLOPS/creating_training_clusters.md) [1 hour]
+- [Creating Deployment Clusters](./Managing_MLOPS/creating_deployment_clusters.md) [1 hour]
+- [Tutorial 1](./Managing_MLOPS/tutorial_1.md) [2 hours]
+- [Tutorial 2](./Managing_MLOPS/tutorial_2.md) [2 hours]
+- [Tutorial 3](./Managing_MLOPS/tutorial_3.md) [2 hours]
 
 ### HCP CLI and API
 
@@ -63,11 +75,10 @@ This document containers a recommended path for learning key HPE Container Platf
 - [CLI](./Data_Fabric_Administration/cli.md) [1 hour]
 - [API](./Data_Fabric_Administration/cli.md) [1 hour]
 
-## Kubernetes User
-
 ## EPIC User
 
-## MLOPS User
+- [Spark Cluster](./EPIC_User/spark_cluster.md) [2 hours]
+- [Action Scripts](./EPIC_User/action_scripts.md) [2 hours]
 
 ## Creating an EPIC application image
 
