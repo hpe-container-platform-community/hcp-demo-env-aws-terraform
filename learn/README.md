@@ -57,11 +57,11 @@ This document containers a recommended path for learning key HPE Container Platf
 ## Data Fabric Administration
 
 - [Management Console](./Data_Fabric_Administration/management_console.md) [1 hour]
+- [Deployment Architecture](./Data_Fabric_Administration/deployment_architecture.md) [2 hours]
+- [Topologies and Volumes](./Data_Fabric_Administration/topologies_and_volumes.md) [2 hours]
+- [Tiering](./Data_Fabric_Administration/tiering.md) [2 hours]
 - [CLI](./Data_Fabric_Administration/cli.md) [1 hour]
 - [API](./Data_Fabric_Administration/cli.md) [1 hour]
-- [Deployment Architecture](./Data_Fabric_Administration/deployment_architecture.md) [2 hours]
-- [Topologies](./Data_Fabric_Administration/topologies.md) [2 hours]
-- [Tiering](./Data_Fabric_Administration/tiering.md) [2 hours]
 
 ## Kubernetes User
 
