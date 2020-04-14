@@ -34,15 +34,20 @@ This document containers a recommended path for learning key HPE Container Platf
 - [Enable Controller Virtual Nodes](./HCP_Administration/enabled_controller_virtual_nodes.md) [15 mins]
 - [Tenant AD authentication](./HCP_Administration/tenant_ad_authentication.md) [30 mins]
 - [Deploy CENTOS 7 Cluster](./HCP_Administration/deploy_centos_7_cluster.md) [15 mins]
-
-### Platform High Availability
-
 - [HA Overview](./HCP_Administration/ha_overview.md) [30 mins]
 
-### Managing an EPIC Tenant
+### Managing EPIC
 
 - [Creating a Tenant](./HCP_Administration/creating_a_tenant.md) [1 hour]
 - [Tenant authentication](./HCP_Administration/tenant_authentication.md) [1 hour]
+- [Host Management](./HCP_Administration/host_management.md) [1 hour]
+
+### Managing K8S
+
+- [Creating a Cluster](./HCP_Administration/creating_a_k8s_cluster.md) [1 hour]
+- [Creating a Tenant](./HCP_Administration/creating_a_k8s_tenant.md) [1 hour]
+- [Tenant authentication](./HCP_Administration/tenant_authentication.md) [1 hour]
+- [Host Management](./HCP_Administration/k8s_host_management.md) [1 hour]
 
 ### HCP CLI and API
 
