@@ -53,8 +53,3 @@ if [[ "$RDP_PUB_IP" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINUX" && -f generated/
             ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${AD_PUB_IP} "cat >> /home/centos/.ssh/authorized_keys" 
     fi
 fi
-
-if [[ "$RDP_PUB_IP" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINUX" && -f generated/bluedata_install_output.txt ]]; then
-    cat generated/bluedata_install_output.txt | \
-        ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/Desktop/HCP_INSTALL_INFO.txt"
-fi

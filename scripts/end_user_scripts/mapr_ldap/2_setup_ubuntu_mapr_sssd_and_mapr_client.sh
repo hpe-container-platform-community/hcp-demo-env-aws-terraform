@@ -22,11 +22,6 @@ DOMAIN="samdom.example.com"
 	# Install the auth packages by executing the following command 
 	sudo apt-get -q update && sudo apt-get install -y pamtester sssd
 	
-	# sudo ldap-auth-config --enableldap --enableldapauth --ldapserver=${AD_PRIVATE_IP} \
-	# --ldapbasedn="${LDAP_BASE_DN}" --enablemkhomedir --enablecachecreds \
-	# --enableldaptls --update --enablelocauthorize --enablesssd --enablesssdauth \
-	# --enablemkhomedir --enablecachecreds
-	
 	sudo bash -c "cat > /etc/sssd/sssd.conf <<-EOF
 		[domain/${DOMAIN}]
 		debug_level = 3
@@ -120,7 +115,7 @@ SSH_EOF
 	sudo bash -c "echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list"
 	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BFDDB60966B3F0D6
 	sudo apt update
-	sudo apt-get install -q -y mapr-posix-client-basic openjdk-8-jdk
+	sudo apt-get install -q -y mapr-posix-client-platinum openjdk-8-jdk
 	sudo modprobe fuse
 
 	# Create required mapr:mapr user/group
@@ -146,8 +141,6 @@ SSH_EOF
 	sudo chown root:root /opt/mapr/conf/ssl_truststore
 SSH_EOF
 
-## TODO use maprcli to create user
-
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
 	set -xeu
@@ -158,11 +151,23 @@ SSH_EOF
 	exit # return to ubuntu/local user
 	
 	sudo cp /home/ad_admin1/maprfuseticket /opt/mapr/conf/
+	sudo bash -c "sed -i 's@[#]fuse.ticketfile.location=.*@fuse.ticketfile.location=/opt/mapr/conf/longlived_ticket@' /opt/mapr/conf/fuse.conf"
 
 	[[ -d /mapr ]] || sudo mkdir /mapr
-	sudo service mapr-posix-client-basic start
+	
+	sudo service mapr-posix-client-platinum start
+
+	# wait for mount to come online
+	sleep 30
 
 	# Test
 	sudo su - ad_admin1
-	ls -l /mapr/hcp.mapr.cluster/
+	[[ -d /mapr/hcp.mapr.cluster/ ]] || { echo "Error: /mapr/hcp.mapr.cluster was not mounted. Aborting."; exit 1; }
+	ls -l /mapr/hcp.mapr.cluster/ 
+
+	# upload some data
+	wget https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv
+	sed -i -e "s/\r/\n/g" airline-safety.csv # convert line endings
+	mv airline-safety.csv /mapr/hcp.mapr.cluster/tmp/
 SSH_EOF
+

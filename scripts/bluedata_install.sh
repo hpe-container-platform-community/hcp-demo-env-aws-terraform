@@ -251,6 +251,9 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    CONTROLLER_IP="-c ${CONFIG_CONTROLLER_IP}"
    CUSTOM_INSTALL_NAME="--cin demo-hpecp"
 
+   #
+   # WARNING: This script is an internal API and is not supported being used directly by users
+   #
    /opt/bluedata/common-install/scripts/start_install.py \$CONTROLLER_IP \
       \$WORKER_LIST \$PROXY_LIST \$KERB_OPTION \$HA_OPTION \
       \$FLOATING_IP -t 60 -s docker -d \$DOMAIN_NAME \$CUSTOM_INSTALL_NAME \$LOCAL_TENANT_STORAGE
@@ -328,6 +331,10 @@ if [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX"
    echo "BlueData installation completed successfully with an RDP server"
    echo "Please run ./generated/rdp_credentials.sh for connection details."
    echo "*****************************************************************"
+
+   cat "$LOG_FILE" | \
+      ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/Desktop/HCP_INSTALL_INFO.txt"
+
 else
    cat "$LOG_FILE"
 fi

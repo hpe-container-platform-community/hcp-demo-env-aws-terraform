@@ -44,26 +44,24 @@ do
 			sudo bash -c "cat > /etc/yum.repos.d/maprtech.repo <<-EOF
 			[maprtech]
 			name=MapR Technologies
-			baseurl=http://package.mapr.com/releases/v5.1.0/redhat/
-			enabled=1
-			gpgcheck=0
-			protect=1
-
-			[maprecosystem]
-			name=MapR Technologies
-			baseurl=http://package.mapr.com/releases/ecosystem-5.x/redhat
+			baseurl=http://package.mapr.com/releases/v6.1.0/redhat/
 			enabled=1
 			gpgcheck=0
 			protect=1
 			EOF"
 
-			#wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-			#sudo rpm -Uvh epel-release-6*.rpm
+			[[ -d /mapr ]] || sudo mkdir /mapr
+
+			# NOTE: The following two commands aren't requird on the AMI instances as epel release 7 is installed
+			# wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+			# sudo rpm -Uvh epel-release-6*.rpm
 
 			sudo rpm --import http://package.mapr.com/releases/pub/maprgpg.key
-			sudo yum install -y mapr-client.x86_64 java-1.7.0-openjdk.x86_64
-			[[ -d /mapr ]] || sudo mkdir /mapr
-			export LD_LIBRARY_PATH=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.131.x86_64/jre/lib/amd64/server/:/opt/mapr/lib
+			sudo yum install -y mapr-client.x86_64 java-1.8.0-openjdk.x86_64
+
+			JRE_LD_LIBRARY_PATH=\$(rpm -ql java-1.8.0-openjdk-headless | grep "jre/lib/amd64/server\$")
+			echo \${JRE_LD_LIBRARY_PATH}
+			export LD_LIBRARY_PATH=\${JRE_LD_LIBRARY_PATH}:/opt/mapr/lib
 			docker cp epic-mapr:/opt/mapr/conf/ssl_truststore .
 			sudo cp /home/centos/ssl_truststore  /opt/mapr/conf/
 			sudo chown root:root /opt/mapr/conf/ssl_truststore
@@ -71,14 +69,21 @@ do
 			sudo /opt/mapr/server/configure.sh -N hcp.mapr.cluster -c -secure -C $CTRL_PRV_IP -HS 
 			echo pass123 | maprlogin password -cluster hcp.mapr.cluster -user ad_admin1
 			maprlogin generateticket -user ad_admin1 -type service -out /tmp/longlived_ticket -duration 30:0:0 -renewal 90:0:0
+			sudo mv /tmp/longlived_ticket /opt/mapr/conf/
+			sudo chown root:root /opt/mapr/conf/longlived_ticket
+			sudo chmod 700 /opt/mapr/conf/longlived_ticket
 
-			sudo yum install -y mapr-posix-client-*
-			
-			sudo bash -c "echo 'fuse.ticketfile.location=/tmp/longlived_ticket' >> /opt/mapr/conf/fuse.conf"
+			sudo yum install -y mapr-posix-client-basic
+			sudo bash -c "sed -i '/^.*fuse.ticketfile.location=.*$/d' /opt/mapr/conf/fuse.conf" # Delete previous config entries before adding a new one
+			sudo bash -c "echo 'fuse.ticketfile.location=/opt/mapr/conf/longlived_ticket' >> /opt/mapr/conf/fuse.conf"
+			tail /opt/mapr/conf/fuse.conf
+			sudo systemctl start mapr-posix-client-basic
 
-			sudo service mapr-posix-client-basic start
+			# wait for mount to come online
+			sleep 30
 
-			ls /mapr/
+			[[ -d /mapr/hcp.mapr.cluster/ ]] || { echo "Error: /mapr/hcp.mapr.cluster was not mounted. Aborting."; exit 1; }
+			ls -l /mapr/hcp.mapr.cluster
 		fi
 	SSH_EOF
 done

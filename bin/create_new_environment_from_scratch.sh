@@ -26,6 +26,7 @@ terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(cu
 sleep 60
 
 terraform output -json > generated/output.json
+
 ./scripts/post_refresh_or_apply.sh
 ./scripts/bluedata_install.sh 
 
@@ -35,4 +36,12 @@ sleep 240
 ./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
 ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap.sh
 
+./scripts/variables.sh
 
+
+if [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]]; then
+   echo "*****************************************************************"
+   echo "BlueData installation completed successfully with an RDP server"
+   echo "Please run ./generated/rdp_credentials.sh for connection details."
+   echo "*****************************************************************"
+fi
