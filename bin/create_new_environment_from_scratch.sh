@@ -36,8 +36,7 @@ sleep 240
 ./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
 ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap.sh
 
-./scripts/variables.sh
-
+source ./scripts/variables.sh
 
 if [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]]; then
    echo "*****************************************************************"

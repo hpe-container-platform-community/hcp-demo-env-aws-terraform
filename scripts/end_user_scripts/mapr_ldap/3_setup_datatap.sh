@@ -73,11 +73,11 @@ do
 			sudo chown root:root /opt/mapr/conf/longlived_ticket
 			sudo chmod 700 /opt/mapr/conf/longlived_ticket
 
-			sudo yum install -y mapr-posix-client-basic
+			sudo yum install -y mapr-posix-client-platinum
 			sudo bash -c "sed -i '/^.*fuse.ticketfile.location=.*$/d' /opt/mapr/conf/fuse.conf" # Delete previous config entries before adding a new one
 			sudo bash -c "echo 'fuse.ticketfile.location=/opt/mapr/conf/longlived_ticket' >> /opt/mapr/conf/fuse.conf"
 			tail /opt/mapr/conf/fuse.conf
-			sudo systemctl start mapr-posix-client-basic
+			sudo systemctl start mapr-posix-client-platinum
 
 			# wait for mount to come online
 			sleep 30

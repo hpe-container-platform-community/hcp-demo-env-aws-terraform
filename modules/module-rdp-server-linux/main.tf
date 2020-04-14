@@ -12,6 +12,13 @@ data "template_file" "mcs_desktop_link" {
   }
 }
 
+data "template_file" "hcp_links_desktop_link" {
+  template = file("${path.module}/Templates/startup.desktop.tpl")
+  vars = {
+    controller_private_ip = var.controller_private_ip
+  }
+}
+
 resource "aws_instance" "rdp_server" {
   ami                    = var.rdp_ec2_ami
   instance_type          = var.rdp_instance_type
@@ -33,18 +40,6 @@ resource "aws_instance" "rdp_server" {
     volume_type = "gp2"
     volume_size = 40
   }
-/*
-  provisioner "file" {
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
-    }
-    content        = file("${var.ssh_prv_key_path}")
-    destination   = "/home/ubuntu/.ssh/id_rsa"
-  }
-  */
 
   provisioner "remote-exec" {
     connection {
@@ -112,6 +107,17 @@ resource "aws_instance" "rdp_server" {
     destination   = "/home/ubuntu/Desktop/HCP.admin.desktop"
   }
 
+  provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file("${var.ssh_prv_key_path}")
+    }
+    content        = data.template_file.hcp_links_desktop_link.rendered
+    destination   = "/home/ubuntu/Desktop/startup.desktop"
+  }
+
   // 'enable' desktop icons 
   provisioner "remote-exec" {
     connection {
@@ -124,7 +130,7 @@ resource "aws_instance" "rdp_server" {
       //"sudo chown ubuntu:ubuntu /home/ubuntu/.local/share/gvfs-metadata/home*",
       "sudo chmod +x /home/ubuntu/Desktop/*.desktop",
       // set firefox to autostart  
-      "sudo cp Desktop/HCP.admin.desktop /etc/xdg/autostart/",
+      "sudo cp Desktop/startup.desktop /etc/xdg/autostart/",
     ]
   }
 
@@ -162,7 +168,6 @@ resource "aws_instance" "rdp_server" {
       "/tmp/ca-certs-setup.sh ${var.controller_private_ip}",
     ]
   }
-
 
   tags = {
     Name = "${var.project_id}-instance-rdp-server-linux"
