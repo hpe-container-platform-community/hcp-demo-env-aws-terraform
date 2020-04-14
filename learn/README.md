@@ -35,6 +35,10 @@ This document containers a recommended path for learning key HPE Container Platf
 - [Tenant AD authentication](./HCP_Administration/tenant_ad_authentication.md) [30 mins]
 - [Deploy CENTOS 7 Cluster](./HCP_Administration/deploy_centos_7_cluster.md) [15 mins]
 
+### Platform High Availability
+
+- [HA Overview](./HCP_Administration/ha_overview.md) [30 mins]
+
 ### Managing an EPIC Tenant
 
 - [Creating a Tenant](./HCP_Administration/creating_a_tenant.md) [1 hour]
