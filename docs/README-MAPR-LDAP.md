@@ -40,15 +40,6 @@ Run this script every time you add a new worker host to your HCP cluster.
 
 ### Test Datatap on an EPIC Spark 2.4 Cluster 
 
-On RDP host add a data set:
-
-```
-sudo su - ad_admin1
-wget https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv
-sed -i -e "s/\r/\n/g" airline-safety.csv
-mv airline-safety.csv /mapr/hcp.mapr.cluster/tmp/
-```
-
 Ensure you have setup HCP and EPIC Demo Tenant with LDAP - [./README-AD.md](./README-AD.md)
 
 Create a spark 2.4 cluster with 1 controller and 1 jupyterhub (both nodes can use the small flavor).
