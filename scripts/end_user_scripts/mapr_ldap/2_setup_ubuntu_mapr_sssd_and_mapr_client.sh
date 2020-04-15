@@ -155,6 +155,7 @@ SSH_EOF
 
 	[[ -d /mapr ]] || sudo mkdir /mapr
 	
+	sudo systemctl enable mapr-posix-client-platinum
 	sudo service mapr-posix-client-platinum start
 
 	# wait for mount to come online

@@ -77,6 +77,8 @@ do
 			sudo bash -c "sed -i '/^.*fuse.ticketfile.location=.*$/d' /opt/mapr/conf/fuse.conf" # Delete previous config entries before adding a new one
 			sudo bash -c "echo 'fuse.ticketfile.location=/opt/mapr/conf/longlived_ticket' >> /opt/mapr/conf/fuse.conf"
 			tail /opt/mapr/conf/fuse.conf
+
+			sudo systemctl enable mapr-posix-client-platinum
 			sudo systemctl start mapr-posix-client-platinum
 
 			# wait for mount to come online
