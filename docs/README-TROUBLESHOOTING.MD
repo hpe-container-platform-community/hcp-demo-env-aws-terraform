@@ -50,3 +50,16 @@ Error: Error creating VPC: VpcLimitExceeded: The maximum number of VPCs has been
 ```
 
 By default AWS allows 5 VPCs per region [more info](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html)
+
+### An error occurred (IncorrectInstanceState)
+
+If you encounter the following error when running a command, please wait a few minutes before trying again:
+
+```
+An error occurred (IncorrectInstanceState) when calling the StartInstances operation: The instance 'i-xxxxxxxxxxx' is not in a state from which it can be started.
+```
+or
+
+```
+An error occurred (IncorrectInstanceState) when calling the StopInstances operation: The instance 'i-xxxxxxxxxxx' is not in a state from which it can be stopped.
+```
