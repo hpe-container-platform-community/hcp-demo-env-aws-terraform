@@ -52,11 +52,21 @@ resource "local_file" "cli_start_ec2_instances" {
 
     source "${path.module}/scripts/variables.sh"
 
-    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids} 
+    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids}
+
+    CURR_CLIENT_CIDR_BLOCK="$(curl -s http://ifconfig.me/ip)/32"
+
+    # check if the client IP address has changed
+    if [[ "$CLIENT_CIDR_BLOCK" = "$CURR_CLIENT_CIDR_BLOCK" ]]; then
+      UPDATE_COMMAND="refresh"
+    else
+      UPDATE_COMMAND="apply"
+    fi
 
     echo "***********************************************************************************************************"
-    echo "IMPORTANT: You need to run the following command to update changed public IP addresses on the aws instances"
-    echo "           ./bin/terraform_apply.sh"
+    echo "IMPORTANT: You need to run the following command to update your local state:"
+    echo
+    echo "           ./bin/terraform_$UPDATE_COMMAND.sh"
     echo 
     echo "           You should only run ./bin/terraform_apply.sh after all instances are running.  You can check the"
     echo "           instances status with:"
