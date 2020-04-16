@@ -2,6 +2,12 @@
 
 This project makes it easy to setup HPE Container Platform demo/trial environments on AWS
 
+```diff
+- The goal of this project is to easily create HPE Container Platform demo and trial environments.
+- The concepts demonstrated in this project are not suitable for production environments.
+- Please read the project license before using this project.
+```
+
 ### Pre-requisites
 
 The following installed locally:
