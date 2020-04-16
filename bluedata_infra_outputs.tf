@@ -177,5 +177,5 @@ output "ec2_instance_status_command" {
 }
 
 output "ec2_rdp_linux_public_ip" {
-  value = "aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ''} --output json --query \"Reservations[*].Instances[*].PublicIpAddress\""
+  value = "aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : \"\"} --output json --query \"Reservations[*].Instances[*].PublicIpAddress\""
 }
