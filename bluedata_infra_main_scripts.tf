@@ -50,7 +50,10 @@ resource "local_file" "cli_start_ec2_instances" {
   content = <<-EOF
     #!/bin/bash
 
-    source "${path.module}/scripts/variables.sh"
+    OUTPUT_JSON=$(cat "${path.module}/generated/output.json")
+
+    CLIENT_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["client_cidr_block"]["value"])')
+    [ "$CLIENT_CIDR_BLOCK" ] || ( echo "ERROR: CLIENT_CIDR_BLOCK is empty" && exit 1 )
 
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids}
 
@@ -282,6 +285,8 @@ resource "local_file" "rdp_linux_credentials" {
     echo 
     echo ==== RDP Credentials ====
     echo 
+    echo The IP addresses will change when instances are restarted.
+    echo
     echo Web Url:  "https://$RDP_PUB_IP (Chrome is recommended)"
     echo RDP URL:   "rdp://full%20address=s:$RDP_PUB_IP:3389&username=s:ubuntu"
     echo Username: ubuntu
