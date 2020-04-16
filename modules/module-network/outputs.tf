@@ -17,3 +17,7 @@ output "security_group_allow_all_from_client_ip" {
 output "subnet_main_id" {
   value = aws_subnet.main.id
 }
+
+output "network_acl_id" {
+  value = aws_network_acl.main.id
+}

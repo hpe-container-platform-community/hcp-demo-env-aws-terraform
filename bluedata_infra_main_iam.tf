@@ -14,14 +14,6 @@ resource "aws_iam_access_key" "start_stop_ec2_instances_access_key" {
 
 data "aws_caller_identity" "current" {}
 
-output "iam_access_key" {
-  value = aws_iam_access_key.start_stop_ec2_instances_access_key.id
-}
-
-output "iam_secret" {
-  value =  aws_iam_access_key.start_stop_ec2_instances_access_key.secret
-}
-
 resource "aws_iam_user_policy" "start_stop_ec2_instances" {
   name = "${var.project_id}-start-stop-ec2-instances"
   user = aws_iam_user.iam_user.name
@@ -96,4 +88,39 @@ resource "aws_iam_user_policy" "allow_from_my_ip" {
       ]
   }
   EOF
+}
+
+resource "local_file" "non_terraform_user_scripts" {
+
+  filename = "${path.module}/generated/non_terraform_user_scripts.txt"
+  content =  <<-EOF
+
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+
+    # Start EC2 instances
+    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids}
+
+    # Stop EC2 instances 
+    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${local.instance_ids}
+
+    # EC2 instances status
+    aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --include-all-instances --output json --query "InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}"
+
+    # RDP Server Public IP Address
+    aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} --output json --query "Reservations[*].Instances[*].PublicIpAddress"
+
+    # Add My IP to Network ACL
+    aws ec2 --region eu-west-3 --profile default replace-network-acl-entry \
+        --network-acl-id ${module.network.network_acl_id} \
+        --cidr-block "$(curl -s http://ifconfig.me/ip)/32" \
+        --ingress \
+        --protocol -1 \
+        --rule-action allow \
+        --rule-number 110
+
+    # TODO modify security group
+
+  EOF
+
 }

@@ -160,22 +160,3 @@ output "rdp_server_instance_id" {
 output "rdp_server_operating_system" {
   value = var.rdp_server_operating_system
 }
-
-output "ec2_instance_start_command" {
-  // instance_ids variable is defined in bluedata_infra_main_scripts.tf
-  value = "aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids}"
-}
-
-output "ec2_instance_stop_command" {
-  // instance_ids variable is defined in bluedata_infra_main_scripts.tf
-  value = "aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${local.instance_ids}"
-}
-
-output "ec2_instance_status_command" {
-  // instance_ids variable is defined in bluedata_infra_main_scripts.tf
-  value = "aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --include-all-instances --output json --query \"InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}\""
-}
-
-output "ec2_rdp_linux_public_ip" {
-  value = "aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} --output json --query \"Reservations[*].Instances[*].PublicIpAddress\""
-}
