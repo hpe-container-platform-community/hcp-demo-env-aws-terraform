@@ -12,8 +12,8 @@ This project makes it easy to setup HPE Container Platform demo/trial environmen
 
 The following installed locally:
 
- - terraform (https://learn.hashicorp.com/terraform/getting-started/install.html
- - aws cli (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+ - Terraform - [installation instructions](https://learn.hashicorp.com/terraform/getting-started/install.html)|[downloads](https://www.terraform.io/downloads.html])
+ - AWS CLI - [installation instructions](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 
 This project has been tested on **Linux** and **OSX** client machines - Windows is unlikely to work.
 
