@@ -78,7 +78,8 @@ resource "aws_iam_user_policy" "allow_from_my_ip" {
               "Sid": "ReplaceNetworkAclEntry",
               "Effect": "Allow",
               "Action": [
-                  "ec2:ReplaceNetworkAclEntry"
+                  "ec2:ReplaceNetworkAclEntry",
+                  "ec2:AuthorizeSecurityGroupIngress"
               ],
               "Resource": "*",
               "Condition": {
@@ -107,8 +108,8 @@ resource "local_file" "non_terraform_user_scripts" {
     # EC2 instances status
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --include-all-instances --output json --query "InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}"
 
-    # RDP Server Public IP Address
-    aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} --output json --query "Reservations[*].Instances[*].PublicIpAddress"
+    # RDP Server Public IP Address and Password (RDP Username = ubuntu)
+    aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} --output json --query "Reservations[*].Instances[*].[PublicIpAddress,InstanceId]"
 
     # Add My IP to Network ACL
     aws ec2 --region eu-west-3 --profile default replace-network-acl-entry \
@@ -119,7 +120,12 @@ resource "local_file" "non_terraform_user_scripts" {
         --rule-action allow \
         --rule-number 110
 
-    # TODO modify security group
+    # Add My IP to security group
+    aws ec2 --region eu-west-3 --profile default authorize-security-group-ingress \
+        --group-id ${module.network.sg_allow_all_from_specified_ips} \
+        --protocol all \
+        --port -1 \
+        --cidr "$(curl -s http://ifconfig.me/ip)/32"
 
   EOF
 
