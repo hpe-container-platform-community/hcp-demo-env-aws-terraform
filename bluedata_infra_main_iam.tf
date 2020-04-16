@@ -63,7 +63,8 @@ resource "aws_iam_user_policy" "describe_ec2_instances" {
               "Sid": "GetStatusOfInstances",
               "Effect": "Allow",
               "Action": [
-                  "ec2:DescribeInstanceStatus"
+                  "ec2:DescribeInstanceStatus",
+                  "ec2:DescribeInstances"
               ],
               "Resource": "*"
           }
