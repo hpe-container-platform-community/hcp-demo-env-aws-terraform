@@ -1,4 +1,4 @@
-resource "aws_iam_user" "start_stop_ec2_instances" {
+resource "aws_iam_user" "iam_user" {
   name = "${var.project_id}-iam-user"
 
   tags = {
@@ -9,7 +9,7 @@ resource "aws_iam_user" "start_stop_ec2_instances" {
 }
 
 resource "aws_iam_access_key" "start_stop_ec2_instances_access_key" {
-  user = aws_iam_user.start_stop_ec2_instances.name
+  user = aws_iam_user.iam_user.name
 }
 
 data "aws_caller_identity" "current" {}
@@ -24,7 +24,7 @@ output "iam_secret" {
 
 resource "aws_iam_user_policy" "start_stop_ec2_instances" {
   name = "${var.project_id}-start-stop-ec2-instances"
-  user = aws_iam_user.start_stop_ec2_instances.name
+  user = aws_iam_user.iam_user.name
 
   policy = <<-EOF
   {
@@ -53,7 +53,7 @@ resource "aws_iam_user_policy" "start_stop_ec2_instances" {
 
 resource "aws_iam_user_policy" "describe_ec2_instances" {
   name = "${var.project_id}-describe-ec2-instances"
-  user = aws_iam_user.start_stop_ec2_instances.name
+  user = aws_iam_user.iam_user.name
 
   policy = <<-EOF
   {
@@ -74,11 +74,9 @@ resource "aws_iam_user_policy" "describe_ec2_instances" {
 }
 
 
-
-/*
 resource "aws_iam_user_policy" "allow_from_my_ip" {
   name = "${var.project_id}-allow-from-my-ip"
-  user = aws_iam_user.start_stop_ec2_instances.name
+  user = aws_iam_user.iam_user.name
 
   policy = <<-EOF
   {
@@ -90,16 +88,12 @@ resource "aws_iam_user_policy" "allow_from_my_ip" {
               "Action": [
                   "ec2:ReplaceNetworkAclEntry"
               ],
-              "Resource": "arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:vpc/vpc-vpc-0e48b0dc596f0eaa4",
+              "Resource": "*",
               "Condition": {
-                  "StringEquals": {
-                      "ec2:ResourceTag/Project": "${var.project_id}",
-                      "ec2:ResourceTag/user": "${var.user}"
-                  }
+                "StringEqualsIfExists" : { "aws:PrincipalArn" : [ "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}" ] } 
               }
           }
       ]
   }
   EOF
 }
-*/
