@@ -51,6 +51,29 @@ resource "aws_iam_user_policy" "start_stop_ec2_instances" {
   EOF
 }
 
+resource "aws_iam_user_policy" "describe_ec2_instances" {
+  name = "${var.project_id}-describe-ec2-instances"
+  user = aws_iam_user.start_stop_ec2_instances.name
+
+  policy = <<-EOF
+  {
+      "Version": "2012-10-17",
+      "Statement": [
+         {
+              "Sid": "GetStatusOfInstances",
+              "Effect": "Allow",
+              "Action": [
+                  "ec2:DescribeInstanceStatus"
+              ],
+              "Resource": "*"
+          }
+      ]
+  }
+  EOF
+}
+
+
+
 /*
 resource "aws_iam_user_policy" "allow_from_my_ip" {
   name = "${var.project_id}-allow-from-my-ip"
