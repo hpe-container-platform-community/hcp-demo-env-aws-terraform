@@ -168,5 +168,10 @@ output "ec2_instance_start_command" {
 
 output "ec2_instance_stop_command" {
   // instance_ids variable is defined in bluedata_infra_main_scripts.tf
-  value = "aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${local.instance_ids} "
+  value = "aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${local.instance_ids}"
+}
+
+output "ec2_instance_status" {
+  // instance_ids variable is defined in bluedata_infra_main_scripts.tf
+  value = "aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --include-all-instances --output json --query \"InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}\""
 }
