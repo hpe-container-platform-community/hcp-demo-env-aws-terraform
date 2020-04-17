@@ -49,9 +49,8 @@ resource "aws_instance" "rdp_server" {
       private_key = file("${var.ssh_prv_key_path}")
     }
     inline = [
-      //"sudo bash -c \"echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list\"",
-      //"sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BFDDB60966B3F0D6",
-      //"wget -O - https://package.mapr.com/releases/pub/maprgpg.key | sudo apt-key add -",
+      // run fastdd in background session.  nohup and disown both failed to achieve this over ssh.
+      "sudo tmux new-session -d -s mySession -n myWindow && sudo tmux send-keys -t mySession:myWindow \"fastdd\" Enter",
       "sudo sed -i 's/1/0/g' /etc/apt/apt.conf.d/20auto-upgrades",
       "sudo apt update",
       "sudo apt install -y firefox",
@@ -68,9 +67,7 @@ resource "aws_instance" "rdp_server" {
       "chmod a+x terraform",
       "sudo mv terraform /usr/local/bin/",
       "rm terraform_0.12.24_linux_amd64.zip",
-      "mkdir /home/ubuntu/Desktop",
-      //"chmod 600 /home/ubuntu/.ssh/id_rsa",
-      "sudo bash -c \"fastdd & disown -h %1\"" # prewarm EBS for faster operation
+      "mkdir /home/ubuntu/Desktop"
     ]
   }
 
