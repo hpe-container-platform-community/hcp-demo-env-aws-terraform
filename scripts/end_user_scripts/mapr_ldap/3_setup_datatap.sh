@@ -79,6 +79,9 @@ do
 			tail /opt/mapr/conf/fuse.conf
 
 			sudo systemctl enable mapr-posix-client-platinum
+			# allow mapr host some time to come on line before starting the service
+			sudo sed -i '/^ExecStartPre=.*$/d' /etc/systemd/system/mapr-posix-client-platinum.service # Delete previous config entries before adding a new one
+			sudo sed -i '/^\[Service\]$/a ExecStartPre=/bin/sleep 120' /etc/systemd/system/mapr-posix-client-platinum.service
 			sudo systemctl start mapr-posix-client-platinum
 
 			# wait for mount to come online
