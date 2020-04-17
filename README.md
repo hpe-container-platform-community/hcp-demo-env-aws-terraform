@@ -8,7 +8,7 @@ This project makes it easy to setup HPE Container Platform demo/trial environmen
 - Please read the project license before using this project.
 ```
 
-**IMPORTANT:** If you haven't yet had any exposure to HPE Container Platform, you should head to [HPE Demonstration Portal](https://hpedemoportal.ext.hpe.com/) (search for HPE Container Plaftorm) where you can schedule to run some demo workflows (available for HPE Employees and Partners only).
+**IMPORTANT:** If you haven't yet had any exposure to HPE Container Platform, you should head to [HPE Demonstration Portal](https://hpedemoportal.ext.hpe.com/) (search for HPE Container Plaftorm) where you can schedule to run some demo workflows.  This is available for HPE Employees and Partners only.
 
 ### Pre-requisites
 
