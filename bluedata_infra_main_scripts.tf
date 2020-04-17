@@ -281,19 +281,17 @@ resource "local_file" "rdp_linux_credentials" {
     #!/bin/bash
     source "${path.module}/scripts/variables.sh"
     echo 
-    echo ==== RDP Credentials ====
+    echo =========================== RDP Credentials  ===============================
     echo 
-    echo The IP addresses will change when instances are restarted.
+    echo Note: The Host IP addresses changes when instances are restarted.
     echo
-    echo Web Url:  "https://$RDP_PUB_IP (Chrome is recommended)"
+    echo Host IP:   $RDP_PUB_IP
+    echo Web Url:   https://$RDP_PUB_IP (Chrome is recommended)
     echo RDP URL:   "rdp://full%20address=s:$RDP_PUB_IP:3389&username=s:ubuntu"
     echo Username: ubuntu
     echo Password: $RDP_INSTANCE_ID
     echo 
-    echo TIP: If you have just deployed the rdp server, it is recommended to run the following to
-    echo      improve performance.  You only need to run this once:
-    echo
-    echo ./generated/rdp_post_provision_setup.sh
+    echo ============================================================================
     echo
   EOF
 }
