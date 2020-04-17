@@ -8,6 +8,8 @@ This project makes it easy to setup HPE Container Platform demo/trial environmen
 - Please read the project license before using this project.
 ```
 
+IMPORTANT: If you haven't yet had any exposure to HPE Container Platform, you should head to [HPE Demonstration Portal](https://hpedemoportal.ext.hpe.com/search/PRD_7ddc6474-8d01-4806-a406-7a36977e753c__Products__HPE%20Container%20Platform) where you can schedule to run some demo workflows (HPE Employees and Partners only).
+
 ### Pre-requisites
 
 The following installed locally:
