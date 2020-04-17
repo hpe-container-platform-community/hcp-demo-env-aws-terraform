@@ -106,7 +106,7 @@ resource "local_file" "non_terraform_user_scripts" {
     aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${local.instance_ids}
 
     # EC2 instances status
-    aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --include-all-instances --output json --query "InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}"
+    aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --include-all-instances --output table --query "InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}"
 
     # RDP Server Public IP Address and Password (RDP Username = ubuntu)
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} --output json --query "Reservations[*].Instances[*].[PublicIpAddress,InstanceId]"
