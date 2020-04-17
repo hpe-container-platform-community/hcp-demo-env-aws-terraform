@@ -285,9 +285,9 @@ resource "local_file" "rdp_linux_credentials" {
     echo 
     echo Note: The Host IP addresses changes when instances are restarted.
     echo
-    echo Host IP:  "$RDP_PUB_IP"
-    echo Web Url:  "https://$RDP_PUB_IP (Chrome is recommended)"
-    echo RDP URL:  "rdp://full%20address=s:$RDP_PUB_IP:3389&username=s:ubuntu"
+    echo Host IP:   $RDP_PUB_IP
+    echo Web Url:   https://$RDP_PUB_IP (Chrome is recommended)
+    echo RDP URL:   "rdp://full%20address=s:$RDP_PUB_IP:3389&username=s:ubuntu"
     echo Username: ubuntu
     echo Password: $RDP_INSTANCE_ID
     echo 
