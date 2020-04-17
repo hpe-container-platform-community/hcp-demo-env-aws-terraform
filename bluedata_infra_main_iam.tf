@@ -99,7 +99,7 @@ resource "local_file" "non_terraform_user_scripts" {
     AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
     AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
-    # Start EC2 instances
+    # Start EC2 instances - after starting your instances, run the command below to check for the new 
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids}
 
     # Stop EC2 instances 

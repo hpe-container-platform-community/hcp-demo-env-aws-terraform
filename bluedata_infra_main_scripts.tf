@@ -71,8 +71,8 @@ resource "local_file" "cli_start_ec2_instances" {
     echo
     echo "           ./bin/terraform_$UPDATE_COMMAND.sh"
     echo 
-    echo "           You should only run ./bin/terraform_$UPDATE_COMMAND.sh after all instances are running.  You can check the"
-    echo "           instances status with:"
+    echo "           If you encounter an error running ./bin/terraform_$UPDATE_COMMAND.sh it is probably because your"
+    echo "           instances are not ready yet.  You can check the instances status with:"
     echo 
     echo "           ./generated/cli_running_ec2_instances.sh"
     echo "***********************************************************************************************************"
