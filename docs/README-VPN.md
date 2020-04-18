@@ -4,7 +4,7 @@ Based on ...
 
 - https://github.com/halo/macosvpn
 - https://www.softether.org/
-- https://hub.docker.com/r/siomiz/softethervpn/
+- https://hub.docker.com/r/siomiz/softethervpn/ (at the time of writing, this uses the latest RFM release of SoftEther)
 
 Note, the vpn server is only accessible to whitelisted IP addresses using the terraform created AWS Network ACL and Security Groups.
 
