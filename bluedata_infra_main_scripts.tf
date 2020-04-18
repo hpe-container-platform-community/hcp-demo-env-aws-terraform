@@ -345,3 +345,72 @@ resource "local_file" "whatismyip" {
      echo $(curl -s http://ifconfig.me/ip)/32
   EOF
 }
+
+resource "local_file" "mac_vpn_setup" {
+  filename = "${path.module}/generated/mac_vpn_setup.sh"
+  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
+  content  = <<-EOF
+    #!/bin/bash
+
+    set -e # abort on error
+    set -u # abort on undefined variable
+
+    source "${path.module}/scripts/variables.sh"
+  
+    if [[ "$EUID" != "0" ]]; then
+      echo "This script must be run as root - e.g. with sudo" 
+      exit 1
+    fi
+
+    USER_BEFORE_SUDO=$(who am i | awk '{print $1}')
+
+    if [[ ! -f "${path.module}/generated/vpn_users" ]]; then
+        sudo -u $USER_BEFORE_SUDO bash -c "echo user1:$(openssl rand -hex 12 | tr -d '\n') > '${path.module}/generated/vpn_users'"
+        sudo -u $USER_BEFORE_SUDO bash -c "echo $(openssl rand -hex 30 | tr -d '\n') > '${path.module}/generated/vpn_shared_key'"
+    fi
+
+    VPN_USERS=$(sudo -u $USER_BEFORE_SUDO cat "${path.module}/generated/vpn_users")
+    VPN_PSK=$(sudo -u $USER_BEFORE_SUDO cat "${path.module}/generated/vpn_shared_key")
+
+    ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP <<-SSH_EOF
+      set -eux
+      sudo ufw allow 1701
+      if docker ps | grep softethervpn; then
+        docker kill \$(docker ps | grep softethervpn | awk '{ print \$1 }')
+      fi
+      docker run -d --cap-add NET_ADMIN -e USERS="$VPN_USERS" -e PSK="$VPN_PSK" -p 500:500/udp -p 4500:4500/udp -p 1701:1701/tcp -p 1194:1194/udp -p 5555:5555/tcp siomiz/softethervpn
+    SSH_EOF
+
+    if ! sudo -u $USER_BEFORE_SUDO command -v macosvpn >/dev/null 2>&1; then 
+      echo "'macosvpn' is required but it's not installed.  You can install it with 'brew install macosvpn'.  Aborting.";
+      exit 1
+    fi
+
+    VPN_USER=$(echo $VPN_USERS | cut -d ":" -f1)
+    VPN_PASS=$(echo $VPN_USERS | cut -d ":" -f2)
+
+    macosvpn create --l2tp hpe-container-platform-aws \
+                            --force \
+                            --endpoint $(terraform output rdp_server_public_ip) \
+                            --username $VPN_USER \
+                            --password $VPN_PASS \
+                            --sharedsecret $VPN_PSK
+
+
+    echo "Waiting 10s for vpn settings to save"
+    sleep 10
+    sudo -u $USER_BEFORE_SUDO /usr/sbin/networksetup -connectpppoeservice "hpe-container-platform-aws"
+    
+    echo "Waiting 10s for VPN to start"
+    sleep 10
+
+    # VPN Status
+    scutil --nc list | grep hpe-container-platform-aws
+
+    route -n delete -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip) || ignore error
+    route -n add -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip)
+
+    echo "Attempting to ping the controller private IP ..."
+    ping -c 5 $CTRL_PRV_IP
+  EOF
+}
