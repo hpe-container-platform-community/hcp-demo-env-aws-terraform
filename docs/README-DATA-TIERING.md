@@ -17,6 +17,12 @@ In this tutorial, we walk through an object tiering example where we have a requ
   - Manage Data with Volumes and Topology: [link](https://www.youtube.com/watch?v=CwkkojVYruw)
   - MapR Multi-Tier Data Platform - Demo: [link](https://www.youtube.com/watch?v=x0Fpd1jcdsU)
 
+
+### Pre-requisites
+
+ - HPE Container Platform 5.x deployed
+ - You will need 6 unused hosts to add as worker nodes
+
 ### Add SSD Hosts to EPIC
 
 Add hosts to EPIC that have SSDs.  **Disable Virtual Node Assignment** on these hosts [Instructions](http://docs.bluedata.com/50_enabling-disabling-a-worker) as in this scenario, we would like to have these nodes dedicated to storage and not to be used for compute.
@@ -64,13 +70,13 @@ Note that:
  -	Volume is not mounted
  -	Data Tier enabled (cannot change this after creation)
  -	For “REPLICATION (HOT)”
-   -	Topology is set to “/SSDTier” 
-   -	Replication and Name Container Replication Min/Max targets are set to 1 (don’t do this in production)
+    -	Topology is set to “/SSDTier” 
+    -	Replication and Name Container Replication Min/Max targets are set to 1 (don’t do this in production)
  -	For “DATA TIERING”
-   -	Tiering type is set to “Erasure Coding (Warm)” - cannot change this once selected
-   -	Topology set to “/CapacityTier”
-   - Storage Policy (offload schedule) left as default system scheduler (or you can create/select another)
-   - EC Scheme set to 3+2
+    -	Tiering type is set to “Erasure Coding (Warm)” - cannot change this once selected
+    -	Topology set to “/CapacityTier”
+    - Storage Policy (offload schedule) left as default system scheduler (or you can create/select another)
+    - EC Scheme set to 3+2
  
 ![image011](./README-DATA-TIERING/image011.png)
 
