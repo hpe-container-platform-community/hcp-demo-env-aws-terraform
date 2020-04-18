@@ -77,4 +77,4 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-DESIGN-PRINCIPLES.md) why this project is architected the way it is.
 
-[README](./docs/README-VPN.md) how to create a vpn to your AWS deployment.
+[README](./docs/README-VPN.md) how to create a vpn to your AWS deployment (BETA)
