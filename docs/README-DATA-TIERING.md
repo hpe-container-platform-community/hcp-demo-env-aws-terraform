@@ -1,5 +1,7 @@
-This document is a work-in-progress. Please raise an issue if you encounter an issue or confusion.
-
+```git
+- This document is intended for educational purposes only.
+- Do not use this document on production environments without the help of HPE Container Platfrom professional services.
+```
 ----
 
 ## Set up data fabric object tiering
