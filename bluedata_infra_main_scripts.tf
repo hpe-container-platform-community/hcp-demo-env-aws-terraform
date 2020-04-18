@@ -413,7 +413,7 @@ resource "local_file" "mac_vpn_connect" {
     # VPN Status
     scutil --nc list | grep hpe-container-platform-aws
 
-    route -n delete -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip) || ignore error
+    route -n delete -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip) || true # ignore error
     route -n add -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip)
 
     echo "Attempting to ping the controller private IP ..."
@@ -448,8 +448,8 @@ resource "local_file" "mac_vpn_delete" {
       exit 1
     fi
 
-    macosvpn delete --name hpe-container-platform-aws 
-    route -n delete -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip) || ignore error
+    macosvpn delete --name hpe-container-platform-aws || true # ignore error
+    route -n delete -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip) || true # ignore error
   EOF
 }
 
@@ -469,11 +469,11 @@ resource "local_file" "mac_vpn_status" {
       exit 1
     fi
 
-    VPN_STATUS=$(scutil --nc list | grep hpe-container-platform-aws)
-    if $VPN_STATUS; then
-      echo $VPN_STATUS
+    VPN_STATUS="'$(scutil --nc list | grep hpe-container-platform-aws)'"
+    if [[ "$VPN_STATUS" == "''" ]]; then
+      echo "VPN not found."
     else
-      "VPN not found."
+      echo "$VPN_STATUS"
     fi
   EOF
 }

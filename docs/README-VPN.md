@@ -10,13 +10,20 @@ Note:
 
 - The vpn server is only accessible to whitelisted IP addresses using the terraform created AWS Network ACL and Security Groups.
 - SoftEther is used because it does not have the 2 user limitation like OpenVPN.
+- The VPN server is provided by SoftEther on the RDP Linux server.
 
-##  Mac Setup
+## Mac Setup
 
 - run `sudo ./generated/mac_vpn_connect.sh` to create vpn and to connect to it
 - run `sudo ./generated/mac_vpn_delete.sh` to delete the vpn
 - run `sudo ./generated/mac_vpn_status.sh` to report on the vpn status
 
-The VPN server is provided by SoftEther on the RDP Linux server.
+## Add VPN Users
 
+- Multiple usernames and passwords may be set with the following pattern: `username:password;user2:pass2;user3:pass3`
+- Username and passwords are separated by :. Each pair of username:password should be separated by `;`
+- If not set a single user account with username ("user1") and a random weak password is created.
+- You can add users to the file: `./generated/vpn_users`
+- If the file `./generated/vpn_users` doesn't exist on running `./generated/mac_vpn_connect.sh`, it will be created automatically
+- The pre-shared key is created automatically in the file `./generated/vpn_shared_key` 
 
