@@ -14,7 +14,7 @@ These instructions assume you have deployed the AD server by setting `ad_server_
 
 After `terraform apply`, run `terraform output ad_server_private_ip` to get the AD server IP address.
 
-Please read the scripts to understand what they are doing - they aren't too complicated!
+Please read the [scripts](../scripts/end_user_scripts/mapr_ldap) below to understand what they are doing - they aren't too complicated!
 
 ### Configure the epic-mapr docker container for LDAP authentication
 

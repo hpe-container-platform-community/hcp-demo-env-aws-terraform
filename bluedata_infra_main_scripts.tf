@@ -71,8 +71,8 @@ resource "local_file" "cli_start_ec2_instances" {
     echo
     echo "           ./bin/terraform_$UPDATE_COMMAND.sh"
     echo 
-    echo "           You should only run ./bin/terraform_$UPDATE_COMMAND.sh after all instances are running.  You can check the"
-    echo "           instances status with:"
+    echo "           If you encounter an error running ./bin/terraform_$UPDATE_COMMAND.sh it is probably because your"
+    echo "           instances are not ready yet.  You can check the instances status with:"
     echo 
     echo "           ./generated/cli_running_ec2_instances.sh"
     echo "***********************************************************************************************************"
@@ -83,11 +83,11 @@ resource "local_file" "cli_running_ec2_instances" {
   filename = "${path.module}/generated/cli_running_ec2_instances.sh"
   content = <<-EOF
     #!/bin/bash
-
-    echo Running:  $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --filter Name=instance-state-name,Values=running --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
-    echo Starting: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --filter Name=instance-state-name,Values=pending --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
-    echo Stopping: $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --filter Name=instance-state-name,Values=stopping --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
-    echo Stopped:  $(aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --filter Name=instance-state-name,Values=stopped --include-all-instances --output text | grep '^INSTANCESTATE' | wc -l)
+    aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status \
+      --instance-ids ${local.instance_ids} \
+      --include-all-instances \
+      --output table \
+      --query "InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}"
   EOF  
 }
 
@@ -281,19 +281,17 @@ resource "local_file" "rdp_linux_credentials" {
     #!/bin/bash
     source "${path.module}/scripts/variables.sh"
     echo 
-    echo ==== RDP Credentials ====
+    echo =========================== RDP Credentials  ===============================
     echo 
-    echo The IP addresses will change when instances are restarted.
+    echo Note: The Host IP addresses changes when instances are restarted.
     echo
-    echo Web Url:  "https://$RDP_PUB_IP (Chrome is recommended)"
+    echo Host IP:   "$RDP_PUB_IP"
+    echo Web Url:   "https://$RDP_PUB_IP (Chrome is recommended)"
     echo RDP URL:   "rdp://full%20address=s:$RDP_PUB_IP:3389&username=s:ubuntu"
-    echo Username: ubuntu
-    echo Password: $RDP_INSTANCE_ID
+    echo Username:  "ubuntu"
+    echo Password:  "$RDP_INSTANCE_ID"
     echo 
-    echo TIP: If you have just deployed the rdp server, it is recommended to run the following to
-    echo      improve performance.  You only need to run this once:
-    echo
-    echo ./generated/rdp_post_provision_setup.sh
+    echo ============================================================================
     echo
   EOF
 }
