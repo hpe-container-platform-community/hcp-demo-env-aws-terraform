@@ -1,5 +1,11 @@
 ## Overview
 
+```diff
+- These instructions are BETA.
+- When connected to the VPN, scripts in `./generated/` that use public IP addresses no longer work.
+- The scripts will need to be modified to use private IP addresses when connected to the VPN.
+```
+
 Based on ...
 
 - https://github.com/halo/macosvpn
