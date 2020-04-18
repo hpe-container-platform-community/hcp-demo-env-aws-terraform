@@ -72,6 +72,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [./docs/README-MAPR-LDAP.md](./docs/README-MAPR-LDAP.md) for information on setting up MAPR  with Active Directory/LDAP.
 
+[./docs/README-DATA-TIERING.md](./docs/README-DATA-TIERING.md) for information on setting up MAPR data tiering.
+
 [./docs/README-DESIGN-PRINCIPLES.md](./docs/README-DESIGN-PRINCIPLES.md) why this project is architected the way it is.
 
 [./docs/README-VPN.md](./docs/README-VPN.md) how to create a vpn to your AWS deployment (coming soon)
