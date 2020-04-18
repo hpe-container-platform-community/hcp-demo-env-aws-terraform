@@ -23,6 +23,8 @@ fi
 
 
 terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
+
+echo "Sleeping for 60s to give services a chance to startup"
 sleep 60
 
 terraform output -json > generated/output.json
@@ -30,6 +32,7 @@ terraform output -json > generated/output.json
 ./scripts/post_refresh_or_apply.sh
 ./scripts/bluedata_install.sh 
 
+echo "Sleeping for 240s to give services a chance to startup"
 sleep 240
 
 ./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh

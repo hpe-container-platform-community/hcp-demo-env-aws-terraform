@@ -81,7 +81,7 @@ do
 			sudo systemctl enable mapr-posix-client-platinum
 			sudo systemctl start mapr-posix-client-platinum
 
-			# wait for mount to come online
+			echo "Sleeping for 30s for mount to come online"
 			sleep 30
 
 			[[ -d /mapr/hcp.mapr.cluster/ ]] || { echo "Error: /mapr/hcp.mapr.cluster was not mounted. Aborting."; exit 1; }

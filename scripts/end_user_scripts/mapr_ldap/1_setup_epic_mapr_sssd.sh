@@ -122,6 +122,6 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${C
 	# after restarting
 	docker restart \$(docker ps | grep "epic/mapr" | cut -d " " -f1); docker ps
 
-	# give mapr a chance to startup inside the container
+	echo "Sleeping for 120s to give MAPR services a chance to startup"
 	sleep 120 
 SSH_EOF
