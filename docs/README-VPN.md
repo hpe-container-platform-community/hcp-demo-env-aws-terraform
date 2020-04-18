@@ -6,7 +6,10 @@ Based on ...
 - https://www.softether.org/
 - https://hub.docker.com/r/siomiz/softethervpn/ (at the time of writing, this uses the latest RFM release of SoftEther)
 
-Note, the vpn server is only accessible to whitelisted IP addresses using the terraform created AWS Network ACL and Security Groups.
+Note:
+
+- The vpn server is only accessible to whitelisted IP addresses using the terraform created AWS Network ACL and Security Groups.
+- SoftEther is used because it does not have the 2 user limitation like OpenVPN.
 
 ## Pre-requisites
 
@@ -47,19 +50,9 @@ The server address is the RDP Public IP.  The account name is what was provided 
 
 ![mac setup 02](./README-VPN/mac-setup02.png)
 
-```
-```
 
 ## TODO
 
-Use PSK, maybe even generated/controller.prv_key
-
-```
--e PSK: Pre-Shared Key (PSK), if not set: "notasecret" (without quotes) by default.
-```
-
-Route delete?
-
-```
-sudo route -n delete -net 10.1.0.0/24 192.168.30.1 
-```
+ - Use PSK, maybe even generated/controller.prv_key `-e PSK: Pre-Shared Key (PSK), if not set: "notasecret" (without quotes) by default.`
+ - Provide a script to run softether docker instance with terraform
+ - In the above script, it could also run the mac vpn setup tool (https://github.com/halo/macosvpn)
