@@ -14,9 +14,9 @@ Based on ...
 
 Note:
 
-- The vpn server is only accessible to whitelisted IP addresses using the terraform created AWS Network ACL and Security Groups.
-- SoftEther is used because it does not have the 2 user limitation like OpenVPN.
 - The VPN server is provided by SoftEther on the RDP Linux server.
+- SoftEther is used because it does not have the 2 user limitation like OpenVPN.
+- The vpn server is only accessible by whitelisted client IP addresses, e.g. those managed by terraform.
 
 ## Mac Setup
 
