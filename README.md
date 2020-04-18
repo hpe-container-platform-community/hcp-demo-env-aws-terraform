@@ -59,21 +59,22 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 ## Further documentation
 
-[./docs/README-EC2-START-STOP-STATUS.md](./docs/README-EC2-START-STOP-STATUS.md) for **stopping**, **starting** and **viewing the status** of your EC2 instances
+[README](./docs/README-EC2-START-STOP-STATUS.md) for **stopping**, **starting** and **viewing the status** of your EC2 instances
 
-[./docs/README-DESTROY-DEMO-ENV.md](./docs/README-DESTROY-DEMO-ENV.md) for **destroying** your demo environment in AWS
+[README](./docs/README-DESTROY-DEMO-ENV.md) for **destroying** your demo environment in AWS
 
-[./docs/README-ADDING-MORE-WORKERS.md](./docs/README-ADDING-MORE-WORKERS.md) for **increasing worked node counts**.
+[README](./docs/README-ADDING-MORE-WORKERS.md) for **increasing worked node counts**.
 
+[README](./docs/README-TROUBLESHOOTING.MD) for troubleshooting help.
 
-[./docs/README-TROUBLESHOOTING.MD](./docs/README-TROUBLESHOOTING.MD) for troubleshooting help.
+[README](./docs/README-AD.md) for information on setting up HCP with Active Directory/LDAP.
 
-[./docs/README-AD.md](./docs/README-AD.md) for information on setting up HCP with Active Directory/LDAP.
+[README](./docs/README-MAPR-LDAP.md) for information on setting up MAPR  with Active Directory/LDAP.
 
-[./docs/README-MAPR-LDAP.md](./docs/README-MAPR-LDAP.md) for information on setting up MAPR  with Active Directory/LDAP.
+[README](./docs/README-DATA-FABRIC-OVERVIEW.md) for information on the data fabric architecture.
 
-[./docs/README-DATA-TIERING.md](./docs/README-DATA-TIERING.md) for information on setting up MAPR data tiering.
+[README](./docs/README-DATA-TIERING.md) for information on setting up MAPR data tiering.
 
-[./docs/README-DESIGN-PRINCIPLES.md](./docs/README-DESIGN-PRINCIPLES.md) why this project is architected the way it is.
+[README](./docs/README-DESIGN-PRINCIPLES.md) why this project is architected the way it is.
 
 [./docs/README-VPN.md](./docs/README-VPN.md) how to create a vpn to your AWS deployment (coming soon)
