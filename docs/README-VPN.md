@@ -14,9 +14,9 @@ Based on ...
 
 Note:
 
-- The VPN server is provided by SoftEther on the RDP Linux server.
+- The VPN server is provided by [SoftEther](https://www.softether.org/) running on the RDP Linux server.
 - SoftEther is used because it does not have the 2 user limitation like OpenVPN.
-- The vpn server is only accessible by whitelisted client IP addresses, e.g. those managed by terraform.
+- The SoftEther VPN server is only accessible by whitelisted client IP addresses, e.g. those managed by terraform.
 
 ## Mac Setup
 
