@@ -18,11 +18,13 @@ TODO: terraform project commit_id
 ## Run on RDP Linux Server:
 
 ```
-sudo ufw disable
+sudo ufw allow 1701
 docker run -d --cap-add NET_ADMIN -e USERS=csnow:pass123 -p 500:500/udp -p 4500:4500/udp -p 1701:1701/tcp -p 1194:1194/udp -p 5555:5555/tcp siomiz/softethervpn
 ```
 
-##  Mac setup:
+##  Mac Setup:
+
+### Automatic Setup
 
 ```
 command -v macosvpn >/dev/null 2>&1    || { 
@@ -31,15 +33,24 @@ command -v macosvpn >/dev/null 2>&1    || {
 }
 
 sudo macosvpn create --l2tp hpe-container-platform-aws \
-                    --endpoint $(terraform output rdp_server_public_ip) \
-                    --username csnow \
-                    --password pass123 \
-                    --sharedsecret notasecret
+                        --force \
+                        --endpoint $(terraform output rdp_server_public_ip) \
+                        --username csnow \
+                        --password pass123 \
+                        --sharedsecret notasecret
 
-sudo route -n add -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip)
+networksetup -connectpppoeservice "hpe-container-platform-aws"
+
+# VPN Status
+scutil --nc list | grep hpe
+
+sudo bash <<EOF
+    route -n delete -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip) || ignore error
+    route -n add -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip)
+EOF
 ```
 
-Manual
+### Manual Setup
 
 The server address is the RDP Public IP.  The account name is what was provided to docker in: `-e USERS=csnow:pass123`
 
