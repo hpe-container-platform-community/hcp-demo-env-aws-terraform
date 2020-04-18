@@ -41,7 +41,7 @@ Update tags
 
 ![image004](./README-DATA-TIERING/image004.png)
  
-Assign SSD: TRUE to 2 of the workers, SSD: FALSE to remaining 5.
+Assign SSD: TRUE to 1 of the workers, SSD: FALSE to remaining 5.
 
 ![image005](./README-DATA-TIERING/image005.png)
  
@@ -52,7 +52,7 @@ Assign SSD: TRUE to 2 of the workers, SSD: FALSE to remaining 5.
 
 Login to MAPR Control System (MCS) - [Instructions](./README-LOGIN-MAPR-CONTROL-SYSTEM.md)
 
-Selected 2 SSD:TRUE nodes and assign them to /SSDTier topology (new topology under /).
+Selected 1 SSD:TRUE node and assign it to /SSDTier topology (new topology under /).
 
 ![image007](./README-DATA-TIERING/image007.png)
 
