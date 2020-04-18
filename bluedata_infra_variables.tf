@@ -113,6 +113,15 @@ variable "allow_rdp_from_world" {
   default = false
 }
 
+variable "softether_cidr_block" {
+  default = "192.168.30.0/24"
+}
+
+variable "softether_rdp_ip" {
+  default = "192.168.30.1"
+}
+
+
 variable "ca_cert" {
   default =<<EOF
 -----BEGIN CERTIFICATE-----

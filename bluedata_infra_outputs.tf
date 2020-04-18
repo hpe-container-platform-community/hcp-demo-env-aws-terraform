@@ -6,6 +6,10 @@ output "aws_region" {
   value = "${var.region}"
 }
 
+output "subnet_cidr_block" {
+  value = "${var.subnet_cidr_block}"
+}
+
 output "selinux_disabled" {
   value = "${var.selinux_disabled}"
 }
@@ -159,4 +163,8 @@ output "rdp_server_instance_id" {
 
 output "rdp_server_operating_system" {
   value = var.rdp_server_operating_system
+}
+
+output "softether_rdp_ip" {
+  value = var.softether_rdp_ip
 }

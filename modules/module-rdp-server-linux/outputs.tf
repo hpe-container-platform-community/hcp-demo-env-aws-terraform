@@ -17,3 +17,6 @@ output "ssh_command" {
 output "enc_administrator_password" {
   value = var.rdp_server_enabled && length(aws_instance.rdp_server) > 0  ? aws_instance.rdp_server[0].password_data : null
 }
+output "network_interface_id" {
+  value = var.rdp_server_enabled && length(aws_instance.rdp_server) > 0  ? aws_instance.rdp_server[0].primary_network_interface_id : null
+}

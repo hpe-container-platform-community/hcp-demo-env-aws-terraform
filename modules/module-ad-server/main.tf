@@ -26,6 +26,7 @@ resource "aws_instance" "ad_server" {
       user        = "centos"
       host        = aws_instance.ad_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     destination   = "/home/centos/ad_user_setup.sh"
     content       = <<-EOT
@@ -57,6 +58,7 @@ resource "aws_instance" "ad_server" {
       user        = "centos"
       host        = aws_instance.ad_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent   = false
     }
     destination   = "/home/centos/ad_set_posix_classes.sh"
     content       = <<-EOT
@@ -122,6 +124,7 @@ resource "aws_instance" "ad_server" {
       user        = "centos"
       host        = aws_instance.ad_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent   = false
     }
     inline = [
       "sudo yum install -y docker openldap-clients",

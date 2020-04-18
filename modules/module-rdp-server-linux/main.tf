@@ -25,6 +25,7 @@ resource "aws_instance" "rdp_server" {
   key_name               = var.key_name
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id              = var.subnet_id
+  source_dest_check      = false #  required for SoftEther VPN
  
   count = var.rdp_server_enabled == true ? 1 : 0
 
@@ -47,6 +48,7 @@ resource "aws_instance" "rdp_server" {
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     inline = [
       // run fastdd in background session.  nohup and disown both failed to achieve this over ssh.
@@ -77,6 +79,7 @@ resource "aws_instance" "rdp_server" {
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     source        = "${path.module}/Desktop/"
     destination   = "/home/ubuntu/Desktop"
@@ -88,6 +91,7 @@ resource "aws_instance" "rdp_server" {
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     content        = data.template_file.mcs_desktop_link.rendered
     destination   = "/home/ubuntu/Desktop/MCS.admin.desktop"
@@ -99,6 +103,7 @@ resource "aws_instance" "rdp_server" {
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     content        = data.template_file.hcp_desktop_link.rendered
     destination   = "/home/ubuntu/Desktop/HCP.admin.desktop"
@@ -110,6 +115,7 @@ resource "aws_instance" "rdp_server" {
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     content        = data.template_file.hcp_links_desktop_link.rendered
     destination   = "/home/ubuntu/Desktop/startup.desktop"
@@ -122,6 +128,7 @@ resource "aws_instance" "rdp_server" {
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     inline = [
       //"sudo chown ubuntu:ubuntu /home/ubuntu/.local/share/gvfs-metadata/home*",
@@ -137,6 +144,7 @@ resource "aws_instance" "rdp_server" {
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     destination   = "/home/ubuntu/hcp-ca-cert.pem"
     content       = var.ca_cert
@@ -148,6 +156,7 @@ resource "aws_instance" "rdp_server" {
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     source        = "${path.module}/ca-certs-setup.sh"
     destination   = "/tmp/ca-certs-setup.sh"
@@ -159,6 +168,7 @@ resource "aws_instance" "rdp_server" {
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     inline = [
       "chmod +x /tmp/ca-certs-setup.sh",

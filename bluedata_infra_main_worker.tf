@@ -29,6 +29,7 @@ resource "null_resource" "yum_update_workers" {
     user        = "centos"
     host        = aws_instance.workers.*.public_ip[count.index]
     private_key = file("${var.ssh_prv_key_path}")
+    agent       = false
   }
 
   provisioner "remote-exec" {

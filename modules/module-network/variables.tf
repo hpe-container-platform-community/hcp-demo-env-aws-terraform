@@ -31,3 +31,9 @@ variable "ad_server_enabled" {
 variable "ad_private_ip" {
     type = string
 }
+variable "rdp_network_interface_id" {
+    type = string
+}
+variable "softether_cidr_block" {
+    type = string
+}

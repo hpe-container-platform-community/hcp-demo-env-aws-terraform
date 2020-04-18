@@ -33,29 +33,37 @@ resource "aws_subnet" "main" {
 
 /******************* Route Table ********************/
 
-resource "aws_default_route_table" "main" {
-  default_route_table_id = aws_vpc.main.default_route_table_id
+resource "aws_route_table" "main" {
+  vpc_id = aws_vpc.main.id
 
+/*
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
-
-  # route {
-  #   ipv6_cidr_block = "::/0"
-  #   gateway_id = aws_internet_gateway.main.id
-  # }
-
+*/
   tags = {
-    Name = "${var.project_id}-default-route-table"
+    Name = "${var.project_id}-main-route-table"
     Project = "${var.project_id}"
     user = "${var.user}"
   }
 }
 
+resource "aws_route" "main" {
+  route_table_id         = aws_route_table.main.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.main.id
+}
+
+resource "aws_route" "softether" {
+  route_table_id         = aws_route_table.main.id
+  destination_cidr_block = var.softether_cidr_block
+  network_interface_id   = var.rdp_network_interface_id
+}
+
 resource "aws_route_table_association" "main" {
   subnet_id      = aws_subnet.main.id
-  route_table_id = aws_default_route_table.main.id
+  route_table_id = aws_route_table.main.id
 }
 
 /******************* Internet Gateway ********************/

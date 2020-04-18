@@ -8,13 +8,35 @@ Based on ...
 
 Note, the vpn server is only accessible to whitelisted IP addresses using the terraform created AWS Network ACL and Security Groups.
 
-## Run on RDP Server:
+## Pre-requisites
+
+TODO: terraform project commit_id 
+
+## Run on RDP Linux Server:
 
 ```
+sudo ufw disable
 docker run -d --cap-add NET_ADMIN -e USERS=csnow:pass123 -p 500:500/udp -p 4500:4500/udp -p 1701:1701/tcp -p 1194:1194/udp -p 5555:5555/tcp siomiz/softethervpn
 ```
 
 ##  Mac setup:
+
+```
+command -v macosvpn >/dev/null 2>&1    || { 
+    echo >&2 "I require 'macosvpn' but it's not installed.  You can install it with `brew install macosvpn`.  Aborting."; 
+    exit 1;
+}
+
+sudo macosvpn create --l2tp hpe-container-platform-aws \
+                    --endpoint $(terraform output rdp_server_public_ip) \
+                    --username csnow \
+                    --password pass123 \
+                    --sharedsecret notasecret
+
+sudo route -n add -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip)
+```
+
+Manual
 
 The server address is the RDP Public IP.  The account name is what was provided to docker in: `-e USERS=csnow:pass123`
 
@@ -25,10 +47,19 @@ The server address is the RDP Public IP.  The account name is what was provided 
 
 ![mac setup 02](./README-VPN/mac-setup02.png)
 
+```
+```
+
 ## TODO
 
 Use PSK, maybe even generated/controller.prv_key
 
 ```
 -e PSK: Pre-Shared Key (PSK), if not set: "notasecret" (without quotes) by default.
+```
+
+Route delete?
+
+```
+sudo route -n delete -net 10.1.0.0/24 192.168.30.1 
 ```

@@ -44,6 +44,7 @@ resource "aws_instance" "controller" {
       user        = "centos"
       host        = aws_instance.controller.public_ip
       private_key = file("${var.ssh_prv_key_path}")
+      agent       = false
     }
     inline = [
       "sudo yum update -y"

@@ -38,6 +38,10 @@ module "network" {
   aws_zone_id = data.aws_availability_zone.main.zone_id
   dns_zone_name = var.dns_zone_name
 
+  // required for softther vpn
+  rdp_network_interface_id = module.rdp_server_linux.network_interface_id
+  softether_cidr_block = var.softether_cidr_block
+
   // variables for experimental feature - Route 53
   controller_private_ip = module.controller.private_ip
   ad_server_enabled = var.ad_server_enabled
