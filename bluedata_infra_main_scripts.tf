@@ -27,7 +27,7 @@ resource "local_file" "cli_stop_ec2_instances" {
     SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=1 -q"
     CMD='nohup sudo halt -n </dev/null &'
 
-    echo "Sending 'sudo halt -n' to all hosts"
+    echo "Sending 'sudo halt -n' to all hosts for graceful shutdown."
 
     for HOST in $${WRKR_PUB_IPS[@]};
     do
@@ -37,11 +37,14 @@ resource "local_file" "cli_stop_ec2_instances" {
     ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$GATW_PUB_IP "$CMD" || true
     ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$CMD" || true
 
-    echo "Sleeping a few minutes, allowing halt to complete"
+    echo "Sleeping 120s allowing halt to complete."
     sleep 120
 
     echo "Stopping instances"
-    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${local.instance_ids} 
+    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances \
+        --instance-ids ${local.instance_ids} \
+        --output table \
+        --query "StoppingInstances[*].{ID:InstanceId,State:CurrentState.Name}"
   EOF
 }
 
@@ -55,7 +58,10 @@ resource "local_file" "cli_start_ec2_instances" {
     CLIENT_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["client_cidr_block"]["value"])')
     [ "$CLIENT_CIDR_BLOCK" ] || ( echo "ERROR: CLIENT_CIDR_BLOCK is empty" && exit 1 )
 
-    aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids}
+    aws --region ${var.region} --profile ${var.profile} ec2 start-instances \
+        --instance-ids ${local.instance_ids} \
+        --output table \
+        --query "StartingInstances[*].{ID:InstanceId,State:CurrentState.Name}"
 
     CURR_CLIENT_CIDR_BLOCK="$(curl -s http://ifconfig.me/ip)/32"
 
