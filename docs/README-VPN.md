@@ -27,8 +27,6 @@ The server address is the RDP Public IP.  The account name is what was provided 
 
 ## TODO
 
-Use PSK, maybe even generated/controller.prv_key
-
-```
--e PSK: Pre-Shared Key (PSK), if not set: "notasecret" (without quotes) by default.
-```
+ - Use PSK, maybe even generated/controller.prv_key `-e PSK: Pre-Shared Key (PSK), if not set: "notasecret" (without quotes) by default.`
+ - Provide a script to run softether docker instance with terraform
+ - In the above script, it could also run the mac vpn setup tool (https://github.com/halo/macosvpn)
