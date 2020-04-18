@@ -16,10 +16,6 @@ data "aws_availability_zone" "main" {
   name = var.az
 }
 
-data "external" "example1" {
- program = [ "python3", "${path.module}/scripts/verify_client_ip.py", "${var.client_cidr_block}", "${var.check_client_ip}" ]
-}
-
 resource "aws_key_pair" "main" {
   key_name   = "${var.project_id}-keypair"
   public_key = file("${path.module}/generated/controller.pub_key")
