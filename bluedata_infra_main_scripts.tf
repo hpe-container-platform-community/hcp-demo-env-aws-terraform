@@ -352,8 +352,8 @@ resource "local_file" "whatismyip" {
   EOF
 }
 
-resource "local_file" "mac_vpn_setup" {
-  filename = "${path.module}/generated/mac_vpn_setup.sh"
+resource "local_file" "mac_vpn_connect" {
+  filename = "${path.module}/generated/mac_vpn_connect.sh"
   count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
   content  = <<-EOF
     #!/bin/bash
@@ -418,5 +418,62 @@ resource "local_file" "mac_vpn_setup" {
 
     echo "Attempting to ping the controller private IP ..."
     ping -c 5 $CTRL_PRV_IP
+
+    echo "******************************************************************************"
+    echo "                                 IMPORTANT"
+    echo "******************************************************************************"
+    echo "- You need to run this script every time you restart your instances to update"
+    echo "  the VPN with the RDP server new public IP address."
+    echo
+    echo "- You may have issues connecting to the instance public IP addresses while"
+    echo "  the VPN is running.  If so, connect to the private IP addresses."
+    echo "*****************************************************************************"
+  EOF
+}
+
+
+resource "local_file" "mac_vpn_delete" {
+  filename = "${path.module}/generated/mac_vpn_delete.sh"
+  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
+  content  = <<-EOF
+    #!/bin/bash
+
+    set -e # abort on error
+    set -u # abort on undefined variable
+
+    source "${path.module}/scripts/variables.sh"
+  
+    if [[ "$EUID" != "0" ]]; then
+      echo "This script must be run as root - e.g. with sudo" 
+      exit 1
+    fi
+
+    macosvpn delete --name hpe-container-platform-aws 
+    route -n delete -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip) || ignore error
+  EOF
+}
+
+resource "local_file" "mac_vpn_status" {
+  filename = "${path.module}/generated/mac_vpn_status.sh"
+  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
+  content  = <<-EOF
+    #!/bin/bash
+
+    set -e # abort on error
+    set -u # abort on undefined variable
+
+    source "${path.module}/scripts/variables.sh"
+  
+    if [[ "$EUID" != "0" ]]; then
+      echo "This script must be run as root - e.g. with sudo" 
+      exit 1
+    fi
+
+    VPN_STATUS=$(scutil --nc list | grep hpe-container-platform-aws)
+    if $VPN_STATUS; then
+      echo $VPN_STATUS
+    else
+      "VPN not found."
+    fi
   EOF
 }

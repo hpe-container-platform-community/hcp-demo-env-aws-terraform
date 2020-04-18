@@ -13,12 +13,10 @@ Note:
 
 ##  Mac Setup
 
-Run `sudo ./generated/mac_vpn_setup.sh`
+- run `sudo ./generated/mac_vpn_connect.sh` to create vpn and to connect to it
+- run `sudo ./generated/mac_vpn_delete.sh` to delete the vpn
+- run `sudo ./generated/mac_vpn_status.sh` to report on the vpn status
 
-This configures and runs SoftEther vpn software on the RDP Linux server and sets up the Mac VPN client.
+The VPN server is provided by SoftEther on the RDP Linux server.
 
-TODO: 
-
-- script to check vpn status
-- script to stop vpn
 
