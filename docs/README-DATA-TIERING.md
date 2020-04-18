@@ -1,6 +1,6 @@
-```git
+```diff
 - This document is intended for educational purposes only.
-- Do not use this document on production environments without the help of HPE Container Platfrom professional services.
+- DO NOT use this document on production environments.
 ```
 ----
 
