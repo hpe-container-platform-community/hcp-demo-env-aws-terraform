@@ -2,8 +2,12 @@ output "private_ip" {
   value = var.rdp_server_enabled && length(aws_instance.rdp_server) > 0 ? aws_instance.rdp_server[0].private_ip : null
 }
 
+locals {
+  rdp_created = var.rdp_server_enabled && length(aws_instance.rdp_server) > 0
+}
+
 output "public_ip" {
-  value = var.rdp_server_enabled && length(aws_instance.rdp_server) > 0  ? aws_instance.rdp_server[0].public_ip : null
+  value = local.rdp_created ? (var.create_eip ? aws_eip.rdp_server[0].public_ip : aws_instance.rdp_server[0].public_ip) : null
 }
 
 output "instance_id" {

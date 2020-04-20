@@ -69,6 +69,11 @@ create_eip_controller = false
 
 create_eip_gateway = false
 
+# Whether to create an EIP for the RDP Server - you may wish to disable this
+# if you are short on EIPs.
+
+create_eip_rdp_linux_server = false
+
 # the path to ssh private key on your local machine
 # DO NOT CHANGE THIS
 
@@ -113,9 +118,9 @@ ad_server_enabled = false
 
 rdp_server_enabled = false
 
-# set to "WINDOWS" or "LINUX"
+# set to "LINUX" ("WINDOWS" RDP instances have been deprecated)
 
-rdp_server_operating_system = "WINDOWS"
+rdp_server_operating_system = "LINUX"
 
 # If you would like to allow ssh or rdp from any source, set the following variables
 

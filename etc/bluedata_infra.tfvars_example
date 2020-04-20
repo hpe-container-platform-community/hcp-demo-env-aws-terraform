@@ -38,3 +38,4 @@ ad_server_enabled = true
 
 rdp_server_enabled = true
 rdp_server_operating_system = "LINUX"
+create_eip_rdp_linux_server = false

@@ -64,6 +64,10 @@ variable "create_eip_gateway" {
   default = false
 }
 
+variable "create_eip_rdp_linux_server" { 
+  default = false
+}
+
 variable "ssh_prv_key_path" {}
 variable "ssh_pub_key_path" {}
 variable "worker_count" { default = 3 }
@@ -98,7 +102,7 @@ terraform {
 
 variable "rdp_server_operating_system" {
   type = string
-  default = "WINDOWS"
+  default = "LINUX"
   validation {
     condition = var.rdp_server_operating_system == "WINDOWS" || var.rdp_server_operating_system == "LINUX"
     error_message = "Valid values: WINDOWS | LINUX."

@@ -34,3 +34,6 @@ variable "ca_cert" {
 variable "controller_private_ip" {
     type = string
 }
+variable "create_eip" {
+    type = bool
+}

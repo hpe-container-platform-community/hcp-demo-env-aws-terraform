@@ -146,6 +146,7 @@ module "rdp_server_linux" {
   project_id = var.project_id
   user = var.user
   az = var.az
+  create_eip = var.create_eip_rdp_linux_server
   ssh_prv_key_path = "${path.module}/generated/controller.prv_key"
   rdp_ec2_ami = var.EC2_LIN_RDP_AMIS[var.region]
   rdp_instance_type = var.rdp_instance_type

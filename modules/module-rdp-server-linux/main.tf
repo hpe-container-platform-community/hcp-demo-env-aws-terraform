@@ -1,3 +1,25 @@
+/******************* elastic ips ********************/
+
+resource "aws_eip" "rdp_server" {
+  vpc = true
+  count = var.create_eip ? 1 : 0
+  tags = {
+    Name = "${var.project_id}-rdp-linux-server"
+    Project = "${var.project_id}"
+    user = "${var.user}"
+  }
+}
+
+// EIP associations
+
+resource "aws_eip_association" "eip_assoc_rdp_server" {
+  count = var.create_eip ? 1 : 0
+  instance_id   = aws_instance.rdp_server[0].id
+  allocation_id = aws_eip.rdp_server[0].id
+}
+
+/******************* Templates ********************/
+
 data "template_file" "hcp_desktop_link" {
   template = file("${path.module}/Templates/HCP.admin.desktop.tpl")
   vars = {
@@ -18,6 +40,8 @@ data "template_file" "hcp_links_desktop_link" {
     controller_private_ip = var.controller_private_ip
   }
 }
+
+
 
 resource "aws_instance" "rdp_server" {
   ami                    = var.rdp_ec2_ami
