@@ -251,6 +251,10 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    CONTROLLER_IP="-c ${CONFIG_CONTROLLER_IP}"
    CUSTOM_INSTALL_NAME="--cin demo-hpecp"
 
+   echo "*************************************************************************************"
+   echo "The next step can take 10 mins or more to run without any output - please be patient."
+   echo "*************************************************************************************"
+
    #
    # WARNING: This script is an internal API and is not supported being used directly by users
    #
