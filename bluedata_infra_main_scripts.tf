@@ -404,7 +404,8 @@ resource "local_file" "mac_vpn_connect" {
                             --endpoint $(terraform output rdp_server_public_ip) \
                             --username $VPN_USER \
                             --password $VPN_PASS \
-                            --sharedsecret $VPN_PSK
+                            --sharedsecret $VPN_PSK \
+                            --split # Do not send all traffic across VPN tunnel
 
 
     echo "Waiting 10s for vpn settings to save"
@@ -426,8 +427,13 @@ resource "local_file" "mac_vpn_connect" {
     echo "******************************************************************************"
     echo "                                 IMPORTANT"
     echo "******************************************************************************"
+    if [[ "$CREATE_EIP_RDP_LINUX_SERVER" == "False" ]]; then
     echo "- You need to run this script every time you restart your instances to update"
     echo "  the VPN with the RDP server new public IP address."
+    else
+    echo "- You are using a EIP for the RDP server, you can connect/disconnect the vpn"
+    echo "  using the tools provided with your OS."
+    fi
     echo
     echo "- You may have issues connecting to the instance public IP addresses while"
     echo "  the VPN is running.  If so, connect to the private IP addresses."
@@ -479,5 +485,14 @@ resource "local_file" "mac_vpn_status" {
     else
       echo "$VPN_STATUS"
     fi
+  EOF
+}
+
+resource "local_file" "get_public_endpoints" {
+  filename = "${path.module}/generated/get_public_endpoints.sh"
+  content  = <<-EOF
+    #!/usr/bin/env python3
+
+    print("Not implemented yet. Sorry!")
   EOF
 }
