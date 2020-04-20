@@ -10,6 +10,7 @@ if [[ ! -f  "./generated/controller.prv_key" ]]; then
    [[ -d "./generated" ]] || mkdir generated
    ssh-keygen -m pem -t rsa -N "" -f "./generated/controller.prv_key"
    mv "./generated/controller.prv_key.pub" "./generated/controller.pub_key"
+   chmod 600 "./generated/controller.prv_key"
 fi
 
 
