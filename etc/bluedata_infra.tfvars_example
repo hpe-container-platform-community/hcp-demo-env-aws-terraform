@@ -4,16 +4,23 @@ az                 = "eu-west-3a"          # Change to your preferred AZ
 project_id         = "<<your-name>>-hcp"   # Change your name and project name. E.g. csnow-hcp-demo
 user               = "<<your-name>>"       # Change your name. E.g. csnow
 
-##############################################################
-###### You probably won't need to change anything below ######
-##############################################################
+worker_count       = 2                     # How many hosts do you want for EPIC or K8S?
 
-# You may  need to change these types if not available in your AWS region
+##########################################################################
+# You may need to change these types if not available in your AWS region #
+# You can heck at: https://aws.amazon.com/ec2/pricing/on-demand/         #
+##########################################################################
+
 gtw_instance_type = "m5.4xlarge" 
 ctr_instance_type = "m5.4xlarge"
 wkr_instance_type = "m5.4xlarge"
+nfs_instance_type = "t2.small"
+ad_instance_type  = "t2.small"
+rdp_instance_type = "t2.xlarge"
 
-worker_count = 2
+##############################################################
+###### You probably won't need to change anything below ######
+##############################################################
 
 ssh_prv_key_path   = "./generated/controller.prv_key"
 ssh_pub_key_path   = "./generated/controller.pub_key"

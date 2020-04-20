@@ -63,3 +63,13 @@ or
 ```
 An error occurred (IncorrectInstanceState) when calling the StopInstances operation: The instance 'i-xxxxxxxxxxx' is not in a state from which it can be stopped.
 ```
+
+### Error launching source instance: Unsupported: The requested configuration is currently not supported
+
+If you get this error:
+
+![Unsupported source instance type](./README-TROUBLESHOOTING/unsupported_source_instance_type.png)
+
+Check that the instance types you have declared in `etc/bluedata_infra.tfvars` are available in the region.
+
+In the above example, the instance type declared for the RDP server was not supported in the region required.

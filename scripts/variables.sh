@@ -197,18 +197,21 @@ read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
 AD_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_private_ip"]["value"])') 
 AD_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_public_ip"]["value"])') 
 
-RDP_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_private_ip"]["value"])') 
-RDP_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_public_ip"]["value"])') 
-RDP_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_instance_id"]["value"])') 
 RDP_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_enabled"]["value"])')
 RDP_SERVER_OPERATING_SYSTEM=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_operating_system"]["value"])')
 
-if [[ "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" && ! "$RDP_PUB_IP"  ]]; then
-   echo "***********************************************************************************"
-   echo "ERROR: RDP_PUB_IP is empty - is the EC2 instance running?"
-   echo
-   echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
-   echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
-   echo "***********************************************************************************"
-   exit 1 
+if [[ "$RDP_SERVER_ENABLED" == "True" ]]; then
+   RDP_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_private_ip"]["value"])') 
+   RDP_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_public_ip"]["value"])') 
+   RDP_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_instance_id"]["value"])') 
+
+   if [[ "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" && ! "$RDP_PUB_IP"  ]]; then
+      echo "***********************************************************************************"
+      echo "ERROR: RDP_PUB_IP is empty - is the EC2 instance running?"
+      echo
+      echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
+      echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
+      echo "***********************************************************************************"
+      exit 1 
+   fi
 fi

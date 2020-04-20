@@ -35,6 +35,7 @@ module "network" {
   dns_zone_name = var.dns_zone_name
 
   // required for softther vpn
+  rdp_linux_server_enabled = var.rdp_server_enabled && var.rdp_server_operating_system == "LINUX" 
   rdp_network_interface_id = module.rdp_server_linux.network_interface_id
   softether_cidr_block = var.softether_cidr_block
 

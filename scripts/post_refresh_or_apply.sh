@@ -8,7 +8,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$SCRIPT_DIR/variables.sh"
 
 # add private key to RDP server to allow passwordless ssh to all other hosts
-if [[ "$RDP_PUB_IP" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINUX" && -f generated/controller.prv_key ]]; then
+if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINUX" && "$RDP_PUB_IP" && -f generated/controller.prv_key ]]; then
     # We can leave the controller.prv_key in the home folder, because it is need when adding hosts to HCP
     cat generated/controller.prv_key | \
         ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/.ssh/id_rsa" 
