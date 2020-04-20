@@ -1,5 +1,11 @@
 ## Overview
 
+```diff
+- These instructions are BETA.
+- When connected to the VPN, scripts in `./generated/` that use public IP addresses no longer work.
+- The scripts will need to be modified to use private IP addresses when connected to the VPN.
+```
+
 Based on ...
 
 - https://github.com/halo/macosvpn
@@ -8,9 +14,9 @@ Based on ...
 
 Note:
 
-- The vpn server is only accessible to whitelisted IP addresses using the terraform created AWS Network ACL and Security Groups.
+- The VPN server is provided by [SoftEther](https://www.softether.org/) running on the RDP Linux server.
 - SoftEther is used because it does not have the 2 user limitation like OpenVPN.
-- The VPN server is provided by SoftEther on the RDP Linux server.
+- The SoftEther VPN server is only accessible by whitelisted client IP addresses, e.g. those managed by terraform.
 
 ## Mac Setup
 
