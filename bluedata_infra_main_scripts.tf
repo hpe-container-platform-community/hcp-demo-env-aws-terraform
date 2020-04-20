@@ -287,9 +287,13 @@ resource "local_file" "rdp_linux_credentials" {
     #!/bin/bash
     source "${path.module}/scripts/variables.sh"
     echo 
-    echo =========================== RDP Credentials  ===============================
+    echo ================================= RDP Credentials  =====================================
     echo 
-    echo Note: The Host IP addresses changes when instances are restarted.
+    if [[ "$CREATE_EIP_RDP_LINUX_SERVER" == "False" ]]; then
+    echo Note: The RDP IP addresses listed below change each time the RDP instance is restarted.
+    else
+    echo Note: The RDP IP addresses listed below are provided by an EIP and are static.
+    fi
     echo
     echo Host IP:   "$RDP_PUB_IP"
     echo Web Url:   "https://$RDP_PUB_IP (Chrome is recommended)"
@@ -297,7 +301,7 @@ resource "local_file" "rdp_linux_credentials" {
     echo Username:  "ubuntu"
     echo Password:  "$RDP_INSTANCE_ID"
     echo 
-    echo ============================================================================
+    echo ========================================================================================
     echo
   EOF
 }

@@ -199,6 +199,7 @@ AD_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.st
 
 RDP_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_enabled"]["value"])')
 RDP_SERVER_OPERATING_SYSTEM=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_operating_system"]["value"])')
+CREATE_EIP_RDP_LINUX_SERVER=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["create_eip_rdp_linux_server"]["value"])')
 
 if [[ "$RDP_SERVER_ENABLED" == "True" ]]; then
    RDP_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_private_ip"]["value"])') 

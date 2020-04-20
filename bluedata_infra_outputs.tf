@@ -54,6 +54,10 @@ output "create_eip_gateway" {
   value = "${var.create_eip_gateway}"
 }
 
+output "create_eip_rdp_linux_server" {
+  value = "${var.create_eip_rdp_linux_server}"
+}
+
 output "gateway_private_ip" {
   value = "${module.gateway.private_ip}"
 }
