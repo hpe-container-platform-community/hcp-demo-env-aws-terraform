@@ -493,6 +493,38 @@ resource "local_file" "get_public_endpoints" {
   content  = <<-EOF
     #!/usr/bin/env python3
 
-    print("Not implemented yet. Sorry!")
+    import json,sys,subprocess
+
+    try:
+      with open('${path.module}/generated/output.json') as f:
+          j = json.load(f)
+    except: 
+      print(80 * "*")
+      print("ERROR: Can't parse: '${path.module}/generated/output.json'")
+      print(80 * "*")
+      sys.exit(1)
+
+    rdp_server_public_ip  = j["rdp_server_public_ip"]["value"]
+    rdp_server_public_dns = "NA"
+    rdp_server_eip        = j["create_eip_rdp_linux_server"]["value"]
+
+    controller_public_ip  = j["controller_public_ip"]["value"]
+    controller_public_dns = j["controller_public_dns"]["value"]
+    controller_eip        = j["create_eip_controller"]["value"]
+
+    gateway_public_ip     = j["gateway_public_ip"]["value"]
+    gateway_public_dns    = j["gateway_public_dns"]["value"]
+    gateway_eip           = j["create_eip_gateway"]["value"]
+
+    workers_public_ips    = j["workers_public_ip"]["value"][0]
+    workers_public_dns    = j["workers_public_dns"]["value"][0]
+
+    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "NAME", "IP", "DNS", "EIP?"))
+    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "RDP Server", rdp_server_public_ip, rdp_server_public_dns, rdp_server_eip))
+    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "Controller", controller_public_ip, controller_public_dns, controller_eip))
+    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "Gateway",    gateway_public_ip,    gateway_public_dns,    gateway_eip))
+
+    for num, ip in enumerate(workers_public_ips):
+       print('{:>9}{:>3}  {:>16}  {:>56}  {:>5}'.format( "Worker", num, ip, workers_public_dns[num], "NA"))
   EOF
 }
