@@ -520,11 +520,51 @@ resource "local_file" "get_public_endpoints" {
     workers_public_dns    = j["workers_public_dns"]["value"][0]
 
     print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "NAME", "IP", "DNS", "EIP?"))
+    print('------------  ----------------  --------------------------------------------------------  -----')
     print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "RDP Server", rdp_server_public_ip, rdp_server_public_dns, rdp_server_eip))
     print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "Controller", controller_public_ip, controller_public_dns, controller_eip))
     print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "Gateway",    gateway_public_ip,    gateway_public_dns,    gateway_eip))
 
     for num, ip in enumerate(workers_public_ips):
        print('{:>9}{:>3}  {:>16}  {:>56}  {:>5}'.format( "Worker", num, ip, workers_public_dns[num], "NA"))
+  EOF
+}
+
+resource "local_file" "get_private_endpoints" {
+  filename = "${path.module}/generated/get_private_endpoints.sh"
+  content  = <<-EOF
+    #!/usr/bin/env python3
+
+    import json,sys,subprocess
+
+    try:
+      with open('${path.module}/generated/output.json') as f:
+          j = json.load(f)
+    except: 
+      print(80 * "*")
+      print("ERROR: Can't parse: '${path.module}/generated/output.json'")
+      print(80 * "*")
+      sys.exit(1)
+
+    rdp_server_private_ip  = j["rdp_server_private_ip"]["value"]
+    rdp_server_private_dns = "NA"
+
+    controller_private_ip  = j["controller_private_ip"]["value"]
+    controller_private_dns = j["controller_private_dns"]["value"]
+
+    gateway_private_ip     = j["gateway_private_ip"]["value"]
+    gateway_private_dns    = j["gateway_private_dns"]["value"]
+
+    workers_private_ips    = j["workers_private_ip"]["value"][0]
+    workers_private_dns    = j["workers_private_dns"]["value"][0]
+
+    print('{:>12}  {:>16}  {:>56}'.format( "NAME", "IP", "DNS"))
+    print('------------  ----------------  --------------------------------------------------------')
+    print('{:>12}  {:>16}  {:>56}'.format( "RDP Server", rdp_server_private_ip, rdp_server_private_dns))
+    print('{:>12}  {:>16}  {:>56}'.format( "Controller", controller_private_ip, controller_private_dns))
+    print('{:>12}  {:>16}  {:>56}'.format( "Gateway",    gateway_private_ip,    gateway_private_dns))
+
+    for num, ip in enumerate(workers_private_ips):
+       print('{:>9}{:>3}  {:>16}  {:>56}'.format( "Worker", num, ip, workers_private_dns[num]))
   EOF
 }
