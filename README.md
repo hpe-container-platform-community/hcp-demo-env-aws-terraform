@@ -5,6 +5,8 @@ This project makes it easy to setup HPE Container Platform demo/trial environmen
 ```diff
 - The goal of this project is to easily create HPE Container Platform demo and trial environments.
 - The concepts demonstrated in this project are not suitable for production environments.
+- This project is for frequently creating and tearing down demo/trial environments.
+- This project is not for creating and managing long-living demo/trial environments.
 - Please read the project license before using this project.
 ```
 
