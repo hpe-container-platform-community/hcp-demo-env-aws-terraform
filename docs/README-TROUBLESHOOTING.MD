@@ -73,3 +73,25 @@ If you get this error:
 Check that the instance types you have declared in `etc/bluedata_infra.tfvars` are available in the region.
 
 In the above example, the instance type declared for the RDP server was not supported in the region required.
+
+### RDP Server MAPR mount fails to come online after restarting EC2 instances
+
+SSH into the RDP server:
+
+```
+./generated/ssh_rdp_linux_server.sh
+```
+
+Restart the posix client:
+
+```
+sudo service mapr-posix-client-platinum stop && sudo service mapr-posix-client-platinum start
+sleep 60
+ls /mapr/
+```
+
+This should return:
+
+```
+hcp.mapr.cluster
+```
