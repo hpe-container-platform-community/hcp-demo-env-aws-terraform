@@ -95,3 +95,34 @@ This should return:
 ```
 hcp.mapr.cluster
 ```
+
+### MaprClus1 Datatap Browser is empty after restarting EC2 instances
+
+See:
+
+![error](./README-TROUBLESHOOTING/mapr_datatap_browser_empty.png)
+
+SSH into the controller:
+
+```
+./generated/ssh_controller.sh
+```
+
+Restart the posix client:
+
+```
+sudo service mapr-posix-client-platinum stop
+sudo service mapr-posix-client-platinum start
+sleep 20
+ls /mapr/
+```
+
+This should return:
+
+```
+hcp.mapr.cluster
+```
+
+Now refresh the browser page and all should be fixed:
+
+![fixed](./README-TROUBLESHOOTING/mapr_datatap_browser_fixed.png)
