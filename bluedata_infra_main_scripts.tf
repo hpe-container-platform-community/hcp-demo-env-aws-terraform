@@ -37,7 +37,7 @@ resource "local_file" "cli_stop_ec2_instances" {
     ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$GATW_PUB_IP "$CMD" || true
     ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$CMD" || true
 
-    echo "Sleeping 120s allowing halt to complete."
+    echo "Sleeping 120s allowing halt to complete before issuing 'ec2 stop-instances' command"
     sleep 120
 
     echo "Stopping instances"
