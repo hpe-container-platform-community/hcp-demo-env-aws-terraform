@@ -26,7 +26,7 @@ Note:
 ## Add VPN Users
 
 - Multiple usernames and passwords may be set with the following pattern: `username:password;user2:pass2;user3:pass3`
-- Username and passwords are separated by :. Each pair of username:password should be separated by `;`
+- Username and password are separated by `:`. Each pair of username:password should be separated by `;`
 - If not set a single user account with username ("user1") and a random weak password is created.
 - You can add users to the file: `./generated/vpn_users`
 - If the file `./generated/vpn_users` doesn't exist on running `./generated/mac_vpn_connect.sh`, it will be created automatically
