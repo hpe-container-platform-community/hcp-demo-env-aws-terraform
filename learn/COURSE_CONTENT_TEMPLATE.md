@@ -28,3 +28,7 @@ Information on step 2
 
 Information on step 3
 
+## Learning Summary
+
+Reflection on the this course content.
+
