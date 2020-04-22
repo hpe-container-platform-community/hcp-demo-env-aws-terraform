@@ -61,7 +61,7 @@ If the above script has run without error, you can retrieve the RDP/brower endpo
 ./generated/rdp_credentials.sh
 ```
 
-Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then ready to configure your HPE Container Platform deployment with Gateways, Hosts, License, etc.
+Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then ready to configure your HPE Container Platform deployment with Gateways, Hosts, License, etc.  For more information on the RDP server, see the [README](./docs/README-RDP.md).
 
 
 
