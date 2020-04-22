@@ -21,7 +21,8 @@ TBC
 ## Test your understanding
 
 - Which type of host is where you initially install HPE Container Platform?
-- What type of host managed the EPIC workers?  
-- What type of host managed the Kubernetes workers?
+- What type of host manages the EPIC workers?  
+- What type of host manages the Kubernetes workers?
+- Do you need a Gateway host?
 
 
