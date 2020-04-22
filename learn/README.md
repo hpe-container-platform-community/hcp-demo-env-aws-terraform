@@ -17,8 +17,6 @@ This document containers a recommended path for learning key HPE Container Platf
 - [Controller, Gateway and Worker Hosts](./HCP_Foundation_Concepts/controller_gateway_and_worker_hosts.md) [30 mins]
 - more topics coming soon ...
 
-http://docs.bluedata.com/50_on-premises-hybrid-and-multi-cloud-deployments
-
 ## Platform Administration
 
 ### Demo environment lifecycle
