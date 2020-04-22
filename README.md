@@ -63,6 +63,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-EC2-START-STOP-STATUS.md) for **stopping**, **starting** and **viewing the status** of your EC2 instances
 
+[README](./docs/README-RDP.md) for **information** on your pre-configured **RDP Server** 
+
 [README](./docs/README-DESTROY-DEMO-ENV.md) for **destroying** your demo environment in AWS
 
 [README](./docs/README-ADDING-MORE-WORKERS.md) for **increasing worked node counts**.
