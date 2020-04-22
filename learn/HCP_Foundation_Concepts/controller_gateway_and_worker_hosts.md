@@ -8,7 +8,7 @@ HPE Container Platform has four main types of hosts - understanding the differen
 
 ## Pre-requisites
 
-- Not applicable.
+- Bookmark http://docs.bluedata.com!
 
 ## Learning Content
 
@@ -16,7 +16,7 @@ HPE Container Platform has four main types of hosts - understanding the differen
 
 ## Learning Summary
 
-TBC
+The HPE Container Platform docs site is a gold mine of information, it is highly recommended that you get used to using this site!
 
 ## Test your understanding
 
@@ -24,5 +24,3 @@ TBC
 - What type of host manages the EPIC workers?  
 - What type of host manages the Kubernetes workers?
 - Do you need a Gateway host?
-
-
