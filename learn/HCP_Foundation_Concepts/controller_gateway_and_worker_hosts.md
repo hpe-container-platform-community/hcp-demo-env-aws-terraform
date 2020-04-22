@@ -1,33 +1,25 @@
 ## Overview
 
-Some information about this course content.
+HPE Container Platform has four main types of hosts.  Understanding the different types of hosts is key foundation knowledge.
 
 ## Objectives
 
-- Objective 1
-- Objective 2
-- Objective n
+- Understand the different types of HPE Container Platform hosts.
 
 ## Pre-requisites
 
-- Pre-requisite 1
-- Pre-requisite 2
-- Pre-requisite n
+- Not applicable.
 
 ## Learning Content
 
-### Step 1
-
-Information on step 1.
-
-### Step 2
-
-Information on step 2
-
-### Step 3
-
-Information on step 3
+- READ: http://docs.bluedata.com/50_controller-gateway-and-worker-hosts
 
 ## Learning Summary
 
-Reflection on the this course content.
+TBC
+
+## Test your understanding
+
+TBC
+
+
