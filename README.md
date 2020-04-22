@@ -43,11 +43,15 @@ vi ./etc/bluedata_infra.tfvars
 terraform init
 ```
 
+![project init](./docs/README/project_init.gif)
+
 We are now ready to automate the environment setup ...
 
 ```
 ./bin/create_new_environment_from_scratch.sh
 ```
+
+This may take 30 minutes or more until it is complete.
 
 If the above script has run without error, you can retrieve the RDP/brower endpoint and credentials using:
 
