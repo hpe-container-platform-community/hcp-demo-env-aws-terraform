@@ -43,6 +43,8 @@ vi ./etc/bluedata_infra.tfvars
 terraform init
 ```
 
+For many more configuration options, see `etc/bluedata_infra.tfvars_template`.
+
 ![project init](./docs/README/project_init.gif)
 
 We are now ready to automate the environment setup ...
@@ -61,7 +63,7 @@ If the above script has run without error, you can retrieve the RDP/brower endpo
 ./generated/rdp_credentials.sh
 ```
 
-Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then ready to configure your HPE Container Platform deployment with Gateways, Hosts, License, etc.
+Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then ready to configure your HPE Container Platform deployment with Gateways, Hosts, License, etc.  For more information on the RDP server, see the [README](./docs/README-RDP.md).
 
 
 
@@ -77,14 +79,16 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-ADDING-MORE-WORKERS.md) for **increasing worked node counts**.
 
-[README](./docs/README-AD.md) for information on setting up HCP with Active Directory/LDAP.
+[README](./docs/README-AD.md) for information on **setting up HCP with Active Directory/LDAP**.
 
-[README](./docs/README-MAPR-LDAP.md) for information on setting up MAPR  with Active Directory/LDAP.
+[README](./docs/README-MAPR-LDAP.md) for information on **setting up MAPR  with Active Directory/LDAP**.
 
-[README](./docs/README-DATA-FABRIC-OVERVIEW.md) for information on the data fabric architecture.
+[README](./docs/README-VPN.md) how to **create a vpn** to your AWS deployment.
 
-[README](./docs/README-DATA-TIERING.md) for information on setting up MAPR data tiering.
+[README](./docs/README-SSL-CERTIFICATES.md) setting up your browser with the **HCP SSL/TLS certificates**.
 
-[README](./docs/README-VPN.md) how to **create a vpn** to your AWS deployment
+[README](./docs/README-DATA-FABRIC-OVERVIEW.md) for **information on the data fabric architecture**.
 
-[README](./docs/README-DESIGN-PRINCIPLES.md) the design principles for this project.
+[README](./docs/README-DATA-TIERING.md) for information on **setting up MAPR data tiering**.
+
+[README](./docs/README-DESIGN-PRINCIPLES.md) this **project's design principles**.
