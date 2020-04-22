@@ -77,14 +77,14 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-ADDING-MORE-WORKERS.md) for **increasing worked node counts**.
 
-[README](./docs/README-AD.md) for information on setting up HCP with Active Directory/LDAP.
+[README](./docs/README-AD.md) for information on **setting up HCP with Active Directory/LDAP**.
 
-[README](./docs/README-MAPR-LDAP.md) for information on setting up MAPR  with Active Directory/LDAP.
+[README](./docs/README-MAPR-LDAP.md) for information on **setting up MAPR  with Active Directory/LDAP**.
 
-[README](./docs/README-DATA-FABRIC-OVERVIEW.md) for information on the data fabric architecture.
+[README](./docs/README-VPN.md) how to **create a vpn** to your AWS deployment.
 
-[README](./docs/README-DATA-TIERING.md) for information on setting up MAPR data tiering.
+[README](./docs/README-DATA-FABRIC-OVERVIEW.md) for **information on the data fabric architecture**.
 
-[README](./docs/README-VPN.md) how to **create a vpn** to your AWS deployment
+[README](./docs/README-DATA-TIERING.md) for information on **setting up MAPR data tiering**.
 
-[README](./docs/README-DESIGN-PRINCIPLES.md) the design principles for this project.
+[README](./docs/README-DESIGN-PRINCIPLES.md) this **project's design principles**.
