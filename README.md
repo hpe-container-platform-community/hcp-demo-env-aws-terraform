@@ -51,6 +51,8 @@ We are now ready to automate the environment setup ...
 ./bin/create_new_environment_from_scratch.sh
 ```
 
+![create from scratch](./docs/README/create_from_scratch.gif)
+
 This may take 30 minutes or more until it is complete.
 
 If the above script has run without error, you can retrieve the RDP/brower endpoint and credentials using:
