@@ -83,6 +83,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-VPN.md) how to **create a vpn** to your AWS deployment.
 
+[README](./docs/README-SSL-CERTIFICATES.md) setting up your browser with the **HCP SSL/TLS certificates**.
+
 [README](./docs/README-DATA-FABRIC-OVERVIEW.md) for **information on the data fabric architecture**.
 
 [README](./docs/README-DATA-TIERING.md) for information on **setting up MAPR data tiering**.
