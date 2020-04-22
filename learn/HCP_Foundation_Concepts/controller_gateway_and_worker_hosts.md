@@ -1,6 +1,6 @@
 ## Overview
 
-HPE Container Platform has four main types of hosts.  Understanding the different types of hosts is key foundation knowledge.
+HPE Container Platform has four main types of hosts - understanding the different types of hosts is core foundation knowledge.
 
 ## Objectives
 
