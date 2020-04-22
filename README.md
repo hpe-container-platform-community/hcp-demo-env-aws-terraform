@@ -43,6 +43,8 @@ vi ./etc/bluedata_infra.tfvars
 terraform init
 ```
 
+For many more configuration options, see `etc/bluedata_infra.tfvars_template`.
+
 ![project init](./docs/README/project_init.gif)
 
 We are now ready to automate the environment setup ...
