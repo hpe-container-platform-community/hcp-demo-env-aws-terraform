@@ -356,8 +356,38 @@ resource "local_file" "whatismyip" {
   EOF
 }
 
-resource "local_file" "mac_vpn_connect" {
-  filename = "${path.module}/generated/mac_vpn_connect.sh"
+resource "local_file" "vpn_server_setup" {
+  filename = "${path.module}/generated/vpn_server_setup.sh"
+  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
+  content  = <<-EOF
+    #!/bin/bash
+
+    set -e # abort on error
+    set -u # abort on undefined variable
+
+    source "${path.module}/scripts/variables.sh"
+
+    if [[ ! -f "${path.module}/generated/vpn_users" ]]; then
+        echo user1:$(openssl rand -hex 12 | tr -d '\n') > "${path.module}/generated/vpn_users"
+        echo $(openssl rand -hex 30 | tr -d '\n') > "${path.module}/generated/vpn_shared_key"
+    fi
+
+    VPN_USERS=$(cat "${path.module}/generated/vpn_users")
+    VPN_PSK=$(cat "${path.module}/generated/vpn_shared_key")
+
+    ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP <<-SSH_EOF
+      set -eux
+      sudo ufw allow 1701
+      if docker ps | grep softethervpn; then
+        docker kill \$(docker ps | grep softethervpn | awk '{ print \$1 }')
+      fi
+      docker run -d --cap-add NET_ADMIN -e USERS="$VPN_USERS" -e PSK="$VPN_PSK" -p 500:500/udp -p 4500:4500/udp -p 1701:1701/tcp -p 1194:1194/udp -p 5555:5555/tcp siomiz/softethervpn
+    SSH_EOF
+  EOF
+}
+
+resource "local_file" "vpn_mac_connect" {
+  filename = "${path.module}/generated/vpn_mac_connect.sh"
   count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
   content  = <<-EOF
     #!/bin/bash
@@ -375,21 +405,11 @@ resource "local_file" "mac_vpn_connect" {
     USER_BEFORE_SUDO=$(who am i | awk '{print $1}')
 
     if [[ ! -f "${path.module}/generated/vpn_users" ]]; then
-        sudo -u $USER_BEFORE_SUDO bash -c "echo user1:$(openssl rand -hex 12 | tr -d '\n') > '${path.module}/generated/vpn_users'"
-        sudo -u $USER_BEFORE_SUDO bash -c "echo $(openssl rand -hex 30 | tr -d '\n') > '${path.module}/generated/vpn_shared_key'"
+        echo "ERROR: '${path.module}/generated/vpn_users' not found - have you run '${path.module}/generated/vpn_server_setup.sh'?"
     fi
 
     VPN_USERS=$(sudo -u $USER_BEFORE_SUDO cat "${path.module}/generated/vpn_users")
     VPN_PSK=$(sudo -u $USER_BEFORE_SUDO cat "${path.module}/generated/vpn_shared_key")
-
-    ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP <<-SSH_EOF
-      set -eux
-      sudo ufw allow 1701
-      if docker ps | grep softethervpn; then
-        docker kill \$(docker ps | grep softethervpn | awk '{ print \$1 }')
-      fi
-      docker run -d --cap-add NET_ADMIN -e USERS="$VPN_USERS" -e PSK="$VPN_PSK" -p 500:500/udp -p 4500:4500/udp -p 1701:1701/tcp -p 1194:1194/udp -p 5555:5555/tcp siomiz/softethervpn
-    SSH_EOF
 
     if ! sudo -u $USER_BEFORE_SUDO command -v macosvpn >/dev/null 2>&1; then 
       echo "'macosvpn' is required but it's not installed.  You can install it with 'brew install macosvpn'.  Aborting.";
@@ -434,16 +454,12 @@ resource "local_file" "mac_vpn_connect" {
     echo "- You are using a EIP for the RDP server, you can connect/disconnect the vpn"
     echo "  using the tools provided with your OS."
     fi
-    echo
-    echo "- You may have issues connecting to the instance public IP addresses while"
-    echo "  the VPN is running.  If so, connect to the private IP addresses."
     echo "*****************************************************************************"
   EOF
 }
 
-
-resource "local_file" "mac_vpn_delete" {
-  filename = "${path.module}/generated/mac_vpn_delete.sh"
+resource "local_file" "vpn_mac_delete" {
+  filename = "${path.module}/generated/vpn_mac_delete.sh"
   count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
   content  = <<-EOF
     #!/bin/bash
@@ -463,8 +479,8 @@ resource "local_file" "mac_vpn_delete" {
   EOF
 }
 
-resource "local_file" "mac_vpn_status" {
-  filename = "${path.module}/generated/mac_vpn_status.sh"
+resource "local_file" "vpn_mac_status" {
+  filename = "${path.module}/generated/vpn_mac_status.sh"
   count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
   content  = <<-EOF
     #!/bin/bash

@@ -1,10 +1,6 @@
 ## Overview
 
-```diff
-- These instructions are BETA.
-```
-
-Based on ...
+The VPN is based on:
 
 - https://github.com/halo/macosvpn
 - https://www.softether.org/
