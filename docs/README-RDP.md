@@ -23,6 +23,8 @@ create_eip_rdp_linux_server = true
 ./generated/rdp_credentials.sh
 ```
 
+![rdp credentials](./README-RDP/rdp_credentials.gif)
+
 ### Accessing with a web browser
 
 TODO
