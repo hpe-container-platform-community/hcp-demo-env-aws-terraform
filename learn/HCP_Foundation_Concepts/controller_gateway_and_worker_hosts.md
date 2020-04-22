@@ -20,6 +20,8 @@ TBC
 
 ## Test your understanding
 
-TBC
+- Which type of host is where you initially install HPE Container Platform?
+- What type of host managed the EPIC workers?  
+- What type of host managed the Kubernetes workers?
 
 
