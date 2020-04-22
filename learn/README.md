@@ -12,7 +12,7 @@ This document containers a recommended path for learning key HPE Container Platf
 - AWS account for running a demo environment
 - Bookmark and regularly refer to http://docs.bluedata.com
 
-## HCP Foundation Concepts
+## Foundation Concepts
 
 - [Controller, Gateway and Worker Hosts](./HCP_Foundation_Concepts/controller_gateway_and_worker_hosts.md) [30 mins]
 - more topics coming soon ...
