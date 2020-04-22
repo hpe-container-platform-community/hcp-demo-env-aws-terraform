@@ -61,6 +61,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 ## Further documentation
 
+[README](./docs/README-TROUBLESHOOTING.MD) for **troubleshooting help**.
+
 [README](./docs/README-EC2-START-STOP-STATUS.md) for **stopping**, **starting** and **viewing the status** of your EC2 instances
 
 [README](./docs/README-RDP.md) for **information** on your pre-configured **RDP Server** 
@@ -68,8 +70,6 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 [README](./docs/README-DESTROY-DEMO-ENV.md) for **destroying** your demo environment in AWS
 
 [README](./docs/README-ADDING-MORE-WORKERS.md) for **increasing worked node counts**.
-
-[README](./docs/README-TROUBLESHOOTING.MD) for troubleshooting help.
 
 [README](./docs/README-AD.md) for information on setting up HCP with Active Directory/LDAP.
 
@@ -79,6 +79,6 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-DATA-TIERING.md) for information on setting up MAPR data tiering.
 
-[README](./docs/README-DESIGN-PRINCIPLES.md) why this project is architected the way it is.
-
 [README](./docs/README-VPN.md) how to **create a vpn** to your AWS deployment
+
+[README](./docs/README-DESIGN-PRINCIPLES.md) the design principles for this project.
