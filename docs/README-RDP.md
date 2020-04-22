@@ -27,7 +27,7 @@ create_eip_rdp_linux_server = true
 
 ### Accessing with a web browser
 
-TODO
+![rdp browser](./README-RDP/rdp_browser.gif)
 
 ### Accessing with a RDP client
 
