@@ -7,3 +7,7 @@ Some scripts were generated for you to view the status of your EC2 instances man
 - `./generated/cli_running_ec2_instances.sh` to view running instances
 
 ------
+
+### Stopping instances - example
+
+![stopping instances](./README-EC2-START-STOP-STATUS/stopping_instances.gif)
