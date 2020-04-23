@@ -10,7 +10,7 @@ You can share your environment with non-terraform users.
 ### Instructions
 
 - Non-terraform users will need to install an AWS client
-- An IAM user with very limited permissions has been created
+- An IAM user with very limited permissions has been created for the non-terraform user
 - The AWS access and secret key for the IAM user are in `generated/non_terraform_user_scripts.txt`
 - The script contains a command allowing users to **start/stop the EC2 instances**
 - The script contains a command allowing users to **update the NACL and Security Groups** to permit access from their IP address
