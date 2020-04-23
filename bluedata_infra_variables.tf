@@ -93,7 +93,7 @@ variable "dns_zone_name" {
 
 variable "enable_route53_private_dns" { default = false }
 
-variable "rdp_server_enabled" { default = false }
+variable "rdp_server_enabled" { default = true }
 
 terraform {
   // required for var.rdp_server_operating_system
