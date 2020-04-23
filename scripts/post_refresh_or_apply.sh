@@ -21,7 +21,7 @@ if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINU
     #ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP}  "[[ -d .ssh ]] || mkdir -p ~/.ssh"
     #ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP}  "[[ -f .ssh/id_rsa ]] || mv ~/Desktop/controller.prv_key ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
 
-	if [[  "$RDP_SERVER_ENABLED" == "True" && "$AD_PUB_IP" ]]; then
+	if [[  "$AD_SERVER_ENABLED" == "True" && "$AD_PUB_IP" ]]; then
 		ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1    
 			cat > ~/.ssh/config <<-EOF2
 				Host controller
@@ -50,7 +50,7 @@ if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINU
     ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "echo ${WRKR_PRV_IPS[@]} > ~/Desktop/HCP_WORKER_HOSTS.txt"
 
     # add private key to AD server to allow passwordless ssh to all other hosts
-    if [[  "$RDP_SERVER_ENABLED" == "True" && "$AD_PUB_IP" ]]; then
+    if [[  "$AD_SERVER_ENABLED" == "True" && "$AD_PUB_IP" ]]; then
         cat generated/controller.pub_key | \
             ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${AD_PUB_IP} "cat >> /home/centos/.ssh/authorized_keys" 
     fi
