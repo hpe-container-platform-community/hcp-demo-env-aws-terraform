@@ -1,8 +1,10 @@
+# This file contains settings that you may need to change.  For a full list of settings, see 'bluedata_infra.tfvars_template'
+
 profile            = "default"             # You shouldn't need to change this
 region             = "eu-west-3"           # Change to your preferred region - ensure you have enough spare VPCs in your region.
 az                 = "eu-west-3a"          # Change to your preferred AZ
-project_id         = "<<your-name>>-hcp"   # Change your name and project name. E.g. csnow-hcp-demo
-user               = "<<your-name>>"       # Change your name. E.g. csnow
+project_id         = "<<your-name>>-hcp"   # Change your name and project name. E.g. csnow-hcp-demo (with no spaces)
+user               = "<<your-name>>"       # Change your name. E.g. csnow (with no spaces)
 
 worker_count       = 2                     # How many hosts do you want for EPIC or K8S?
 
