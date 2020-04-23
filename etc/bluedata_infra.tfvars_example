@@ -34,8 +34,8 @@ epid_dl_url_needs_presign = true
 epic_dl_url_presign_options = "--region eu-west-1" # region of the S3 bucket
 
 selinux_disabled = true
-ad_server_enabled = true
+ad_server_enabled = true # Do not disable this unless you are doing a manual installation
 
-rdp_server_enabled = true
+rdp_server_enabled = true # Do not disable this unless you are doing a manual installation
 rdp_server_operating_system = "LINUX"
 create_eip_rdp_linux_server = false
