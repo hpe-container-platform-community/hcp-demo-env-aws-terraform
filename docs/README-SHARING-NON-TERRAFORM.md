@@ -18,6 +18,7 @@ You can share your environment with non-terraform users.
 
 ### Optional
 
+- You can provide users access to the environment using a VPN (L2TP+IPSEC)
 - You can add additional users to the VPN - see [here](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform/blob/master/docs/README-VPN.md#add-vpn-users)
 - It is recommend to enable an EIP for the RDP server in your `etc/bluedata_infra.tf` file (`create_eip_rdp_linux_server=true`) so users don't have to keep updating the VPN server IP address
 - Don't forget to run `./bin/terraform_apply.bin` after updating variables 
