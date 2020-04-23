@@ -17,7 +17,8 @@ This document containers a recommended path for learning key HPE Container Platf
 - [Controller, Gateway and Worker Hosts](./HCP_Foundation_Concepts/controller_gateway_and_worker_hosts.md) [30 mins]
 - ...
 - [DataTaps](./HCP_Foundation_Concepts/datataps.md) [30 mins]
-- more topics coming soon
+
+more topics coming soon ...
 
 ## Platform Administration
 
@@ -89,4 +90,8 @@ This document containers a recommended path for learning key HPE Container Platf
 
 ## Creating an EPIC application image
 
+topics coming soon ...
+
 ## Creating a K8S KubeDirector application image
+
+topics coming soon ...
