@@ -6,6 +6,20 @@ user               = "<<your-name>>"       # Change your name. E.g. csnow
 
 worker_count       = 2                     # How many hosts do you want for EPIC or K8S?
 
+# This is a private bucket: only HPE Container Platform Sales Engineers with AWS accounts will be able to access this
+# Change the epic_dl_url to your s3 url
+
+epic_dl_url = "s3://csnow-bins/bluedata-epic-entdoc-minimal-release-5.0-3008.bin"
+
+# set to true for private buckets
+
+epid_dl_url_needs_presign = true 
+
+# you can use this to set the region of the S3 bucket
+# you may need to set this if you are deploying your instances in a different region to your s3 bucket
+
+epic_dl_url_presign_options = "--region eu-west-1" 
+
 ##########################################################################
 # You may need to change these types if not available in your AWS region #
 # You can heck at: https://aws.amazon.com/ec2/pricing/on-demand/         #
@@ -27,11 +41,6 @@ ssh_pub_key_path   = "./generated/controller.pub_key"
 
 vpc_cidr_block     = "10.1.0.0/16"
 subnet_cidr_block  = "10.1.0.0/24"
-
-# This is a private bucket - only HPE Container Platform Sales Engineers with AWS accounts will be able to access this
-epic_dl_url = "s3://csnow-bins/bluedata-epic-entdoc-minimal-release-5.0-3008.bin"
-epid_dl_url_needs_presign = true 
-epic_dl_url_presign_options = "--region eu-west-1" # region of the S3 bucket
 
 selinux_disabled = true
 ad_server_enabled = true
