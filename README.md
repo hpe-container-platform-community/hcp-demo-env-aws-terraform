@@ -85,6 +85,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-VPN.md) how to **create a vpn** to your AWS deployment.
 
+[README](./docs/README-SHARING-NON-TERRAFORM.md) for information on **sharing the environment with non-terraform users**.
+
 [README](./docs/README-SSL-CERTIFICATES.md) setting up your browser with the **HCP SSL/TLS certificates**.
 
 [README](./docs/README-DATA-FABRIC-OVERVIEW.md) for **information on the data fabric architecture**.
