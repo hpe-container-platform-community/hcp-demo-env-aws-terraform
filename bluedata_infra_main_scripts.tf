@@ -381,7 +381,7 @@ resource "local_file" "vpn_server_setup" {
       if docker ps | grep softethervpn; then
         docker kill \$(docker ps | grep softethervpn | awk '{ print \$1 }')
       fi
-      docker run -d --cap-add NET_ADMIN -e USERS="$VPN_USERS" -e PSK="$VPN_PSK" -p 500:500/udp -p 4500:4500/udp -p 1701:1701/tcp -p 1194:1194/udp -p 5555:5555/tcp siomiz/softethervpn
+      docker run -d --cap-add NET_ADMIN --restart=always -e USERS="$VPN_USERS" -e PSK="$VPN_PSK" -p 500:500/udp -p 4500:4500/udp -p 1701:1701/tcp -p 1194:1194/udp -p 5555:5555/tcp siomiz/softethervpn
     SSH_EOF
   EOF
 }
