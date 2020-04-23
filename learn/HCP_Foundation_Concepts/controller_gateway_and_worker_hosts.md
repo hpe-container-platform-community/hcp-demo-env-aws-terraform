@@ -24,3 +24,5 @@ The HPE Container Platform docs site is a gold mine of information, it is highly
 - What type of host manages the EPIC workers?  
 - What type of host manages the Kubernetes workers?
 - Do you need a Gateway host?
+- Can you run Kubernetes clusters on EPIC hosts?
+- Can you run EPIC clusters on Kubernetes hosts?
