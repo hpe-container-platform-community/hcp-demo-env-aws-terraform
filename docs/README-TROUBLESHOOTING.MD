@@ -1,3 +1,20 @@
+### Error: timeout - last error: SSH authentication failed
+
+```
+‘Error: timeout - last error: SSH authentication failed (centos@1.2.3.4:22): ssh: handshake failed: ssh: unable to authenticate, attempted methods [none publickey], no supported methods remain’
+```
+
+This error may occur if you some of your client's outgoing traffic is routed via. a VPN connection.
+
+To debug this, you can try to connect directly to the server, e.g. 
+
+```
+ssh -i ./generated/controller.prv_key centos@1.2.3.4
+```
+
+If you are unable to connect to the server try disconnecting the VPN and try again.
+
+
 ### K8S Application Catalog is empty
 
 SSH into the controller and restart the container `epic/authproxy:1.6`.  E.g.
@@ -64,7 +81,11 @@ or
 An error occurred (IncorrectInstanceState) when calling the StopInstances operation: The instance 'i-xxxxxxxxxxx' is not in a state from which it can be stopped.
 ```
 
-### Error launching source instance: Unsupported: The requested configuration is currently not supported
+### Error launching source instance
+
+```
+Error launching source instance: Unsupported: The requested configuration is currently not supported
+```
 
 If you get this error:
 

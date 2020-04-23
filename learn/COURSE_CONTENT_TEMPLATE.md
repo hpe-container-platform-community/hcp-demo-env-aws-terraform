@@ -1,6 +1,3 @@
-coming soon ...
----
-
 ## Overview
 
 Some information about this course content.

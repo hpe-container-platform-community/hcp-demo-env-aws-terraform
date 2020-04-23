@@ -92,3 +92,7 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 [README](./docs/README-DATA-TIERING.md) for information on **setting up MAPR data tiering**.
 
 [README](./docs/README-DESIGN-PRINCIPLES.md) this **project's design principles**.
+
+## Structured Learning (coming soon ...)
+
+Looking for a more structured learning path?  Try [here](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform/blob/master/learn/README.md)
