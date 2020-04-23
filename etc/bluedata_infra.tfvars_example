@@ -1,5 +1,3 @@
-# This file contains settings that you may need to change.  For a full list of settings, see 'bluedata_infra.tfvars_template'
-
 profile            = "default"             # You shouldn't need to change this
 region             = "eu-west-3"           # Change to your preferred region - ensure you have enough spare VPCs in your region.
 az                 = "eu-west-3a"          # Change to your preferred AZ
@@ -8,18 +6,18 @@ user               = "<<your-name>>"       # Change your name. E.g. csnow (with 
 
 worker_count       = 2                     # How many hosts do you want for EPIC or K8S?
 
-# This is a private bucket: only HPE Container Platform Sales Engineers with AWS accounts will be able to access this
-# Change the epic_dl_url to your s3 url
+###########################################################################################
+# If you are not an HPE Container Platform Sales Engineers with an AWS account you do NOT #
+# need to change the 'epic_dl_url*' settings, below                                       # 
+###########################################################################################
 
+# This is a private bucket: change the epic_dl_url to your s3 url
 epic_dl_url = "s3://csnow-bins/bluedata-epic-entdoc-minimal-release-5.0-3008.bin"
 
 # set to true for private buckets
-
 epid_dl_url_needs_presign = true 
 
-# you can use this to set the region of the S3 bucket
-# you may need to set this if you are deploying your instances in a different region to your s3 bucket
-
+# you may need to set this if you are deploying your instances in a different region to the s3 bucket on your install binary
 epic_dl_url_presign_options = "--region eu-west-1" 
 
 ##########################################################################
@@ -50,3 +48,7 @@ ad_server_enabled = true
 rdp_server_enabled = true
 rdp_server_operating_system = "LINUX"
 create_eip_rdp_linux_server = false
+
+#####################################################################
+# For a full list of settings, see 'bluedata_infra.tfvars_template' #
+#####################################################################
