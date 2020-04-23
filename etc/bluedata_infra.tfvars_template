@@ -127,7 +127,7 @@ rdp_server_operating_system = "LINUX"
 allow_ssh_from_world = false # this variable is no longer used
 allow_rdp_from_world = false # this variable is no longer used
 
-# whether to use route 53 private dns
+# whether to use route 53 private dns (experimental - not feature complete)
 
 enable_route53_private_dns = false
 
