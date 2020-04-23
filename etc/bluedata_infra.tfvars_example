@@ -1,3 +1,7 @@
+#########################################################
+# You will need to change the variables in this section #
+#########################################################
+
 profile            = "default"             # You shouldn't need to change this
 region             = "eu-west-3"           # Change to your preferred region - ensure you have enough spare VPCs in your region.
 az                 = "eu-west-3a"          # Change to your preferred AZ
@@ -21,8 +25,9 @@ epid_dl_url_needs_presign = true
 epic_dl_url_presign_options = "--region eu-west-1" 
 
 ##########################################################################
-# You may need to change these types if not available in your AWS region #
+# You MAY need to change these types if not available in your AWS region #
 # You can heck at: https://aws.amazon.com/ec2/pricing/on-demand/         #
+# See docs/README-TROUBLESHOOTING.MD#error-launching-source-instance.    #
 ##########################################################################
 
 gtw_instance_type = "m5.4xlarge" 
