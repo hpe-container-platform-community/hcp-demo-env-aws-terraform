@@ -81,7 +81,11 @@ or
 An error occurred (IncorrectInstanceState) when calling the StopInstances operation: The instance 'i-xxxxxxxxxxx' is not in a state from which it can be stopped.
 ```
 
-### Error launching source instance: Unsupported: The requested configuration is currently not supported
+### Error launching source instance
+
+```
+Error launching source instance: Unsupported: The requested configuration is currently not supported
+```
 
 If you get this error:
 
