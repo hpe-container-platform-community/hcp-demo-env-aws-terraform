@@ -147,6 +147,10 @@ output "ad_server_ssh_command" {
   value = module.ad_server.ssh_command
 }
 
+output "ad_server_enabled" {
+  value = var.ad_server_enabled
+}
+
 // RDP Server Output
 
 output "rdp_server_enabled" {
