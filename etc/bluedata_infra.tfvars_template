@@ -112,11 +112,11 @@ nfs_server_enabled = false
 
 # set to true to create an Active Directory server for BlueData, required for ML OPS
 
-ad_server_enabled = false
+ad_server_enabled = true # Do not disable this unless you are doing a manual installation
 
 # windows rdp server
 
-rdp_server_enabled = false
+rdp_server_enabled = true # Do not disable this unless you are doing a manual installation
 
 # set to "LINUX" ("WINDOWS" RDP instances have been deprecated)
 
