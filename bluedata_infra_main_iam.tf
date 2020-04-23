@@ -96,6 +96,11 @@ resource "local_file" "non_terraform_user_scripts" {
   filename = "${path.module}/generated/non_terraform_user_scripts.txt"
   content =  <<-EOF
 
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # The IAM user only has permissions to run this script.
+
+    # The ACCESS and SECRET key for the IAM user are below:
+
     AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
     AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
