@@ -520,6 +520,7 @@ resource "local_file" "get_public_endpoints" {
       print(80 * "*")
       sys.exit(1)
 
+    # FIXME: check if rdp is enabled
     rdp_server_public_ip  = j["rdp_server_public_ip"]["value"]
     rdp_server_public_dns = "NA"
     rdp_server_eip        = j["create_eip_rdp_linux_server"]["value"]
@@ -564,6 +565,7 @@ resource "local_file" "get_private_endpoints" {
       print(80 * "*")
       sys.exit(1)
 
+    # FIXME: check if enabled
     rdp_server_private_ip  = j["rdp_server_private_ip"]["value"]
     rdp_server_private_dns = "NA"
 
@@ -576,12 +578,17 @@ resource "local_file" "get_private_endpoints" {
     workers_private_ips    = j["workers_private_ip"]["value"][0]
     workers_private_dns    = j["workers_private_dns"]["value"][0]
 
+    # FIXME: check if enabled
+    ad_server_private_ip  = j["ad_server_private_ip"]["value"]
+    ad_server_private_dns = "NA"
+
     print('------------  ----------------  --------------------------------------------------------')
     print('{:>12}  {:>16}  {:>56}'.format( "NAME", "IP", "DNS"))
     print('------------  ----------------  --------------------------------------------------------')
     print('{:>12}  {:>16}  {:>56}'.format( "RDP Server", rdp_server_private_ip, rdp_server_private_dns))
     print('{:>12}  {:>16}  {:>56}'.format( "Controller", controller_private_ip, controller_private_dns))
     print('{:>12}  {:>16}  {:>56}'.format( "Gateway",    gateway_private_ip,    gateway_private_dns))
+    print('{:>12}  {:>16}  {:>56}'.format( "AD",         ad_server_private_ip,  ad_server_private_dns))
 
     for num, ip in enumerate(workers_private_ips):
        print('{:>9}{:>3}  {:>16}  {:>56}'.format( "Worker", num, ip, workers_private_dns[num]))
