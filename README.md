@@ -95,6 +95,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-CONNECT-TO-CEPH-FROM-PYTHON-NB.ipynb) **connect to a ceph instance from a python notebook**
 
+[README](./docs/README-CONNECT-TO-CEPH-FROM-PYSPARK-NB.ipynb) **connect to a ceph instance from a pyspark notebook**
+
 [README](./docs/README-DESIGN-PRINCIPLES.md) this **project's design principles**.
 
 ## Structured Learning (coming soon ...)
