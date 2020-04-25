@@ -406,6 +406,7 @@ resource "local_file" "vpn_mac_connect" {
 
     if [[ ! -f "${path.module}/generated/vpn_users" ]]; then
         echo "ERROR: '${path.module}/generated/vpn_users' not found - have you run '${path.module}/generated/vpn_server_setup.sh'?"
+        exit 1
     fi
 
     VPN_USERS=$(sudo -u $USER_BEFORE_SUDO cat "${path.module}/generated/vpn_users")
