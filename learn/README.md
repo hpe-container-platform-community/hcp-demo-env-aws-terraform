@@ -12,7 +12,19 @@ This document containers a recommended path for learning key HPE Container Platf
 - AWS account for running a demo environment
 - Bookmark and regularly refer to http://docs.bluedata.com
 
-## Foundation Concepts
+## Product Overview
+
+TODO create learning pages for ...
+
+- [HPE container strategy - Market overview](https://www.hpe.com/us/en/solutions/container-platform.brightcove.440cd5a2-c9b5-4b15-ad78-9f5adc672fb7.html.html)
+- [HPE container strategy - Transformation challenges](https://www.hpe.com/us/en/solutions/container-platform.brightcove.c94f2cc7-92b7-44b1-aae1-8ba2992f0578.html.html)
+- [HPE container strategy - HPE solution](https://www.hpe.com/us/en/solutions/container-platform.brightcove.20b7d874-85ca-4c3f-8765-9a6c6492bbdb.html.html)
+- [HPE Container Platform - How it Works](https://www.hpe.com/us/en/solutions/container-platform.brightcove.df01eb6c-2faf-4eb6-b637-82d0080fb1b9.html)
+- [HPE Data Fabric](https://www.hpe.com/us/en/solutions/container-platform.brightcove.2c86bcce-641c-4df8-99b9-7f43afb4c1f1.html.html)
+- [Operationalizing the ML Lifecycle](https://www.hpe.com/us/en/solutions/container-platform.brightcove.b7e8ce3b-f18e-49e7-bd3c-d55b11c4ca9a.html)
+
+
+## Foundation Technical Concepts
 
 - [Software Components](./HCP_Foundation_Concepts/software-components.md) [30 mins] (ready)
 - [Controller, Gateway and Worker Hosts](./HCP_Foundation_Concepts/controller_gateway_and_worker_hosts.md) [30 mins] (ready)
