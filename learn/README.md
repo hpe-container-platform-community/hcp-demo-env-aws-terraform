@@ -15,7 +15,7 @@ This document containers a recommended path for learning key HPE Container Platf
 ## Foundation Concepts
 
 - [Controller, Gateway and Worker Hosts](./HCP_Foundation_Concepts/controller_gateway_and_worker_hosts.md) [30 mins] (ready)
-- [Software Components](./HCP_Foundation_Concepts/software-components.md) (coming soon)
+- [Software Components](./HCP_Foundation_Concepts/software-components.md) (ready)
 - ...
 - [DataTaps](./HCP_Foundation_Concepts/datataps.md) [30 mins] (ready)
 
