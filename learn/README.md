@@ -14,9 +14,10 @@ This document containers a recommended path for learning key HPE Container Platf
 
 ## Foundation Concepts
 
-- [Controller, Gateway and Worker Hosts](./HCP_Foundation_Concepts/controller_gateway_and_worker_hosts.md) [30 mins]
+- [Controller, Gateway and Worker Hosts](./HCP_Foundation_Concepts/controller_gateway_and_worker_hosts.md) [30 mins] (complete)
+- [Software Components](./HCP_Foundation_Concepts/software-components.md) (coming soon)
 - ...
-- [DataTaps](./HCP_Foundation_Concepts/datataps.md) [30 mins]
+- [DataTaps](./HCP_Foundation_Concepts/datataps.md) [30 mins] (complete)
 
 more topics coming soon ...
 
@@ -24,69 +25,69 @@ more topics coming soon ...
 
 ### Demo environment lifecycle
 
-- [Provision demo environment](./HCP_Administration/provision_demo_environment.md) [2 hours]
-- [Teardown demo environment](./HCP_Administration/teardown_demo_environment.md) [30 mins]
-- [Shutdown demo environment](./HCP_Administration/shutdown_demo_environment.md) [15 mins]
-- [Startup demo environment](./HCP_Administration/startup_demo_environment.md) [15 mins]
-- [Status of demo environment](./HCP_Administration/status_demo_environment.md) [15 mins]
+- [Provision demo environment](./HCP_Administration/provision_demo_environment.md) [2 hours] (coming soon)
+- [Teardown demo environment](./HCP_Administration/teardown_demo_environment.md) [30 mins] (coming soon)
+- [Shutdown demo environment](./HCP_Administration/shutdown_demo_environment.md) [15 mins] (coming soon)
+- [Startup demo environment](./HCP_Administration/startup_demo_environment.md) [15 mins] (coming soon)
+- [Status of demo environment](./HCP_Administration/status_demo_environment.md) [15 mins] (coming soon)
 
 ### Manual install HCP
 
-- [Manually install HCP](./HCP_Administration/manually_install_demo_environment.md) [4 hours]
+- [Manually install HCP](./HCP_Administration/manually_install_demo_environment.md) [4 hours] (coming soon)
 
 ### Configure HCP Global Settings
 
-- [Add a Gateway Host](./HCP_Administration/add_a_gateway_host.md) [30 mins]
-- [Configure Active Directory](./HCP_Administration/configure_active_directory.md) [30 mins]
-- [Install CENTOS 7 EPIC Image](./HCP_Administration/install_centos_7_image.md) [15 mins]
-- [Enable Controller Virtual Nodes](./HCP_Administration/enabled_controller_virtual_nodes.md) [15 mins]
-- [Tenant AD authentication](./HCP_Administration/tenant_ad_authentication.md) [30 mins]
-- [Deploy CENTOS 7 Cluster](./HCP_Administration/deploy_centos_7_cluster.md) [15 mins]
-- [HA Overview](./HCP_Administration/ha_overview.md) [30 mins]
+- [Add a Gateway Host](./HCP_Administration/add_a_gateway_host.md) [30 mins] (coming soon)
+- [Configure Active Directory](./HCP_Administration/configure_active_directory.md) [30 mins] (coming soon)
+- [Install CENTOS 7 EPIC Image](./HCP_Administration/install_centos_7_image.md) [15 mins] (coming soon)
+- [Enable Controller Virtual Nodes](./HCP_Administration/enabled_controller_virtual_nodes.md) [15 mins] (coming soon)
+- [Tenant AD authentication](./HCP_Administration/tenant_ad_authentication.md) [30 mins] (coming soon)
+- [Deploy CENTOS 7 Cluster](./HCP_Administration/deploy_centos_7_cluster.md) [15 mins] (coming soon)
+- [HA Overview](./HCP_Administration/ha_overview.md) [30 mins] (coming soon)
 
 ### Managing EPIC
 
-- [Cluster Security](./HCP_Administration/cluster_security.md) [1 hour]
-- [Creating a Tenant](./HCP_Administration/creating_a_tenant.md) [1 hour]
-- [Tenant authentication](./HCP_Administration/tenant_authentication.md) [1 hour]
-- [Host Management](./HCP_Administration/host_management.md) [1 hour]
+- [Cluster Security](./HCP_Administration/cluster_security.md) [1 hour] (coming soon)
+- [Creating a Tenant](./HCP_Administration/creating_a_tenant.md) [1 hour] (coming soon)
+- [Tenant authentication](./HCP_Administration/tenant_authentication.md) [1 hour] (coming soon)
+- [Host Management](./HCP_Administration/host_management.md) [1 hour] (coming soon)
 
 ### Managing K8S
 
-- [Creating a Cluster](./HCP_Administration/creating_a_k8s_cluster.md) [1 hour]
-- [Creating a Tenant](./HCP_Administration/creating_a_k8s_tenant.md) [1 hour]
-- [Tenant authentication](./HCP_Administration/tenant_authentication.md) [1 hour]
-- [Host Management](./HCP_Administration/k8s_host_management.md) [1 hour]
+- [Creating a Cluster](./HCP_Administration/creating_a_k8s_cluster.md) [1 hour] (coming soon)
+- [Creating a Tenant](./HCP_Administration/creating_a_k8s_tenant.md) [1 hour] (coming soon)
+- [Tenant authentication](./HCP_Administration/tenant_authentication.md) [1 hour] (coming soon)
+- [Host Management](./HCP_Administration/k8s_host_management.md) [1 hour] (coming soon)
 
 ### Managing MLOPS
 
-- [Pre-requisites](./Managing_MLOPS/prerequisites.md) [1 hour]
-- [MLOPS Images](./Managing_MLOPS/images.md) [1 hour]
-- [Creating MLOPS Tenants](./Managing_MLOPS/creating_tenants.md) [1 hour]
-- [Creating Training Clusters](./Managing_MLOPS/creating_training_clusters.md) [1 hour]
-- [Creating Deployment Clusters](./Managing_MLOPS/creating_deployment_clusters.md) [1 hour]
-- [Tutorial 1](./Managing_MLOPS/tutorial_1.md) [2 hours]
-- [Tutorial 2](./Managing_MLOPS/tutorial_2.md) [2 hours]
-- [Tutorial 3](./Managing_MLOPS/tutorial_3.md) [2 hours]
+- [Pre-requisites](./Managing_MLOPS/prerequisites.md) [1 hour] (coming soon)
+- [MLOPS Images](./Managing_MLOPS/images.md) [1 hour] (coming soon)
+- [Creating MLOPS Tenants](./Managing_MLOPS/creating_tenants.md) [1 hour] (coming soon)
+- [Creating Training Clusters](./Managing_MLOPS/creating_training_clusters.md) [1 hour] (coming soon)
+- [Creating Deployment Clusters](./Managing_MLOPS/creating_deployment_clusters.md) [1 hour] (coming soon)
+- [Tutorial 1](./Managing_MLOPS/tutorial_1.md) [2 hours] (coming soon)
+- [Tutorial 2](./Managing_MLOPS/tutorial_2.md) [2 hours] (coming soon)
+- [Tutorial 3](./Managing_MLOPS/tutorial_3.md) [2 hours] (coming soon)
 
 ### HCP CLI and API
 
-- [HCP CLIs](./HCP_Administration/hcp_cli.md) [1 hour]
-- [HCP APIs](./HCP_Administration/hcp_api.md) [1 hour]
+- [HCP CLIs](./HCP_Administration/hcp_cli.md) [1 hour] (coming soon)
+- [HCP APIs](./HCP_Administration/hcp_api.md) [1 hour] (coming soon)
 
 ## Data Fabric Administration
 
-- [Management Console](./Data_Fabric_Administration/management_console.md) [1 hour]
-- [Deployment Architecture](./Data_Fabric_Administration/deployment_architecture.md) [2 hours]
-- [Topologies and Volumes](./Data_Fabric_Administration/topologies_and_volumes.md) [2 hours]
-- [Tiering](./Data_Fabric_Administration/tiering.md) [2 hours]
-- [CLI](./Data_Fabric_Administration/cli.md) [1 hour]
-- [API](./Data_Fabric_Administration/cli.md) [1 hour]
+- [Management Console](./Data_Fabric_Administration/management_console.md) [1 hour] (coming soon)
+- [Deployment Architecture](./Data_Fabric_Administration/deployment_architecture.md) [2 hours] (coming soon)
+- [Topologies and Volumes](./Data_Fabric_Administration/topologies_and_volumes.md) [2 hours] (coming soon)
+- [Tiering](./Data_Fabric_Administration/tiering.md) [2 hours] (coming soon)
+- [CLI](./Data_Fabric_Administration/cli.md) [1 hour] (coming soon)
+- [API](./Data_Fabric_Administration/cli.md) [1 hour] (coming soon)
 
 ## EPIC User
 
-- [Spark Cluster](./EPIC_User/spark_cluster.md) [2 hours]
-- [Action Scripts](./EPIC_User/action_scripts.md) [2 hours]
+- [Spark Cluster](./EPIC_User/spark_cluster.md) [2 hours] (coming soon)
+- [Action Scripts](./EPIC_User/action_scripts.md) [2 hours] (coming soon)
 
 ## Creating an EPIC application image
 
