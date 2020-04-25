@@ -37,3 +37,6 @@ variable "controller_private_ip" {
 variable "create_eip" {
     type = bool
 }
+variable "deployment_uuid" { 
+    type = string
+}

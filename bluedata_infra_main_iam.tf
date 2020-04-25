@@ -1,10 +1,11 @@
 resource "aws_iam_user" "iam_user" {
-  name = "${var.project_id}-iam-user"
+  name = "${var.project_id}-iam-user-${random_uuid.deployment_uuid.result}"
 
   tags = {
     Name = "${var.project_id}-iam-user"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }
 

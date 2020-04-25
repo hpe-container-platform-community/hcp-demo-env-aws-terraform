@@ -40,3 +40,6 @@ variable "rdp_linux_server_enabled" {
 variable "softether_cidr_block" {
     type = string
 }
+variable "deployment_uuid" { 
+    type = string
+}

@@ -7,6 +7,7 @@ resource "aws_eip" "controller" {
     Name = "${var.project_id}-controller"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${var.deployment_uuid}"
   }
 }
 
@@ -36,6 +37,7 @@ resource "aws_instance" "controller" {
     Name = "${var.project_id}-instance-controller"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${var.deployment_uuid}"
   }
 
   provisioner "remote-exec" {
@@ -63,6 +65,7 @@ resource "aws_ebs_volume" "controller-ebs-sdb" {
     Name = "${var.project_id}-controller-ebs-sdb"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${var.deployment_uuid}"
   }
 }
 
@@ -86,6 +89,7 @@ resource "aws_ebs_volume" "controller-ebs-sdc" {
     Name = "${var.project_id}-controller-ebs-sdc"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${var.deployment_uuid}"
   }
 }
 

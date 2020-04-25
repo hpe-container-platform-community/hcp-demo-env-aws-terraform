@@ -21,12 +21,17 @@ resource "aws_key_pair" "main" {
   public_key = file("${path.module}/generated/controller.pub_key")
 }
 
+resource "random_uuid" "deployment_uuid" { }
+
+// random_uuid.deployment_uuid.result
+
 /******************* modules ********************/
 
 module "network" {
   source = "./modules/module-network"
   project_id = var.project_id
   user = var.user
+  deployment_uuid = random_uuid.deployment_uuid.result
   client_cidr_block = var.client_cidr_block
   additional_client_ip_list = var.additional_client_ip_list
   subnet_cidr_block = var.subnet_cidr_block
@@ -50,6 +55,7 @@ module "controller" {
   create_eip = var.create_eip_controller
   project_id = var.project_id
   user = var.user
+  deployment_uuid = random_uuid.deployment_uuid.result
   ssh_prv_key_path = "${path.module}/generated/controller.prv_key"
   client_cidr_block = var.client_cidr_block
   additional_client_ip_list = var.additional_client_ip_list
@@ -73,6 +79,7 @@ module "gateway" {
   create_eip = var.create_eip_gateway
   project_id = var.project_id
   user = var.user
+  deployment_uuid = random_uuid.deployment_uuid.result
   ssh_prv_key_path = "${path.module}/generated/controller.prv_key"
   client_cidr_block = var.client_cidr_block
   additional_client_ip_list = var.additional_client_ip_list
@@ -96,6 +103,7 @@ module "nfs_server" {
   source = "./modules/module-nfs-server"
   project_id = var.project_id
   user = var.user
+  deployment_uuid = random_uuid.deployment_uuid.result
   ssh_prv_key_path = "${path.module}/generated/controller.prv_key"
   nfs_ec2_ami = var.EC2_CENTOS7_AMIS[var.region]
   nfs_instance_type = var.nfs_instance_type
@@ -112,6 +120,7 @@ module "ad_server" {
   source = "./modules/module-ad-server"
   project_id = var.project_id
   user = var.user
+  deployment_uuid = random_uuid.deployment_uuid.result
   ssh_prv_key_path = "${path.module}/generated/controller.prv_key"
   ad_ec2_ami = var.EC2_CENTOS7_AMIS[var.region]
   ad_instance_type = var.ad_instance_type
@@ -128,6 +137,7 @@ module "rdp_server" {
   source = "./modules/module-rdp-server"
   project_id = var.project_id
   user = var.user
+  deployment_uuid = random_uuid.deployment_uuid.result
   ssh_prv_key_path = "${path.module}/generated/controller.prv_key"
   rdp_ec2_ami = var.EC2_WIN_RDP_AMIS[var.region]
   rdp_instance_type = var.rdp_instance_type
@@ -145,6 +155,7 @@ module "rdp_server_linux" {
   source = "./modules/module-rdp-server-linux"
   project_id = var.project_id
   user = var.user
+  deployment_uuid = random_uuid.deployment_uuid.result
   az = var.az
   create_eip = var.create_eip_rdp_linux_server
   ssh_prv_key_path = "${path.module}/generated/controller.prv_key"

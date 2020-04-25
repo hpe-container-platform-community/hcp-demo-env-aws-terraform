@@ -18,6 +18,7 @@ resource "aws_instance" "ad_server" {
     Name = "${var.project_id}-instance-ad-server"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${var.deployment_uuid}"
   }
 
   provisioner "file" {

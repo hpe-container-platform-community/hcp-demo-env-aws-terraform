@@ -43,3 +43,6 @@ variable "ssh_prv_key_path" {
 variable "create_eip" {
     type = bool
 }
+variable "deployment_uuid" { 
+    type = string
+}

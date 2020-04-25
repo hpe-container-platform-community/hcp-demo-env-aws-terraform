@@ -7,6 +7,7 @@ resource "aws_eip" "rdp_server" {
     Name = "${var.project_id}-rdp-linux-server"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${var.deployment_uuid}"
   }
 }
 
@@ -204,5 +205,6 @@ resource "aws_instance" "rdp_server" {
     Name = "${var.project_id}-instance-rdp-server-linux"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${var.deployment_uuid}"
   }
 }

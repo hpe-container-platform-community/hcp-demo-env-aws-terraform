@@ -9,6 +9,7 @@ resource "aws_default_network_acl" "default" {
     Name = "${var.project_id}-default-network-acl"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${var.deployment_uuid}"
   }
 }
 
@@ -20,6 +21,7 @@ resource "aws_network_acl" "main" {
     Name = "${var.project_id}-network-acl"
     Project = "${var.project_id}"
     user = "${var.user}"
+    deployment_uuid = "${var.deployment_uuid}"
   }
 }
 

@@ -25,3 +25,6 @@ variable "vpc_security_group_ids" {
 variable "subnet_id" { 
     type = string
 }
+variable "deployment_uuid" { 
+    type = string
+}
