@@ -14,7 +14,7 @@ This document containers a recommended path for learning key HPE Container Platf
 
 ## Product Overview
 
-TODO create learning pages for ...
+TODO create learning pages with knowledge test for ...
 
 - [HPE container strategy - Market overview](https://www.hpe.com/us/en/solutions/container-platform.brightcove.440cd5a2-c9b5-4b15-ad78-9f5adc672fb7.html.html)
 - [HPE container strategy - Transformation challenges](https://www.hpe.com/us/en/solutions/container-platform.brightcove.c94f2cc7-92b7-44b1-aae1-8ba2992f0578.html.html)
