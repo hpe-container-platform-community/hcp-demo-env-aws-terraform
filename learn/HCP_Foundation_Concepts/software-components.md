@@ -23,6 +23,6 @@ The HPE Container Platform docs site is a gold mine of information, it is highly
 - What are the three different types of roles does the HPE Container Platform have?
 - What is the temporary file system called in this document?
 
-## Challenge
+## Task
 
 - Draw the diagram and describe the different components to a colleage.
