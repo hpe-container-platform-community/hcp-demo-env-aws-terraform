@@ -3,7 +3,6 @@
 from hpecp import ContainerPlatformClient
 import json,sys,subprocess
 import os
-import argparse
 
 # Disable the SSL warnings - don't do this on productions!  
 import urllib3
@@ -11,53 +10,49 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 os.environ["LOG_LEVEL"] = "DEBUG"
 
-parser = argparse.ArgumentParser(description='Add K8S Worker Host.')
-parser.add_argument('ip_address', metavar='ip_address', type=str, nargs=1,
-                   help='worker host ip address')
-
-args = parser.parse_args()
-worker_host_ip = args.ip_address[0]
-
-json_file = './generated/output.json'
 try:
-    with open(json_file) as f:
+    with open('./generated/output.json') as f:
         j = json.load(f)
-except FileNotFoundError:
-    print("ERROR: File not found: {}".format(json_file))
-    sys.exit(1)
-except:
+except: 
     print(80 * "*")
-    print("ERROR: Can't parse: '{}'".format(json_file))
+    print("ERROR: Can't parse: './generated/output.json'")
     print(80 * "*")
     sys.exit(1)
 
 controller_public_ip  = j["controller_public_ip"]["value"]
-controller_ssh_key    = j["ssh_prv_key_path"]["value"]
+ad_server_private_ip  = j["ad_server_private_ip"]["value"]
+
 
 client = ContainerPlatformClient(username='admin', 
                                 password='admin123', 
                                 api_host=controller_public_ip, 
                                 api_port=8080,
                                 use_ssl=True,
-                                verify_ssl=False
-                                )
+                                verify_ssl=False)
 
 client.create_session()
 
-with open(controller_ssh_key, 'r') as f:
+################
+# Add Gateway  # 
+################
+
+gateway_host_ip = j["gateway_private_ip"]["value"]
+gateway_host_dns = j["gateway_private_dns"]["value"]
+
+with open('/certs/controller.prv_key', 'r') as f:
     prvkey = f.read()
 
-response = client.worker.add_k8shost(
+response = client.worker.add_gateway(
             data ={
-                "ipaddr":worker_host_ip,
+                "ip": gateway_host_ip,
                 "credentials":{
                     "type":"ssh_key_access",
                     "ssh_key_data":prvkey
                 },
-                "tags":[]
+                "tags":[],
+                "proxy_nodes_hostname":gateway_host_dns,
+                "purpose":"proxy"
             }
     )
 
-print('Submitted add host request')
-
-print( client.worker.get_k8shosts().tabulate() )
+print(response)

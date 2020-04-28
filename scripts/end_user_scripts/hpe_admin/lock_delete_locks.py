@@ -3,20 +3,13 @@
 from hpecp import ContainerPlatformClient
 import json,sys,subprocess
 import os
-import argparse
 
 # Disable the SSL warnings - don't do this on productions!  
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-os.environ["LOG_LEVEL"] = "DEBUG"
+#os.environ["LOG_LEVEL"] = "DEBUG"
 
-parser = argparse.ArgumentParser(description='Add K8S Worker Host.')
-parser.add_argument('ip_address', metavar='ip_address', type=str, nargs=1,
-                   help='worker host ip address')
-
-args = parser.parse_args()
-worker_host_ip = args.ip_address[0]
 
 json_file = './generated/output.json'
 try:
@@ -32,7 +25,6 @@ except:
     sys.exit(1)
 
 controller_public_ip  = j["controller_public_ip"]["value"]
-controller_ssh_key    = j["ssh_prv_key_path"]["value"]
 
 client = ContainerPlatformClient(username='admin', 
                                 password='admin123', 
@@ -44,20 +36,6 @@ client = ContainerPlatformClient(username='admin',
 
 client.create_session()
 
-with open(controller_ssh_key, 'r') as f:
-    prvkey = f.read()
+print("Deleting locks ...")
+client.lock.delete_locks()
 
-response = client.worker.add_k8shost(
-            data ={
-                "ipaddr":worker_host_ip,
-                "credentials":{
-                    "type":"ssh_key_access",
-                    "ssh_key_data":prvkey
-                },
-                "tags":[]
-            }
-    )
-
-print('Submitted add host request')
-
-print( client.worker.get_k8shosts().tabulate() )
