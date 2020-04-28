@@ -8,7 +8,7 @@ import os
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-os.environ["LOG_LEVEL"] = "DEBUG"
+os.environ["LOG_LEVEL"] = "INFO"
 
 try:
     with open('./generated/output.json') as f:
@@ -42,7 +42,7 @@ gateway_host_dns = j["gateway_private_dns"]["value"]
 with open('/certs/controller.prv_key', 'r') as f:
     prvkey = f.read()
 
-response = client.worker.add_gateway(
+gw_id = client.worker.add_gateway(
             data ={
                 "ip": gateway_host_ip,
                 "credentials":{
@@ -55,4 +55,5 @@ response = client.worker.add_gateway(
             }
     )
 
-print(response)
+# wait 10 minutes for gateway to  have state of 'installed'
+client.worker.wait_for_gateway_state(id=gw_id, timeout_secs=600, state=['installed'])
