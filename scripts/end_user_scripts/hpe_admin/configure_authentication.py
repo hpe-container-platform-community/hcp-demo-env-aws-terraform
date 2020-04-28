@@ -3,7 +3,6 @@
 from hpecp import ContainerPlatformClient
 import json,sys,subprocess
 import os
-from time import sleep
 
 # Disable the SSL warnings - don't do this on productions!  
 import urllib3
@@ -50,8 +49,6 @@ client.config.auth(
                 "type":"Active Directory",
                 "port":636 }
             })
-
-sleep(30)
 
 ###################################
 # Configure Tenant authentication #
