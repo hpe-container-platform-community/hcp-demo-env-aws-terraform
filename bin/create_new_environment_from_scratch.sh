@@ -5,17 +5,19 @@ set -u # abort on undefined variable
 
 ./scripts/check_prerequisites.sh
 
-TF_RESOURCES=$(cat  terraform.tfstate | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(len(obj["resources"]))')
+if [[ -f terraform.tfstate ]]; then
+   TF_RESOURCES=$(cat  terraform.tfstate | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(len(obj["resources"]))')
 
-if [[ "$TF_RESOURCES" == "0" ]]; then
-   echo "Found 0 terraform resources in terraform.tfstate - presuming this is a clean envrionment"
-else
-   echo "********************************************************************************************************"
-   echo "Refusing to create environment because existing ./terraform.tfstate file found."
-   echo "Please destroy your environment (./bin/terraform_destroy.sh) and then remove all terraform.tfstate files"
-   echo "before trying again."
-   echo "********************************************************************************************************"
-   exit 1
+   if [[ "$TF_RESOURCES" == "0" ]]; then
+      echo "Found 0 terraform resources in terraform.tfstate - presuming this is a clean envrionment"
+   else
+      echo "********************************************************************************************************"
+      echo "Refusing to create environment because existing ./terraform.tfstate file found."
+      echo "Please destroy your environment (./bin/terraform_destroy.sh) and then remove all terraform.tfstate files"
+      echo "before trying again."
+      echo "********************************************************************************************************"
+      exit 1
+   fi
 fi
 
 if [[ ! -f  "./generated/controller.prv_key" ]]; then
@@ -44,7 +46,7 @@ sleep 240
 ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap.sh
 
 pip3 install --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
-#./scripts/hpe_post_provisioning_setup.py # experimental
+./scripts/hpe_post_provisioning_setup.py # experimental
 
 source ./scripts/variables.sh
 
