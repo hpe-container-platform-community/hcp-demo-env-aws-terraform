@@ -46,7 +46,7 @@ sleep 240
 ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap.sh
 
 pip3 install --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
-./scripts/hpe_post_provisioning_setup.py # experimental
+#./scripts/hpe_post_provisioning_setup.py # experimental
 
 source ./scripts/variables.sh
 
