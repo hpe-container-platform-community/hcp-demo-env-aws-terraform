@@ -27,7 +27,6 @@ if [[ ! -f  "./generated/controller.prv_key" ]]; then
    chmod 600 "./generated/controller.prv_key"
 fi
 
-
 terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
 
 echo "Sleeping for 60s to give services a chance to startup"
@@ -44,23 +43,6 @@ sleep 240
 ./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
 ./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
 ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap.sh
-
-# set the following to true to enable experimental features
-if [[ false ]]; then
-   # set +e # don't abort on error
-
-   pip3 install --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
-
-   ./scripts/end_user_scripts/hpe_admin/lock_delete_locks.py # experimental
-   ./scripts/end_user_scripts/hpe_admin/lock_set.py # experimental
-   ./scripts/end_user_scripts/hpe_admin/add_gateway.py # experimental
-   ./scripts/end_user_scripts/hpe_admin/lock_delete_locks.py # experimental
-   ./scripts/end_user_scripts/hpe_admin/configure_authentication.py # experimental
-   ./scripts/end_user_scripts/hpe_admin/worker_add_k8s_host.py $(./generated/get_private_endpoints.sh | grep 'Worker  0' | awk '{ print $3}') # experimental
-   ./scripts/end_user_scripts/hpe_admin/worker_add_k8s_host.py $(./generated/get_private_endpoints.sh | grep 'Worker  1' | awk '{ print $3}') # experimental
-   ./scripts/end_user_scripts/hpe_admin/worker_add_k8s_host.py $(./generated/get_private_endpoints.sh | grep 'Worker  2' | awk '{ print $3}') # experimental
-   ./scripts/end_user_scripts/hpe_admin/worker_add_k8s_host.py $(./generated/get_private_endpoints.sh | grep 'Worker  3' | awk '{ print $3}') # experimental
-fi
 
 source ./scripts/variables.sh
 
