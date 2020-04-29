@@ -4,6 +4,8 @@ set -e # abort on error
 set -u # abort on undefined variable
 
 command -v python3 >/dev/null 2>&1    || { echo >&2 "I require 'python3' but it's not installed.  Aborting."; exit 1; }
+command -v pip3 >/dev/null 2>&1       || { echo >&2 "I require 'pip3' but it's not installed.  Aborting."; exit 1; }
+
 command -v ssh-keygen >/dev/null 2>&1 || { echo >&2 "I require 'ssh-keygen' but it's not installed.  Aborting."; exit 1; }
 command -v nc >/dev/null 2>&1         || { echo >&2 "I require 'nc' but it's not installed.  Aborting."; exit 1; }
 command -v curl >/dev/null 2>&1       || { echo >&2 "I require 'curl' but it's not installed.  Aborting."; exit 1; }

@@ -21,3 +21,9 @@ pip3 install --upgrade git+https://github.com/hpe-container-platform-community/h
 ./scripts/end_user_scripts/hpe_admin/worker_add_k8s_host.py $(./generated/get_private_endpoints.sh | grep 'Worker  1' | awk '{ print $3}')
 ./scripts/end_user_scripts/hpe_admin/worker_add_k8s_host.py $(./generated/get_private_endpoints.sh | grep 'Worker  2' | awk '{ print $3}')
 ./scripts/end_user_scripts/hpe_admin/worker_add_k8s_host.py $(./generated/get_private_endpoints.sh | grep 'Worker  3' | awk '{ print $3}')
+
+# Register license so workers can be fully installed
+./scripts/end_user_scripts/hpe_admin/license_register.py
+
+# Finish worker install
+./scripts/end_user_scripts/hpe_admin/worker_set_storage_k8s_host.py
