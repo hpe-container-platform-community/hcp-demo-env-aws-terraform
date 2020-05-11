@@ -118,7 +118,16 @@ resource "local_file" "non_terraform_user_scripts" {
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} --output json --query "Reservations[*].Instances[*].[PublicIpAddress,InstanceId]"
 
     # Add My IP to Network ACL
-    aws ec2 --region eu-west-3 --profile default replace-network-acl-entry \
+    aws ec2 --region ${var.region} --profile default create-network-acl-entry \
+        --network-acl-id ${module.network.network_acl_id} \
+        --cidr-block "$(curl -s http://ifconfig.me/ip)/32" \
+        --ingress \
+        --protocol -1 \
+        --rule-action allow \
+        --rule-number 110
+
+    # if the above fails, try the following:  
+    aws ec2 --region ${var.region} --profile default replace-network-acl-entry \
         --network-acl-id ${module.network.network_acl_id} \
         --cidr-block "$(curl -s http://ifconfig.me/ip)/32" \
         --ingress \
@@ -127,7 +136,7 @@ resource "local_file" "non_terraform_user_scripts" {
         --rule-number 110
 
     # Add My IP to security group
-    aws ec2 --region eu-west-3 --profile default authorize-security-group-ingress \
+    aws ec2 --region ${var.region} --profile default authorize-security-group-ingress \
         --group-id ${module.network.sg_allow_all_from_specified_ips} \
         --protocol all \
         --port -1 \
