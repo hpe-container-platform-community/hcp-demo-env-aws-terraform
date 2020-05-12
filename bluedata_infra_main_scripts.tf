@@ -570,9 +570,12 @@ resource "local_file" "get_private_endpoints" {
       print(80 * "*")
       sys.exit(1)
 
-    # FIXME: check if enabled
-    rdp_server_private_ip  = j["rdp_server_private_ip"]["value"]
-    rdp_server_private_dns = "NA"
+    try:
+        rdp_server_private_ip  = j["rdp_server_private_ip"]["value"]
+        rdp_server_private_dns = "NA"
+    except:
+        rdp_server_private_ip  = "NA"
+        rdp_server_private_dns = "NA"
 
     controller_private_ip  = j["controller_private_ip"]["value"]
     controller_private_dns = j["controller_private_dns"]["value"]
@@ -583,9 +586,12 @@ resource "local_file" "get_private_endpoints" {
     workers_private_ips    = j["workers_private_ip"]["value"][0]
     workers_private_dns    = j["workers_private_dns"]["value"][0]
 
-    # FIXME: check if enabled
-    ad_server_private_ip  = j["ad_server_private_ip"]["value"]
-    ad_server_private_dns = "NA"
+    try:
+        ad_server_private_ip  = j["ad_server_private_ip"]["value"]
+        ad_server_private_dns = "NA"
+    except:
+        ad_server_private_ip  = "NA"
+        ad_server_private_dns = "NA"
 
     print('------------  ----------------  --------------------------------------------------------')
     print('{:>12}  {:>16}  {:>56}'.format( "NAME", "IP", "DNS"))
