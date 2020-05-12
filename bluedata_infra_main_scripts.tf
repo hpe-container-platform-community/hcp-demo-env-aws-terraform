@@ -521,10 +521,14 @@ resource "local_file" "get_public_endpoints" {
       print(80 * "*")
       sys.exit(1)
 
-    # FIXME: check if rdp is enabled
-    rdp_server_public_ip  = j["rdp_server_public_ip"]["value"]
-    rdp_server_public_dns = "NA"
-    rdp_server_eip        = j["create_eip_rdp_linux_server"]["value"]
+    try:
+        rdp_server_public_ip  = j["rdp_server_public_ip"]["value"]
+        rdp_server_public_dns = "NA"
+        rdp_server_eip        = j["create_eip_rdp_linux_server"]["value"]
+    except:
+        rdp_server_public_ip  = "NA"
+        rdp_server_public_dns = "NA"
+        rdp_server_eip        = "NA"
 
     controller_public_ip  = j["controller_public_ip"]["value"]
     controller_public_dns = j["controller_public_dns"]["value"]
