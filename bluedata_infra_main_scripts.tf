@@ -29,10 +29,11 @@ resource "local_file" "cli_stop_ec2_instances" {
 
     echo "Sending 'sudo halt -n' to all hosts for graceful shutdown."
 
-    for HOST in $${WRKR_PUB_IPS[@]};
-    do
-      ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$HOST "$CMD" || true
-    done
+    if [[ -z WRKR_PUB_IPS ]]; then
+       for HOST in $${WRKR_PUB_IPS[@]}; do
+         ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$HOST "$CMD" || true
+       done
+    fi
 
     ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$GATW_PUB_IP "$CMD" || true
     ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$CMD" || true
