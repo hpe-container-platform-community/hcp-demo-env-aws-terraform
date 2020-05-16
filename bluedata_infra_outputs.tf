@@ -26,6 +26,10 @@ output "ssh_prv_key_path" {
   value = "${var.ssh_prv_key_path}"
 }
 
+output "install_with_ssl" {
+  value = "${var.install_with_ssl}"
+}
+
 output "ca_cert" {
   value = "${var.ca_cert}"
 }

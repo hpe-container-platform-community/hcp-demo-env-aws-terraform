@@ -68,6 +68,10 @@ variable "create_eip_rdp_linux_server" {
   default = false
 }
 
+variable "install_with_ssl" {
+    default = true
+}
+
 variable "ssh_prv_key_path" {}
 variable "ssh_pub_key_path" {}
 variable "worker_count" { default = 3 }
