@@ -185,8 +185,8 @@ GATW_PRV_HOST=$(echo $GATW_PRV_DNS | cut -d"." -f1)
 WRKR_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_private_ip"]["value"][0], sep=" ")') 
 WRKR_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_public_ip"]["value"][0], sep=" ")') 
 
-[ "$WRKR_PRV_IPS" ] || ( echo "ERROR: WRKR_PRV_IPS is empty - is the instance running?" && exit 1 )
-[ "$WRKR_PUB_IPS" ] || ( echo "ERROR: WRKR_PUB_IPS is empty - is the instance running?" && exit 1 )
+#[ "$WRKR_PRV_IPS" ] || ( echo "ERROR: WRKR_PRV_IPS is empty - is the instance running?" && exit 1 )
+#[ "$WRKR_PUB_IPS" ] || ( echo "ERROR: WRKR_PUB_IPS is empty - is the instance running?" && exit 1 )
 
 read -r -a WRKR_PRV_IPS <<< "$WRKR_PRV_IPS"
 read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
