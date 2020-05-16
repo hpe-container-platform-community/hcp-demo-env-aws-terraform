@@ -59,6 +59,8 @@ CREATE_EIP_GATEWAY=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.lo
 #echo CREATE_EIP_CONTROLLER=${CREATE_EIP_CONTROLLER}
 #echo CREATE_EIP_GATEWAY=${CREATE_EIP_GATEWAY}
 
+INSTALL_WITH_SSL="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["install_with_ssl"]["value"])')"
+
 CA_KEY="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ca_key"]["value"])')"
 CA_CERT="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ca_cert"]["value"])')"
 
