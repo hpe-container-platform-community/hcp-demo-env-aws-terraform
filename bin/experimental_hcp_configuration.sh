@@ -14,7 +14,7 @@ cat >$HPECP_CONFIG_FILE<<EOF
 [default]
 api_host = ${CTRL_PUB_IP}
 api_port = 8080
-use_ssl = True
+use_ssl = ${INSTALL_WITH_SSL}
 verify_ssl = False
 warn_ssl = False
 username = admin
