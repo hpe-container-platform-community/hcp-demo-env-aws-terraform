@@ -8,18 +8,8 @@ source ./scripts/variables.sh
 
 pip3 install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
 
-# Save the configuration file
+# use the project's HPECP CLI config file
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"
-cat >$HPECP_CONFIG_FILE<<EOF
-[default]
-api_host = ${CTRL_PUB_IP}
-api_port = 8080
-use_ssl = ${INSTALL_WITH_SSL}
-verify_ssl = False
-warn_ssl = False
-username = admin
-password = admin123
-EOF
 
 echo "Checking for LICENSE locally"
 # Register license so workers can be fully installed
