@@ -20,13 +20,8 @@
 - Filter wireshark, e.g.
 
 ```
-http.request.method == POST
-```
-
-or 
-
-```
-http.request.method == GET
+http.request.method == "POST" or http.request.method == "GET"
+http.request.uri == "/api/v1/user"
 ```
 
 - Right click stream, and select follow HTTP Stream
