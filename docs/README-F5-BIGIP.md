@@ -126,8 +126,8 @@ spec:
             # See the k8s-bigip-ctlr documentation for information about
             # all config options
             # https://clouddocs.f5.com/products/connectors/k8s-bigip-ctlr/latest
-            "--bigip-username=\${BIGIP_USERNAME}",
-            "--bigip-password=\${BIGIP_PASSWORD}",
+            "--bigip-username=\$(BIGIP_USERNAME)",
+            "--bigip-password=\$(BIGIP_PASSWORD)",
             "--bigip-url=${BIGIP_IP}",
             "--bigip-partition=${BIGIP_PARTITION}",
             "--pool-member-type=nodeport",
