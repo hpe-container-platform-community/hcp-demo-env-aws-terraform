@@ -5,6 +5,8 @@ This document is a work-in-progress.
 
 - Provision F5 AWS image inside VPC managed by Terraform
 
+Example: https://www.youtube.com/watch?v=XUjDMY9i29I&feature=youtu.be
+
 ```
 ssh -i ./generated/controller.prv_key admin@<F5_HOST>
 modify auth user admin password <your_password> 
