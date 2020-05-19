@@ -83,7 +83,7 @@ kubectl apply -f rbac.yaml
 
 ```
 BIGIP_IP=10.1.0.25 # 52.25.28.177 # change this
-BIGIP_PARTITION=Common
+BIGIP_PARTITION=demopartition
 
 
 cat > deployment.yaml <<EOF
