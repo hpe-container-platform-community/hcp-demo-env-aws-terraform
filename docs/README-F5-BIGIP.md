@@ -17,7 +17,11 @@ save sys config
 
 from: https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html)
 
+
+- Create service account
+
 ```
+kubectl create serviceaccount bigip-ctlr -n kube-system
 ```
 
 - Create namespace
