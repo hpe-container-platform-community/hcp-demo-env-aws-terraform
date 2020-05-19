@@ -93,7 +93,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      name: k8s-bigip-ctlr
+      app: k8s-bigip-ctlr
   template:
     metadata:
       name: k8s-bigip-ctlr
