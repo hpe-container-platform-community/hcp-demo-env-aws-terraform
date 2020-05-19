@@ -78,12 +78,12 @@ kubectl apply -f rbac.yaml
 - From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#basic-deployment
 
 ```
-BIGIP_IP=52.25.28.177 # change this
+BIGIP_IP=10.1.0.25 # 52.25.28.177 # change this
 BIGIP_PARTITION=Common
 
 
 cat > deployment.yaml <<EOF
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: k8s-bigip-ctlr-deployment
@@ -91,9 +91,6 @@ metadata:
 spec:
   # DO NOT INCREASE REPLICA COUNT
   replicas: 1
-  selector:
-    matchLabels:
-      app: k8s-bigip-ctlr
   template:
     metadata:
       name: k8s-bigip-ctlr
