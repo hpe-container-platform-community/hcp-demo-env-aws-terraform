@@ -430,7 +430,7 @@ resource "local_file" "vpn_mac_connect" {
                             --split # Do not send all traffic across VPN tunnel
 
     # VPC DNS Server is base of VPC network range plus 2 - https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
-    VPC_DNS_SERVER=$(python3 -c "import ipcalc; print(str((ipcalc.Network('${VPC_CIDR_BLOCK}')+2)).split('/')[0])")
+    VPC_DNS_SERVER=$(python3 -c "import ipcalc; print(str((ipcalc.Network('$VPC_CIDR_BLOCK')+2)).split('/')[0])")
     networksetup -setdnsservers hpe-container-platform-aws $VPC_DNS_SERVER
 
     echo "Waiting 10s for vpn settings to save"
