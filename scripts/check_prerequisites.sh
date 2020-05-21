@@ -21,3 +21,9 @@ command -v aws >/dev/null 2>&1  || {
     echo >&2 "Please install as per: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html"
     exit 1
 }
+
+python3 -m ipcalc > /dev/null || {
+    echo "I require 'ipcalc' python module, but it's not installed.  Aborting."
+    echo "Please install with: 'pip3 install --user ipcalc'"
+    exit 1
+}

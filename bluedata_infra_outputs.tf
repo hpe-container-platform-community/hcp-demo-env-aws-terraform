@@ -10,6 +10,10 @@ output "subnet_cidr_block" {
   value = "${var.subnet_cidr_block}"
 }
 
+output "vpc_cidr_block" {
+  value = "${var.vpc_cidr_block}"
+}
+
 output "deployment_uuid" {
   value = "${random_uuid.deployment_uuid.result}"
 }

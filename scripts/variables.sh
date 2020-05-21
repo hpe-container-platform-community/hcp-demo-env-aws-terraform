@@ -38,6 +38,9 @@ LOG_FILE="${PROJECT_DIR}"/generated/bluedata_install_output.txt
 CLIENT_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["client_cidr_block"]["value"])')
 [ "$CLIENT_CIDR_BLOCK" ] || ( echo "ERROR: CLIENT_CIDR_BLOCK is empty" && exit 1 )
 
+VPC_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["vpc_cidr_block"]["value"])')
+[ "$VPC_CIDR_BLOCK" ] || ( echo "ERROR: VPC_CIDR_BLOCK is empty" && exit 1 )
+
 REGION=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["aws_region"]["value"])')
 [ "$REGION" ] || ( echo "ERROR: REGION is empty" && exit 1 )
 
