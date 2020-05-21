@@ -40,7 +40,7 @@ The installation scripts in project use [minica](https://github.com/jsha/minica)
    ./${EPIC_INSTALLER_FILENAME} --skipeula --ssl-cert /home/centos/${CTRL_PUB_DNS}/cert.pem --ssl-priv-key /home/centos/${CTRL_PUB_DNS}/key.pem
    ```
    
-We can use `openssl x509 -in /home/centos/{minica_output_folder}/cert.pem -text` to verify the certificate.  The first **domain** in the `-domains* list is used to create the **minica_output_folder**.  Here is an example extract from the openssl command:
+We can use `openssl x509 -in /home/centos/{minica_output_folder}/cert.pem -text` to view the certificate.  The first **domain** in the `-domains* list is used to create the **minica_output_folder**.  Here is an example extract from the openssl command:
 
 ```
             ... 
