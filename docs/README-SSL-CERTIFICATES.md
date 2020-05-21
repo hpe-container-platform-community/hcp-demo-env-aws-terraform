@@ -1,7 +1,7 @@
 ## Overview
 
-- The script `./scripts/bluedata_install.sh` that installs HCP sets up a certificate authority (CA).
-- You should install the certificate authority certificate in your browser.
+- The HCP installation script [scripts/bluedata_install.sh](../scripts/bluedata_install.sh) sets up a certificate authority (CA).
+- You need to install the certificate authority certificate in your browser (see below)
 - You can find the CA certificate in the location: `./generated/ca-cert.pem`.
 - The RDP server has the CA certificate automatically installed in the firefox browser.
 
