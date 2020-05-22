@@ -93,6 +93,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-DATA-TIERING.md) for information on **setting up MAPR data tiering**.
 
+[README](./docs/README-INSPECT-API.md) using wireshark to **inspect/debug API calls**
+
 [README](./docs/README-CONNECT-TO-CEPH-FROM-PYTHON-NB.ipynb) **connect to a ceph instance from a python notebook**
 
 [README](./docs/README-CONNECT-TO-CEPH-FROM-PYSPARK-NB.ipynb) **connect to a ceph instance from a pyspark notebook**
