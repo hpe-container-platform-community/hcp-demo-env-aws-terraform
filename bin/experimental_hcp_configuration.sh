@@ -53,9 +53,19 @@ EOF
 hpecp httpclient post /api/v2/config/auth --json-file ${JSON_FILE}
 
 echo "Adding workers"
+WRKR_IDS=()
 for WRKR in ${WRKR_PRV_IPS[@]}; do
     echo "   worker $WRKR"
-    hpecp k8sworker create-with-ssh-key --ip ${WRKR} --ssh-key-file generated/controller.prv_key
+    WRKR_IDS+=($(hpecp k8sworker create-with-ssh-key --ip ${WRKR} --ssh-key-file generated/controller.prv_key))
 done
 
+# TODO fix: k8sworker wait-for-state
+sleep 1200
+
+echo "Setting worker storage"
+for WRKR in "${WRKR_IDS[@]}" 
+do
+    echo "   worker $WRKR"
+    hpecp k8sworker set-storage --k8sworker_id ${WRKR} --persistent-disks=/dev/nvme2n1 --ephemeral-disks=/dev/nvme2n2
+done
 
