@@ -80,6 +80,7 @@ resource "aws_iam_user_policy" "allow_from_my_ip" {
               "Effect": "Allow",
               "Action": [
                   "ec2:ReplaceNetworkAclEntry",
+                  "ec2:CreateNetworkAclEntry",
                   "ec2:AuthorizeSecurityGroupIngress"
               ],
               "Resource": "*",
@@ -117,6 +118,9 @@ resource "local_file" "non_terraform_user_scripts" {
     # RDP Server Public IP Address and Password (RDP Username = ubuntu)
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} --output json --query "Reservations[*].Instances[*].[PublicIpAddress,InstanceId]"
 
+    # Controller Server Public IP Address 
+    aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.controller.id != null ? module.controller.id : ""} --output json --query "Reservations[*].Instances[*].[PublicIpAddress]"
+
     # Add My IP to Network ACL
     aws ec2 --region ${var.region} --profile default create-network-acl-entry \
         --network-acl-id ${module.network.network_acl_id} \
@@ -142,6 +146,22 @@ resource "local_file" "non_terraform_user_scripts" {
         --port -1 \
         --cidr "$(curl -s http://ifconfig.me/ip)/32"
 
+  EOF
+
+}
+
+resource "local_file" "non_terraform_user_scripts_variables" {
+
+  filename = "${path.module}/generated/non_terraform_user_scripts_variables.txt"
+  content =  <<-EOF
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+    AWS_REGION="${var.region}"
+    RDP_INSTANCE_ID=${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""}
+    CONTROLLER_INSTANCE_ID=${module.controller.id != null ? module.controller.id : ""}
+    ALL_INSTANCE_IDS="${local.instance_ids}"
+    NACL_ID=${module.network.network_acl_id}
+    SG_ID=${module.network.sg_allow_all_from_specified_ips}
   EOF
 
 }
