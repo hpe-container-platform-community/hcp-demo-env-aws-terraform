@@ -429,10 +429,6 @@ resource "local_file" "vpn_mac_connect" {
                             --sharedsecret $VPN_PSK \
                             --split # Do not send all traffic across VPN tunnel
 
-    # VPC DNS Server is base of VPC network range plus 2 - https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
-    VPC_DNS_SERVER=$(python3 -c "import ipcalc; print(str((ipcalc.Network('$VPC_CIDR_BLOCK')+2)).split('/')[0])")
-    networksetup -setdnsservers hpe-container-platform-aws $VPC_DNS_SERVER
-
     echo "Waiting 10s for vpn settings to save"
     sleep 10
     sudo -u $USER_BEFORE_SUDO /usr/sbin/networksetup -connectpppoeservice "hpe-container-platform-aws"
@@ -445,6 +441,14 @@ resource "local_file" "vpn_mac_connect" {
 
     route -n delete -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip) || true # ignore error
     route -n add -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip)
+
+    # VPC DNS Server is base of VPC network range plus 2 - https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
+    VPC_DNS_SERVER=$(python3 -c "import ipcalc; print(str((ipcalc.Network('$VPC_CIDR_BLOCK')+2)).split('/')[0])")
+    networksetup -setdnsservers hpe-container-platform-aws $VPC_DNS_SERVER
+    echo "VPN DNS set to: $(networksetup -getdnsservers hpe-container-platform-aws)"
+
+    echo "Looking up controller private dns with dig"
+    dig @$VPC_DNS_SERVER $(terraform output controller_private_dns)
 
     echo "Attempting to ping the controller private IP ..."
     ping -c 5 $CTRL_PRV_IP
