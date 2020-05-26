@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from hpecp import ContainerPlatformClient
-from hpecp.worker import WorkerK8sStatus
+from hpecp.k8s_worker import WorkerK8sStatus
 import os, sys, json
 
 # Disable the SSL warnings - don't do this on productions!  
@@ -32,17 +32,17 @@ client = ContainerPlatformClient(username='admin',
 client.create_session()
 
 worker_ids = []
-for worker in client.worker.get_k8shosts():
+for worker in client.k8s_worker.get_k8shosts():
     worker_id = worker.worker_id
     print("Found worker {} with state {}".format(worker_id, worker.status))
-    client.worker.wait_for_k8shost_status(worker_id=worker_id, timeout_secs=1200, status=[ WorkerK8sStatus.storage_pending ])
+    client.k8s_worker.wait_for_status(worker_id=worker_id, timeout_secs=1200, status=[ WorkerK8sStatus.storage_pending ])
     data = {"op_spec": {"persistent_disks": ["/dev/nvme2n1"], "ephemeral_disks": ["/dev/nvme1n1"]}, "op": "storage"}
-    client.worker.set_storage_k8shost(worker_id=worker_id, data=data)
+    client.k8s_worker.set_storage(worker_id=worker_id, data=data)
     worker_ids.append(worker_id)
 
 # wait 20 minutes
 for worker in worker_ids:
     print("Waiting 20 mins for worker id: {} to have status of ready".format(worker_id))
-    client.worker.wait_for_k8shost_status(worker_id=worker_id, timeout_secs=1200, status=[ WorkerK8sStatus.ready ])
+    client.k8s_worker.wait_for_status(worker_id=worker_id, timeout_secs=1200, status=[ WorkerK8sStatus.ready ])
 
 print("Worker hosts are ready")

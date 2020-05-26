@@ -11,20 +11,6 @@ pip3 install --quiet --upgrade git+https://github.com/hpe-container-platform-com
 # use the project's HPECP CLI config file
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 
-echo "Checking for LICENSE locally"
-# Register license so workers can be fully installed
-if [[ ! -f generated/LICENSE ]]; then
-    echo "ERROR: File './generated/LICENSE' not found - please add it - platform ID: $(hpecp license platform-id)"
-    echo "       After adding the file, run this script again"
-    exit 
-fi
-
-echo "Uploading LICENSE to Controller"
-scp -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" ./generated/LICENSE centos@${CTRL_PUB_IP}:/srv/bluedata/license/LICENSE
-hpecp license delete-all
-hpecp license register /srv/bluedata/license/LICENSE
-hpecp license list
-
 echo "Deleting and creating lock"
 hpecp lock delete-all
 hpecp lock create "Install Gateway"
@@ -69,9 +55,7 @@ hpecp httpclient post /api/v2/config/auth --json-file ${JSON_FILE}
 echo "Adding workers"
 for WRKR in ${WRKR_PRV_IPS[@]}; do
     echo "   worker $WRKR"
-    ./scripts/end_user_scripts/hpe_admin/worker_add_k8s_host.py ${WRKR}
+    hpecp k8sworker create-with-ssh-key --ip ${WRKR} --ssh-key-file generated/controller.prv_key
 done
 
 
-# Finish worker install
-./scripts/end_user_scripts/hpe_admin/worker_set_storage_k8s_host.py
