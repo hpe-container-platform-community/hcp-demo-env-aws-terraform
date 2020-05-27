@@ -38,6 +38,11 @@ done
 echo "Setting worker storage"
 for WRKR in ${WRKR_IDS[@]}; do
     echo "   worker $WRKR"
-    hpecp k8sworker set-storage --k8sworker_id ${WRKR} --persistent-disks=/dev/nvme2n1 --ephemeral-disks=/dev/nvme2n1
+    hpecp k8sworker set-storage --k8sworker_id ${WRKR} --persistent-disks=/dev/nvme1n1 --ephemeral-disks=/dev/nvme2n1
 done
 
+echo "Waiting for workers to have state 'ready'"
+for WRKR in ${WRKR_IDS[@]}; do
+    echo "   worker $WRKR"
+    hpecp k8sworker wait-for-status ${WRKR} --status  "['ready']"
+done
