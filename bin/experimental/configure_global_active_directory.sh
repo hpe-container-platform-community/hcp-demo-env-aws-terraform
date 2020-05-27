@@ -3,13 +3,18 @@
 set -e # abort on error
 set -u # abort on undefined variable
 
-../../scripts/check_prerequisites.sh
-source ../../scripts/variables.sh
+if [[ ! -d generated ]]; then
+   echo "This file should be executed from the project directory"
+   exit 1
+fi
+
+./scripts/check_prerequisites.sh
+source ./scripts/variables.sh
 
 pip3 install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
 
 # use the project's HPECP CLI config file
-export HPECP_CONFIG_FILE="../../generated/hpecp.conf"
+export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 
 echo "Configuring AD authentication"
 JSON_FILE=$(mktemp)
