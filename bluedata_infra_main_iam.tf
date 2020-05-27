@@ -162,6 +162,7 @@ resource "local_file" "non_terraform_user_scripts_variables" {
     ALL_INSTANCE_IDS="${local.instance_ids}"
     NACL_ID=${module.network.network_acl_id}
     SG_ID=${module.network.sg_allow_all_from_specified_ips}
+    INSTALL_WITH_SSL=${var.install_with_ssl}
   EOF
 
 }
