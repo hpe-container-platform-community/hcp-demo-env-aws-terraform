@@ -14,9 +14,7 @@ This document containers a recommended path for learning key HPE Container Platf
 
 ## Product Overview
 
-TODO create learning pages with knowledge test for ...
-
-- [HPE container strategy - Market overview](erraform/blob/master/learn/Product_Overview/hpe_container_strategy_market_overview.md) [15 mins]
+- [HPE Container Strategy](./hpe_container_strategy_market_overview.md) [20 mins]
 
 ## Foundation Technical Concepts
 
