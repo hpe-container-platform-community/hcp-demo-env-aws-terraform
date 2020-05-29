@@ -29,11 +29,11 @@ more topics coming soon ...
 
 ### Demo environment lifecycle
 
-- [Provision demo environment](./HCP_Administration/provision_demo_environment.md) [2 hours] (coming soon)
-- [Teardown demo environment](./HCP_Administration/teardown_demo_environment.md) [30 mins] (coming soon)
-- [Shutdown demo environment](./HCP_Administration/shutdown_demo_environment.md) [15 mins] (coming soon)
-- [Startup demo environment](./HCP_Administration/startup_demo_environment.md) [15 mins] (coming soon)
-- [Status of demo environment](./HCP_Administration/status_demo_environment.md) [15 mins] (coming soon)
+- [Provision AWS demo environment](./HCP_Administration/provision_demo_environment.md) [2 hours] (coming soon)
+- [Teardown AWS demo environment](./HCP_Administration/teardown_demo_environment.md) [30 mins] (coming soon)
+- [Shutdown AWS demo environment](./HCP_Administration/shutdown_demo_environment.md) [15 mins] (coming soon)
+- [Startup AWS demo environment](./HCP_Administration/startup_demo_environment.md) [15 mins] (coming soon)
+- [Status of AWS demo environment](./HCP_Administration/status_demo_environment.md) [15 mins] (coming soon)
 
 ### Manual install HCP
 
