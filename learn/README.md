@@ -27,19 +27,21 @@ more topics coming soon ...
 
 ## Platform Administration
 
-### Demo environment lifecycle
+### Manually install HCP
+
+- [Installation Overview](./HCP_Administration/manual_install_overview.md) [2 hours]
+- [Planning the Deployment](./HCP_Administration/manual_install_planning_the_deployment.md) [2 hours]
+- [System Requirements](./HCP_Administration/manual_install_system_requirements.md) [2 hours]
+
+### AWS Demo environment lifecycle
+
+This section is only required for users using the [HPE CP AWS Demo Environment Terraform project](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform)
 
 - [Provision AWS demo environment](./HCP_Administration/provision_demo_environment.md) [2 hours] (coming soon)
 - [Teardown AWS demo environment](./HCP_Administration/teardown_demo_environment.md) [30 mins] (coming soon)
 - [Shutdown AWS demo environment](./HCP_Administration/shutdown_demo_environment.md) [15 mins] (coming soon)
 - [Startup AWS demo environment](./HCP_Administration/startup_demo_environment.md) [15 mins] (coming soon)
 - [Status of AWS demo environment](./HCP_Administration/status_demo_environment.md) [15 mins] (coming soon)
-
-### Manual install HCP
-
-- [Installation Overview](./HCP_Administration/manual_install_overview.md) [2 hours]
-- [Planning the Deployment](./HCP_Administration/manual_install_planning_the_deployment.md) [2 hours]
-- [System Requirements](./HCP_Administration/manual_install_system_requirements.md) [2 hours]
 
 ### Configure HCP Global Settings
 
