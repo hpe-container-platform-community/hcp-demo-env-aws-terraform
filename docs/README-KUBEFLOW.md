@@ -78,6 +78,9 @@ echo $CLUS_ID
 # wait until ready
 watch hpecp k8scluster list
 
+# check connectivity to server (may need to start vpn)
+ping -c 5 $MASTER_IP
+
 # update the kube-apiserver settings
 ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" centos@${MASTER_IP} <<END_SSH
 sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-issuer=kubernetes.default.svc' /etc/kubernetes/manifests/kube-apiserver.yaml
