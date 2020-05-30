@@ -38,7 +38,7 @@ more topics coming soon ...
 ### Manual install HCP
 
 - [Installation Overview](./HCP_Administration/manual_install_overview.md) [2 hours]
-- [Manually install HCP](./HCP_Administration/manually_install_demo_environment.md) [4 hours] (coming soon)
+- [System Requirements](./HCP_Administration/manual_install_system_requirements.md) [2 hours]
 
 ### Configure HCP Global Settings
 
