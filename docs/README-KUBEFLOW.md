@@ -46,7 +46,7 @@ THIS DOCUMENT IS A WORK IN PROGRESS
 
 This can run on your client machine
 
-```
+```bash
 # Install a fresh Environment of HPECP 5.1 (1289+ engineering build)
 ./bin/create_new_environment_from_scratch.sh
 
