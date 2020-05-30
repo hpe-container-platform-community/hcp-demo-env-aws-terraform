@@ -4,7 +4,7 @@ It is very important before installing HPE Container Platform that you understan
 
 ## Pre-requisites
 
-- Watch: [Manual Install Overview](./manual_install_overview.md)
+- Complete: [Manual Install Overview](./manual_install_overview.md)
 
 ## Learning Content
 
