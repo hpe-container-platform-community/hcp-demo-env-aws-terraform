@@ -89,9 +89,10 @@ END_SSH
 
 export KUBECONFIG=./generated/clus_kfg
 hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
-kubectl get pods --all-namespaces  | grep kube-apiserver
 
-# The change to the API server should have triggered the kube-apiserver to restart and should only show running time of a few seconds
+# The change to the API server configuration (above) should have triggered the kube-apiserver to restart
+# the kubea-apiserver should only show running time of a few seconds
+kubectl get pods --all-namespaces  | grep kube-apiserver
 
 # automatically create PVs
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
