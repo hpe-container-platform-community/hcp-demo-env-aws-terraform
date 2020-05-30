@@ -5,7 +5,7 @@ In this section, you will learn the general workflow for installing HPE Containe
 ## Pre-requisites
 
 - [Product Overview](../README.md#product-overview)
-- [Foundation Technical Concepts](../README.mdfoundation-technical-concepts)
+- [Foundation Technical Concepts](../README.md#foundation-technical-concepts)
 
 ## Learning Content
 
