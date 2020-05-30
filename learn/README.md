@@ -32,6 +32,7 @@ more topics coming soon ...
 - [Installation Overview](./HCP_Administration/manual_install_overview.md) [2 hours]
 - [Planning the Deployment](./HCP_Administration/manual_install_planning_the_deployment.md) [2 hours]
 - [System Requirements](./HCP_Administration/manual_install_system_requirements.md) [2 hours]
+- [Deploying the Platform]() [8 hours] (coming soon)
 
 ### AWS Demo environment lifecycle
 
