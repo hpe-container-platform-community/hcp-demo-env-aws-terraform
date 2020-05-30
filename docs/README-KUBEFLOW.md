@@ -9,11 +9,10 @@ THIS DOCUMENT IS A WORK IN PROGRESS
 
 #### Install steps
 
-- Deploy a 5.1 (E.g. 1289+ Engineering Build) HPE Container Platform Environment
 - This can run on your client machine:
 
 ```bash
-# Install a fresh Environment of HPECP 5.1 (1289+ engineering build)
+# Set etc/bluedata_infra.tfvars with URL for HPECP 5.1 (1289+ engineering build)
 ./bin/create_new_environment_from_scratch.sh
 
 ./bin/experimental/01_configure_global_active_directory.sh
