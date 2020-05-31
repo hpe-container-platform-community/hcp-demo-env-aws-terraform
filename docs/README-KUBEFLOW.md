@@ -56,7 +56,7 @@ hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 
 # The change to the API server configuration (above) should have triggered the kube-apiserver to restart
 # the kubea-apiserver should only show running time of a few seconds
-watch kubectl get pods --all-namespaces  | grep kube-apiserver
+kubectl get pods --all-namespaces  | grep kube-apiserver
 
 # automatically create PVs
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
@@ -75,6 +75,9 @@ kubectl apply -f operator_bootstrap.yaml
 
 # Install the default services that are specified in 
 kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
+
+# Wait until the auth namespace has been created
+watch kubectl get ns
 
 # Deploy the test LDAP service: 
 kubectl apply -f test_ldap.yaml
