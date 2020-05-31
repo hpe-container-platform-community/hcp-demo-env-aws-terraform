@@ -43,7 +43,7 @@ This section is only required for users using the [HPE CP AWS Demo Environment T
 
 ## Advanced Technical Concepts
 
-- Coming Soon.
+- [Universal Concepts](./HCP_Advanced_Concepts/universal_concepts.md) [8 hours]
 
 ### Configure HCP Global Settings
 
