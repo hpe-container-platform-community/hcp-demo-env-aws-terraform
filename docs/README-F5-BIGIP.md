@@ -1,22 +1,59 @@
-This document is a work-in-progress.
+THIS DOCUMENT IS A WORK-IN-PROGRESS
 ----
 
-- Create a K8s 1.17.0 Cluster with 1 master and 1 worker node
+```bash
+# Set etc/bluedata_infra.tfvars with URL for HPECP 5.1 (1289+ engineering build)
 
-- Provision F5 AWS image inside VPC managed by Terraform
-
-```
 ln -s docs/README-F5-BIGIP/bluedata_infra_main_bigip.tf .
-# EDIT the above file if you are not deploying in Oregon
+# EDIT the AMI id in the above file if you are not deploying in Oregon
 
-# Example: https://www.youtube.com/watch?v=XUjDMY9i29I&feature=youtu.be
+./bin/create_new_environment_from_scratch.sh
 
-ssh -o StrictHostKeyChecking=no -i ./generated/controller.prv_key admin@$(terraform output bigip_public_ip)
+# Update BIGIP password
+ssh -o StrictHostKeyChecking=no -i ./generated/controller.prv_key admin@$(terraform output bigip_public_ip) <<EOF
 modify auth user admin password in5ecurP55wrd 
-save sys config 
+save sys config
+EOF
 
-# Create a BIPIP partition - https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html
+# Create a BIPIP partition
+# See: https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html
 open "https://$(terraform output bigip_public_ip):8443"
+
+./bin/experimental/01_configure_global_active_directory.sh
+./bin/experimental/02_gateway_add.sh
+./bin/experimental/03_k8sworkers_add.sh
+
+hpecp k8sworker list
+# +-----------+--------+------------------------------------------+------------+---------------------------+
+# | worker_id | status |                 hostname                 |   ipaddr   |           href            |
+# +-----------+--------+------------------------------------------+------------+---------------------------+
+# |    16     | ready  | ip-10-1-0-178.us-west-2.compute.internal | 10.1.0.178 | /api/v2/worker/k8shost/16 |
+# |    17     | ready  | ip-10-1-0-93.us-west-2.compute.internal  | 10.1.0.93  | /api/v2/worker/k8shost/17 |
+# +-----------+--------+------------------------------------------+------------+---------------------------+
+
+# get the HPE CP supported k8s 1.17.x version number
+KVERS=$(hpecp k8scluster k8s-supported-versions --output text --major-filter 1 --minor-filter 15)
+echo $KVERS
+
+# replace IDs defined below with the ones from `hpecp k8sworker list'
+MASTER_ID="/api/v2/worker/k8shost/16"
+WORKER_ID="/api/v2/worker/k8shost/17"
+MASTER_IP="10.1.0.178"
+
+# create a K8s Cluster
+CLUS_ID=$(hpecp k8scluster create clus1 ${MASTER_ID}:master,${WORKER_ID}:worker --k8s-version $KVERS)
+echo $CLUS_ID
+
+# wait until ready
+hpecp k8scluster wait-for-status $CLUS_ID --status "['ready']" --timeout-secs 1200
+
+# check connectivity to server - you may need to start vpn with:
+# ./generated/vpn_server_setup.sh
+# sudo ./generated/vpn_mac_connect.sh
+ping -c 5 $MASTER_IP
+
+export KUBECONFIG=./generated/clus_kfg
+hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 ```
 
 - Create service account
@@ -36,7 +73,7 @@ kubectl create namespace bigip-namespace
 kubectl create secret generic bigip-login \
   --namespace kube-system \
   --from-literal=username=admin \
-  --from-literal=password=<your_password>
+  --from-literal=password=in5ecurP55wrd
 ```
 
 - From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#set-up-rbac-authentication
@@ -83,7 +120,7 @@ kubectl apply -f rbac.yaml
 - From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#basic-deployment
 
 ```
-BIGIP_IP=10.1.0.25 # 52.25.28.177 # change this
+BIGIP_IP=$(terraform output bigip_public_ip)
 BIGIP_PARTITION=demopartition
 
 
