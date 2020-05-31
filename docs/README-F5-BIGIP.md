@@ -52,12 +52,6 @@ hpecp k8scluster wait-for-status $CLUS_ID --status "['ready']" --timeout-secs 12
 # sudo ./generated/vpn_mac_connect.sh
 ping -c 5 $MASTER_IP
 
-# update the kube-apiserver settings
-ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" centos@${MASTER_IP} <<END_SSH
-sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-issuer=kubernetes.default.svc' /etc/kubernetes/manifests/kube-apiserver.yaml
-sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-signing-key-file=\/etc\/kubernetes\/pki\/sa.key' /etc/kubernetes/manifests/kube-apiserver.yaml
-END_SSH
-
 export KUBECONFIG=./generated/clus_kfg
 hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 
