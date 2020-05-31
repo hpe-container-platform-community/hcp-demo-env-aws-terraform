@@ -73,9 +73,6 @@ kubectl get sc
 #   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/kfctl_hpc_istio.v1.0.1.yaml
 #   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/test_ldap.yaml
 
-# Create auth namespace 
-kubectl create namespace auth
-
 # Apply the bootstrap script to deploy the operator: 
 kubectl apply -f operator_bootstrap.yaml
 
@@ -84,6 +81,9 @@ kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
 
 # Deploy the test LDAP service: 
 kubectl apply -f test_ldap.yaml
+
+### ^ This fails with:
+Error from server (NotFound): error when creating "test_ldap.yaml": namespaces "auth" not found
 
 # this step is needed because for some reason the dex service doesn't understand that config map is changed
 kubectl rollout restart deployment dex -n auth
