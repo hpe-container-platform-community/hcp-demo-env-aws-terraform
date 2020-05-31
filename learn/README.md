@@ -35,11 +35,12 @@ This document containers a recommended path for learning key HPE Container Platf
 
 This section is only required for users using the [HPE CP AWS Demo Environment Terraform project](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform)
 
-- [Provision AWS demo environment](./HCP_Administration/provision_demo_environment.md) [2 hours] (coming soon)
-- [Teardown AWS demo environment](./HCP_Administration/teardown_demo_environment.md) [30 mins] (coming soon)
-- [Shutdown AWS demo environment](./HCP_Administration/shutdown_demo_environment.md) [15 mins] (coming soon)
-- [Startup AWS demo environment](./HCP_Administration/startup_demo_environment.md) [15 mins] (coming soon)
-- [Status of AWS demo environment](./HCP_Administration/status_demo_environment.md) [15 mins] (coming soon)
+- [Provision AWS demo environment](../README.md) [2 hours]
+- [Starting/Stopping/Status of AWS demo environment](./docs/README-EC2-START-STOP-STATUS.md) [30 mins]
+- [Destroying AWS demo environment](./docs/README-DESTROY-DEMO-ENV.md) [30 mins]
+- [Connecting to the demo environment using RDP remote desktop connection](./docs/README-RDP.md) [1 hour]
+- [Using the AWS demo environment VPN](./docs/README-VPN.md) [30 mins]
+- [Adding more AWS workers to the demo environemnt](docs/README-ADDING-MORE-WORKERS.md) [30 mins]
 
 ## Advanced Technical Concepts
 
