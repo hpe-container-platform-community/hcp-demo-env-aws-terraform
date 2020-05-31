@@ -30,7 +30,7 @@ This document containers a recommended path for learning key HPE Container Platf
 - [Installation Overview](./HCP_Administration/manual_install_overview.md) [2 hours]
 - [Planning the Deployment](./HCP_Administration/manual_install_planning_the_deployment.md) [2 hours]
 - [System Requirements](./HCP_Administration/manual_install_system_requirements.md) [2 hours]
-- [Deploying the Platform]() [8 hours] (coming soon)
+- [Deploying the Platform](./HCP_Administration/manual_install_deploying_the_platform.md) [8 hours]
 
 ### AWS Demo environment lifecycle
 
