@@ -101,6 +101,6 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-DESIGN-PRINCIPLES.md) this **project's design principles**.
 
-## Structured Learning (coming soon ...)
+## Structured Learning
 
 Looking for a more structured learning path?  Try [here](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform/blob/master/learn/README.md)
