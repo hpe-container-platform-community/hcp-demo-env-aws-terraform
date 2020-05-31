@@ -83,7 +83,7 @@ kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
 kubectl apply -f test_ldap.yaml
 
 ### ^ This fails with:
-Error from server (NotFound): error when creating "test_ldap.yaml": namespaces "auth" not found
+### Error from server (NotFound): error when creating "test_ldap.yaml": namespaces "auth" not found
 
 # this step is needed because for some reason the dex service doesn't understand that config map is changed
 kubectl rollout restart deployment dex -n auth
