@@ -54,11 +54,6 @@ ping -c 5 $MASTER_IP
 
 export KUBECONFIG=./generated/clus_kfg
 hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
-
-# The change to the API server configuration (above) should have triggered the kube-apiserver to restart
-# the kubea-apiserver should only show running time of a few seconds
-watch kubectl get pods --all-namespaces  | grep kube-apiserver
-
 ```
 
 - Create service account
