@@ -1,4 +1,4 @@
-This document is a work-in-progress.
+THIS DOCUMENT IS A WORK-IN-PROGRESS
 ----
 
 - Create a K8s 1.17.0 Cluster with 1 master and 1 worker node
@@ -7,7 +7,7 @@ This document is a work-in-progress.
 
 ```
 ln -s docs/README-F5-BIGIP/bluedata_infra_main_bigip.tf .
-# EDIT the above file if you are not deploying in Oregon
+# EDIT the AMI id in the above file if you are not deploying in Oregon
 
 # Example: https://www.youtube.com/watch?v=XUjDMY9i29I&feature=youtu.be
 
