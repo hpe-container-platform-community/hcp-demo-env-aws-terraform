@@ -11,12 +11,14 @@ In this section you learn how to manually deploy the HPE Container Platform.
 
 ## Learning Content
 
-Read the documentation sections:
+Read the [documentation](http://docs.bluedata.com/home) sections:
 
 - Deploying the platform
 - Support and troubleshooting
 
-![docs](./manual_install_planning_the_deployment/docs_menu.png)
+See the image below:
+
+<image src="./manual_install_deploying_the_platform/docs_menu.png" width=300/>
 
 ## Learning Summary
 
