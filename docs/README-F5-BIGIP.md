@@ -73,7 +73,7 @@ kubectl create namespace bigip-namespace
 kubectl create secret generic bigip-login \
   --namespace kube-system \
   --from-literal=username=admin \
-  --from-literal=password=<your_password>
+  --from-literal=password=in5ecurP55wrd
 ```
 
 - From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#set-up-rbac-authentication
