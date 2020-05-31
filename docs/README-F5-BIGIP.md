@@ -120,7 +120,7 @@ kubectl apply -f rbac.yaml
 - From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#basic-deployment
 
 ```
-BIGIP_IP=10.1.0.25 # 52.25.28.177 # change this
+BIGIP_IP=$(terraform output bigip_public_ip)
 BIGIP_PARTITION=demopartition
 
 
