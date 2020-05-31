@@ -20,7 +20,6 @@ This document containers a recommended path for learning key HPE Container Platf
 
 - [Software Components](./HCP_Foundation_Concepts/software-components.md) [30 mins]
 - [Controller, Gateway and Worker Hosts](./HCP_Foundation_Concepts/controller_gateway_and_worker_hosts.md) [30 mins]
-- more topics coming soon ...
 - [DataTaps](./HCP_Foundation_Concepts/datataps.md) [30 mins]
 
 ## Platform Administration
@@ -41,6 +40,10 @@ This section is only required for users using the [HPE CP AWS Demo Environment T
 - [Shutdown AWS demo environment](./HCP_Administration/shutdown_demo_environment.md) [15 mins] (coming soon)
 - [Startup AWS demo environment](./HCP_Administration/startup_demo_environment.md) [15 mins] (coming soon)
 - [Status of AWS demo environment](./HCP_Administration/status_demo_environment.md) [15 mins] (coming soon)
+
+## Advanced Technical Concepts
+
+- Coming Soon.
 
 ### Configure HCP Global Settings
 
