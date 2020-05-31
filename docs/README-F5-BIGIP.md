@@ -10,10 +10,10 @@ ln -s docs/README-F5-BIGIP/bluedata_infra_main_bigip.tf .
 ./bin/create_new_environment_from_scratch.sh
 
 # Update BIGIP password
-ssh -o StrictHostKeyChecking=no -i ./generated/controller.prv_key admin@$(terraform output bigip_public_ip)
+ssh -o StrictHostKeyChecking=no -i ./generated/controller.prv_key admin@$(terraform output bigip_public_ip) <<EOF
 modify auth user admin password in5ecurP55wrd 
 save sys config
-exit
+EOF
 
 # Create a BIPIP partition
 # See: https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html
