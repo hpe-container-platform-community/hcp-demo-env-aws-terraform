@@ -27,7 +27,7 @@ hpecp k8sworker list
 # |    17     | ready  | ip-10-1-0-93.us-west-2.compute.internal  | 10.1.0.93  | /api/v2/worker/k8shost/17 |
 # +-----------+--------+------------------------------------------+------------+---------------------------+
 
-# get the latest 17x version number
+# get the HPE CP supported k8s 1.17.x version number
 KVERS=$(hpecp httpclient get /api/v2/k8smanifest |  python3 -c 'import json,sys;obj=json.load(sys.stdin);  [ print(v) for v in obj["version_info"] if v.startswith("1.17") ]')
 echo $KVERS
 
