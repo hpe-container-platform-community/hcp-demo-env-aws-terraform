@@ -1,13 +1,7 @@
 THIS DOCUMENT IS A WORK IN PROGRESS
 -----
 
-### Kubeflow
-
-#### Pre-requisites
-
-- [VPN Setup and Connected](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform/blob/master/docs/README-VPN.md)
-
-#### Install steps
+### Kubeflow Install steps
 
 - This can run on your client machine:
 
