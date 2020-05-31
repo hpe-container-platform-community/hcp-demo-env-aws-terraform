@@ -3,7 +3,7 @@ THIS DOCUMENT IS A WORK IN PROGRESS
 
 ### Kubeflow Install steps
 
-- This can run on your client machine:
+- This script assumes you are creating a new terraform managed environment with 2 worker hosts:
 
 ```bash
 # Set etc/bluedata_infra.tfvars with URL for HPECP 5.1 (1289+ engineering build)
