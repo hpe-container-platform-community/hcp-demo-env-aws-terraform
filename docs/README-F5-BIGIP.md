@@ -7,16 +7,17 @@ THIS DOCUMENT IS A WORK-IN-PROGRESS
 ln -s docs/README-F5-BIGIP/bluedata_infra_main_bigip.tf .
 # EDIT the AMI id in the above file if you are not deploying in Oregon
 
+./bin/create_new_environment_from_scratch.sh
+
 # Update BIGIP password
 ssh -o StrictHostKeyChecking=no -i ./generated/controller.prv_key admin@$(terraform output bigip_public_ip)
 modify auth user admin password in5ecurP55wrd 
 save sys config
 exit
 
-# Create a BIPIP partition - https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html
+# Create a BIPIP partition
+# See: https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html
 open "https://$(terraform output bigip_public_ip):8443"
-
-./bin/create_new_environment_from_scratch.sh
 
 ./bin/experimental/01_configure_global_active_directory.sh
 ./bin/experimental/02_gateway_add.sh
