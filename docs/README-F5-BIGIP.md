@@ -45,7 +45,7 @@ CLUS_ID=$(hpecp k8scluster create clus1 ${MASTER_ID}:master,${WORKER_ID}:worker 
 echo $CLUS_ID
 
 # wait until ready
-watch hpecp k8scluster list
+hpecp k8scluster wait-for-status $CLUS_ID --status "['ready']" --timeout-secs 1200
 
 # check connectivity to server - you may need to start vpn with:
 # ./generated/vpn_server_setup.sh
