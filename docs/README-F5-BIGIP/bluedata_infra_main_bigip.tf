@@ -51,3 +51,7 @@ resource "aws_volume_attachment" "bigip-volume-attachment-sdb" {
 output "bigip_public_ip" {
   value = "${aws_instance.bigip.public_ip}"
 }
+
+output "bigip_private_ip" {
+  value = "${aws_instance.bigip.private_ip}"
+}
