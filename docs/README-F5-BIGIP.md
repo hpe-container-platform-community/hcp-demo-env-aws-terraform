@@ -1,22 +1,69 @@
 THIS DOCUMENT IS A WORK-IN-PROGRESS
 ----
 
-- Create a K8s 1.17.0 Cluster with 1 master and 1 worker node
+```bash
+# Set etc/bluedata_infra.tfvars with URL for HPECP 5.1 (1289+ engineering build)
 
-- Provision F5 AWS image inside VPC managed by Terraform
-
-```
 ln -s docs/README-F5-BIGIP/bluedata_infra_main_bigip.tf .
 # EDIT the AMI id in the above file if you are not deploying in Oregon
 
-# Example: https://www.youtube.com/watch?v=XUjDMY9i29I&feature=youtu.be
-
+# Update BIGIP password
 ssh -o StrictHostKeyChecking=no -i ./generated/controller.prv_key admin@$(terraform output bigip_public_ip)
 modify auth user admin password in5ecurP55wrd 
-save sys config 
+save sys config
+exit
 
 # Create a BIPIP partition - https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html
 open "https://$(terraform output bigip_public_ip):8443"
+
+./bin/create_new_environment_from_scratch.sh
+
+./bin/experimental/01_configure_global_active_directory.sh
+./bin/experimental/02_gateway_add.sh
+./bin/experimental/03_k8sworkers_add.sh
+
+hpecp k8sworker list
+# +-----------+--------+------------------------------------------+------------+---------------------------+
+# | worker_id | status |                 hostname                 |   ipaddr   |           href            |
+# +-----------+--------+------------------------------------------+------------+---------------------------+
+# |    16     | ready  | ip-10-1-0-178.us-west-2.compute.internal | 10.1.0.178 | /api/v2/worker/k8shost/16 |
+# |    17     | ready  | ip-10-1-0-93.us-west-2.compute.internal  | 10.1.0.93  | /api/v2/worker/k8shost/17 |
+# +-----------+--------+------------------------------------------+------------+---------------------------+
+
+# get the HPE CP supported k8s 1.17.x version number
+KVERS=$(hpecp k8scluster k8s-supported-versions --output text --major-filter 1 --minor-filter 15)
+echo $KVERS
+
+# replace IDs defined below with the ones from `hpecp k8sworker list'
+MASTER_ID="/api/v2/worker/k8shost/16"
+WORKER_ID="/api/v2/worker/k8shost/17"
+MASTER_IP="10.1.0.178"
+
+# create a K8s Cluster
+CLUS_ID=$(hpecp k8scluster create clus1 ${MASTER_ID}:master,${WORKER_ID}:worker --k8s-version $KVERS)
+echo $CLUS_ID
+
+# wait until ready
+watch hpecp k8scluster list
+
+# check connectivity to server - you may need to start vpn with:
+# ./generated/vpn_server_setup.sh
+# sudo ./generated/vpn_mac_connect.sh
+ping -c 5 $MASTER_IP
+
+# update the kube-apiserver settings
+ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" centos@${MASTER_IP} <<END_SSH
+sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-issuer=kubernetes.default.svc' /etc/kubernetes/manifests/kube-apiserver.yaml
+sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-signing-key-file=\/etc\/kubernetes\/pki\/sa.key' /etc/kubernetes/manifests/kube-apiserver.yaml
+END_SSH
+
+export KUBECONFIG=./generated/clus_kfg
+hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
+
+# The change to the API server configuration (above) should have triggered the kube-apiserver to restart
+# the kubea-apiserver should only show running time of a few seconds
+watch kubectl get pods --all-namespaces  | grep kube-apiserver
+
 ```
 
 - Create service account
