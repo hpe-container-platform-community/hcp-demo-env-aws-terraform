@@ -6,6 +6,9 @@ THIS DOCUMENT IS A WORK IN PROGRESS
 - This script assumes you are creating a new terraform managed environment with 2 worker hosts:
 
 ```bash
+set -e # abort on encountering an error
+set -u # abort on encountering an undefined variable
+
 # Set etc/bluedata_infra.tfvars with URL for HPECP 5.1 (1289+ engineering build)
 ./bin/create_new_environment_from_scratch.sh
 
@@ -35,7 +38,7 @@ CLUS_ID=$(hpecp k8scluster create clus1 ${MASTER_ID}:master,${WORKER_ID}:worker 
 echo $CLUS_ID
 
 # wait until ready
-watch hpecp k8scluster list
+hpecp k8scluster wait-for-status $CLUS_ID --status "['ready']" --timeout-secs 1200
 
 # check connectivity to server - you may need to start vpn with:
 # ./generated/vpn_server_setup.sh
