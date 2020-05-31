@@ -22,7 +22,7 @@ hpecp k8sworker list
 # +-----------+--------+------------------------------------------+------------+---------------------------+
 
 # get the HPE CP supported k8s 1.17.x version number
-KVERS=$(hpecp httpclient get /api/v2/k8smanifest |  python3 -c 'import json,sys;obj=json.load(sys.stdin);  [ print(v) for v in obj["version_info"] if v.startswith("1.17") ]')
+KVERS=$(hpecp k8scluster k8s-supported-versions --output text --major-filter 1 --minor-filter 17)
 echo $KVERS
 
 # replace IDs defined below with the ones from `hpecp k8sworker list'
