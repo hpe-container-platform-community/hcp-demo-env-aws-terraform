@@ -5,18 +5,19 @@ This document is a work-in-progress.
 
 - Provision F5 AWS image inside VPC managed by Terraform
 
-Example: https://www.youtube.com/watch?v=XUjDMY9i29I&feature=youtu.be
-
 ```
-ssh -i ./generated/controller.prv_key admin@<F5_HOST>
-modify auth user admin password <your_password> 
+ln -s docs/README-F5-BIGIP/bluedata_infra_main_bigip.tf .
+# EDIT the above file if you are not deploying in Oregon
+
+# Example: https://www.youtube.com/watch?v=XUjDMY9i29I&feature=youtu.be
+
+ssh -o StrictHostKeyChecking=no -i ./generated/controller.prv_key admin@$(terraform output bigip_public_ip)
+modify auth user admin password in5ecurP55wrd 
 save sys config 
+
+# Create a BIPIP partition - https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html
+open "https://$(terraform output bigip_public_ip):8443"
 ```
-
-- Create a partition 
-
-from: https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html)
-
 
 - Create service account
 
