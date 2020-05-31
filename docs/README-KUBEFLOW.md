@@ -43,7 +43,9 @@ echo $CLUS_ID
 # wait until ready
 watch hpecp k8scluster list
 
-# check connectivity to server (may need to start vpn)
+# check connectivity to server - you may need to start vpn with:
+# ./generated/vpn_server_setup.sh
+# sudo ./generated/vpn_mac_connect.sh
 ping -c 5 $MASTER_IP
 
 # update the kube-apiserver settings
