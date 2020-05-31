@@ -11,7 +11,8 @@ ln -s docs/README-F5-BIGIP/bluedata_infra_main_bigip.tf .
 
 # Update BIGIP password
 ssh -o StrictHostKeyChecking=no -i ./generated/controller.prv_key admin@$(terraform output bigip_public_ip) <<EOF
-modify auth user admin password in5ecurP55wrd 
+modify auth user admin password in5ecurP55wrd
+create /auth partition demopartition
 save sys config
 EOF
 
