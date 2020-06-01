@@ -77,25 +77,26 @@ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storagec
 
 # Should contain line: `local-path (default)   rancher.io/local-path` 
 kubectl get sc
+```
 
-# - Download:
-#   - https://github.com/mapr/private-kfctl/blob/v1.0.1-branch-mapr/deploy/operator_bootstrap.yaml 
-#   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/kfctl_hpc_istio.v1.0.1.yaml
-#   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/test_ldap.yaml
+- Download:
+   - https://github.com/mapr/private-kfctl/blob/v1.0.1-branch-mapr/deploy/operator_bootstrap.yaml 
+   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/kfctl_hpc_istio.v1.0.1.yaml
+   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/test_ldap.yaml
 
+```
 # Apply the bootstrap script to deploy the operator: 
 kubectl apply -f operator_bootstrap.yaml
-
-# Install the default services that are specified in 
-kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
 
 # Wait until the auth namespace has been created
 watch kubectl get ns
 ```
-
-If the auth namespace was created, continue setting up ldap:
+Now setup istio, etc.
 
 ```
+# Install the default services that are specified in 
+kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
+
 # Deploy the test LDAP service: 
 kubectl apply -f test_ldap.yaml
 
