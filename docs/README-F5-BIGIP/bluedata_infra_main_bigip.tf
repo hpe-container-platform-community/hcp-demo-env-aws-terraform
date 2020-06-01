@@ -1,7 +1,9 @@
 resource "aws_instance" "bigip" {
+
   # Find AMI for regions outside of Oregaon, here: 
   # https://aws.amazon.com/marketplace/server/configuration?productId=8e1217d4-a046-4cdf-894e-e38175bae37f&ref_=psb_cfg_continue 
-  ami                    = "ami-0b6bb8289ee2d28d0"
+
+  ami                    = "ami-084c1f12d3aa3de94"
   instance_type          = "m4.large"
 
   key_name               = aws_key_pair.main.key_name
