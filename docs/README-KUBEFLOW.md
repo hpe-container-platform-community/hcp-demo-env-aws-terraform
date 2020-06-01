@@ -28,10 +28,10 @@ hpecp k8sworker list
 KVERS=$(hpecp k8scluster k8s-supported-versions --output text --major-filter 1 --minor-filter 18)
 echo $KVERS
 
-# replace IDs defined below with the ones from `hpecp k8sworker list'
+# setup values from `hpecp k8sworker list'
 MASTER_ID="/api/v2/worker/k8shost/3"
 WORKER_ID="/api/v2/worker/k8shost/4"
-MASTER_IP="10.1.0.178"
+MASTER_IP=$(hpecp k8sworker get ${MASTER_ID} | grep '^ipaddr' | cut -d " " -f 2)
 
 # create a K8s Cluster
 CLUS_ID=$(hpecp k8scluster create clus1 ${MASTER_ID}:master,${WORKER_ID}:worker --k8s-version $KVERS)
