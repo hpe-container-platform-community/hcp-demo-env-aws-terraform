@@ -32,9 +32,10 @@ echo $KVERS
 MASTER_ID="/api/v2/worker/k8shost/3"
 WORKER_ID="/api/v2/worker/k8shost/4"
 MASTER_IP=$(hpecp k8sworker get ${MASTER_ID} | grep '^ipaddr' | cut -d " " -f 2)
+CLUS_NAME="kubeflow_cluster"
 
 # create a K8s Cluster
-CLUS_ID=$(hpecp k8scluster create clus1 ${MASTER_ID}:master,${WORKER_ID}:worker --k8s-version $KVERS)
+CLUS_ID=$(hpecp k8scluster create ${CLUS_NAME} ${MASTER_ID}:master,${WORKER_ID}:worker --k8s-version $KVERS)
 echo $CLUS_ID
 
 # wait until ready
@@ -59,7 +60,7 @@ sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-iss
 sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-signing-key-file=\/etc\/kubernetes\/pki\/sa.key' /etc/kubernetes/manifests/kube-apiserver.yaml
 END_SSH
 
-export KUBECONFIG=./generated/clus_kfg
+export KUBECONFIG=./generated/${CLUS_NAME}.conf
 hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 
 # The change to the API server configuration (above) should have triggered the kube-apiserver to restart
