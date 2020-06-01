@@ -41,10 +41,18 @@ echo $CLUS_ID
 hpecp k8scluster wait-for-status $CLUS_ID --status "['ready']" --timeout-secs 1200
 
 # check connectivity to server - you may need to start vpn with:
-# ./generated/vpn_server_setup.sh
-# sudo ./generated/vpn_mac_connect.sh
 ping -c 5 $MASTER_IP
+```
+If ping fails start the vpn:
 
+```
+./generated/vpn_server_setup.sh
+sudo ./generated/vpn_mac_connect.sh
+```
+
+Now setup the k8s cluster api-server:
+
+```
 # update the kube-apiserver settings
 ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" centos@${MASTER_IP} <<END_SSH
 sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-issuer=kubernetes.default.svc' /etc/kubernetes/manifests/kube-apiserver.yaml
@@ -57,7 +65,11 @@ hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 # The change to the API server configuration (above) should have triggered the kube-apiserver to restart
 # the kubea-apiserver should only show running time of a few seconds
 kubectl get pods --all-namespaces  | grep kube-apiserver
+```
 
+Now define PVs and apply the kubeflow scripts:
+
+```
 # automatically create PVs
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
 kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
@@ -78,12 +90,13 @@ kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
 
 # Wait until the auth namespace has been created
 watch kubectl get ns
+```
 
+If the auth namespace was created, continue setting up ldap:
+
+```
 # Deploy the test LDAP service: 
 kubectl apply -f test_ldap.yaml
-
-### ^ This fails with:
-### Error from server (NotFound): error when creating "test_ldap.yaml": namespaces "auth" not found
 
 # this step is needed because for some reason the dex service doesn't understand that config map is changed
 kubectl rollout restart deployment dex -n auth
