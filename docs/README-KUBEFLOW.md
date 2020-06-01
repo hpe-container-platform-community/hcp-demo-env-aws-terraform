@@ -87,5 +87,8 @@ kubectl apply -f test_ldap.yaml
 
 # this step is needed because for some reason the dex service doesn't understand that config map is changed
 kubectl rollout restart deployment dex -n auth
+
+export NAMESPACE=istio-system
+kubectl port-forward -n ${NAMESPACE} svc/istio-ingressgateway 8080:80
 ```
  
