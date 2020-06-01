@@ -24,8 +24,8 @@ hpecp k8sworker list
 # |    17     | ready  | ip-10-1-0-93.us-west-2.compute.internal  | 10.1.0.93  | /api/v2/worker/k8shost/17 |
 # +-----------+--------+------------------------------------------+------------+---------------------------+
 
-# get the HPE CP supported k8s 1.17.x version number
-KVERS=$(hpecp k8scluster k8s-supported-versions --output text --major-filter 1 --minor-filter 17)
+# get the HPE CP supported k8s 1.18.x version number
+KVERS=$(hpecp k8scluster k8s-supported-versions --output text --major-filter 1 --minor-filter 18)
 echo $KVERS
 
 # replace IDs defined below with the ones from `hpecp k8sworker list'
