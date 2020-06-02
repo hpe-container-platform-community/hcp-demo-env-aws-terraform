@@ -34,6 +34,10 @@ DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/download
 
 curl -kvu $CREDS "https://$IP/mgmt/shared/iapp/package-management-tasks" -H "Origin: https://$IP" -H 'Content-Type: application/json;charset=UTF-8' --data $DATA
 
+# verify
+# https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/installation.html#success
+curl -kvu $CREDS "https://$IP/mgmt/shared/appsvcs/info"
+
 
 # BIGIP management interface
 open https://$(terraform output bigip_private_ip_1)
