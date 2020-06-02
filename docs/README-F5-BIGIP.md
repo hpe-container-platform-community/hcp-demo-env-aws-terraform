@@ -132,7 +132,7 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: bigip-ctlr-clusterrole-binding
-  namespace: bigip-namespace
+  namespace: kube-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -141,7 +141,7 @@ subjects:
 - apiGroup: ""
   kind: ServiceAccount
   name: bigip-ctlr
-  namespace: bigip-namespace
+  namespace: kube-system
 EOF
 kubectl apply -f rbac.yaml 
 ```
