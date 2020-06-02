@@ -98,6 +98,19 @@ resource "local_file" "cli_running_ec2_instances" {
   EOF  
 }
 
+
+resource "local_file" "cli_running_ec2_instances_all_regions" {
+  filename = "${path.module}/generated/cli_running_ec2_instances_all_regions.sh"
+  content = <<-EOF
+    #!/bin/bash
+    export AWS_DEFAULT_REGION=${var.region}
+    for region in `aws ec2 describe-regions --output text | cut -f4`; do
+      echo -e "\nListing Running Instances in region:'$region' ... matching '${var.user}' ";
+      aws ec2 describe-instances --query "Reservations[*].Instances[*].{IP:PublicIpAddress,ID:InstanceId,Type:InstanceType,State:State.Name,Name:Tags[0].Value}" --filters Name=instance-state-name,Values=running --output=table --region $region | grep -i ${var.user}
+    done
+  EOF  
+}
+
 resource "local_file" "ssh_controller_port_forwards" {
   filename = "${path.module}/generated/ssh_controller_port_forwards.sh"
   content = <<-EOF
