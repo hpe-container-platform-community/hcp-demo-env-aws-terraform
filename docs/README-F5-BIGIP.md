@@ -95,6 +95,11 @@ hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 
 # Create service account
 kubectl create serviceaccount bigip-ctlr -n kube-system
+     
+# Warning: this gives the bigip-ctlr-clusterrole super user privileges
+kubectl create clusterrolebinding bigip-ctlr-clusterrole \
+     --clusterrole=cluster-admin \
+     --group=system:serviceaccounts
 
 # Create namespace
 kubectl create namespace bigip-namespace
@@ -104,46 +109,6 @@ kubectl create secret generic bigip-login \
   --namespace kube-system \
   --from-literal=username=admin \
   --from-literal=password=in5ecurP55wrd
-
-# From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#set-up-rbac-authentication
-
-cat > rbac.yaml <<EOF
-# for use in k8s clusters only
-# for OpenShift, use the OpenShift-specific examples
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: bigip-ctlr-clusterrole
-rules:
-- apiGroups: ["", "extensions"]
-  resources: ["nodes", "services", "endpoints", "namespaces", "ingresses", "pods"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["", "extensions"]
-  resources: ["configmaps", "events", "ingresses/status"]
-  verbs: ["get", "list", "watch", "update", "create", "patch"]
-- apiGroups: ["", "extensions"]
-  resources: ["secrets"]
-  resourceNames: ["bigip-login"]
-  verbs: ["get", "list", "watch"]
-
----
-
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: bigip-ctlr-clusterrole-binding
-  namespace: kube-system
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: bigip-ctlr-clusterrole
-subjects:
-- apiGroup: ""
-  kind: ServiceAccount
-  name: bigip-ctlr
-  namespace: kube-system
-EOF
-kubectl apply -f rbac.yaml 
 ```
 
 - From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#basic-deployment
