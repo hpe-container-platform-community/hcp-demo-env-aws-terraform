@@ -13,16 +13,11 @@ ln -s docs/README-F5-BIGIP/bluedata_infra_main_bigip.tf .
 ssh -o StrictHostKeyChecking=no -i ./generated/controller.prv_key admin@$(terraform output bigip_public_ip) <<EOF
 modify auth user admin password in5ecurP55wrd
 create /auth partition demopartition
-#modify /net self self_1nic allow-service all
-#modify /security firewall management-ip-rules rules delete { example_mgmt_rule }
-#modify /security firewall management-ip-rules rules add { example2_mgmt_rule { action accept destination { addresses add { 10.1.0.69 } ports add { 443 } } ip-protocol tcp log yes place-before first source { addresses add { 10.1.0.1-10.1.0.254 } ports none } status enabled uuid auto-generate } }
 show /sys version
 save sys config
 EOF
 
-# Create a BIPIP partition
-# See: https://techdocs.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/tmos-implementations-12-1-0/29.html
-open "https://$(terraform output bigip_public_ip):8443"
+open https://$(terraform output bigip_private_ip_1)
 
 ./bin/experimental/01_configure_global_active_directory.sh
 ./bin/experimental/02_gateway_add.sh
