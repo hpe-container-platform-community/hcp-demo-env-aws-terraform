@@ -167,8 +167,8 @@ data:
         userSearch:
           baseDN: CN=Users,DC=samdom,DC=example,DC=com
           filter: "(|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))"
-          username: uid
-          idAttr: uid
+          username: cn
+          idAttr: cn
           emailAttr: mail
           nameAttr: givenName
         groupSearch:
@@ -199,6 +199,6 @@ open http://localhost:8080
 Debugging:
 
 ```
-kubectl logs -l app=dex -n auth
+kubectl logs -l app=dex -n auth -f
 ```
  
