@@ -117,10 +117,75 @@ kubectl get ns auth
 
 # Deploy the test LDAP service: 
 kubectl apply -f test_ldap.yaml
+```
 
-# this step is needed because for some reason the dex service doesn't understand that config map is changed
+Configure AD/LDAP:
+
+```
+cat > ldap_configmap.yaml <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dex
+  namespace: auth
+data:
+  config.yaml: |
+    issuer: http://dex.auth.svc.cluster.local:5556/dex
+    storage:
+      type: kubernetes
+      config:
+        inCluster: true
+    web:
+      http: 0.0.0.0:5556
+    logger:
+      level: "debug"
+      format: text
+    oauth2:
+      skipApprovalScreen: true
+    enablePasswordDB: true
+    staticPasswords:
+      - email: admin@kubeflow.org
+        hash: \$2y\$12\$ruoM7FqXrpVgaol44eRZW.4HWS8SAvg6KYVVSCIwKQPBmTpCm.EeO
+        username: admin
+    staticClients:
+      - id: kubeflow-oidc-authservice
+        redirectURIs: ["/login/oidc"]
+        name: 'Dex Login Application'
+        secret: pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok
+    connectors:
+    - type: ldap
+      id: ldap
+      name: LDAP
+      config:
+        host: $(terraform output ad_server_private_ip):636
+        insecureNoSSL: false
+        insecureSkipVerify: true
+        startTLS: false
+        bindDN: cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com
+        bindPW: 5ambaPwd@
+        usernamePrompt: username
+        userSearch:
+          baseDN: CN=Users,DC=samdom,DC=example,DC=com
+          filter: "(|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))"
+          username: uid
+          idAttr: uid
+          emailAttr: mail
+          nameAttr: givenName
+        groupSearch:
+          baseDN: CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com
+          filter: "(|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))"
+          userAttr: DN
+          groupAttr: member
+          nameAttr: cn
+EOF
+kubectl apply -f ldap_configmap.yaml
+
 kubectl rollout restart deployment dex -n auth
+```
 
+Expose the UI
+
+```
 export NAMESPACE=istio-system
 kubectl port-forward -n ${NAMESPACE} svc/istio-ingressgateway 8080:80
 ```
@@ -129,5 +194,11 @@ Open browser:
 
 ```
 open http://localhost:8080
+```
+
+Debugging:
+
+```
+kubectl logs -l app=dex -n auth
 ```
  
