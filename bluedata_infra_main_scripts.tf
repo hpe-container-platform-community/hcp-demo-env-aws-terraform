@@ -86,15 +86,15 @@ resource "local_file" "cli_start_ec2_instances" {
   EOF
 }
 
+
 resource "local_file" "cli_running_ec2_instances" {
   filename = "${path.module}/generated/cli_running_ec2_instances.sh"
   content = <<-EOF
     #!/bin/bash
-    aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status \
+    aws --region ${var.region} --profile ${var.profile} ec2 describe-instances \
       --instance-ids ${local.instance_ids} \
-      --include-all-instances \
       --output table \
-      --query "InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}"
+      --query "Reservations[*].Instances[*].{ExtIP:PublicIpAddress,IntIP:PrivateIpAddress,ID:InstanceId,Type:InstanceType,State:State.Name,Name:Tags[?Key=='Name']|[0].Value}"
   EOF  
 }
 
