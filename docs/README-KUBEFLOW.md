@@ -73,7 +73,7 @@ Now define PVs and apply the kubeflow scripts:
 ```
 # automatically create PVs
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
-kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+kubectl patch storageclass default -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 
 # Should contain line: `local-path (default)   rancher.io/local-path` 
 kubectl get sc
@@ -82,20 +82,23 @@ kubectl get sc
 - Download:
    - https://github.com/mapr/private-kfctl/blob/v1.0.1-branch-mapr/deploy/operator_bootstrap.yaml 
    - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/kfctl_hpc_istio.v1.0.1.yaml
-   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/test_ldap.yaml
+   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/utils/test_ldap.yaml
 
 ```
 # Apply the bootstrap script to deploy the operator: 
 kubectl apply -f operator_bootstrap.yaml
-
-# Wait until the auth namespace has been created
-watch kubectl get ns
 ```
 Now setup istio, etc.
 
 ```
 # Install the default services that are specified in 
 kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
+
+# Give install time to start
+sleep 300
+
+# Wait until the auth namespace has been created
+watch kubectl get ns
 
 # Deploy the test LDAP service: 
 kubectl apply -f test_ldap.yaml
@@ -105,5 +108,11 @@ kubectl rollout restart deployment dex -n auth
 
 export NAMESPACE=istio-system
 kubectl port-forward -n ${NAMESPACE} svc/istio-ingressgateway 8080:80
+```
+
+Open browser:
+
+```
+open http://localhost:8080
 ```
  
