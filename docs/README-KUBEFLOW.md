@@ -3,18 +3,30 @@ THIS DOCUMENT IS A WORK IN PROGRESS
 
 ### Kubeflow Install steps
 
-- This script assumes you are creating a new terraform managed environment with 2 worker hosts:
+Execute the below script if creating a new environment with terraform managed
+
+- Have a least 2 worker hosts
+- Use HPECP 5.1 (1289+ engineering build)
 
 ```bash
-set -e # abort on encountering an error
-set -u # abort on encountering an undefined variable
-
-# Set etc/bluedata_infra.tfvars with URL for HPECP 5.1 (1289+ engineering build)
 ./bin/create_new_environment_from_scratch.sh
 
 ./bin/experimental/01_configure_global_active_directory.sh
 ./bin/experimental/02_gateway_add.sh
 ./bin/experimental/03_k8sworkers_add.sh
+```
+
+Create a k8s cluster:
+
+```
+# install the cli
+pip3 install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
+
+# configure the cli
+hpecp configure-cli
+
+# test the cli - should return your platform id
+hpecp license platform-id 
 
 hpecp k8sworker list
 # +-----------+--------+------------------------------------------+------------+---------------------------+
