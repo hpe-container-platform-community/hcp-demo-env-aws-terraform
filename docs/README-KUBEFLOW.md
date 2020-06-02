@@ -190,7 +190,7 @@ export NAMESPACE=istio-system
 kubectl port-forward -n ${NAMESPACE} svc/istio-ingressgateway 8080:80
 ```
 
-Open browser:
+Open browser and login as `ad_admin1` with password `pass123`.
 
 ```
 open http://localhost:8080
