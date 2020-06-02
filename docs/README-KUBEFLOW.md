@@ -112,8 +112,8 @@ kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
 # Give install time to start
 sleep 300
 
-# Wait until the auth namespace has been created
-watch kubectl get ns
+# Ensure the auth namespace has been created
+kubectl get ns auth
 
 # Deploy the test LDAP service: 
 kubectl apply -f test_ldap.yaml
