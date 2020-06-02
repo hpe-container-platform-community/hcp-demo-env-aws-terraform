@@ -89,6 +89,12 @@ resource "aws_instance" "ad_server" {
       -
       add: loginShell
       loginShell: /bin/bash
+      -
+      add: mail
+      mail: adadmin1@example.com
+      -
+      add: givenName
+      givenName: ADAdmin1
 
       # DemoTenantUsers
       dn: cn=DemoTenantUsers,cn=Users,DC=samdom,DC=example,DC=com
@@ -116,6 +122,12 @@ resource "aws_instance" "ad_server" {
       -
       add: loginShell
       loginShell: /bin/bash
+      -
+      add: mail
+      mail: aduser1@example.com
+      -
+      add: givenName
+      givenName: ADUser1
     EOT
   }
 
