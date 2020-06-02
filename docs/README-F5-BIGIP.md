@@ -181,6 +181,7 @@ spec:
             "--bigip-password=\$(BIGIP_PASSWORD)",
             "--bigip-url=${BIGIP_IP}",
             "--bigip-partition=${BIGIP_PARTITION}",
+            "--insecure=true",
             "--pool-member-type=nodeport",
             "--agent=as3",
             ]
