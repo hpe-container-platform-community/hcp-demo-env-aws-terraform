@@ -65,7 +65,7 @@ hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 
 # The change to the API server configuration (above) should have triggered the kube-apiserver to restart
 # the kubea-apiserver should only show running time of a few seconds
-kubectl get pods --all-namespaces  | grep kube-apiserver
+kubectl get pods -n kube-system -l component=kube-apiserver
 ```
 
 Now define PVs and apply the kubeflow scripts:
@@ -73,6 +73,7 @@ Now define PVs and apply the kubeflow scripts:
 ```
 # automatically create PVs
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 kubectl patch storageclass default -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 
 # Should contain line: `local-path (default)   rancher.io/local-path` 
@@ -87,6 +88,8 @@ kubectl get sc
 ```
 # Apply the bootstrap script to deploy the operator: 
 kubectl apply -f operator_bootstrap.yaml
+
+sleep 300
 ```
 Now setup istio, etc.
 
