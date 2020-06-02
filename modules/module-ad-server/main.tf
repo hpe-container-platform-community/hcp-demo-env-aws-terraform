@@ -163,7 +163,7 @@ resource "aws_instance" "ad_server" {
       EOT
       ,
       "sleep 60",
-      "LDAPTLS_REQCERT=never ldapmodify -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -f /home/centos/ad_set_posix_classes.sh -w '5ambaPwd@' -c",
+      "LDAPTLS_REQCERT=never ldapmodify -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -f /home/centos/ad_set_posix_classes.sh -w '5ambaPwd@' -c 2>&1 >ad_set_posix_classes.log",
       "echo Done!"
 
       // To connect ...
