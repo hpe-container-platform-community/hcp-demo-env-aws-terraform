@@ -24,7 +24,11 @@ EOF
 
 # BIGIP management interface
 open https://$(terraform output bigip_private_ip_1)
+```
 
+Configure HPE CP
+
+```
 ./bin/experimental/01_configure_global_active_directory.sh
 ./bin/experimental/02_gateway_add.sh
 ./bin/experimental/03_k8sworkers_add.sh
@@ -37,17 +41,18 @@ hpecp k8sworker list
 # |    17     | ready  | ip-10-1-0-93.us-west-2.compute.internal  | 10.1.0.93  | /api/v2/worker/k8shost/17 |
 # +-----------+--------+------------------------------------------+------------+---------------------------+
 
-# get the HPE CP supported k8s 1.17.x version number
+# get the HPE CP supported k8s 1.15.x version number - BIGIP docs state this was the latest tested version
 KVERS=$(hpecp k8scluster k8s-supported-versions --output text --major-filter 1 --minor-filter 15)
 echo $KVERS
 
-# replace IDs defined below with the ones from `hpecp k8sworker list'
-MASTER_ID="/api/v2/worker/k8shost/16"
-WORKER_ID="/api/v2/worker/k8shost/17"
-MASTER_IP="10.1.0.178"
+# setup values from `hpecp k8sworker list'
+MASTER_ID="/api/v2/worker/k8shost/3"
+WORKER_ID="/api/v2/worker/k8shost/4"
+MASTER_IP=$(hpecp k8sworker get ${MASTER_ID} | grep '^ipaddr' | cut -d " " -f 2)
+CLUS_NAME="kubeflow_cluster"
 
 # create a K8s Cluster
-CLUS_ID=$(hpecp k8scluster create clus1 ${MASTER_ID}:master,${WORKER_ID}:worker --k8s-version $KVERS)
+CLUS_ID=$(hpecp k8scluster create ${CLUS_NAME} ${MASTER_ID}:master,${WORKER_ID}:worker --k8s-version $KVERS)
 echo $CLUS_ID
 
 # wait until ready
@@ -57,33 +62,34 @@ hpecp k8scluster wait-for-status $CLUS_ID --status "['ready']" --timeout-secs 12
 # ./generated/vpn_server_setup.sh
 # sudo ./generated/vpn_mac_connect.sh
 ping -c 5 $MASTER_IP
+```
+If the above ping fails, connect to the VPN:
 
+```
+./generated/vpn_server_setup.sh
+sudo ./generated/vpn_mac_connect.sh
+```
+
+Setup the k8s cluster
+
+```
 export KUBECONFIG=./generated/clus_kfg
 hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
-```
 
-- Create service account
-
-```
+# Create service account
 kubectl create serviceaccount bigip-ctlr -n kube-system
-```
 
-- Create namespace
-```
+# Create namespace
 kubectl create namespace bigip-namespace
-```
 
-
-- From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-secrets.html#secret-bigip-login
-```
+# From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-secrets.html#secret-bigip-login
 kubectl create secret generic bigip-login \
   --namespace kube-system \
   --from-literal=username=admin \
   --from-literal=password=in5ecurP55wrd
-```
 
-- From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#set-up-rbac-authentication
-```
+# From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#set-up-rbac-authentication
+
 cat > rbac.yaml <<EOF
 # for use in k8s clusters only
 # for OpenShift, use the OpenShift-specific examples
@@ -126,7 +132,7 @@ kubectl apply -f rbac.yaml
 - From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#basic-deployment
 
 ```
-BIGIP_IP=$(terraform output bigip_private_ip)
+BIGIP_IP=$(terraform output bigip_private_ip_1)
 BIGIP_PARTITION=demopartition
 
 
