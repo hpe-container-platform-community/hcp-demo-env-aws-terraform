@@ -22,6 +22,19 @@ show /sys version
 save sys config
 EOF
 
+# upload AS3 extensions
+# https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/installation.html#installcurl-ref
+wget https://github.com/F5Networks/f5-appsvcs-extension/releases/download/v3.20.0/f5-appsvcs-3.20.0-3.noarch.rpm
+FN=f5-appsvcs-3.20.0-3.noarch.rpm
+CREDS=admin:in5ecurP55wrd
+IP=$(terraform output bigip_private_ip_1)
+LEN=$(wc -c $FN | awk 'NR==1{print $1}')
+curl -kvu $CREDS https://$IP/mgmt/shared/file-transfer/uploads/$FN -H 'Content-Type: application/octet-stream' -H "Content-Range: 0-$((LEN - 1))/$LEN" -H "Content-Length: $LEN" -H 'Connection: keep-alive' --data-binary @$FN
+DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/downloads/$FN\"}"
+
+curl -kvu $CREDS "https://$IP/mgmt/shared/iapp/package-management-tasks" -H "Origin: https://$IP" -H 'Content-Type: application/json;charset=UTF-8' --data $DATA
+
+
 # BIGIP management interface
 open https://$(terraform output bigip_private_ip_1)
 ```
@@ -192,6 +205,8 @@ spec:
         - name: bigip-login
 EOF
 kubectl apply -f deployment.yaml
+
+kubectl get pods --all-namespaces | grep k8s-bigip-ctlr-deployment
 ```
 Test application
 
