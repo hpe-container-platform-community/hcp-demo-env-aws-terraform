@@ -22,6 +22,23 @@ show /sys version
 save sys config
 EOF
 
+# upload AS3 extensions
+# https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/installation.html#installcurl-ref
+wget https://github.com/F5Networks/f5-appsvcs-extension/releases/download/v3.20.0/f5-appsvcs-3.20.0-3.noarch.rpm
+FN=f5-appsvcs-3.20.0-3.noarch.rpm
+CREDS=admin:in5ecurP55wrd
+IP=$(terraform output bigip_private_ip_1)
+LEN=$(wc -c $FN | awk 'NR==1{print $1}')
+curl -kvu $CREDS https://$IP/mgmt/shared/file-transfer/uploads/$FN -H 'Content-Type: application/octet-stream' -H "Content-Range: 0-$((LEN - 1))/$LEN" -H "Content-Length: $LEN" -H 'Connection: keep-alive' --data-binary @$FN
+DATA="{\"operation\":\"INSTALL\",\"packageFilePath\":\"/var/config/rest/downloads/$FN\"}"
+
+curl -kvu $CREDS "https://$IP/mgmt/shared/iapp/package-management-tasks" -H "Origin: https://$IP" -H 'Content-Type: application/json;charset=UTF-8' --data $DATA
+
+# verify
+# https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/installation.html#success
+curl -kvu $CREDS "https://$IP/mgmt/shared/appsvcs/info"
+
+
 # BIGIP management interface
 open https://$(terraform output bigip_private_ip_1)
 ```
@@ -78,6 +95,11 @@ hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 
 # Create service account
 kubectl create serviceaccount bigip-ctlr -n kube-system
+     
+# Warning: this gives the bigip-ctlr-clusterrole super user privileges
+kubectl create clusterrolebinding bigip-ctlr-clusterrole \
+     --clusterrole=cluster-admin \
+     --group=system:serviceaccounts
 
 # Create namespace
 kubectl create namespace bigip-namespace
@@ -87,46 +109,6 @@ kubectl create secret generic bigip-login \
   --namespace kube-system \
   --from-literal=username=admin \
   --from-literal=password=in5ecurP55wrd
-
-# From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#set-up-rbac-authentication
-
-cat > rbac.yaml <<EOF
-# for use in k8s clusters only
-# for OpenShift, use the OpenShift-specific examples
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: bigip-ctlr-clusterrole
-rules:
-- apiGroups: ["", "extensions"]
-  resources: ["nodes", "services", "endpoints", "namespaces", "ingresses", "pods"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["", "extensions"]
-  resources: ["configmaps", "events", "ingresses/status"]
-  verbs: ["get", "list", "watch", "update", "create", "patch"]
-- apiGroups: ["", "extensions"]
-  resources: ["secrets"]
-  resourceNames: ["bigip-login"]
-  verbs: ["get", "list", "watch"]
-
----
-
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: bigip-ctlr-clusterrole-binding
-  namespace: bigip-namespace
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: bigip-ctlr-clusterrole
-subjects:
-- apiGroup: ""
-  kind: ServiceAccount
-  name: bigip-ctlr
-  namespace: bigip-namespace
-EOF
-kubectl apply -f rbac.yaml 
 ```
 
 - From: https://clouddocs.f5.com/containers/v2/kubernetes/kctlr-app-install.html#basic-deployment
@@ -181,6 +163,7 @@ spec:
             "--bigip-password=\$(BIGIP_PASSWORD)",
             "--bigip-url=${BIGIP_IP}",
             "--bigip-partition=${BIGIP_PARTITION}",
+            "--insecure=true",
             "--pool-member-type=nodeport",
             "--agent=as3",
             ]
@@ -191,6 +174,8 @@ spec:
         - name: bigip-login
 EOF
 kubectl apply -f deployment.yaml
+
+kubectl get pods --all-namespaces | grep k8s-bigip-ctlr-deployment
 ```
 Test application
 
