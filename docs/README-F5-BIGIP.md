@@ -37,8 +37,8 @@ hpecp k8sworker list
 # +-----------+--------+------------------------------------------+------------+---------------------------+
 # | worker_id | status |                 hostname                 |   ipaddr   |           href            |
 # +-----------+--------+------------------------------------------+------------+---------------------------+
-# |    16     | ready  | ip-10-1-0-178.us-west-2.compute.internal | 10.1.0.178 | /api/v2/worker/k8shost/16 |
-# |    17     | ready  | ip-10-1-0-93.us-west-2.compute.internal  | 10.1.0.93  | /api/v2/worker/k8shost/17 |
+# |    3      | ready  | ip-10-1-0-178.us-west-2.compute.internal | 10.1.0.178 | /api/v2/worker/k8shost/3  |
+# |    4      | ready  | ip-10-1-0-93.us-west-2.compute.internal  | 10.1.0.93  | /api/v2/worker/k8shost/4  |
 # +-----------+--------+------------------------------------------+------------+---------------------------+
 
 # get the HPE CP supported k8s 1.15.x version number - BIGIP docs state this was the latest tested version
@@ -192,6 +192,7 @@ spec:
 EOF
 kubectl apply -f deployment.yaml
 ```
+Test application
 
 ```
 kubectl create deployment web --image=gcr.io/google-samples/hello-app:1.0
