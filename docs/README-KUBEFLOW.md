@@ -3,7 +3,7 @@ THIS DOCUMENT IS A WORK IN PROGRESS
 
 ### Kubeflow Install steps
 
-Execute the below script if creating a new environment with terraform managed
+Execute the below script to create a new environment with terraform 
 
 - Have a least 2 worker hosts
 - Use HPECP 5.1 (1289+ engineering build)
@@ -16,15 +16,35 @@ Execute the below script if creating a new environment with terraform managed
 ./bin/experimental/03_k8sworkers_add.sh
 ```
 
-Create a k8s cluster:
+- Terraform users only - connect to the VPN
+
+```
+./generated/vpn_server_setup.sh
+sudo ./generated/vpn_mac_connect.sh
+```
+
+Download the yaml files
+
+   - https://github.com/mapr/private-kfctl/blob/v1.0.1-branch-mapr/deploy/operator_bootstrap.yaml to `operator_bootstrap.yaml `
+   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/kfctl_hpc_istio.v1.0.1.yaml to `kfctl_hpc_istio.v1.0.1.yaml`
+   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/utils/test_ldap.yaml to `test_ldap.yaml`
+
+
+Create a k8s cluster
+
+- First configure the hpecp CLI
 
 ```
 # install the cli
 pip3 install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
 
-# configure the cli
+# configure the cli - input your details when prompted
 hpecp configure-cli
+```
 
+- Create a K8S Cluster and install Kubeflow
+
+```
 # test the cli - should return your platform id
 hpecp license platform-id 
 
@@ -46,6 +66,12 @@ WORKER_ID="/api/v2/worker/k8shost/4"
 MASTER_IP=$(hpecp k8sworker get ${MASTER_ID} | grep '^ipaddr' | cut -d " " -f 2)
 CLUS_NAME="kubeflow_cluster"
 
+ping -c 5 $MASTER_IP
+if [[ $? != 0 ]]; then
+   echo "Aborting. No connectivity to Kubernetes Master: $MASTER - do you need to start the vpn?"
+   exit 1
+fi
+
 # create a K8s Cluster
 CLUS_ID=$(hpecp k8scluster create ${CLUS_NAME} ${MASTER_ID}:master,${WORKER_ID}:worker --k8s-version $KVERS)
 echo $CLUS_ID
@@ -53,19 +79,8 @@ echo $CLUS_ID
 # wait until ready
 hpecp k8scluster wait-for-status $CLUS_ID --status "['ready']" --timeout-secs 1200
 
-# check connectivity to server - you may need to start vpn with:
-ping -c 5 $MASTER_IP
-```
-If ping fails start the vpn:
+### Setup the k8s cluster api-server:
 
-```
-./generated/vpn_server_setup.sh
-sudo ./generated/vpn_mac_connect.sh
-```
-
-Now setup the k8s cluster api-server:
-
-```
 # update the kube-apiserver settings
 ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" centos@${MASTER_IP} <<END_SSH
 sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-issuer=kubernetes.default.svc' /etc/kubernetes/manifests/kube-apiserver.yaml
@@ -78,50 +93,37 @@ hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 # The change to the API server configuration (above) should have triggered the kube-apiserver to restart
 # the kubea-apiserver should only show running time of a few seconds
 kubectl get pods -n kube-system -l component=kube-apiserver
-```
 
-Now define PVs and apply the kubeflow scripts:
+### Define PVs and apply the kubeflow scripts:
 
-```
 # automatically create PVs
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
 kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 kubectl patch storageclass default -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 
-# Should contain line: `local-path (default)   rancher.io/local-path` 
+# Display the storage classes
 kubectl get sc
-```
 
-- Download:
-   - https://github.com/mapr/private-kfctl/blob/v1.0.1-branch-mapr/deploy/operator_bootstrap.yaml 
-   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/kfctl_hpc_istio.v1.0.1.yaml
-   - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/utils/test_ldap.yaml
+### Deploy the Kubeflow operator
 
-```
 # Apply the bootstrap script to deploy the operator: 
 kubectl apply -f operator_bootstrap.yaml
 
-sleep 300
-```
-Now setup istio, etc.
+kubectl wait --for=condition=ready -l name=kubeflow-operator -n kubeflow-operator pods --timeout 600s
 
-```
+### Now setup istio, etc.
+
 # Install the default services that are specified in 
 kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
 
 # Give install time to start
-sleep 300
-
-# Ensure the auth namespace has been created
-kubectl get ns auth
+kubectl wait --for=condition=Active namespace auth --timeout 600s
 
 # Deploy the test LDAP service: 
 kubectl apply -f test_ldap.yaml
-```
 
-Configure AD/LDAP:
+### Configure AD/LDAP
 
-```
 cat > ldap_configmap.yaml <<EOF
 apiVersion: v1
 kind: ConfigMap
@@ -181,6 +183,8 @@ EOF
 kubectl apply -f ldap_configmap.yaml
 
 kubectl rollout restart deployment dex -n auth
+
+kubectl wait --for=condition=ready -n auth service dex --timeout 600s
 ```
 
 Expose the UI
