@@ -65,6 +65,9 @@ kubectl get sc
 # Apply the bootstrap script to deploy the operator: 
 kubectl apply -f operator_bootstrap.yaml
 
+# need a better way to wait 
+sleep 300
+
 kubectl wait --for=condition=ready -l name=kubeflow-operator -n kubeflow-operator pods --timeout 600s
 
 ### Now setup istio, etc.
