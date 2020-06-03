@@ -161,7 +161,7 @@ resource "local_file" "ssh_gateway" {
   content = <<-EOF
      #!/bin/bash
      source "${path.module}/scripts/variables.sh"
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$@"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$GATW_PUB_IP "$@"
   EOF
 }
 
