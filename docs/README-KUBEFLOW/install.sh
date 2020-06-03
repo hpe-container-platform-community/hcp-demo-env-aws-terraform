@@ -72,8 +72,8 @@ kubectl wait --for=condition=ready -l name=kubeflow-operator -n kubeflow-operato
 # Install the default services that are specified in 
 kubectl apply -f kfctl_hpc_istio.v1.0.1.yaml
 
-# Give install time to start
-kubectl wait --for=condition=Active namespace auth --timeout 600s
+# need a better way to wait 
+sleep 300
 
 # Deploy the test LDAP service: 
 kubectl apply -f test_ldap.yaml
