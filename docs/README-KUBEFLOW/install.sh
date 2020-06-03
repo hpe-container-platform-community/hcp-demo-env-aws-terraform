@@ -44,11 +44,15 @@ sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-iss
 sudo sed -i '/^    - --service-account-key-file.*$/a\    - --service-account-signing-key-file=\/etc\/kubernetes\/pki\/sa.key' /etc/kubernetes/manifests/kube-apiserver.yaml
 END_SSH
 
+# Give kube-apiserver a chance to restart
+sleep 60
+
+# Setup Kubectl
 export KUBECONFIG=./generated/${CLUS_NAME}.conf
 hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 
 # Wait for api-server to restart and be ready
-kubectl wait --for=condition=ready -l component=kube-apiserver -n kube-system pods --timeout 600s
+#kubectl wait --for=condition=ready -l component=kube-apiserver -n kube-system pods --timeout 600s
 
 ### Define PVs and apply the kubeflow scripts:
 
