@@ -47,9 +47,8 @@ END_SSH
 export KUBECONFIG=./generated/${CLUS_NAME}.conf
 hpecp k8scluster admin-kube-config ${CLUS_ID} > ${KUBECONFIG}
 
-# The change to the API server configuration (above) should have triggered the kube-apiserver to restart
-# the kubea-apiserver should only show running time of a few seconds
-kubectl get pods -n kube-system -l component=kube-apiserver
+# Wait for api-server to restart and be ready
+kubectl wait --for=condition=ready -l component=kube-apiserver -n kube-system pods --timeout 600s
 
 ### Define PVs and apply the kubeflow scripts:
 
