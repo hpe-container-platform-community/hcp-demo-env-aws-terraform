@@ -46,10 +46,4 @@ Open browser and login as `ad_admin1` with password `pass123`.
 ```
 open http://localhost:8080
 ```
-
-Debugging:
-
-```
-kubectl logs -l app=dex -n auth -f
-```
  
