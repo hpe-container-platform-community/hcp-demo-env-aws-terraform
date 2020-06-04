@@ -4,7 +4,7 @@ In this document we will create a Kubeflow notebook server and run a simple Tens
 
 ### Pre-requisities
 
-- You have installed Kubeflow as per the instructions [here](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform/blob/master/docs/README-KUBEFLOW.md)
+- You have installed Kubeflow as per the instructions [here](../README-KUBEFLOW.md)
 
 ### Instructions
 
