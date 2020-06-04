@@ -35,3 +35,12 @@ sess = tf.Session()
 
 print(sess.run(hello))
 ```
+
+- Now save the notebook:
+  - Click **File** then **Save As**
+  - Give it a name, e.g. **HelloWorldTF**
+  - Click **Save**
+- Navigate back to the browser tab with the KubeFlow interface
+  - Click **Home** from the menu
+  - **Reload** the browser window and you should see your notebook in the section **Recent Notebooks**
+
