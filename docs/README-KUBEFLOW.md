@@ -1,7 +1,7 @@
 THIS DOCUMENT IS A WORK IN PROGRESS
 -----
 
-### Kubeflow Install steps
+### Kubeflow install steps
 
 It is recommended that you clone a fresh instance of this repository and create a new HPE Container Platform deployment for the Kubeflow installation - see the [quickstart](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform#setup-environment).
 
