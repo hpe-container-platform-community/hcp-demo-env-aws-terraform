@@ -164,7 +164,7 @@ resource "aws_instance" "ad_server" {
       EOT
       ,
       "sleep 60",
-      ldapmodify -H ldap://localhost:389 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -f /home/centos/ad_set_posix_classes.ldif -w '5ambaPwd@' -c 2>&1 >ad_set_posix_classes.log",
+      "ldapmodify -H ldap://localhost:389 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -f /home/centos/ad_set_posix_classes.ldif -w '5ambaPwd@' -c 2>&1 >ad_set_posix_classes.log",
       "echo Done!"
 
       // To connect ...
