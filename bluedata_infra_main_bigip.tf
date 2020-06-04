@@ -1,1 +1,0 @@
-docs/README-F5-BIGIP/bluedata_infra_main_bigip.tf

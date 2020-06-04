@@ -20,3 +20,4 @@ generated/
 tmp/
 log/
 .DS_Store
+bluedata_infra_main_bigip.tf
