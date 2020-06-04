@@ -55,7 +55,7 @@ open http://localhost:8080
 
 ### Known Issues
 
-- Restarting your AWS instances will result in Kubeflow disappearing.
+- Restarting your AWS instances may result in Kubeflow disappearing.
 
 ### Next Steps
 
