@@ -8,7 +8,10 @@ In this document we will create a Kubeflow notebook server and run a simple Tens
 
 ### Instructions
 
-Note details coming soon ...
+- In the **Quick shortcuts** on the left hand tile:
+  - Click **Create a new Notebook server**
+  - Provide a name, e.g. **helloworld** (name should be lowercase)
+  - Click Finish
 
 ```
 from __future__ import print_function
