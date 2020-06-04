@@ -4,6 +4,12 @@ set -e # abort on error
 set -u # abort on undefined variable
 
 ./scripts/check_prerequisites.sh
+source ./scripts/functions.sh
+
+print_term_width "="
+echo "TIP: Parameters given to this script are passed to 'terraform apply'"
+echo "     Example: ./bin/terraform_apply.sh -var='ad_server_enabled=false'"
+print_term_width "="
 
 
 if [[ ! -f  "./generated/controller.prv_key" ]]; then
@@ -15,8 +21,9 @@ fi
 
 
 terraform apply -var-file=etc/bluedata_infra.tfvars \
-   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" && \
-terraform output -json > generated/output.json && \
+   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" "$@"
+
+terraform output -json > generated/output.json 
 ./scripts/post_refresh_or_apply.sh
 
 source ./scripts/variables.sh
