@@ -61,7 +61,7 @@ resource "aws_instance" "ad_server" {
       private_key = file("${var.ssh_prv_key_path}")
       agent   = false
     }
-    destination   = "/home/centos/ad_set_posix_classes.sh"
+    destination   = "/home/centos/ad_set_posix_classes.ldif"
     content       = <<-EOT
       # DemoTenantAdmins
       dn: cn=DemoTenantAdmins,cn=Users,DC=samdom,DC=example,DC=com
@@ -128,6 +128,7 @@ resource "aws_instance" "ad_server" {
       -
       add: givenName
       givenName: ADUser1
+
     EOT
   }
 
@@ -163,7 +164,7 @@ resource "aws_instance" "ad_server" {
       EOT
       ,
       "sleep 60",
-      "LDAPTLS_REQCERT=never ldapmodify -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -f /home/centos/ad_set_posix_classes.sh -w '5ambaPwd@' -c 2>&1 >ad_set_posix_classes.log",
+      ldapmodify -H ldap://localhost:389 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -f /home/centos/ad_set_posix_classes.ldif -w '5ambaPwd@' -c 2>&1 >ad_set_posix_classes.log",
       "echo Done!"
 
       // To connect ...
