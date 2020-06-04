@@ -53,6 +53,7 @@ resource "aws_instance" "ad_server" {
 
   // create posixAccount and posixGroup attributes, required for MAPR LDAP auth
   // see: https://mapr.com/docs/61/SecurityGuide/PAMConfiguration-LDAP.html
+  // Kubeflow requires mail and givenName attributes.
   provisioner "file" {
     connection {
       type        = "ssh"
