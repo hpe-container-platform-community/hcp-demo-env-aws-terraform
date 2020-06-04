@@ -49,4 +49,14 @@ Open browser and login as `ad_admin1` with password `pass123`.
 ```
 open http://localhost:8080
 ```
- 
+
+- Click Start Setup
+- Click Finish
+
+### Known Issues
+
+- Restarting your AWS instances will result in Kubeflow disappearing.
+
+### Next Steps
+
+- [Hello World](./README-KUBEFLOW/HELLO-WORLD.md)
