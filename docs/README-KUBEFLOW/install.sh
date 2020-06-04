@@ -145,6 +145,8 @@ data:
 EOF
 kubectl apply -f ldap_configmap.yaml
 
+sleep 30
+
 kubectl rollout restart deployment dex -n auth
 
-kubectl wait --for=condition=ready -n auth service dex --timeout 600s
+sleep 300
