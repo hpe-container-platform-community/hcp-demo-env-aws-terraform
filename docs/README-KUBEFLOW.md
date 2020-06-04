@@ -5,6 +5,10 @@ THIS DOCUMENT IS A WORK IN PROGRESS
 
 It is recommended that you clone a fresh instance of this repository and create a new HPE Container Platform deployment for the Kubeflow installation - see the [quickstart](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform#setup-environment).
 
+- Execute the below scripts to create a new environment with terraform 
+  - Define 2 worker hosts: set `worker_count=2` in `./etc/bluedata_infra.tfvars`
+  - Use HPECP 5.1 (1289+ engineering build)
+
 ```bash
 ./bin/create_new_environment_from_scratch.sh
 
@@ -18,9 +22,7 @@ It is recommended that you clone a fresh instance of this repository and create 
    - https://github.com/mapr/private-kfctl/blob/v1.0.1-branch-mapr/deploy/operator_bootstrap.yaml to `./operator_bootstrap.yaml `
    - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/kfctl_hpc_istio.v1.0.1.yaml to `./kfctl_hpc_istio.v1.0.1.yaml`
    - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/utils/test_ldap.yaml to `./test_ldap.yaml`
-- Execute the below script to create a new environment with terraform 
-  - Define 2 worker hosts: set `worker_count=2` in `./etc/bluedata_infra.tfvars`
-  - Use HPECP 5.1 (1289+ engineering build)
+
 
 - Connect to the VPN
 
