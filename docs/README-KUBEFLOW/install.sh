@@ -150,3 +150,6 @@ sleep 30
 kubectl rollout restart deployment dex -n auth
 
 sleep 300
+
+## Debugging 
+# kubectl logs -l app=dex -n auth -f
