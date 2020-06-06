@@ -24,6 +24,6 @@ command -v aws >/dev/null 2>&1  || {
 
 python3 -m ipcalc > /dev/null || {
     echo "I require 'ipcalc' python module, but it's not installed.  Aborting."
-    echo "Please install with: 'pip3 install --user ipcalc'"
+    echo "Please install with: 'pip3 install --user ipcalc six'"
     exit 1
 }
