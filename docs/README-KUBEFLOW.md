@@ -7,7 +7,7 @@ It is recommended that you clone a fresh instance of this repository and create 
 
 - Execute the below scripts to create a new environment with terraform 
   - Define 2 worker hosts: set `worker_count=2` in `./etc/bluedata_infra.tfvars`
-  - Use HPECP 5.1 (1289+ engineering build)
+  - Use HPECP 5.1 (1289+ engineering build) - Chris Snow can provide the URL.
 
 ```bash
 ./bin/create_new_environment_from_scratch.sh
