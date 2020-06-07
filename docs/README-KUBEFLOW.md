@@ -54,9 +54,9 @@ open http://localhost:8080
 - Click Start Setup
 - Click Finish
 
-### Known Issues
+### Reconnecting after worker host reboot
 
-- Restarting your AWS instances may result in Kubeflow failing to properly restart. If so, run:
+- Restarting your AWS instances may result in Kubeflow failing to properly restart. Wait around 10 minutes before running the steps to [Expose the UI and Login](#expose-the-ui-and-login).  If after this time you are still unable to portforward, run:
 
 ```bash
 bash -x  docs/README-KUBEFLOW/after_worker_restart.sh
