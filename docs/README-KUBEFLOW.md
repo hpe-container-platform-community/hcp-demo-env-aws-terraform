@@ -56,11 +56,13 @@ open http://localhost:8080
 
 ### Known Issues
 
-- Restarting your AWS instances may result in Kubeflow failing to properly restart. For now, reinstall:
+- Restarting your AWS instances may result in Kubeflow failing to properly restart. If so, run:
 
 ```bash
 bash -x  docs/README-KUBEFLOW/after_worker_restart.sh
 ```
+
+After running the above script, proceed to the step [Expose the UI and Login](#expose-the-ui-and-login)
 
 ### Next Steps
 
