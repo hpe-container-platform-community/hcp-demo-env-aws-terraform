@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Please be patient - the next command can take 10 mins or more to complete."
+
 kubectl delete -f kfctl_hpc_istio.v1.0.1.yaml
 
 kubectl delete validatingwebhookconfigurations --all
