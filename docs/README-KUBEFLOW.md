@@ -59,16 +59,7 @@ open http://localhost:8080
 - Restarting your AWS instances may result in Kubeflow failing to properly restart. For now, reinstall:
 
 ```bash
-hpecp k8scluster list
-
-# replace with your cluster id from 'hpecp k8scluster list'
-CLUSTER_ID=/api/v2/k8scluster/1 
-
-hpecp k8scluster delete $CLUSTER_ID
-
-watch hpecp k8scluster list
-
-bash -x  docs/README-KUBEFLOW/install.sh
+bash -x  docs/README-KUBEFLOW/after_worker_restart.sh
 ```
 
 ### Next Steps
