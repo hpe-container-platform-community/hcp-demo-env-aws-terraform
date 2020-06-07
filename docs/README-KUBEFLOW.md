@@ -37,7 +37,7 @@ sudo ./generated/vpn_mac_connect.sh
 bash -x  docs/README-KUBEFLOW/install.sh
 ```
 
-Expose the UI
+### Expose the UI and Login
 
 ```
 export KUBECONFIG=./generated/kubeflow_cluster.conf
