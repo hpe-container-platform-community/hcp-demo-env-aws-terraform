@@ -55,7 +55,18 @@ open http://localhost:8080
 
 ### Known Issues
 
-- Restarting your AWS instances may result in Kubeflow disappearing.
+- Restarting your AWS instances may result in Kubeflow disappearing. For now, reinstall:
+
+```bash
+hpecp k8scluster list
+
+# \/ replace with your cluster id from 'hpecp k8scluster list'
+CLUSTER_ID=/api/v2/k8scluster/1 
+hpecp k8scluster delete 
+
+watch hpecp k8scluster list
+bash -x  docs/README-KUBEFLOW/install.sh
+```
 
 ### Next Steps
 
