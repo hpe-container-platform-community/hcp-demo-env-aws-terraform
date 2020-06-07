@@ -40,6 +40,7 @@ bash -x  docs/README-KUBEFLOW/install.sh
 Expose the UI
 
 ```
+export KUBECONFIG=./generated/kubeflow_cluster.conf
 export NAMESPACE=istio-system
 kubectl port-forward -n ${NAMESPACE} svc/istio-ingressgateway 8080:80
 ```
