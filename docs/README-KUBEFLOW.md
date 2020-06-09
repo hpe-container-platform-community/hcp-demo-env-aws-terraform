@@ -73,3 +73,4 @@ After running the above script, proceed to the step [Expose the UI and Login](#e
 - Familiarise yourself with the main [Kubeflow Components](https://www.kubeflow.org/docs/components/)
 - [Hello World notebook](./README-KUBEFLOW/HELLO-WORLD-NOTEBOOK.md)
 - [Hello World pipeline](./README-KUBEFLOW/HELLO-WORLD-PIPELINE.md)
+- [Hello World training](./README-KUBEFLOW/HELLO-WORLD-TF-TRAINING.md)
