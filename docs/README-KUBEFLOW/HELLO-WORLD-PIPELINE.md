@@ -53,3 +53,4 @@ python3 hello_world.py
   - Wait for the **Default** experiment to show, when it does click the arrow to **Expand it**
   - Wait for your **Run** to have a green tick next to it
   - Click the **Run Name** 
+  - Click on the **Echo** box and inspect the **Logs** tab - you should see "hello world"
