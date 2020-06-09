@@ -82,6 +82,13 @@ kubectl apply -f tfevent-pvc.yaml
 kubectl apply -f tf_job_mnist.yaml
 ```
 
+- Check tf /train folder
+
+```bash
+kubectl -n kubeflow exec -it mnist-worker-0 /bin/bash
+ls /train
+```
+
 - Monitor the job:
 
 ```
