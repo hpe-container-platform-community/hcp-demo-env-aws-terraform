@@ -7,6 +7,8 @@ In this document we will create and run a simple 'hello world' pipeline - [src](
 - You have installed Kubeflow as per the instructions [here](../README-KUBEFLOW.md)
 - You have followed the instructions to create a Notebook [here](./HELLO-WORLD-NOTEBOOK.md)
 - You have Python3 installed on your client machine.
+- You understand the basics of Kubeflow Pipelines:
+  - [Intro to Kubeflow Pipelines - Kubeflow 101](https://www.youtube.com/watch?v=_AY8mmbR1o4)
 
 ### Instructions
 
