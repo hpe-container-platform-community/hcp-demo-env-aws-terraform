@@ -29,8 +29,7 @@ kubectl get sc
 
 Note that the MAPR CSI storage class is called `default`
 
-- Update the event PV
-  - Change `storageClassName:` from `standard` to `default`
+- Update the event PV, change `storageClassName:` from `standard` to `default`
 
 ```bash
 > cat tfevent-pv.yaml
@@ -50,8 +49,7 @@ spec:
   hostPath:
     path: /tmp/data
 ```
-- Update the event PVC
-  - Add the `storageClassName: default` to the spec:
+- Update the event PVC, add the `storageClassName: default` to the spec:
   
 ```bash
 > cat tfevent-pvc.yaml
@@ -71,7 +69,7 @@ spec:
       storage: 10Gi
   storageClassName: default
 ```
-- Apply the pv and pvc:
+- Apply the pv and pvc
 
 ```bash
 kubectl apply -f tfevent-pv.yaml
