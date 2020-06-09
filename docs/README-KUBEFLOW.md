@@ -71,3 +71,4 @@ After running the above script, proceed to the step [Expose the UI and Login](#e
 ### Next Steps
 
 - [Hello World notebook](./README-KUBEFLOW/HELLO-WORLD-NOTEBOOK.md)
+- [Hello World pipeline](./README-KUBEFLOW/HELLO-WORLD-PIPELINE.md)
