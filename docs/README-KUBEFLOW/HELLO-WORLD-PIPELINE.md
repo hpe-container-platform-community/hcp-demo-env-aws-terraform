@@ -1,6 +1,6 @@
 ### Overview
 
-In this document we will create and run a simple pipeline.
+In this document we will create and run a simple 'hello world' pipeline - [src](https://raw.githubusercontent.com/kubeflow/pipelines/master/samples/core/helloworld/hello_world.py)
 
 ### Pre-requisities
 
