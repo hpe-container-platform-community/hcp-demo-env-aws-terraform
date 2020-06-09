@@ -70,4 +70,4 @@ After running the above script, proceed to the step [Expose the UI and Login](#e
 
 ### Next Steps
 
-- [Hello World](./README-KUBEFLOW/HELLO-WORLD.md)
+- [Hello World notebook](./README-KUBEFLOW/HELLO-WORLD-NOTEBOOK.md)
