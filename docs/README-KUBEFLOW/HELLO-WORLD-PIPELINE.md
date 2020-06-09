@@ -49,4 +49,7 @@ python3 hello_world.py
 
 - In the Kubeflow UI, **click Create Run** on the top right
   - Leave the default values and **click Start**
-- 
+- You will notice you are in the Experiments section
+  - Wait for the **Default** experiment to show, when it does click the arrow to **Expand it**
+  - Wait for your **Run** to have a green tick next to it
+  - Click the **Run Name** 
