@@ -19,23 +19,26 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	# 2 = EPIC Demo Tenant
 	TENANT_KEYTAB_DIR=/srv/bluedata/keytab/2/
 
-
 	CONTAINER_ID=\$(docker ps | grep "epic-mapr" | cut -d " " -f1)
 
+	# create an impresonation ticket and copy it to the tenant folder on the controller
 	bdmapr maprlogin generateticket -type servicewithimpersonation -user \${MAPR_USER} -out \${MAPR_TCKT}
 	sudo docker cp \${CONTAINER_ID}:\${MAPR_TCKT} \${TENANT_KEYTAB_DIR}
 	sudo chown centos:apache \${TENANT_KEYTAB_DIR}/\${MAPR_USER}_impersonation_ticket
 	sudo chmod 660 \${TENANT_KEYTAB_DIR}/\${MAPR_USER}_impersonation_ticket
 
+	# create a mount point for the new volume
 	docker exec -i \$CONTAINER_ID bash <<-DOCKER_EOF
 		[[ -d /mapr/mnt/hcp.mapr.cluster/global ]] || mkdir /mapr/mnt/hcp.mapr.cluster/global
 		chown -R mapr:mapr /mapr/mnt/hcp.mapr.cluster/global
 		chmod -R 777 /mapr/mnt/hcp.mapr.cluster/global
 	DOCKER_EOF
 
+	# ignore errors so this script is idempotent
 	bdmapr maprcli volume create -name global -path \${MAPR_VMNT} || true # ignore error
 	bdmapr maprcli acl set -type volume -name global -user ad_admin1:fc || true # ignore error
 
+	# currently, the hpecp CLI doesn't support python2.7 so run it in a container
 	docker run -i --rm ubuntu:18.04 /bin/bash -s <<DOCK_EOF 
 		set -xeu
 		apt-get update 
