@@ -7,7 +7,7 @@ It is recommended that you clone a fresh instance of this repository and create 
 
 - Execute the below scripts to create a new environment with terraform 
   - Define 2 worker hosts: set `worker_count=2` in `./etc/bluedata_infra.tfvars`
-  - Use HPECP 5.1 (1289+ engineering build) - Chris Snow can provide the URL.
+  - Use HPECP 5.1 (1289 or 1440 engineering build) - Chris Snow can provide the URL.
 
 ```bash
 ./bin/create_new_environment_from_scratch.sh
@@ -47,7 +47,8 @@ kubectl port-forward -n ${NAMESPACE} svc/istio-ingressgateway 8080:80
 
 # If you recieve an error such as the following:
 #
-#    Unable to connect to the server: dial tcp: lookup ip-10-1-0-185.us-west-2.compute.internal: no such host
+#    Unable to connect to the server: \
+#       dial tcp: lookup ip-10-1-0-185.us-west-2.compute.internal: no such host
 #
 # Ensure you are only connected to terraform managed vpn and not any other vpn such as Pulse.
 ```
