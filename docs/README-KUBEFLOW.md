@@ -17,7 +17,7 @@ It is recommended that you clone a fresh instance of this repository and create 
 ./bin/experimental/03_k8sworkers_add.sh
 ```
 
-- Download the yaml files
+- Download the yaml files to the terraform project root directory
 
    - https://github.com/mapr/private-kfctl/blob/v1.0.1-branch-mapr/deploy/operator_bootstrap.yaml to `./operator_bootstrap.yaml `
    - https://github.com/mapr/private-manifests/blob/v1.0.1-branch-mapr/kfdef/kfctl_hpc_istio.v1.0.1.yaml to `./kfctl_hpc_istio.v1.0.1.yaml`
