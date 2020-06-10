@@ -34,6 +34,7 @@ sudo ./generated/vpn_mac_connect.sh
 - Run the install script (if you have created a new HPE CP environment with 2 workers, you don't need to modify the script):
 
 ```
+export HPECP_CONFIG_FILE=./generated/hpecp.conf
 bash -x  docs/README-KUBEFLOW/install.sh
 ```
 
