@@ -31,7 +31,7 @@ It is recommended that you clone a fresh instance of this repository and create 
 sudo ./generated/vpn_mac_connect.sh
 ```
 
-- Run the install script:
+- Run the install script (if you have created a new HPE CP environment with 2 workers, you don't need to modify the script):
 
 ```
 bash -x  docs/README-KUBEFLOW/install.sh
@@ -70,4 +70,7 @@ After running the above script, proceed to the step [Expose the UI and Login](#e
 
 ### Next Steps
 
-- [Hello World](./README-KUBEFLOW/HELLO-WORLD.md)
+- Familiarise yourself with the main [Kubeflow Components](https://www.kubeflow.org/docs/components/)
+- [Hello World notebook](./README-KUBEFLOW/HELLO-WORLD-NOTEBOOK.md)
+- [Hello World pipeline](./README-KUBEFLOW/HELLO-WORLD-PIPELINE.md)
+- [Hello World training](./README-KUBEFLOW/HELLO-WORLD-TF-TRAINING.md)
