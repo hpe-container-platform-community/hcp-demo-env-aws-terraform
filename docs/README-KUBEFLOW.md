@@ -45,9 +45,11 @@ export KUBECONFIG=./generated/kubeflow_cluster.conf
 export NAMESPACE=istio-system
 kubectl port-forward -n ${NAMESPACE} svc/istio-ingressgateway 8080:80
 
-# If you recieve an error such as the following, you may need to restart your VPN
-#    > kubectl port-forward -n ${NAMESPACE} svc/istio-ingressgateway 8080:80
+# If you recieve an error such as the following:
+#
 #    Unable to connect to the server: dial tcp: lookup ip-10-1-0-185.us-west-2.compute.internal: no such host
+#
+# Ensure you are only connected to terraform managed vpn and not any other vpn such as Pulse.
 ```
 
 Open browser and login as `ad_admin1` with password `pass123`.
