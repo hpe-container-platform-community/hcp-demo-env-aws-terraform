@@ -21,7 +21,11 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
 
 	CONTAINER_ID=\$(docker ps | grep "epic-mapr" | cut -d " " -f1)
+
+	bdmapr maprlogin generateticket -type servicewithimpersonation -user \${MAPR_USER} -out \${MAPR_TCKT}
 	sudo docker cp \${CONTAINER_ID}:\${MAPR_TCKT} \${TENANT_KEYTAB_DIR}
+	sudo chown centos:apache \${TENANT_KEYTAB_DIR}/\${MAPR_USER}_impersonation_ticket
+	sudo chmod 660 \${TENANT_KEYTAB_DIR}/\${MAPR_USER}_impersonation_ticket
 
 	docker exec -i \$CONTAINER_ID bash <<-DOCKER_EOF
 		[[ -d /mapr/mnt/hcp.mapr.cluster/global ]] || mkdir /mapr/mnt/hcp.mapr.cluster/global
@@ -29,7 +33,6 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		chmod -R 777 /mapr/mnt/hcp.mapr.cluster/global
 	DOCKER_EOF
 
-	bdmapr maprlogin generateticket -type servicewithimpersonation -user \${MAPR_USER} -out \${MAPR_TCKT}
 	bdmapr maprcli volume create -name global -path \${MAPR_VMNT} || true # ignore error
 	bdmapr maprcli acl set -type volume -name global -user ad_admin1:fc || true # ignore error
 
