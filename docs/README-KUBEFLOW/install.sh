@@ -2,6 +2,11 @@
 
 set -e # abort on error
 
+if [[ ! -f kfctl_hpc_istio.v1.0.1.yaml ]]; then
+   echo "Aborting. Can't find kfctl_hpc_istio.v1.0.1.yaml in $(pwd)"
+   exit 1
+fi
+
 # test the cli - should return your platform id
 hpecp license platform-id 
 
