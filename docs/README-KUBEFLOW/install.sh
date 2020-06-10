@@ -3,7 +3,17 @@
 set -e # abort on error
 
 if [[ ! -f kfctl_hpc_istio.v1.0.1.yaml ]]; then
-   echo "Aborting. Can't find kfctl_hpc_istio.v1.0.1.yaml in $(pwd)"
+   echo "Aborting. Can't find 'kfctl_hpc_istio.v1.0.1.yaml' in '$(pwd)'"
+   exit 1
+fi
+
+if [[ ! -f operator_bootstrap.yaml ]]; then
+   echo "Aborting. Can't find 'operator_bootstrap.yaml' in '$(pwd)'"
+   exit 1
+fi
+
+if [[ ! -f test_ldap.yaml ]]; then
+   echo "Aborting. Can't find 'test_ldap.yaml' in '$(pwd)'"
    exit 1
 fi
 
