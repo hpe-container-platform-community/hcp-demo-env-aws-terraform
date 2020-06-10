@@ -48,8 +48,8 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 			use_ssl = ${INSTALL_WITH_SSL}
 			verify_ssl = False
 			warn_ssl = False
-			username = admin
-			password = admin123
+			username = ad_admin1
+			password = pass123
 		CAT_EOF
 
 		export LOG_LEVEL=DEBUG
