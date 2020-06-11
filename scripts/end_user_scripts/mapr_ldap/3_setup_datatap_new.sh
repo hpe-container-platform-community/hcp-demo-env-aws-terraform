@@ -43,6 +43,44 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		apt-get install -y python3-pip git
 		pip3 install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
 		
+		# First we need 'admin' to setup the Demo Tenant authentication AD groups
+		cat > ~/.hpecp.conf <<-CAT_EOF
+			[default]
+			api_host = ${CTRL_PRV_IP}
+			api_port = 8080
+			use_ssl = ${INSTALL_WITH_SSL}
+			verify_ssl = False
+			warn_ssl = False
+			username = admin
+			password = admin123
+		CAT_EOF
+
+		# set the log level for the HPE CP CLI 
+		export LOG_LEVEL=DEBUG
+		
+		# test connectivity to HPE CP with the CLI
+		hpecp license platform-id
+
+		# setup AD user for tenant Administrator
+		# NOTE:
+		#  - /api/v1/role/2 = Admins
+		#  - /api/v1/role/3 = Members
+		cat >tenant_ad_auth.json<<-JSON_EOF
+		{
+			"external_user_groups": [
+			    {
+				"role": "/api/v1/role/2",
+				"group":"CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
+			    },
+			    {
+				"role": "/api/v1/role/3",
+				"group": "CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
+			    }
+			]
+		}
+		JSON_EOF
+		hpecp httpclient put /api/v1/tenant/2?external_user_groups --json-file tenant_ad_auth.json
+
 		# The datatap needs to be created as a tenant administrator, not as global admin
 		cat > ~/.hpecp.conf <<-CAT_EOF
 			[default]
@@ -54,29 +92,6 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 			username = ad_admin1
 			password = pass123
 		CAT_EOF
-
-		# set the log level for the HPE CP CLI 
-		export LOG_LEVEL=DEBUG
-		
-		# test connectivity to HPE CP with the CLI
-		hpecp license platform-id
-
-		# setup AD user for tenant Administrator
-		cat >tenant_ad_auth.json<<-JSON_EOF
-		{
-			"external_user_groups": [
-			    {
-				"role": "/api/v1/role/2", # 2 = Admins
-				"group":"CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
-			    },
-			    {
-				"role": "/api/v1/role/3", # 3 = Members
-				"group": "CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
-			    }
-			]
-		}
-		JSON_EOF
-		hpecp httpclient put /api/v1/tenant/2?external_user_groups --json-file tenant_ad_auth.json
 
 		cat >datatap.json<<-JSON_EOF
 			{
