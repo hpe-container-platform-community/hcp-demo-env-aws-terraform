@@ -36,6 +36,14 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	bdmapr maprcli volume create -name global -path \${MAPR_VMNT} || true # ignore error
 	bdmapr maprcli acl set -type volume -name global -user ad_admin1:fc || true # ignore error
 
+	# create a mount point for the new volume
+	docker exec -i \$CONTAINER_ID bash <<-DOCKER_EOF
+		# upload some data
+		wget https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv
+		sed -i -e "s/\r/\n/g" airline-safety.csv # convert line endings
+		mv airline-safety.csv /mapr/mnt/hcp.mapr.cluster/global/global1/
+	DOCKER_EOF
+
 	# currently, the hpecp CLI doesn't support python2.7 so run it in a container
 	docker run -i --rm ubuntu:18.04 /bin/bash -s <<DOCK_EOF 
 		set -xeu
