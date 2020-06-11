@@ -53,7 +53,7 @@ Login to jupyterhub (ad_admin1/pass123) and launch a python 3 Jupyter notebook (
 In the jupyter notebook, create a cell with the following contents:
 
 ```
-! hadoop fs -cat dtap://dtap://globalshare/airline-safety.csv
+! hadoop fs -cat dtap://globalshare/airline-safety.csv
 ```
  
 Run this cell - you should see data from the airline-safety.csv file, e.g.
