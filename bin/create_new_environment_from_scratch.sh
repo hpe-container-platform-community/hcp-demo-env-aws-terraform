@@ -40,9 +40,10 @@ terraform output -json > generated/output.json
 echo "Sleeping for 240s to give services a chance to startup"
 sleep 240
 
+
 ./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
 ./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
-
+./bin/experimental/01_configure_global_active_directory.sh
 set +e
 ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap_new.sh
 
