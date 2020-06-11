@@ -44,6 +44,8 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		apt-get update 
 		apt-get install -y python3-pip git
 		pip3 install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
+		
+		# The datatap needs to be created as a tenant administrator, not as global admin
 		cat > ~/.hpecp.conf <<-CAT_EOF
 			[default]
 			api_host = ${CTRL_PRV_IP}
@@ -58,6 +60,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		export LOG_LEVEL=DEBUG
 		hpecp license platform-id
 
+		# setup AD user for tenant Administrator
 		cat >tenant_ad_auth.json<<-JSON_EOF
 		{
 			"external_user_groups": [
