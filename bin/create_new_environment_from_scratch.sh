@@ -42,7 +42,9 @@ sleep 240
 
 ./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
 ./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
-./scripts/end_user_scripts/mapr_ldap/3_setup_datatap.sh
+
+set +e
+./scripts/end_user_scripts/mapr_ldap/3_setup_datatap_new.sh
 
 source ./scripts/variables.sh
 

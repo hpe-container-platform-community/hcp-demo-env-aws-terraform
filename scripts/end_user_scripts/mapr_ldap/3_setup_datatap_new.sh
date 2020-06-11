@@ -58,6 +58,22 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		export LOG_LEVEL=DEBUG
 		hpecp license platform-id
 
+		cat >tenant_ad_auth.json<<-JSON_EOF
+		{
+			"external_user_groups": [
+			    {
+				"role": "/api/v1/role/2", # 2 = Admins
+				"group":"CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
+			    },
+			    {
+				"role": "/api/v1/role/3", # 3 = Members
+				"group": "CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
+			    }
+			]
+		}
+		JSON_EOF
+		hpecp httpclient put /api/v1/tenant/2?external_user_groups --json-file tenant_ad_auth.json
+
 		cat >datatap.json<<-JSON_EOF
 			{
 			  "bdfs_root": {
