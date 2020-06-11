@@ -55,7 +55,10 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 			password = pass123
 		CAT_EOF
 
+		# set the log level for the HPE CP CLI 
 		export LOG_LEVEL=DEBUG
+		
+		# test connectivity to HPE CP with the CLI
 		hpecp license platform-id
 
 		# setup AD user for tenant Administrator
