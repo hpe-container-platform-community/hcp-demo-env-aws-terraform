@@ -34,24 +34,26 @@ From your client machine where the github project is checked out, run:
 
 ### Setup Datatap on HCP in the EPIC Demo Tenant
 
+For HPE CP 5.1 build 1440+
+
 ```
-./scripts/end_user_scripts/mapr_ldap/3_setup_datatap.sh
+./scripts/end_user_scripts/mapr_ldap/3_setup_datatap_new.sh
 ```
 
-Run this script every time you add a new worker host to your HCP cluster.
+This script creates a volume named **global** and a Datatap named **globalshare** in the EPIC Demo Tenant.
 
 ### Test Datatap on an EPIC Spark 2.4 Cluster 
 
 Ensure you have setup HCP and EPIC Demo Tenant with LDAP - [./README-AD.md](./README-AD.md)
 
-Create a spark 2.4 cluster with 1 controller and 1 jupyterhub (both nodes can use the small flavor).
+Create a spark 2.4 cluster with 1 controller and 1 jupyterhub (both nodes can use the small flavor). TIP - you can [enable compute on the Controller](http://docs.bluedata.com/50_enabling-disabling-a-worker) if you don't have a spare worker to deploy.
 
 Login to jupyterhub (ad_admin1/pass123) and launch a python 3 Jupyter notebook (not Spark).
 
 In the jupyter notebook, create a cell with the following contents:
 
 ```
-! hadoop fs -cat dtap://MaprClus1/tmp/airline-safety.csv
+! hadoop fs -cat dtap://dtap://globalshare/airline-safety.csv
 ```
  
 Run this cell - you should see data from the airline-safety.csv file, e.g.
