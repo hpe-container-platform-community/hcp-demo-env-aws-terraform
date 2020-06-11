@@ -7,8 +7,6 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/../../variables.sh"
 
-# Setup steps taken from: http://docs.bluedata.com/40_using-a-datatap-to-connect-to-a-mapr-fs
-
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
 	set -xeu
 
