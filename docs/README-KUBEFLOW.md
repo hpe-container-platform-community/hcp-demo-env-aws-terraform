@@ -1,6 +1,10 @@
 THIS DOCUMENT IS A WORK IN PROGRESS
 -----
 
+### Recommended watching
+
+[Kubeflow 101 playlist - 5 videos](https://www.youtube.com/watch?v=cTZArDgbIWw&list=PLIivdWyY5sqLS4lN75RPDEyBgTro_YX7x) [approx. 20 mins total]
+
 ### Kubeflow install steps
 
 It is recommended that you clone a fresh instance of this repository and create a new HPE Container Platform deployment for the Kubeflow installation - see the [quickstart](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform#setup-environment).

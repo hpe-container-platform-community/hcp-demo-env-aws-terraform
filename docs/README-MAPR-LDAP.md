@@ -42,6 +42,12 @@ For HPE CP 5.1 build 1440+
 
 This script creates a volume named **global** and a Datatap named **globalshare** in the EPIC Demo Tenant.
 
+If you are unable to perform operations such as create folders or upload files using the HPE CP UI, try restarting the webhdfs container with:
+
+```bash
+./generated/ssh_controller.sh 'docker restart $(docker ps -q --filter ancestor=epic/webhdfs:1.2)'
+```
+
 ### Test Datatap on an EPIC Spark 2.4 Cluster 
 
 Ensure you have setup HCP and EPIC Demo Tenant with LDAP - [./README-AD.md](./README-AD.md)
@@ -63,6 +69,3 @@ Run this cell - you should see data from the airline-safety.csv file, e.g.
 Xiamen Airlines,430462962,9,1,82,2,0,0,0,7,224,11,2,23ccidents_85_99,fatalities_85_99,incidents_00_14,fatal_accidents_00_14,fatalities_00_14
 ```
 
-### Create a Shared Volume in MAPR
-
-TODO ... coming soon
