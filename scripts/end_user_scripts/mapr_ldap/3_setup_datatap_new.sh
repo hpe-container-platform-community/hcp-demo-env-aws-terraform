@@ -44,90 +44,87 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		mv airline-safety.csv /mapr/mnt/hcp.mapr.cluster/global/global1/
 	DOCKER_EOF
 
-	# currently, the hpecp CLI doesn't support python2.7 so run it in a container
-	docker run -i --rm ubuntu:18.04 /bin/bash -s <<DOCK_EOF 
-		set -xeu
-		apt-get update 
-		apt-get install -y python3-pip git
-		pip3 install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
+	set +u 
+	pyenv activate my-3.6.10 # see script: bin/experimental/install_hpecp_cli.sh
+	set -u
+	pip install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
 		
-		# First we need 'admin' to setup the Demo Tenant authentication AD groups
-		cat > ~/.hpecp.conf <<-CAT_EOF
-			[default]
-			api_host = ${CTRL_PRV_IP}
-			api_port = 8080
-			use_ssl = ${INSTALL_WITH_SSL}
-			verify_ssl = False
-			warn_ssl = False
-			username = admin
-			password = admin123
-		CAT_EOF
+	# First we need 'admin' to setup the Demo Tenant authentication AD groups
+	cat > ~/.hpecp.conf <<-CAT_EOF
+		[default]
+		api_host = ${CTRL_PRV_IP}
+		api_port = 8080
+		use_ssl = ${INSTALL_WITH_SSL}
+		verify_ssl = False
+		warn_ssl = False
+		username = admin
+		password = admin123
+	CAT_EOF
 
-		# set the log level for the HPE CP CLI 
-		export LOG_LEVEL=DEBUG
+	# set the log level for the HPE CP CLI 
+	export LOG_LEVEL=DEBUG
 		
-		# test connectivity to HPE CP with the CLI
-		hpecp license platform-id
+	# test connectivity to HPE CP with the CLI
+	hpecp license platform-id
 
-		# setup AD user for tenant Administrator
-		# NOTE:
-		#  - /api/v1/role/2 = Admins
-		#  - /api/v1/role/3 = Members
-		cat >tenant_ad_auth.json<<-JSON_EOF
+	# setup AD user for tenant Administrator
+	# NOTE:
+	#  - /api/v1/role/2 = Admins
+	#  - /api/v1/role/3 = Members
+	cat >tenant_ad_auth.json<<-JSON_EOF
+	{
+		"external_user_groups": [
+		    {
+			"role": "/api/v1/role/2",
+			"group":"CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
+		    },
+		    {
+			"role": "/api/v1/role/3",
+			"group": "CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
+		    }
+		]
+	}
+	JSON_EOF
+	hpecp httpclient put /api/v1/tenant/2?external_user_groups --json-file tenant_ad_auth.json
+
+	# The datatap needs to be created as a tenant administrator, not as global admin
+	cat > ~/.hpecp.conf <<-CAT_EOF
+		[default]
+		api_host = ${CTRL_PRV_IP}
+		api_port = 8080
+		use_ssl = ${INSTALL_WITH_SSL}
+		verify_ssl = False
+		warn_ssl = False
+		username = ad_admin1
+		password = pass123
+	CAT_EOF
+
+	cat >datatap.json<<-JSON_EOF
 		{
-			"external_user_groups": [
-			    {
-				"role": "/api/v1/role/2",
-				"group":"CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
-			    },
-			    {
-				"role": "/api/v1/role/3",
-				"group": "CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
-			    }
-			]
+		  "bdfs_root": {
+		    "path_from_endpoint": "\${MAPR_VMNT}"
+		  },
+		  "endpoint": {
+		    "cluster_name": "hcp.mapr.cluster",
+		    "ticket": "\${MAPR_USER}_impersonation_ticket",
+		    "type": "mapr",
+		    "secure": true,
+		    "cldb": [
+		      "${CTRL_PRV_IP}"
+		    ],
+		    "ticket_type": "servicewithimpersonation",
+		    "ticket_user": "\${MAPR_USER}",
+		    "mapr_tenant_volume": false,
+		    "impersonation_enabled": true
+		  },
+		  "flags": {
+		    "read_only": false
+		  },
+		  "label": {
+		    "name": "globalshare",
+		    "description": "mapr volume global share"
+		  }
 		}
-		JSON_EOF
-		hpecp httpclient put /api/v1/tenant/2?external_user_groups --json-file tenant_ad_auth.json
-
-		# The datatap needs to be created as a tenant administrator, not as global admin
-		cat > ~/.hpecp.conf <<-CAT_EOF
-			[default]
-			api_host = ${CTRL_PRV_IP}
-			api_port = 8080
-			use_ssl = ${INSTALL_WITH_SSL}
-			verify_ssl = False
-			warn_ssl = False
-			username = ad_admin1
-			password = pass123
-		CAT_EOF
-
-		cat >datatap.json<<-JSON_EOF
-			{
-			  "bdfs_root": {
-			    "path_from_endpoint": "\${MAPR_VMNT}"
-			  },
-			  "endpoint": {
-			    "cluster_name": "hcp.mapr.cluster",
-			    "ticket": "\${MAPR_USER}_impersonation_ticket",
-			    "type": "mapr",
-			    "secure": true,
-			    "cldb": [
-			      "${CTRL_PRV_IP}"
-			    ],
-			    "ticket_type": "servicewithimpersonation",
-			    "ticket_user": "\${MAPR_USER}",
-			    "mapr_tenant_volume": false,
-			    "impersonation_enabled": true
-			  },
-			  "flags": {
-			    "read_only": false
-			  },
-			  "label": {
-			    "name": "globalshare",
-			    "description": "mapr volume global share"
-			  }
-			}
-		JSON_EOF
-		hpecp httpclient post /api/v1/dataconn --json-file datatap.json
-	DOCK_EOF
+	JSON_EOF
+	hpecp httpclient post /api/v1/dataconn --json-file datatap.json
 SSH_EOF
