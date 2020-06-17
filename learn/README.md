@@ -26,6 +26,7 @@ This document containers a recommended path for learning key HPE Container Platf
 
 ### Manually install HCP
 
+- [Active Directory Server](./HCP_Administration/manual_install_ad.md) [1 hour]
 - [Installation Overview](./HCP_Administration/manual_install_overview.md) [2 hours]
 - [Planning the Deployment](./HCP_Administration/manual_install_planning_the_deployment.md) [2 hours]
 - [System Requirements](./HCP_Administration/manual_install_system_requirements.md) [2 hours]
