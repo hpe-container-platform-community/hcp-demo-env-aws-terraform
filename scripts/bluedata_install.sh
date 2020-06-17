@@ -196,6 +196,13 @@ echo "SSHing into Controller ${CTRL_PUB_IP}"
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
    set -xeu
 
+   sudo yum install -y wget
+
+   # manually install epel due to https://stackoverflow.com/questions/62359639/unable-to-install-packages-via-yum-in-aws-errno-1-repomd-xml-does-not-match
+   wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+   sudo yum install -y epel-release-latest-7.noarch.rpm
+
+
    if [[ -e /home/centos/bd_installed ]]
    then
       echo BlueData already installed - quitting
