@@ -157,6 +157,12 @@ SSH_EOF
 	
 	sudo systemctl enable mapr-posix-client-platinum
 	sudo service mapr-posix-client-platinum start
+	
+	cat > restart_posix_client.sh <<-EOF
+		#!/bin/bash
+		sudo service mapr-posix-client-platinum restart
+	EOF
+	chmod +x restart_posix_client.sh
 
 	echo "Sleeping for 30s waiting for mount to come online"
 	sleep 30
