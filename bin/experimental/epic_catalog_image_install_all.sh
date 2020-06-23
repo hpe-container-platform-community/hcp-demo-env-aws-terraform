@@ -4,7 +4,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 echo "Installing all catalog images - note that this script does NOT check for status=success."
 
-CATALOG_IMAGES=$(hpecp catalog list --query "[?state!='installed' && state!='installing' && state!='downloading'] | [*].[_links.self.href]" | tr -d '"[],')
+CATALOG_IMAGES=$(hpecp catalog list --query "[?state!='installed' && state!='installing' && state!='verifying' && state!='downloading'] | [*].[_links.self.href]" | tr -d '"[],')
 
 for IMG_ID in $CATALOG_IMAGES
 do

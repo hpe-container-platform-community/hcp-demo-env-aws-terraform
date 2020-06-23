@@ -158,7 +158,7 @@ SSH_EOF
 	sudo systemctl enable mapr-posix-client-platinum
 	sudo service mapr-posix-client-platinum start
 	
-	cat > restart_posix_client.sh <<-EOF
+	cat > ~ubuntu/restart_posix_client.sh <<-EOF
 		#!/bin/bash
 		sudo service mapr-posix-client-platinum restart
 	EOF
