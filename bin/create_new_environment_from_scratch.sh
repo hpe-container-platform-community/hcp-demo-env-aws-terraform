@@ -5,6 +5,15 @@ set -u # abort on undefined variable
 
 ./scripts/check_prerequisites.sh
 
+while true; do
+    read -p "Do you wish to run experimental scripts y/n? " yn
+    case $yn in
+        [Yy]* ) EXPERIMENTAL=1; break;;
+        [Nn]* ) EXPERIMENTAL=0; break;;
+        * ) echo "Please answer y or n.";;
+    esac
+done
+
 if [[ -f terraform.tfstate ]]; then
    TF_RESOURCES=$(cat  terraform.tfstate | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(len(obj["resources"]))')
 
@@ -44,11 +53,13 @@ terraform output -json > generated/output.json
 echo "Sleeping for 240s to give services a chance to startup"
 sleep 240
 
-./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
-./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
-./bin/df-cluster-acl-ad_admin1.sh # add the ad_admin1 user to the cluster
-set +e
-./scripts/end_user_scripts/mapr_ldap/3_setup_datatap_new.sh
+if [[ "$EXPERIMENTAL" == "1" ]]; then
+   ./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
+   ./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
+   ./bin/df-cluster-acl-ad_admin1.sh # add the ad_admin1 user to the cluster
+   set +e
+   ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap_new.sh
+fi
 
 source ./scripts/variables.sh
 
