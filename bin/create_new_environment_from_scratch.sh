@@ -49,6 +49,7 @@ terraform output -json > generated/output.json
 ./bin/experimental/install_hpecp_cli.sh # install the hpecp
 ./bin/experimental/01_configure_global_active_directory.sh
 ./bin/experimental/02_gateway_add.sh
+./bin/experimental/setup_demo_tenant_ad.sh
 
 echo "Sleeping for 240s to give services a chance to startup"
 sleep 240
