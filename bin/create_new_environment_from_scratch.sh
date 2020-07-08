@@ -6,7 +6,7 @@ set -u # abort on undefined variable
 ./scripts/check_prerequisites.sh
 
 while true; do
-    read -p "Do you wish to run experimental scripts y/n? " yn
+    read -p "Do you wish to run experimental scripts y/n (enter no if unsure)? " yn
     case $yn in
         [Yy]* ) EXPERIMENTAL=1; break;;
         [Nn]* ) EXPERIMENTAL=0; break;;
@@ -46,15 +46,16 @@ terraform output -json > generated/output.json
 ./scripts/post_refresh_or_apply.sh
 ./scripts/bluedata_install.sh 
 
-./bin/experimental/install_hpecp_cli.sh # install the hpecp
-./bin/experimental/01_configure_global_active_directory.sh
-./bin/experimental/02_gateway_add.sh
-./bin/experimental/setup_demo_tenant_ad.sh
-
-echo "Sleeping for 240s to give services a chance to startup"
-sleep 240
-
 if [[ "$EXPERIMENTAL" == "1" ]]; then
+   
+    ./bin/experimental/install_hpecp_cli.sh # install the hpecp
+    ./bin/experimental/01_configure_global_active_directory.sh
+    ./bin/experimental/02_gateway_add.sh
+    ./bin/experimental/setup_demo_tenant_ad.sh
+    
+    echo "Sleeping for 240s to give services a chance to startup"
+    sleep 240
+    
    ./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
    ./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
    ./bin/df-cluster-acl-ad_admin1.sh # add the ad_admin1 user to the cluster
