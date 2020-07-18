@@ -44,10 +44,14 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		mv airline-safety.csv /mapr/mnt/hcp.mapr.cluster/global/global1/
 	DOCKER_EOF
 
-	set +u 
-	pyenv activate my-3.6.10 # see script: bin/experimental/install_hpecp_cli.sh
-	set -u
-	pip install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
+	command -v hpecp >/dev/null 2>&1 || { 
+		echo >&2 "Ensure you have run: bin/experimental/install_hpecp_cli.sh"
+		exit 1; 
+	}
+
+	set +u
+	pyenv activate my-3.6.10 # installed by bin/experimental/install_hpecp_cli.sh
+	set -u	
 		
 	# First we need 'admin' to setup the Demo Tenant authentication AD groups
 	cat > ~/.hpecp.conf <<-CAT_EOF
