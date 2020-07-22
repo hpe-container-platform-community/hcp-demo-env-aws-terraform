@@ -35,3 +35,4 @@ CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8sh
 
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 600
 
+hpecp tenant create --name tenant1 --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s
