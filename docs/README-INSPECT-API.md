@@ -22,5 +22,6 @@
   - `http`
   - `http.request.method == "POST" or http.request.method == "GET"`
   - `http.request.uri == "/api/v1/user"`
+  - `http.request.uri matches "k8skubeconfig"`
 
 - Right click stream, and select follow HTTP Stream
