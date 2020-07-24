@@ -52,7 +52,7 @@ if [[ "$EXPERIMENTAL" == "1" ]]; then
     ./bin/experimental/01_configure_global_active_directory.sh
     ./bin/experimental/02_gateway_add.sh
     ./bin/experimental/setup_demo_tenant_ad.sh
-    
+
     echo "Sleeping for 240s to give services a chance to startup"
     sleep 240
     
@@ -61,6 +61,12 @@ if [[ "$EXPERIMENTAL" == "1" ]]; then
    ./bin/df-cluster-acl-ad_admin1.sh # add the ad_admin1 user to the cluster
    set +e
    ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap_new.sh
+
+    echo "Recommended scripts:"
+    echo "./bin/experimental/03_k8sworkers_add.sh"
+    echo "./bin/experimental/04_k8scluster_create.sh"
+    echo "./bin/experimental/epic_catalog_image_install_all.sh"
+
 fi
 
 source ./scripts/variables.sh
