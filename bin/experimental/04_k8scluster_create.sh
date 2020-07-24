@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x # debug
 set -e # abort on error
 
 if [[ ! -d generated ]]; then
@@ -35,4 +36,15 @@ CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8sh
 
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 600
 
-hpecp tenant create --name tenant1 --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s
+TENANT_ID=$(hpecp tenant create --name tenant1 --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s)
+
+hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 600
+
+ADMIN_GROUP="CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
+ADMIN_ROLE=$(hpecp role list  --query "[?label.name == 'Admin'][_links.self.href] | [0][0]" --output json | tr -d '"')
+hpecp tenant add-external-user-group --tenant-id $TENANT_ID --group $ADMIN_GROUP --role-id $ADMIN_ROLE
+
+MEMBER_GROUP="CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
+MEMBER_ROLE=$(hpecp role list  --query "[?label.name == 'Member'][_links.self.href] | [0][0]" --output json | tr -d '"')
+hpecp tenant add-external-user-group --tenant-id $TENANT_ID --group $MEMBER_GROUP --role-id $MEMBER_ROLE
+
