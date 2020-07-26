@@ -7,8 +7,8 @@ NC='\033[0m' # No Color
 
 echo
 echo -e "${RED}EPIC Catalog Images : Installed${NC}"
-hpecp catalog list --query "[?state=='installed'] | [*].[_links.self.href,label.name,state]" --output json | perl -pe 's/\], \[/,\n/g'
+hpecp catalog list --query "[?state=='installed'] | [*].[_links.self.href,state,label.name]" --output text
 
 echo
 echo -e "${RED}EPIC Catalog Images : NOT Installed${NC}"
-hpecp catalog list --query "[?state!='installed'] | [*].[_links.self.href,label.name,state]" --output json | perl -pe 's/\], \[/,\n/g'
+hpecp catalog list --query "[?state!='installed'] | [*].[_links.self.href,state,label.name]" --output text
