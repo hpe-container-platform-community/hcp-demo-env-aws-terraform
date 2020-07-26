@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash -euo pipefail -O inherit_errexit
 
 set -x # debug
-set -e # abort on error
 
 if [[ ! -d generated ]]; then
    echo "This file should be executed from the project directory"
@@ -19,7 +18,7 @@ export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 # Test CLI is able to connect
 hpecp license platform-id
 
-AVAIL_K8S_WORKERS=($(hpecp k8sworker list --columns [id,status] --output text | awk '$2 == "ready" { print $1 }' | tr '\r\n' ' '))
+AVAIL_K8S_WORKERS=($(hpecp k8sworker list --query "[?status == 'ready'][_links.self.href]" --output text))
 
 K8S_WORKER_1=${AVAIL_K8S_WORKERS[0]}
 K8S_WORKER_2=${AVAIL_K8S_WORKERS[1]}
@@ -32,8 +31,10 @@ fi
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 17 --output text)
 
-CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config $K8S_WORKER_1:master,$K8S_WORKER_2:worker)
+CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config $K8S_WORKER_1:master,$K8S_WORKER_2:worker --addons [picasso])
+hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 600
 
+hpecp k8scluster add-addons --id $CLUSTER_ID --addons [istio,harbor]
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 600
 
 TENANT_ID=$(hpecp tenant create --name tenant1 --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s)
