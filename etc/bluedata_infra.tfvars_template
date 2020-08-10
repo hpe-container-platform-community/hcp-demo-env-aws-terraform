@@ -47,7 +47,7 @@ additional_client_ip_list = []  # E.g. [ "1.1.1.1/24","2.2.2.2/32" ]
 # specify how many BlueData workers you want
 worker_count = 3
 
-# specify how many MAPR instances you want
+# specify how many MAPR instances you want (0 or 3)
 mapr_count = 0
 
 # you may need to change the instance types if the ones

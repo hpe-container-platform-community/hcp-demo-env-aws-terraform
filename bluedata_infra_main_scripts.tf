@@ -176,6 +176,17 @@ resource "local_file" "ssh_worker" {
   EOF
 }
 
+resource "local_file" "ssh_mapr_host" {
+  count = var.mapr_count
+
+  filename = "${path.module}/generated/ssh_mapr_host_${count.index + 1}.sh"
+  content = <<-EOF
+     #!/bin/bash
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$${MAPR_HOSTS_PUB_IPS[${count.index}]} "$@"
+  EOF
+}
+
 resource "local_file" "ssh_workers" {
   count = var.worker_count
   filename = "${path.module}/generated/ssh_worker_all.sh"
