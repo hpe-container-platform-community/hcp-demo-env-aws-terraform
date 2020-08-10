@@ -116,6 +116,20 @@ output "workers_private_dns" {
   value = ["${aws_instance.workers.*.private_dns}"]
 }
 
+output "mapr_hosts_public_ip" {
+  value = ["${aws_instance.mapr_hosts.*.public_ip}"]
+}
+output "mapr_hosts_public_dns" {
+  value = ["${aws_instance.mapr_hosts.*.public_dns}"]
+}
+output "mapr_hosts_private_ip" {
+  value = ["${aws_instance.mapr_hosts.*.private_ip}"]
+}
+output "mapr_hosts_private_dns" {
+  value = ["${aws_instance.mapr_hosts.*.private_dns}"]
+}
+
+
 output "controller_ssh_command" {
   value = "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${module.controller.public_ip}"
 }
@@ -127,6 +141,13 @@ output "gateway_ssh_command" {
 output "workers_ssh" {
   value = {
     for instance in aws_instance.workers:
+    instance.private_ip => "ssh -o StrictHostKeyChecking=no -i '${var.ssh_prv_key_path}' centos@${instance.public_ip}" 
+  }
+}
+
+output "mapr_hosts_ssh" {
+  value = {
+    for instance in aws_instance.mapr_hosts:
     instance.private_ip => "ssh -o StrictHostKeyChecking=no -i '${var.ssh_prv_key_path}' centos@${instance.public_ip}" 
   }
 }
