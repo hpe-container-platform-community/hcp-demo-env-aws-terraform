@@ -13,7 +13,7 @@ fi
 USER_BEFORE_SUDO=$(who am i | awk '{print $1}')
 
 if [[ ! -f "./generated/vpn_users" ]]; then
-    echo "ERROR: './generated/vpn_users' not found - have you run './generated/vpn_server_setup.sh'?"
+    echo "ERROR: './generated/vpn_users' not found - have you run './bin/vpn_server_setup.sh'?"
     exit 1
 fi
 
