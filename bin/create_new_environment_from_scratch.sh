@@ -44,9 +44,11 @@ sleep 60
 terraform output -json > generated/output.json
 
 ./scripts/post_refresh_or_apply.sh
-./scripts/bluedata_install.sh 
+./scripts/bluedata_install.sh
 
 if [[ "$EXPERIMENTAL" == "1" ]]; then
+
+   ./scripts/mapr_install.sh 
    
     ./bin/experimental/install_hpecp_cli.sh # install the hpecp
     ./bin/experimental/01_configure_global_active_directory.sh
