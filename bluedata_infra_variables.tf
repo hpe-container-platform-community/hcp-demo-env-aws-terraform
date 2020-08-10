@@ -28,16 +28,16 @@ variable "EC2_CENTOS7_AMIS" {
 variable "EC2_UBUNTU1804_AMIS" {
   # Find more at https://console.aws.amazon.com/ec2/home?region=us-east-1#Images:visibility=public-images;search=aws-marketplace/CentOS%20Linux%207%20x86_64%20HVM%20EBS%20ENA%201805_01-b7ee8a69-ee97-4a49-9e68-afaee216db2e-ami-77ec9308.4
   default = { 
-    # us-east-1      = "ami-9887c6e7" # N.Virginia
-    # us-east-2      = "ami-e1496384" # Ohio
-    # us-west-1      = "ami-4826c22b" # N.California
+    us-east-1      = "ami-06c075a638fee778f" # N.Virginia
+    us-east-2      = "ami-0ee5e851705bfaf7a" # Ohio
+    us-west-1      = "ami-0eedd569ba78a4bbc" # N.California
     us-west-2      = "ami-01cfa0ce6fe1024f8" # Oregon
-    # ap-southeast-1 = "ami-8e0205f2" # Singapore
-    # eu-central-1   = "ami-dd3c0f36" # Frankfurt
-    # eu-west-1      = "ami-3548444c" # Ireland 
-    # eu-west-2      = "ami-00846a67" # London
-    # eu-west-3      = "ami-262e9f5b" # Paris
-    # eu-north-1     = "ami-b133bccf" # Stockholm
+    ap-southeast-1 = "ami-088d07b5c35876923" # Singapore
+    eu-central-1   = "ami-060e472760062f83f" # Frankfurt
+    eu-west-1      = "ami-02f7235fe5805da91" # Ireland 
+    eu-west-2      = "ami-0978f2d57755c6503" # London
+    eu-west-3      = "ami-0d857c06968b4f4fb" # Paris
+    eu-north-1     = "ami-0991deb71c7c7537f" # Stockholm
   } 
 } 
 
