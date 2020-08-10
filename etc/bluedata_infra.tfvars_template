@@ -47,6 +47,9 @@ additional_client_ip_list = []  # E.g. [ "1.1.1.1/24","2.2.2.2/32" ]
 # specify how many BlueData workers you want
 worker_count = 3
 
+# specify how many MAPR instances you want
+mapr_count = 0
+
 # you may need to change the instance types if the ones
 # listed below are not available in your region
 
@@ -56,6 +59,7 @@ wkr_instance_type  = "m4.4xlarge" # Paris: "m5.4xlarge"
 nfs_instance_type  = "t2.small"
 ad_instance_type   = "t2.small"
 rdp_instance_type  = "t2.xlarge"
+mapr_instance_type = "m4.4xlarge" # Paris: "m5.4xlarge"
 
 # Whether to install HPECP with ssl certificates.  It may be useful to 
 # set this to false if you want to view network traffic (e.g. for debugging api calls).

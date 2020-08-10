@@ -75,6 +75,7 @@ variable "install_with_ssl" {
 variable "ssh_prv_key_path" {}
 variable "ssh_pub_key_path" {}
 variable "worker_count" { default = 3 }
+variable "mapr_count" { default = 0 }
 
 variable "gtw_instance_type" { default = "m4.2xlarge" }
 variable "ctr_instance_type" { default = "m4.2xlarge" }
@@ -82,6 +83,7 @@ variable "wkr_instance_type" { default = "m4.2xlarge" }
 variable "nfs_instance_type" { default = "t2.small" }
 variable "ad_instance_type" { default = "t2.small" }
 variable "rdp_instance_type" { default = "t2.xlarge" }
+variable "mapr_instance_type" { default = "m4.2xlarge" }
 
 variable "epic_dl_url" { }
 variable "epid_dl_url_needs_presign" { default = false }
