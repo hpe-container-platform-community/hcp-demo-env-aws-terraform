@@ -93,7 +93,6 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    sed -i s/ansible_user=ec2-user/ansible_user=ubuntu/g ./hosts_cluster.xml
    sed -i 's^#mapr_subnets: 10.0.0.0/24^mapr_subnets: $VPC_CIDR_BLOCK^g' ./hosts_cluster.xml
 
-
    cp ~/.ssh/id_rsa .
 
    docker run \
@@ -106,7 +105,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
       -u ubuntu \
       -become \
       --key-file ./id_rsa \
-      -k
+      -k | tee ansible_log.txt
 ENDSSH
 
 
