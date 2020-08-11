@@ -199,7 +199,7 @@ MAPR_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.lo
 read -r -a MAPR_HOSTS_PRV_IPS <<< "$MAPR_HOSTS_PRV_IPS"
 read -r -a MAPR_HOSTS_PUB_IPS <<< "$MAPR_HOSTS_PUB_IPS"
 
-MAPR_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_count"]["value"][0], sep=" ")') 
+MAPR_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_count"]["value"][0], sep=" ")') 
 
 
 AD_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_enabled"]["value"])')
