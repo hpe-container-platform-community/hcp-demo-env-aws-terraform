@@ -9,31 +9,10 @@ source "$SCRIPT_DIR/variables.sh"
 
 echo PROJECT_DIR="${PROJECT_DIR}"
 echo VPC_CIDR_BLOCK=${VPC_CIDR_BLOCK}
-echo LOCAL_SSH_PUB_KEY_PATH=${LOCAL_SSH_PUB_KEY_PATH}
 echo LOCAL_SSH_PRV_KEY_PATH=${LOCAL_SSH_PRV_KEY_PATH}
-echo CREATE_EIP_CONTROLLER=${CREATE_EIP_CONTROLLER}
-echo CREATE_EIP_GATEWAY=${CREATE_EIP_GATEWAY}
-echo EPIC_DL_URL=$EPIC_DL_URL
-echo EPIC_FILENAME=$EPIC_FILENAME
-echo EPIC_DL_URL_NEEDS_PRESIGN=$EPIC_DL_URL_NEEDS_PRESIGN
-echo SELINUX_DISABLED=$SELINUX_DISABLED
-echo CTRL_PRV_IP=$CTRL_PRV_IP
 echo CTRL_PUB_IP=$CTRL_PUB_IP
-echo CTRL_PRV_DNS=$CTRL_PRV_DNS
-echo CTRL_PUB_DNS=$CTRL_PUB_DNS
-echo CTRL_PUB_HOST=$CTRL_PUB_HOST
-echo CTRL_PRV_HOST=$CTRL_PRV_HOST
-echo GATW_PRV_IP=$GATW_PRV_IP
-echo GATW_PUB_IP=$GATW_PUB_IP
-echo GATW_PRV_DNS=$GATW_PRV_DNS
-echo GATW_PUB_DNS=$GATW_PUB_DNS
-echo GATW_PUB_HOST=$GATW_PUB_HOST
-echo GATW_PRV_HOST=$GATW_PRV_HOST
-echo WRKR_PRV_IPS=${WRKR_PRV_IPS[@]}
-echo WRKR_PUB_IPS=${WRKR_PUB_IPS[@]}
 echo MAPR_HOSTS_PRV_IPS=${MAPR_HOSTS_PRV_IPS[@]}
 echo MAPR_HOSTS_PUB_IPS=${MAPR_HOSTS_PUB_IPS[@]}
-echo INSTALL_WITH_SSL=${INSTALL_WITH_SSL}
 
 ###############################################################################
 # Test SSH connectivity to EC2 instances from local machine
@@ -80,7 +59,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    set -e
 
    if [[ ! -d ~/mapr-ansible ]]; then
-      git clone https://github.com/mapr-emea/mapr-ansible.git
+      git clone https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform-mapr-ansible mapr-ansible
       sed -i '26i\ \ when: inventory_hostname == groups["mapr-spark-yarn"][0]' ./mapr-ansible/roles/mapr-spark-yarn-install/tasks/main.yml
       sed -i 's/yarn_spark_shuffle: True/yarn_spark_shuffle: False/g' ./mapr-ansible/group_vars/all
    fi
@@ -108,5 +87,4 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
       -k | tee ansible_log.txt
       
 ENDSSH
-
 
