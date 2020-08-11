@@ -67,7 +67,7 @@ done
 for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do 
     ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} << ENDSSH
         sudo apt-get update 
-        sudo apt-get install -y openjdk-8-jdk
+        sudo apt-get install -y openjdk-8-jdk python-pymysql python3-pymysql
 ENDSSH
 done
 
