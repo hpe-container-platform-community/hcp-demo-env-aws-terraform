@@ -81,6 +81,8 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
    if [[ ! -d ~/mapr-ansible ]]; then
       git clone https://github.com/mapr-emea/mapr-ansible.git
+      sed -i '26i\ \ when: inventory_hostname == groups["mapr-spark-yarn"][0]' ./mapr-ansible/roles/mapr-spark-yarn-install/tasks/main.yml
+      sed -i 's/yarn_spark_shuffle: True/yarn_spark_shuffle: False/g' ./mapr-ansible/group_vars/all
    fi
 
    cp -f mapr-ansible/myhosts/hosts_3nodes hosts_cluster.xml
@@ -90,6 +92,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    sed -i s/10.0.0.162/${MAPR_HOSTS_PRV_IPS[2]}/g ./hosts_cluster.xml
    sed -i s/ansible_user=ec2-user/ansible_user=ubuntu/g ./hosts_cluster.xml
    sed -i 's^#mapr_subnets: 10.0.0.0/24^mapr_subnets: $VPC_CIDR_BLOCK^g' ./hosts_cluster.xml
+
 
    cp ~/.ssh/id_rsa .
 

@@ -481,6 +481,9 @@ resource "local_file" "get_public_endpoints" {
     workers_public_ips    = j["workers_public_ip"]["value"][0]
     workers_public_dns    = j["workers_public_dns"]["value"][0]
 
+    mapr_hosts_public_ips    = j["mapr_hosts_public_ip"]["value"][0]
+    mapr_hosts_public_dns    = j["mapr_hosts_public_dns"]["value"][0]
+
     print('------------  ----------------  --------------------------------------------------------  -----')
     print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "NAME", "IP", "DNS", "EIP?"))
     print('------------  ----------------  --------------------------------------------------------  -----')
@@ -490,6 +493,9 @@ resource "local_file" "get_public_endpoints" {
 
     for num, ip in enumerate(workers_public_ips):
        print('{:>9}{:>3}  {:>16}  {:>56}  {:>5}'.format( "Worker", num, ip, workers_public_dns[num], "NA"))
+
+    for num, ip in enumerate(mapr_hosts_public_ips):
+       print('{:>9}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR", num, ip, mapr_hosts_public_dns[num], "NA"))
     print('------------  ----------------  --------------------------------------------------------  -----')
   EOF
 }
@@ -526,6 +532,9 @@ resource "local_file" "get_private_endpoints" {
     workers_private_ips    = j["workers_private_ip"]["value"][0]
     workers_private_dns    = j["workers_private_dns"]["value"][0]
 
+    mapr_hosts_private_ips    = j["mapr_hosts_private_ip"]["value"][0]
+    mapr_hosts_private_dns    = j["mapr_hosts_private_dns"]["value"][0]
+    
     try:
         ad_server_private_ip  = j["ad_server_private_ip"]["value"]
         ad_server_private_dns = "NA"
@@ -543,6 +552,9 @@ resource "local_file" "get_private_endpoints" {
 
     for num, ip in enumerate(workers_private_ips):
        print('{:>9}{:>3}  {:>16}  {:>56}'.format( "Worker", num, ip, workers_private_dns[num]))
+
+    for num, ip in enumerate(mapr_hosts_private_ips):
+       print('{:>9}{:>3}  {:>16}  {:>56}'.format( "MAPR", num, ip, mapr_hosts_private_dns[num]))
     print('------------  ----------------  --------------------------------------------------------')
   EOF
 }
