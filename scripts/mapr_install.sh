@@ -106,6 +106,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
       -become \
       --key-file ./id_rsa \
       -k | tee ansible_log.txt
+      
 ENDSSH
 
 
