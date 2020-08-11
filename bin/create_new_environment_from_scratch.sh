@@ -48,7 +48,9 @@ terraform output -json > generated/output.json
 
 if [[ "$EXPERIMENTAL" == "1" ]]; then
 
-   ./scripts/mapr_install.sh 
+   if [[ "$MAPR_COUNT" == "3" ]]; then
+      ./scripts/mapr_install.sh || true # ignore errors
+   fi
    
     ./bin/experimental/install_hpecp_cli.sh # install the hpecp
     ./bin/experimental/01_configure_global_active_directory.sh

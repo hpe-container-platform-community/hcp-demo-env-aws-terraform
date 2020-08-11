@@ -129,6 +129,10 @@ output "mapr_hosts_private_dns" {
   value = ["${aws_instance.mapr_hosts.*.private_dns}"]
 }
 
+output "mapr_count" {
+  value = ["${var.mapr_count}"]
+}
+
 
 output "controller_ssh_command" {
   value = "ssh -o StrictHostKeyChecking=no -i \"${var.ssh_prv_key_path}\" centos@${module.controller.public_ip}"
