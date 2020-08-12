@@ -11,7 +11,7 @@ fi
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
-pip3 install --quiet --upgrade git+https://github.com/hpe-container-platform-community/hpecp-client@master
+pip3 install --quiet --upgrade --user hpecp
 
 # use the project's HPECP CLI config file
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"
