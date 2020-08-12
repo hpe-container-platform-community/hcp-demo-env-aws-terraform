@@ -118,11 +118,6 @@ variable "enable_route53_private_dns" { default = false }
 
 variable "rdp_server_enabled" { default = true }
 
-terraform {
-  // required for var.rdp_server_operating_system
-  experiments = [variable_validation]
-}
-
 variable "rdp_server_operating_system" {
   type = string
   default = "LINUX"
