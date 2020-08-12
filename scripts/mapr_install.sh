@@ -21,7 +21,11 @@ echo MAPR_HOSTS_PUB_IPS=${MAPR_HOSTS_PUB_IPS[@]}
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} 'echo CONTROLLER: $(hostname)'
 
 for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do 
-   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} 'echo MAPR_HOST: $(hostname)'
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} << ENDSSH
+   sudo chmod -x /etc/update-motd.d/*
+   touch .hushlogin
+   echo MAPR_HOST: $(hostname)
+ENDSSH
 done
 
 ###############################################################################
@@ -83,6 +87,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
       -i ./hosts_cluster.xml \
       -u ubuntu \
       -become \
+      -vvv \
       --key-file ./id_rsa \
       -k | tee ansible_log.txt
       
