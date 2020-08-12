@@ -27,6 +27,6 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	pyenv activate my-3.6.10
 
 	pip install --upgrade pip
-	pip install --upgrade --user hpecp
+	pip install --upgrade hpecp
 
 SSH_EOF
