@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -euo pipefail -O inherit_errexit
+#!/bin/bash
 
 set -x # debug
 
