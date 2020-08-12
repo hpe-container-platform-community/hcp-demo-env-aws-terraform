@@ -6,6 +6,7 @@ set -u # abort on undefined variable
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/../../variables.sh"
+source "$SCRIPT_DIR/functions.sh"
 
 AD_PRIVATE_IP=$AD_PRV_IP
 LDAP_BASE_DN="CN=Users,DC=samdom,DC=example,DC=com"
@@ -16,14 +17,21 @@ DOMAIN="samdom.example.com"
 
 MAPR_CLUSTER_NAME="demo.mapr.com"
 
-
 for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do 
 
-	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} <<-SSH_EOF
-	set -xeu
+	print_term_width '='
+	echo "Setting up SSSD on ${MAPR_HOST}"
+	print_term_width '='
+
+	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} <<-SSH_EOF
+	set -eu
+
+	# don't display login banners
+	sudo touch /etc/skel/.hushlogin
+	sudo chmod -x /etc/update-motd.d/*
 	
 	# Install the auth packages by executing the following command 
-	sudo apt-get -q update && sudo apt-get install -y pamtester sssd
+	sudo apt-get -qq update && sudo apt-get -qq install -y pamtester sssd
 	
 	sudo bash -c "cat > /etc/sssd/sssd.conf <<-EOF
 		[domain/${DOMAIN}]
@@ -101,7 +109,7 @@ for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do
 	if ! grep 'pam_mkhomedir.so' /etc/pam.d/common-session; then
 		sudo sed -i '/^session\s*required\s*pam_unix.so\s*$/a session required    pam_mkhomedir.so skel=/etc/skel/ umask=0022' /etc/pam.d/common-session
 	fi
-	cat /etc/pam.d/common-session
+	# cat /etc/pam.d/common-session
 
 	sudo pamtester login ad_user1 open_session
 	sudo id ad_user1
@@ -111,12 +119,13 @@ for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do
 	echo 'Done setting up SSSD.'
 SSH_EOF
 
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} <<-SSH_EOF
+print_term_width '-'
+ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} <<-SSH_EOF
 
-	set -xeu
+	set -eu
 
 	echo mapr | maprlogin password -user mapr -cluster ${MAPR_CLUSTER_NAME}
- 	maprlogin generateticket -type servicewithimpersonation -user mapr -out maprfuseticket
+ 	# maprlogin generateticket -type servicewithimpersonation -user mapr -out maprfuseticket
 
 	# Add Active Directory user and group
 	maprcli acl edit \
@@ -127,12 +136,32 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 
 	maprcli acl show -type cluster
 SSH_EOF
-
 done
 
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} <<-SSH_EOF
+print_term_width '-'
+for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do 
+	# reboot - and if the reboot causes ssh to terminate with an error, ignore it
+	echo "Rebooting Host:"
+	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} "nohup sudo reboot </dev/null &" || true
+done
 
-	echo "Finished setting up SSSD - please reboot host ${MAPR_HOST}"
-SSH_EOF
+print_term_width '-'
+for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do 
+    echo "Waiting for host ${MAPR_HOST} to accept ssh connections"
+    while ! nc -w5 -z ${MAPR_HOST} 22; do printf "." -n ; sleep 1; done;
+    echo 'Host is back online.'
+done
 
+# Only verify connectivity to CLDB from the first host
+for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[0]}; do 
+	print_term_width '-'
+	echo "Verifing CLDB is online:"
+	print_term_width '-'
+	for i in {1..1000}; do
+		ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} \
+			"echo mapr | maprlogin password -user mapr -cluster ${MAPR_CLUSTER_NAME}" \
+			&& break # if maprlogin command was successful, exit loop
+
+		sleep 1
+	done
 done
