@@ -52,6 +52,7 @@ if [[ "$EXPERIMENTAL" == "1" ]]; then
 
    if [[ "$MAPR_COUNT" == "3" ]]; then
       ./scripts/mapr_install.sh || true # ignore errors
+      ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh || true # ignore errors
    fi
    
    ./bin/experimental/install_hpecp_cli.sh # install the hpecp
