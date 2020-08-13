@@ -5,7 +5,7 @@ set -u # abort on undefined variable
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-source "$SCRIPT_DIR/../../variables.sh"
+source "$SCRIPT_DIR/../variables.sh"
 
 MAPR_BIN_DL_URL="$(aws s3 presign --region eu-west-1 s3://csnow-bins/libMapRClient_c.so.1)"
 echo MAPR_BIN_DL_URL=$MAPR_BIN_DL_URL
