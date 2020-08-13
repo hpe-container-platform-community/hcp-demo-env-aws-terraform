@@ -165,4 +165,6 @@ for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[0]}; do
 
 		sleep 1
 	done
+	echo "maprlogin was successful - CLDB is assumed to be online"
+	print_term_width '-'
 done
