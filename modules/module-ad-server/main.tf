@@ -44,10 +44,13 @@ resource "aws_instance" "ad_server" {
       samba-tool user create ad_user1 pass123
       samba-tool group addmembers DemoTenantUsers ad_user1
 
-      # Create DemoTenantAdmins group and a user ad_admin1
+      # Create DemoTenantAdmins group and a user ad_admin1, ad_admin2
       samba-tool group add DemoTenantAdmins
       samba-tool user create ad_admin1 pass123
       samba-tool group addmembers DemoTenantAdmins ad_admin1
+
+      samba-tool user create ad_admin2 pass123
+      samba-tool group addmembers DemoTenantAdmins ad_admin2
     EOT
   }
 
@@ -64,7 +67,10 @@ resource "aws_instance" "ad_server" {
     }
     destination   = "/home/centos/ad_set_posix_classes.ldif"
     content       = <<-EOT
-      # DemoTenantAdmins
+      ##############################
+      ###### DemoTenantAdmins ######
+      ##############################
+
       dn: cn=DemoTenantAdmins,cn=Users,DC=samdom,DC=example,DC=com
       changetype: modify
       add:objectclass
@@ -97,7 +103,37 @@ resource "aws_instance" "ad_server" {
       add: givenName
       givenName: ADAdmin1
 
-      # DemoTenantUsers
+      #######################
+      ###### ad_admin2 ######
+      #######################
+
+      dn: cn=ad_admin2,cn=Users,DC=samdom,DC=example,DC=com
+      changetype: modify
+      add:objectclass
+      objectclass: posixAccount
+      -
+      add: uidNumber
+      uidNumber: 20003
+      -
+      add: gidnumber
+      gidnumber: 10001
+      -
+      add: unixHomeDirectory
+      unixHomeDirectory: /home/ad_admin2
+      -
+      add: loginShell
+      loginShell: /bin/bash
+      -
+      add: mail
+      mail: adadmin2@example.com
+      -
+      add: givenName
+      givenName: ADAdmin2
+
+      #############################
+      ###### DemoTenantUsers ######
+      #############################
+
       dn: cn=DemoTenantUsers,cn=Users,DC=samdom,DC=example,DC=com
       changetype: modify
       add:objectclass
@@ -106,7 +142,10 @@ resource "aws_instance" "ad_server" {
       add: gidnumber
       gidnumber: 10002
 
-      # ad_admin1
+      ######################
+      ###### ad_user1 ######
+      ######################
+
       dn: cn=ad_user1,cn=Users,DC=samdom,DC=example,DC=com
       changetype: modify
       add:objectclass
