@@ -6,6 +6,7 @@ set -u # abort on undefined variable
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/../../variables.sh"
+source "$SCRIPT_DIR/verify_ad_server_config.sh"
 
 AD_PRIVATE_IP=$AD_PRV_IP
 LDAP_BASE_DN="CN=Users,DC=samdom,DC=example,DC=com"
@@ -14,9 +15,11 @@ LDAP_BIND_PASSWORD="5ambaPwd@"
 LDAP_ACCESS_FILTER="CN=Users,CN=Builtin,DC=samdom,DC=example,DC=com"
 DOMAIN="samdom.example.com"
 
+
+
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${CTRL_PUB_IP} <<-SSH_EOF
 	set -xeu
-	
+
 	CONTAINER_ID=\$(docker ps | grep "epic-mapr" | cut -d " " -f1)
 	docker exec -i \$CONTAINER_ID bash <<-DOCKER_EOF
 		set -xeu
