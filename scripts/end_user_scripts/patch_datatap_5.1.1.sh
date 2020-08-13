@@ -44,10 +44,10 @@ do
 
 				sudo systemctl start bds-worker
 			else
-				echo "Skipping Host ${HOST} (\${CURR_HOST}) ..."
+				echo "Skipping Host ${HOST} ..."
 			fi
 		else
-			echo "Skipping Host ${HOST} (\${CURR_HOST}) ..."
+			echo "Skipping Host ${HOST} ..."
 		fi
 
 	SSH_EOF
