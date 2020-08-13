@@ -14,30 +14,40 @@ for HOST in $CTRL_PUB_IP ${WRKR_PUB_IPS[@]};
 do
 	echo HOST=$HOST
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@$HOST <<-SSH_EOF
-		set -eux
+		set -eu
 
-		# if the host doesn't have bdconfig, it hasn't been added to HCP yet
+		# if the host has bdconfig, it has been added to HCP
 		if command -v bdconfig >/dev/null 2>&1; then
-			echo "Host ${HOST} has not been added to HCP yet - skipping  ..."
 
-			sudo systemctl stop bds-worker
+			# now select the controller and worker hosts
+			EPIC_HOSTS=\$(bdconfig  --getworkers | awk '{ if (\$5 != "proxy") { print \$2 }  }')
+			CURR_HOST=\$(hostname -I | awk '{ print \$1 }')
 
-			# lrwxrwxrwx 1 root root        31 Aug 12 23:03 /usr/lib64/libMapRClient_c.so -> /usr/lib64/libMapRClient_c.so.1
-			# -rw-r--r-- 1 root root 135860896 Jul 28 20:11 /usr/lib64/libMapRClient_c.so.1
+			# Only run on EPIC hosts and not K8S hosts
+			if [[ \${EPIC_HOSTS} == *"\${CURR_HOST}"* ]]; then
 
-			sudo rm -f /usr/lib64/libMapRClient_c.so
+				echo "Patching DataTap on EPIC Host ${HOST} (\${CURR_HOST}) ..."
 
-			curl "${MAPR_BIN_DL_URL}" > /home/centos/libMapRClient_c.so.1 
+				sudo systemctl stop bds-worker
 
-			sudo mv /home/centos/libMapRClient_c.so.1 /usr/lib64/libMapRClient_c.so.1
-			sudo chown root:root /usr/lib64/libMapRClient_c.so.1
-			sudo chmod 644 /usr/lib64/libMapRClient_c.so.1
+				sudo rm -f /usr/lib64/libMapRClient_c.so
 
-			sudo ln -f -s /usr/lib64/libMapRClient_c.so.1 /usr/lib64/libMapRClient_c.so
+				curl -s "${MAPR_BIN_DL_URL}" > /home/centos/libMapRClient_c.so.1 
 
-			ls -al /usr/lib64/libMapRClient_c.so*
+				sudo mv /home/centos/libMapRClient_c.so.1 /usr/lib64/libMapRClient_c.so.1
+				sudo chown root:root /usr/lib64/libMapRClient_c.so.1
+				sudo chmod 644 /usr/lib64/libMapRClient_c.so.1
 
-			sudo systemctl start bds-worker
+				sudo ln -f -s /usr/lib64/libMapRClient_c.so.1 /usr/lib64/libMapRClient_c.so
+
+				ls -al /usr/lib64/libMapRClient_c.so*
+
+				sudo systemctl start bds-worker
+			else
+				echo "Skipping Host ${HOST} (\${CURR_HOST}) ..."
+			fi
+		else
+			echo "Skipping Host ${HOST} (\${CURR_HOST}) ..."
 		fi
 
 	SSH_EOF
