@@ -19,7 +19,7 @@ MAPR_DTAP_NAME=ext-mapr
 TENANT_KEYTAB_DIR=/srv/bluedata/keytab/2/
 
 
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} << ENDSSH
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} << ENDSSH
 	echo pass123 | maprlogin password -user ${MAPR_USER} -cluster ${MAPR_CLUSTER_NAME}
 	maprlogin generateticket -type servicewithimpersonation -user ${MAPR_USER} -out maprfuseticket
 ENDSSH
