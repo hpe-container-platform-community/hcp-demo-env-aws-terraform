@@ -11,7 +11,8 @@ MAPR_HOST=${MAPR_HOSTS_PRV_IPS[0]} # From variables.sh
 MAPR_USER=ad_admin1
 MAPR_TCKT=ad_admin1_impersonation_ticket
 MAPR_TCKT_PATH=/tmp/${MAPR_TCKT}
-MAPR_VMNT=/users
+MAPR_VOL=demo_tenant_admins
+MAPR_VMNT=/demo_tenant_admins
 MAPR_CLUSTER_NAME=demo.mapr.com
 MAPR_DTAP_NAME=ext-mapr
 
@@ -19,11 +20,37 @@ MAPR_DTAP_NAME=ext-mapr
 TENANT_KEYTAB_DIR=/srv/bluedata/keytab/2/
 
 
+# create mapr volumes
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} << ENDSSH
+	export MAPR_TICKETFILE_LOCATION=/home/ubuntu/mapr_user_ticket
+	echo mapr | maprlogin password -user mapr -cluster ${MAPR_CLUSTER_NAME} -out \${MAPR_TICKETFILE_LOCATION}
+
+	# Add Active Directory user and group
+	maprcli acl edit \
+			-cluster ${MAPR_CLUSTER_NAME} -type cluster -user ad_admin1:fc
+
+	maprcli acl edit \
+			-cluster ${MAPR_CLUSTER_NAME} -type cluster -group DemoTenantAdmins:login,cv
+
+	maprcli acl show -type cluster
+	
+	# note errors ignore so script can be idempotent
+	maprcli volume create \
+			-name ${MAPR_VOL} -path ${MAPR_VMNT} || true # ignore error
+
+	maprcli acl set \
+			-type volume -name ${MAPR_VOL} -user ad_admin1:fc
+
+	hadoop fs -chgrp DemoTenantAdmins /demo_tenant_admins
+
+	hadoop fs -chmod 770 /demo_tenant_admins
+ENDSSH
+
+# create a mapr ticket for use with datatap
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} << ENDSSH
 	echo pass123 | maprlogin password -user ${MAPR_USER} -cluster ${MAPR_CLUSTER_NAME}
 	maprlogin generateticket -type servicewithimpersonation -user ${MAPR_USER} -out maprfuseticket
 ENDSSH
-
 MAPRFUSETICKET=$(ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} cat maprfuseticket)
 echo MAPRFUSETICKET:${MAPRFUSETICKET}
 
