@@ -6,6 +6,12 @@ set -u # abort on undefined variable
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/../../variables.sh"
+source "$SCRIPT_DIR/functions.sh"
+
+print_term_width '='
+echo "Setting up DataTap to standalone MAPR"
+print_term_width '='
+
 
 MAPR_HOST=${MAPR_HOSTS_PRV_IPS[0]} # From variables.sh
 MAPR_USER=ad_admin1
@@ -15,10 +21,24 @@ MAPR_VOL=demo_tenant_admins
 MAPR_VMNT=/demo_tenant_admins
 MAPR_CLUSTER_NAME=demo.mapr.com
 MAPR_DTAP_NAME=ext-mapr
-
 # 2 = EPIC Demo Tenant
 TENANT_KEYTAB_DIR=/srv/bluedata/keytab/2/
+TENANT_KEYTAB_TCKT_FILE=${TENANT_KEYTAB_DIR}${MAPR_TCKT}
 
+echo MAPR_HOST=${MAPR_HOST}
+echo MAPR_USER=${MAPR_USER}
+echo MAPR_TCKT=${MAPR_TCKT}
+echo MAPR_TCKT_PATH=${MAPR_TCKT_PATH}
+echo MAPR_VOL=${MAPR_VOL}
+echo MAPR_VMNT=${MAPR_VMNT}
+echo MAPR_CLUSTER_NAME=${MAPR_CLUSTER_NAME}
+echo MAPR_DTAP_NAME=${MAPR_DTAP_NAME}
+echo TENANT_KEYTAB_DIR=${TENANT_KEYTAB_DIR}
+echo TENANT_KEYTAB_TCKT_FILE=${TENANT_KEYTAB_TCKT_FILE}
+
+print_term_width '-'
+echo "Setting up mapr acls and volumes"
+print_term_width '-'
 
 # create mapr volumes
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} << ENDSSH
@@ -36,7 +56,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 	
 	# note errors ignore so script can be idempotent
 	maprcli volume create \
-			-name ${MAPR_VOL} -path ${MAPR_VMNT} || true # ignore error
+			-name ${MAPR_VOL} -path ${MAPR_VMNT} || echo "^ Ignoring error ^"
 
 	maprcli acl set \
 			-type volume -name ${MAPR_VOL} -user ad_admin1:fc
@@ -46,22 +66,31 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 	hadoop fs -chmod 770 /demo_tenant_admins
 ENDSSH
 
+print_term_width '-'
+echo "Creating mapr ticket for ${MAPR_USER}"
+print_term_width '-'
+
 # create a mapr ticket for use with datatap
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} << ENDSSH
 	echo pass123 | maprlogin password -user ${MAPR_USER} -cluster ${MAPR_CLUSTER_NAME}
 	maprlogin generateticket -type servicewithimpersonation -user ${MAPR_USER} -out maprfuseticket
 ENDSSH
 MAPRFUSETICKET=$(ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} cat maprfuseticket)
-echo MAPRFUSETICKET:${MAPRFUSETICKET}
+# echo MAPRFUSETICKET:${MAPRFUSETICKET}
+
+print_term_width '-'
+echo "Saving mapr ticket to EPIC controller to ${TENANT_KEYTAB_TCKT_FILE}"
+print_term_width '-'
 
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
-	set -xeu
+	set -eu
 
 	# copy impresonation ticket to the tenant folder on the controller
-	sudo echo $MAPRFUSETICKET > ${TENANT_KEYTAB_DIR}/${MAPR_TCKT}
-	sudo chown centos:apache ${TENANT_KEYTAB_DIR}/${MAPR_TCKT}
-	sudo chmod 660 ${TENANT_KEYTAB_DIR}/${MAPR_TCKT}
+	sudo echo $MAPRFUSETICKET > ${TENANT_KEYTAB_TCKT_FILE}
+	sudo chown centos:apache ${TENANT_KEYTAB_TCKT_FILE}
+	sudo chmod 660 ${TENANT_KEYTAB_TCKT_FILE}
+	sudo ls -l ${TENANT_KEYTAB_TCKT_FILE}
 
 	command -v hpecp >/dev/null 2>&1 || { 
 		echo >&2 "Ensure you have run: bin/experimental/install_hpecp_cli.sh"
@@ -85,7 +114,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	CAT_EOF
 
 	# set the log level for the HPE CP CLI 
-	export LOG_LEVEL=DEBUG
+	export LOG_LEVEL=INFO
 		
 	# test connectivity to HPE CP with the CLI
 	hpecp license platform-id
@@ -118,6 +147,9 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		use_ssl = ${INSTALL_WITH_SSL}
 		verify_ssl = False
 		warn_ssl = False
+
+		[tenant2]
+		tenant   = /api/v1/tenant/2
 		username = ad_admin1
 		password = pass123
 	CAT_EOF
@@ -145,9 +177,12 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		  },
 		  "label": {
 		    "name": "${MAPR_DTAP_NAME}",
-		    "description": "mapr volume global share"
+		    "description": "mapr standalone volume"
 		  }
 		}
 	JSON_EOF
-	hpecp httpclient post /api/v1/dataconn --json-file datatap.json
+	cat datatap.json
+	PROFILE=tenant2 hpecp httpclient post /api/v1/dataconn --json-file datatap.json
 SSH_EOF
+
+print_term_width '-'

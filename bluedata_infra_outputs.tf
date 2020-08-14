@@ -116,6 +116,10 @@ output "workers_private_dns" {
   value = ["${aws_instance.workers.*.private_dns}"]
 }
 
+output "worker_count" {
+  value = ["${var.worker_count}"]
+}
+
 output "mapr_hosts_public_ip" {
   value = ["${aws_instance.mapr_hosts.*.public_ip}"]
 }

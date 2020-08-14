@@ -31,15 +31,15 @@ fi
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 17 --output text)
 
-CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config $K8S_WORKER_1:master,$K8S_WORKER_2:worker --addons [picasso])
-hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 600
+CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config $K8S_WORKER_1:master,$K8S_WORKER_2:worker --addons [istio])
+hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1200
 
-hpecp k8scluster add-addons --id $CLUSTER_ID --addons [istio,harbor]
-hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 600
+hpecp k8scluster add-addons --id $CLUSTER_ID --addons [harbor]
+hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1200
 
 TENANT_ID=$(hpecp tenant create --name tenant1 --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s)
 
-hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 600
+hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 1200
 
 ADMIN_GROUP="CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
 ADMIN_ROLE=$(hpecp role list  --query "[?label.name == 'Admin'][_links.self.href] | [0][0]" --output json | tr -d '"')

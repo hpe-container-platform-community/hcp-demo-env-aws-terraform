@@ -99,6 +99,9 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		use_ssl = ${INSTALL_WITH_SSL}
 		verify_ssl = False
 		warn_ssl = False
+
+		[tenant2]
+		tenant   = /api/v1/tenant/2
 		username = ad_admin1
 		password = pass123
 	CAT_EOF
@@ -130,5 +133,5 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		  }
 		}
 	JSON_EOF
-	hpecp httpclient post /api/v1/dataconn --json-file datatap.json
+	PROFILE=tenant2 hpecp httpclient post /api/v1/dataconn --json-file datatap.json
 SSH_EOF

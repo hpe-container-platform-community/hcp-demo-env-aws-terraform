@@ -70,15 +70,24 @@ if [[ "$EXPERIMENTAL" == "1" ]]; then
    ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap_new.sh
 
    echo "Recommended scripts:"
-   echo "./bin/experimental/03_k8sworkers_add.sh"
+   echo "./bin/experimental/03_k8sworkers_add.sh 2 # add 2 EC2 hosts as k8s workers"
    echo "./bin/experimental/04_k8scluster_create.sh"
    echo "./bin/experimental/epic_catalog_image_install_all.sh"
+
+   if [[ "$MAPR_COUNT" == "3" ]]; then
+      echo "./scripts/end_user_scripts/patch_datatap_5.1.1.sh"
+      echo "./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh"
+   fi
 
 fi
 
 if [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]]; then
-   echo "*****************************************************************"
+   echo "*******************************************************************"
    echo "BlueData installation completed successfully with an RDP server"
    echo "Please run ./generated/rdp_credentials.sh for connection details."
-   echo "*****************************************************************"
+   echo "*******************************************************************"
 fi
+
+echo "*******************************************************************"
+echo "Run ./generated/get_public_endpoints.sh for all connection details."
+echo "*******************************************************************"
