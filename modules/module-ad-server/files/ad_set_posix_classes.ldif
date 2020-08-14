@@ -1,0 +1,128 @@
+##############################
+###### DemoTenantAdmins ######
+##############################
+
+dn: cn=DemoTenantAdmins,cn=Users,DC=samdom,DC=example,DC=com
+changetype: modify
+add:objectclass
+objectclass: posixGroup
+-
+add: gidnumber
+gidnumber: 10001
+
+# ad_admin1
+dn: cn=ad_admin1,cn=Users,DC=samdom,DC=example,DC=com
+changetype: modify
+add:objectclass
+objectclass: posixAccount
+-
+add: uidNumber
+uidNumber: 20001
+-
+add: gidnumber
+gidnumber: 10001
+-
+add: unixHomeDirectory
+unixHomeDirectory: /home/ad_admin1
+-
+add: loginShell
+loginShell: /bin/bash
+-
+add: mail
+mail: adadmin1@example.com
+-
+add: givenName
+givenName: ADAdmin1
+
+#######################
+###### ad_admin2 ######
+#######################
+
+dn: cn=ad_admin2,cn=Users,DC=samdom,DC=example,DC=com
+changetype: modify
+add:objectclass
+objectclass: posixAccount
+-
+add: uidNumber
+uidNumber: 20003
+-
+add: gidnumber
+gidnumber: 10001
+-
+add: unixHomeDirectory
+unixHomeDirectory: /home/ad_admin2
+-
+add: loginShell
+loginShell: /bin/bash
+-
+add: mail
+mail: adadmin2@example.com
+-
+add: givenName
+givenName: ADAdmin2
+
+#############################
+###### DemoTenantUsers ######
+#############################
+
+dn: cn=DemoTenantUsers,cn=Users,DC=samdom,DC=example,DC=com
+changetype: modify
+add:objectclass
+objectclass: posixGroup
+-
+add: gidnumber
+gidnumber: 10002
+
+######################
+###### ad_user1 ######
+######################
+
+dn: cn=ad_user1,cn=Users,DC=samdom,DC=example,DC=com
+changetype: modify
+add:objectclass
+objectclass: posixAccount
+-
+add: uidNumber
+uidNumber: 20002
+-
+add: gidnumber
+gidnumber: 10002
+-
+add: unixHomeDirectory
+unixHomeDirectory: /home/ad_user1
+-
+add: loginShell
+loginShell: /bin/bash
+-
+add: mail
+mail: aduser1@example.com
+-
+add: givenName
+givenName: ADUser1
+
+######################
+###### ad_user2 ######
+######################
+
+dn: cn=ad_user2,cn=Users,DC=samdom,DC=example,DC=com
+changetype: modify
+add:objectclass
+objectclass: posixAccount
+-
+add: uidNumber
+uidNumber: 20004
+-
+add: gidnumber
+gidnumber: 10002
+-
+add: unixHomeDirectory
+unixHomeDirectory: /home/ad_user2
+-
+add: loginShell
+loginShell: /bin/bash
+-
+add: mail
+mail: aduser2@example.com
+-
+add: givenName
+givenName: ADUser2
