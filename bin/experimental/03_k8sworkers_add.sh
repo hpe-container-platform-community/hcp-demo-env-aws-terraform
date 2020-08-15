@@ -31,7 +31,7 @@ pip3 install --quiet --upgrade --user hpecp
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 
 # Test CLI is able to connect
-hpecp license platform-id
+echo "Platform ID: $(hpecp license platform-id)"
 
 echo "Adding workers"
 WRKR_IDS=()
