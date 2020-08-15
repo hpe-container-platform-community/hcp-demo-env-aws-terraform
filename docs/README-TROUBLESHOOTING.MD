@@ -1,3 +1,7 @@
+### load pubkey "./generated/controller.prv_key": invalid format
+
+This can be ignored - if you want to understand why this occurs, see:  https://blog.hqcodeshop.fi/archives/482-OpenSSH-8.3-client-fails-with-load-pubkey-invalid-format.html
+
 ### Error: timeout - last error: SSH authentication failed
 
 ```
