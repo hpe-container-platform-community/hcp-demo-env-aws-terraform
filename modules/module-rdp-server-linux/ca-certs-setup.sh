@@ -14,7 +14,7 @@ sudo update-ca-certificates
 # the rest of this script adds the HCP CA cert to the mozilla user profiles
 # and also setups the homepage to the controller
 
-sudo apt install libnss3-tools
+sudo apt -qq install libnss3-tools
 
 rm -rf /home/${USER}/.mozilla/
 

@@ -49,8 +49,8 @@ done
 # test passwordless SSH connection from Controller to Workers
 for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do 
     ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} << ENDSSH
-        sudo apt-get update 
-        sudo apt-get install -y openjdk-8-jdk python-pymysql python3-pymysql
+        sudo apt-get -qq update 
+        sudo apt-get -qq install -y openjdk-8-jdk python-pymysql python3-pymysql
 ENDSSH
 done
 

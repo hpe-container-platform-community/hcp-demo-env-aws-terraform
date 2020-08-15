@@ -25,7 +25,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${C
 		set -eu
 	
 		# Install the auth packages by executing the following command - TODO: really disable pgpcheck??
-		yum install -y authconfig openldap openldap-clients pamtester sssd sssd-client --nogpgcheck
+		yum install -y -q authconfig openldap openldap-clients pamtester sssd sssd-client --nogpgcheck
 		
 		authconfig --enableldap --enableldapauth --ldapserver=${AD_PRIVATE_IP} \
 			--ldapbasedn="${LDAP_BASE_DN}" --enablemkhomedir --enablecachecreds \

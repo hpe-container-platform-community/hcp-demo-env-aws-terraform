@@ -20,7 +20,7 @@ DOMAIN="samdom.example.com"
 	set -eu
 	
 	# Install the auth packages by executing the following command 
-	sudo apt-get -q update && sudo apt-get install -y pamtester sssd
+	sudo apt-get -qq  update && sudo apt-get -qq install -y pamtester sssd
 	
 	sudo bash -c "cat > /etc/sssd/sssd.conf <<-EOF
 		[domain/${DOMAIN}]
@@ -114,8 +114,8 @@ SSH_EOF
 
 	sudo bash -c "echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list"
 	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BFDDB60966B3F0D6
-	sudo apt update
-	sudo apt-get install -q -y mapr-posix-client-platinum openjdk-8-jdk
+	sudo apt-get -qq update
+	sudo apt-get -qq install -y mapr-posix-client-platinum openjdk-8-jdk
 	sudo modprobe fuse
 
 	# Create required mapr:mapr user/group

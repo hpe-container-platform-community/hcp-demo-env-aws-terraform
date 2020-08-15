@@ -9,6 +9,8 @@ source "$SCRIPT_DIR/variables.sh"
 set +e
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${CTRL_PUB_IP} <<-SSH_EOF
 
+	set -x
+	
 	# Apply the posix classes ldif.  This should have been applied by terraform when the EC2 instance was created.
 	# If it was applied, it will return 20 here.  If not, it will be run for the first time and return 0 if successful.	
 

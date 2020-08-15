@@ -12,7 +12,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
 	[[ -d /home/centos/.pyenv ]] && exit 0    # we have already been installed
 
-	sudo yum install -y  gcc gcc-c++ make git patch openssl-devel zlib zlib-devel readline-devel sqlite-devel bzip2-devel libffi-devel
+	sudo yum install -y -q gcc gcc-c++ make git patch openssl-devel zlib zlib-devel readline-devel sqlite-devel bzip2-devel libffi-devel
 	git clone git://github.com/yyuu/pyenv.git ~/.pyenv
 	echo 'export PATH="\$HOME/.pyenv/bin:\$PATH"' >> ~/.bashrc
 	echo 'eval "\$(pyenv init -)"' >> ~/.bashrc

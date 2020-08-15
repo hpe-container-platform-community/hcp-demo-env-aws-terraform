@@ -79,8 +79,8 @@ resource "aws_instance" "rdp_server" {
       // run fastdd in background session.  nohup and disown both failed to achieve this over ssh.
       "sudo tmux new-session -d -s mySession -n myWindow && sudo tmux send-keys -t mySession:myWindow \"fastdd\" Enter",
       "sudo sed -i 's/1/0/g' /etc/apt/apt.conf.d/20auto-upgrades",
-      "sudo apt update",
-      "sudo apt install -y firefox",
+      "sudo apt -qq update",
+      "sudo apt -qq install -y firefox",
       "sudo snap install gedit",
       "curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl",
       "chmod +x ./kubectl",

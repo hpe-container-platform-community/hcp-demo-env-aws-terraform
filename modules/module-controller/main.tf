@@ -49,7 +49,7 @@ resource "aws_instance" "controller" {
       agent       = false
     }
     inline = [
-      "sudo yum update -y"
+      "sudo yum update -y -q"
     ]
   }
 }

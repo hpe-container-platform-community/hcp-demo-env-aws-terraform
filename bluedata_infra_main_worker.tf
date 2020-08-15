@@ -34,7 +34,7 @@ resource "null_resource" "yum_update_workers" {
   }
 
   provisioner "remote-exec" {
-    inline = [ "sudo yum update -y" ]
+    inline = [ "sudo yum update -y -q" ]
   }
 }
 

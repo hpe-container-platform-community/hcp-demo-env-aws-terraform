@@ -57,7 +57,7 @@ do
 			# sudo rpm -Uvh epel-release-6*.rpm
 
 			sudo rpm --import http://package.mapr.com/releases/pub/maprgpg.key
-			sudo yum install -y mapr-client.x86_64 java-1.8.0-openjdk.x86_64
+			sudo yum install -y -q mapr-client.x86_64 java-1.8.0-openjdk.x86_64
 
 			JRE_LD_LIBRARY_PATH=\$(rpm -ql java-1.8.0-openjdk-headless | grep "jre/lib/amd64/server\$")
 			echo \${JRE_LD_LIBRARY_PATH}
@@ -73,7 +73,7 @@ do
 			sudo chown root:root /opt/mapr/conf/longlived_ticket
 			sudo chmod 700 /opt/mapr/conf/longlived_ticket
 
-			sudo yum install -y mapr-posix-client-platinum
+			sudo yum install -y -q mapr-posix-client-platinum
 			sudo bash -c "sed -i '/^.*fuse.ticketfile.location=.*$/d' /opt/mapr/conf/fuse.conf" # Delete previous config entries before adding a new one
 			sudo bash -c "echo 'fuse.ticketfile.location=/opt/mapr/conf/longlived_ticket' >> /opt/mapr/conf/fuse.conf"
 			tail /opt/mapr/conf/fuse.conf

@@ -8,7 +8,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$SCRIPT_DIR/../../variables.sh"
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" ubuntu@$RDP_PUB_IP <<-SSH_EOF
-	sudo apt-get install -y s3cmd
+	sudo apt-get -qq install -y s3cmd
 
 	PREV_ID=\$(docker ps -a | grep 'ceph/daemon' | awk '{ print \$1 }')
 	echo PREV_ID=\$PREV_ID

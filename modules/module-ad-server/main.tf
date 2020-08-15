@@ -44,7 +44,7 @@ resource "aws_instance" "ad_server" {
     inline = [
       <<EOT
         set -e
-        sudo yum install -y docker openldap-clients
+        sudo yum install -y -q docker openldap-clients
         sudo service docker start
         sudo systemctl enable docker
         . /home/centos/run_ad.sh

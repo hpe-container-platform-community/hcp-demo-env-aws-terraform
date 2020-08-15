@@ -30,7 +30,7 @@ resource "aws_instance" "nfs_server" {
       agent       = false
     }
     inline = [
-      "sudo yum -y install nfs-utils",
+      "sudo yum -y -q install nfs-utils",
       "sudo mkdir /nfsroot",
       "echo '/nfsroot *(rw,no_root_squash,no_subtree_check)' | sudo tee /etc/exports",
       "sudo exportfs -r",

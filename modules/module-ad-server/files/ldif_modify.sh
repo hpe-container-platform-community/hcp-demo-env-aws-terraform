@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ldapmodify -H ldap://localhost:389 \
     -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' \
     -f /home/centos/ad_set_posix_classes.ldif \

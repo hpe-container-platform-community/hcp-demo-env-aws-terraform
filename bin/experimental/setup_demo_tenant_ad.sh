@@ -17,7 +17,7 @@ pip3 install --quiet --upgrade --user hpecp
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 
 # set the log level for the HPE CP CLI
-export LOG_LEVEL=DEBUG
+# export LOG_LEVEL=DEBUG
 
 # test connectivity to HPE CP with the CLI
 hpecp license platform-id

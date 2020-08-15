@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # allow weak passwords - easier to demo
 samba-tool domain passwordsettings set --complexity=off
 

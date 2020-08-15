@@ -48,7 +48,7 @@ resource "aws_instance" "gateway" {
       agent       = false
     }
     inline = [
-      "sudo yum update -y"
+      "sudo yum update -y -q"
     ]
   }
 }

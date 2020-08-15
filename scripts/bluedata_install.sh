@@ -119,7 +119,7 @@ done
 # Gateway
 #
 
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "sudo yum update -y"
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "sudo yum update -y -q"
 # if the reboot causes ssh to terminate with an error, ignore it
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "nohup sudo reboot </dev/null &" || true
 
@@ -128,7 +128,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_
 # Controller
 #
 
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "sudo yum update -y"
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "sudo yum update -y -q"
 
 # FIXME: Hack to allow HPE CP httpd service to use minica key and cert
 echo 'Disabling SELINUX on the Controller host'
@@ -147,7 +147,7 @@ for WRKR in ${WRKR_PUB_IPS[@]}; do
       ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
    fi
 
-   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum update -y"
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum update -y -q"
    # if the reboot causes ssh to terminate with an error, ignore it
    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
 done
@@ -196,11 +196,11 @@ echo "SSHing into Controller ${CTRL_PUB_IP}"
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
    set -eu
 
-   sudo yum install -y wget
+   sudo yum install -y -q wget
 
    # manually install epel due to https://stackoverflow.com/questions/62359639/unable-to-install-packages-via-yum-in-aws-errno-1-repomd-xml-does-not-match
    wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-   sudo yum install -y epel-release-latest-7.noarch.rpm
+   sudo yum install -y -q epel-release-latest-7.noarch.rpm
 
 
    if [[ -e /home/centos/bd_installed ]]
@@ -211,7 +211,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
    set -e # abort on error
 
-   sudo yum -y install git wget
+   sudo yum -y -q install git wget
    wget -c --progress=bar -e dotbytes=1M https://dl.google.com/go/go1.13.linux-amd64.tar.gz
    sudo tar -C /usr/local -xzf go1.13.linux-amd64.tar.gz
 
@@ -280,8 +280,8 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    set -eu
 
    # install application workbench
-   sudo yum install -y epel-release
-   sudo yum install -y python-pip
+   sudo yum install -y -q epel-release
+   sudo yum install -y -q python-pip
    sudo pip install --upgrade pip
    sudo pip install --upgrade setuptools
    sudo pip install --upgrade bdworkbench

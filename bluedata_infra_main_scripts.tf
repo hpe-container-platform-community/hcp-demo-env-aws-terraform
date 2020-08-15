@@ -164,6 +164,15 @@ resource "local_file" "ssh_gateway" {
   EOF
 }
 
+resource "local_file" "ssh_ad" {
+  filename = "${path.module}/generated/ssh_ad.sh"
+  content = <<-EOF
+     #!/bin/bash
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$AD_PUB_IP "$@"
+  EOF
+}
+
 resource "local_file" "ssh_worker" {
   count = var.worker_count
 
@@ -483,12 +492,20 @@ resource "local_file" "get_public_endpoints" {
     mapr_hosts_public_ips    = j["mapr_hosts_public_ip"]["value"][0]
     mapr_hosts_public_dns    = j["mapr_hosts_public_dns"]["value"][0]
 
+    try:
+        ad_server_public_ip  = j["ad_server_public_ip"]["value"]
+        ad_server_public_dns = "NA"
+    except:
+        ad_server_public_ip  = "NA"
+        ad_server_public_dns = "NA"
+
     print('------------  ----------------  --------------------------------------------------------  -----')
     print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "NAME", "IP", "DNS", "EIP?"))
     print('------------  ----------------  --------------------------------------------------------  -----')
     print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "RDP Server", rdp_server_public_ip, rdp_server_public_dns, rdp_server_eip))
     print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "Controller", controller_public_ip, controller_public_dns, controller_eip))
     print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "Gateway",    gateway_public_ip,    gateway_public_dns,    gateway_eip))
+    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "AD",         ad_server_public_ip,  ad_server_public_dns,  "NA"))
 
     for num, ip in enumerate(workers_public_ips):
        print('{:>9}{:>3}  {:>16}  {:>56}  {:>5}'.format( "Worker", num, ip, workers_public_dns[num], "NA"))
