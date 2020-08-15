@@ -10,7 +10,7 @@ source "$SCRIPT_DIR/../../variables.sh"
 # Setup steps taken from: http://docs.bluedata.com/40_using-a-datatap-to-connect-to-a-mapr-fs
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
-	set -xeu
+	set -eu
 
 	# delete any previous files - start with a clean slate
 	rm -f create_dataconn.py settings.py session.py
@@ -36,7 +36,7 @@ for HOST in $CTRL_PUB_IP ${WRKR_PUB_IPS[@]};
 do
 	echo HOST=$HOST
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@$HOST <<-SSH_EOF
-		set -xeu
+		set -eu
 
 		# if the host doesn't have bdconfig, it hasn't been added to HCP yet
 		if command -v bdconfig >/dev/null 2>&1; then

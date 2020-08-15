@@ -59,7 +59,6 @@ done
 ###############################################################################
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-   set -x
    set -e
 
    if [[ ! -d ~/mapr-ansible ]]; then
@@ -78,6 +77,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
    cp ~/.ssh/id_rsa .
 
+   # add -vvv to debug
    docker run \
       -v \$PWD:/app \
       -w /app \
@@ -87,7 +87,6 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
       -i ./hosts_cluster.xml \
       -u ubuntu \
       -become \
-      -vvv \
       --key-file ./id_rsa \
       -k | tee ansible_log.txt
       

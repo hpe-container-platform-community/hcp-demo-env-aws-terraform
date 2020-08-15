@@ -128,7 +128,6 @@ resource "local_file" "ssh_controller_port_forwards" {
     fi
     echo Creating port forwards from "${path.module}/etc/port_forwards.sh"
 
-    set -x
     ssh -o StrictHostKeyChecking=no \
       -i "${var.ssh_prv_key_path}" \
       -N \

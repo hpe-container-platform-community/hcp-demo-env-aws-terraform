@@ -18,11 +18,11 @@ DOMAIN="samdom.example.com"
 
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${CTRL_PUB_IP} <<-SSH_EOF
-	set -xeu
+	set -eu
 
 	CONTAINER_ID=\$(docker ps | grep "epic-mapr" | cut -d " " -f1)
 	docker exec -i \$CONTAINER_ID bash <<-DOCKER_EOF
-		set -xeu
+		set -eu
 	
 		# Install the auth packages by executing the following command - TODO: really disable pgpcheck??
 		yum install -y authconfig openldap openldap-clients pamtester sssd sssd-client --nogpgcheck

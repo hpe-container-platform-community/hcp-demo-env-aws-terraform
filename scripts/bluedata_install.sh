@@ -194,7 +194,7 @@ cat generated/ca-key.pem  | ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_
 echo "SSHing into Controller ${CTRL_PUB_IP}"
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-   set -xeu
+   set -eu
 
    sudo yum install -y wget
 
@@ -249,7 +249,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 ENDSSH
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-   set -xeu
+   set -eu
 
    # do initial configuration
    KERB_OPTION="-k no"
@@ -277,7 +277,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 ENDSSH
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-   set -xeu
+   set -eu
 
    # install application workbench
    sudo yum install -y epel-release

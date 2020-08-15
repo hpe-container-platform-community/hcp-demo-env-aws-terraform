@@ -20,8 +20,6 @@ echo "Deleting and creating lock"
 hpecp lock delete-all
 hpecp lock create "Install Gateway"
 
-# set -x # debug output
-
 echo "Configuring the Gateway"
 GATEWAY_ID=$(hpecp gateway create-with-ssh-key $GATW_PRV_IP $GATW_PRV_DNS --ssh-key-file ./generated/controller.prv_key)
 

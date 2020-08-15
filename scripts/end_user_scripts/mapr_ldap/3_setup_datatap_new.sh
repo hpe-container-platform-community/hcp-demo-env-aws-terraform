@@ -8,7 +8,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$SCRIPT_DIR/../../variables.sh"
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
-	set -xeu
+	set -eu
 
 	MAPR_USER=ad_admin1
 	MAPR_TCKT=/tmp/ad_admin1_impersonation_ticket

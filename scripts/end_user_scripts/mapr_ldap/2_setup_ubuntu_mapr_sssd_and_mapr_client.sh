@@ -17,7 +17,7 @@ DOMAIN="samdom.example.com"
 
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
-	set -xeu
+	set -eu
 	
 	# Install the auth packages by executing the following command 
 	sudo apt-get -q update && sudo apt-get install -y pamtester sssd
@@ -110,7 +110,7 @@ SSH_EOF
 
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
-	set -xeu
+	set -eu
 
 	sudo bash -c "echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list"
 	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BFDDB60966B3F0D6
@@ -134,7 +134,7 @@ SSH_EOF
 
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
-	set -xeu
+	set -eu
 
 	scp -o StrictHostKeyChecking=no centos@${CTRL_PRV_IP}:~/ssl_truststore .
 	sudo mv /home/ubuntu/ssl_truststore /opt/mapr/conf/
@@ -143,7 +143,7 @@ SSH_EOF
 
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
-	set -xeu
+	set -eu
 
 	sudo su - ad_admin1
 	echo pass123 | maprlogin password -user ad_admin1 -cluster hcp.mapr.cluster

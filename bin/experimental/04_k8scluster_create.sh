@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# set -x # debug
-
 if [[ ! -d generated ]]; then
    echo "This file should be executed from the project directory"
    exit 1
