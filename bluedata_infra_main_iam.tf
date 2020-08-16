@@ -93,10 +93,12 @@ resource "aws_iam_user_policy" "allow_from_my_ip" {
   EOF
 }
 
-resource "local_file" "non_terraform_user_scripts" {
-
-  filename = "${path.module}/generated/non_terraform_user_scripts.txt"
+resource "local_file" "non_terraform_user_scripts_update_firewal" {
+  filename = "${path.module}/generated/non_terraform_user/update_firewall_script.sh"
   content =  <<-EOF
+    #!/bin/bash
+
+    set -e
 
     # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
     # The IAM user only has permissions to run this script.
@@ -106,19 +108,24 @@ resource "local_file" "non_terraform_user_scripts" {
     AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
     AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
+    MY_IP="$(curl -s http://ifconfig.me/ip)/32"
+
     # Add My IP to Network ACL
 
     RULE_110=$(aws ec2 --region ${var.region} \
       --profile default \
       describe-network-acls \
       --network-acl-id ${module.network.network_acl_id} \
-      --query 'NetworkAcls[*].Entries[?RuleNumber == `110` && Egress ==`false` ] | [?length(@) == `0`] | []')
+      --query 'NetworkAcls[*].Entries[?RuleNumber == `110` && Egress ==`false` ] | [?length(@) == `1`] | []')
+
+    echo "Query result for RuleNumber=110, Ingress:"
+    echo "$RULE_110"
 
     if [[ "$${RULE_110}" == "[]" ]]; then
         # Rule 110 doesn't exist so create it
         aws ec2 --region ${var.region} --profile default create-network-acl-entry \
             --network-acl-id ${module.network.network_acl_id} \
-            --cidr-block "$(curl -s http://ifconfig.me/ip)/32" \
+            --cidr-block "$${MY_IP}" \
             --ingress \
             --protocol -1 \
             --rule-action allow \
@@ -127,42 +134,143 @@ resource "local_file" "non_terraform_user_scripts" {
         # Rule 110 does exist so replace it
         aws ec2 --region ${var.region} --profile default replace-network-acl-entry \
             --network-acl-id ${module.network.network_acl_id} \
-            --cidr-block "$(curl -s http://ifconfig.me/ip)/32" \
+            --cidr-block "$${MY_IP}" \
             --ingress \
             --protocol -1 \
             --rule-action allow \
             --rule-number 110
     fi
 
-    # Add My IP to security group
-    aws ec2 --region ${var.region} --profile default authorize-security-group-ingress \
-        --group-id ${module.network.sg_allow_all_from_specified_ips} \
-        --protocol all \
-        --port -1 \
-        --cidr "$(curl -s http://ifconfig.me/ip)/32"
+    SG=$(aws ec2 --region us-west-2 \
+            --profile default \
+            describe-security-groups \
+            --group-id sg-07d4994a5829c4ba8 \
+            --query 'SecurityGroups[*].IpPermissions[*].IpRanges[*].CidrIp | [] | [] | [? contains(@, ` "$${MY_IP}"`)] | [?length(@) == `1`]')
+
+    if [[ "$${SG}" != "[]" ]]; then
+      # Add My IP to security group
+      aws ec2 --region ${var.region} --profile default authorize-security-group-ingress \
+          --group-id ${module.network.sg_allow_all_from_specified_ips} \
+          --protocol all \
+          --port -1 \
+          --cidr "$${MY_IP}"
+    fi
+  EOF
+}
+
+resource "local_file" "non_terraform_user_scripts_start_instances" {
+  filename = "${path.module}/generated/non_terraform_user/start_instances.sh"
+  content =  <<-EOF
+    #!/bin/bash
+
+    set -e
+
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # The IAM user only has permissions to run this script.
+
+    # The ACCESS and SECRET key for the IAM user are below:
+
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
     # Start EC2 instances - after starting your instances, run the command below to check for the new 
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids}
+  EOF
+}
+
+resource "local_file" "non_terraform_user_scripts_stop_instances" {
+  filename = "${path.module}/generated/non_terraform_user/stop_instances.sh"
+  content =  <<-EOF
+    #!/bin/bash
+
+    set -e
+
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # The IAM user only has permissions to run this script.
+
+    # The ACCESS and SECRET key for the IAM user are below:
+
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
     # Stop EC2 instances 
     aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${local.instance_ids}
+  EOF
+}
+
+resource "local_file" "non_terraform_user_scripts_status_instances" {
+  filename = "${path.module}/generated/non_terraform_user/instance_status.sh"
+  content =  <<-EOF
+    #!/bin/bash
+
+    set -e
+
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # The IAM user only has permissions to run this script.
+
+    # The ACCESS and SECRET key for the IAM user are below:
+
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
     # EC2 instances status
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --include-all-instances --output table --query "InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}"
+  EOF
+}
 
-    # RDP Server Public IP Address and Password (RDP Username = ubuntu)
-    aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} --output json --query "Reservations[*].Instances[*].[PublicIpAddress,InstanceId]"
+resource "local_file" "non_terraform_user_scripts_rdp_info" {
+  filename = "${path.module}/generated/non_terraform_user/rdp_info.sh"
+  content =  <<-EOF
+    #!/bin/bash
+
+    set -e
+
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # The IAM user only has permissions to run this script.
+
+    # The ACCESS and SECRET key for the IAM user are below:
+
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+
+    # RDP Server Info
+    IFS=,
+    INFO=($(aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} --output text --query 'Reservations[*].Instances[*].[PublicIpAddress,InstanceId] | [][] | join(`,`, @)'))
+    PUB_IP=$${INFO[0]}
+    PASSWD=$${INFO[1]}
+
+    echo RDP Endpoint Details
+    echo --------------------
+    echo Username: ubuntu
+    echo Password: $${PASSWD}
+    echo IP ADDR:  $${PUB_IP}
+    echo WEB URL:  https://$${PUB_IP}
+  EOF
+}
+
+resource "local_file" "non_terraform_user_scripts_controller_info" {
+  filename = "${path.module}/generated/non_terraform_user/controller_info.sh"
+  content =  <<-EOF
+    #!/bin/bash
+
+    set -e
+
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # The IAM user only has permissions to run this script.
+
+    # The ACCESS and SECRET key for the IAM user are below:
+
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
     # Controller Server Public IP Address 
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.controller.id != null ? module.controller.id : ""} --output json --query "Reservations[*].Instances[*].[PublicIpAddress]"
-
   EOF
-
 }
 
 resource "local_file" "non_terraform_user_scripts_variables" {
 
-  filename = "${path.module}/generated/non_terraform_user_scripts_variables.txt"
+  filename = "${path.module}/generated/non_terraform_user/variables.txt"
   content =  <<-EOF
     AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
     AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
@@ -174,5 +282,4 @@ resource "local_file" "non_terraform_user_scripts_variables" {
     SG_ID=${module.network.sg_allow_all_from_specified_ips}
     INSTALL_WITH_SSL=${var.install_with_ssl}
   EOF
-
 }
