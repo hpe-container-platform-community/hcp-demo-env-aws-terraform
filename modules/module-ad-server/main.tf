@@ -43,20 +43,14 @@ resource "aws_instance" "ad_server" {
     }
     inline = [
       <<EOT
-        set -e
+        set -ex
         sudo yum install -y -q docker openldap-clients
         sudo service docker start
         sudo systemctl enable docker
         . /home/centos/run_ad.sh
-        sleep 60
+        sleep 120
         . /home/centos/ldif_modify.sh
-        echo Done!
       EOT
     ]
   }
 }
-
-// To connect ...
-// LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no -x -H ldaps://localhost:636 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com'
-// or
-// ldapsearch -o ldif-wrap=no -x -H ldap://localhost:389 -D 'cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com' -w '5ambaPwd@' -b 'DC=samdom,DC=example,DC=com'

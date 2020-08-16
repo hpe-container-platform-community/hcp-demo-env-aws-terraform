@@ -4,6 +4,9 @@ set -e # abort on error
 set -u # abort on undefined variable
 
 ./scripts/check_prerequisites.sh
+source "scripts/functions.sh"
+
+print_term_width '='
 
 while true; do
     read -p "Do you wish to run experimental scripts y/n (enter no if unsure)? " yn
@@ -13,6 +16,8 @@ while true; do
         * ) echo "Please answer y or n.";;
     esac
 done
+
+print_term_width '='
 
 if [[ -f terraform.tfstate ]]; then
    TF_RESOURCES=$(cat  terraform.tfstate | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(len(obj["resources"]))')
@@ -63,21 +68,33 @@ if [[ "$EXPERIMENTAL" == "1" ]]; then
    echo "Sleeping for 240s to give services a chance to startup"
    sleep 240
     
-   ./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
-   ./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
+   ./scripts/end_user_scripts/embedded_mapr/1_setup_epic_mapr_sssd.sh
+   ./scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
    ./bin/df-cluster-acl-ad_admin1.sh # add the ad_admin1 user to the cluster
    set +e
-   ./scripts/end_user_scripts/mapr_ldap/3_setup_datatap_new.sh
+   ./scripts/end_user_scripts/embedded_mapr/3_setup_datatap_new.sh
 
+   print_term_width '='
    echo "Recommended scripts:"
+   echo "--------------------"
+   echo "./bin/experimental/epic_enable_virtual_node_assignment.sh"
+   echo "./bin/experimental/epic_set_cpu_allocation_ratio.sh"
    echo "./bin/experimental/03_k8sworkers_add.sh 2 # add 2 EC2 hosts as k8s workers"
    echo "./bin/experimental/04_k8scluster_create.sh"
-   echo "./bin/experimental/epic_catalog_image_install_all.sh"
 
    if [[ "$MAPR_COUNT" == "3" ]]; then
       echo "./scripts/end_user_scripts/patch_datatap_5.1.1.sh"
       echo "./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh"
    fi
+
+   # install images last because operations requiring system to be quiesced 
+   # such as site lockdown may have to wait a long time for the installs
+
+   echo "./bin/experimental/epic_catalog_image_install_spark23.sh"
+   echo "or"
+   echo "./bin/experimental/epic_catalog_image_install_all.sh"
+   echo "./bin/experimental/epic_catalog_image_status.sh"
+   print_term_width '='
 
 fi
 
@@ -91,3 +108,5 @@ fi
 echo "*******************************************************************"
 echo "Run ./generated/get_public_endpoints.sh for all connection details."
 echo "*******************************************************************"
+
+print_term_width '='

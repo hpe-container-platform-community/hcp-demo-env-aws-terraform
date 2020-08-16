@@ -14,14 +14,14 @@ These instructions assume you have deployed the AD server by setting `ad_server_
 
 After `terraform apply`, run `terraform output ad_server_private_ip` to get the AD server IP address.
 
-Please read the [scripts](../scripts/end_user_scripts/mapr_ldap) below to understand what they are doing - they aren't too complicated!
+Please read the [scripts](../scripts/end_user_scripts/embedded_mapr) below to understand what they are doing - they aren't too complicated!
 
 ### Configure the epic-mapr docker container for LDAP authentication
 
 From your client machine where the github project is checked out, run:
 
 ```
-./scripts/end_user_scripts/mapr_ldap/1_setup_epic_mapr_sssd.sh
+./scripts/end_user_scripts/embedded_mapr/1_setup_epic_mapr_sssd.sh
 ```
 
 ### Configure the RDP jump host server for LDAP authentication.
@@ -29,7 +29,7 @@ From your client machine where the github project is checked out, run:
 From your client machine where the github project is checked out, run:
 
 ```
-./scripts/end_user_scripts/mapr_ldap/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
+./scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
 ```
 
 ### Setup Datatap on HCP in the EPIC Demo Tenant
@@ -37,7 +37,7 @@ From your client machine where the github project is checked out, run:
 For HPE CP 5.1 build 1440+
 
 ```
-./scripts/end_user_scripts/mapr_ldap/3_setup_datatap_new.sh
+./scripts/end_user_scripts/embedded_mapr/3_setup_datatap_new.sh
 ```
 
 This script creates a volume named **global** and a Datatap named **globalshare** in the EPIC Demo Tenant.

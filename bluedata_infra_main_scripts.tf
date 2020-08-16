@@ -237,6 +237,32 @@ resource "local_file" "ssh_all" {
   EOF
 }
 
+
+resource "local_file" "run_wireshark_on_mac" {
+  filename = "${path.module}/generated/run_wireshark_on_mac.sh"
+  content = <<-EOF
+  #!/bin/bash
+    
+  if [[ "$EUID" != "0" ]]; then
+    echo "This script must be run as root - e.g. with sudo" 
+    exit 1
+  fi
+
+  USER_BEFORE_SUDO=$(who am i | awk '{print $1}')
+
+  echo Wireshark filter examples:
+  echo --------------------------
+  echo http
+  echo http.request.method == "POST" or http.request.method == "GET"
+  echo http.request.uri == "/api/v1/user"
+  echo http.request.uri matches "k8skubeconfig"  
+  echo --------------------------
+
+  sudo -u $USER_BEFORE_SUDO ./generated/ssh_controller.sh sudo yum install -y -q tcpdump 
+  sudo -u $USER_BEFORE_SUDO ./generated/ssh_controller.sh sudo tcpdump -i lo -U -s0 -w - 'port 8080' | sudo /Applications/Wireshark.app/Contents/MacOS/Wireshark -k -i -
+  EOF
+}
+
 resource "local_file" "mcs_credentials" {
   filename = "${path.module}/generated/mcs_credentials.sh"
   content = <<-EOF
