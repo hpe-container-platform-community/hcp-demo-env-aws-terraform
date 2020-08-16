@@ -106,6 +106,41 @@ resource "local_file" "non_terraform_user_scripts" {
     AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
     AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
+    # Add My IP to Network ACL
+
+    RULE_110=$(aws ec2 --region ${var.region} \
+      --profile default \
+      describe-network-acls \
+      --network-acl-id ${module.network.network_acl_id} \
+      --query 'NetworkAcls[*].Entries[?RuleNumber == `110` && Egress ==`false` ] | [?length(@) == `0`] | []')
+
+    if [[ "$${RULE_110}" == "[]" ]]; then
+        # Rule 110 doesn't exist so create it
+        aws ec2 --region ${var.region} --profile default create-network-acl-entry \
+            --network-acl-id ${module.network.network_acl_id} \
+            --cidr-block "$(curl -s http://ifconfig.me/ip)/32" \
+            --ingress \
+            --protocol -1 \
+            --rule-action allow \
+            --rule-number 110
+    else
+        # Rule 110 does exist so replace it
+        aws ec2 --region ${var.region} --profile default replace-network-acl-entry \
+            --network-acl-id ${module.network.network_acl_id} \
+            --cidr-block "$(curl -s http://ifconfig.me/ip)/32" \
+            --ingress \
+            --protocol -1 \
+            --rule-action allow \
+            --rule-number 110
+    fi
+
+    # Add My IP to security group
+    aws ec2 --region ${var.region} --profile default authorize-security-group-ingress \
+        --group-id ${module.network.sg_allow_all_from_specified_ips} \
+        --protocol all \
+        --port -1 \
+        --cidr "$(curl -s http://ifconfig.me/ip)/32"
+
     # Start EC2 instances - after starting your instances, run the command below to check for the new 
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids}
 
@@ -120,31 +155,6 @@ resource "local_file" "non_terraform_user_scripts" {
 
     # Controller Server Public IP Address 
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.controller.id != null ? module.controller.id : ""} --output json --query "Reservations[*].Instances[*].[PublicIpAddress]"
-
-    # Add My IP to Network ACL
-    aws ec2 --region ${var.region} --profile default create-network-acl-entry \
-        --network-acl-id ${module.network.network_acl_id} \
-        --cidr-block "$(curl -s http://ifconfig.me/ip)/32" \
-        --ingress \
-        --protocol -1 \
-        --rule-action allow \
-        --rule-number 110
-
-    # if the above fails, try the following:  
-    aws ec2 --region ${var.region} --profile default replace-network-acl-entry \
-        --network-acl-id ${module.network.network_acl_id} \
-        --cidr-block "$(curl -s http://ifconfig.me/ip)/32" \
-        --ingress \
-        --protocol -1 \
-        --rule-action allow \
-        --rule-number 110
-
-    # Add My IP to security group
-    aws ec2 --region ${var.region} --profile default authorize-security-group-ingress \
-        --group-id ${module.network.sg_allow_all_from_specified_ips} \
-        --protocol all \
-        --port -1 \
-        --cidr "$(curl -s http://ifconfig.me/ip)/32"
 
   EOF
 

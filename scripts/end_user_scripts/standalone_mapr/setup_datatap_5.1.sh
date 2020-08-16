@@ -54,7 +54,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 
 	maprcli acl show -type cluster
 	
-	# note errors ignore so script can be idempotent
+	# note: ignore errors so script can be idempotent
 	maprcli volume create \
 			-name ${MAPR_VOL} -path ${MAPR_VMNT} || echo "^ Ignoring error ^"
 
