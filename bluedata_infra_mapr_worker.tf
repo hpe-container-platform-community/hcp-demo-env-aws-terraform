@@ -1,7 +1,7 @@
 resource "aws_instance" "mapr_hosts" {
   count                  = var.mapr_count
   ami                    = var.EC2_UBUNTU1804_AMIS[var.region]
-  instance_type          = var.wkr_instance_type
+  instance_type          = var.mapr_instance_type
   key_name               = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     module.network.security_group_allow_all_from_client_ip,
