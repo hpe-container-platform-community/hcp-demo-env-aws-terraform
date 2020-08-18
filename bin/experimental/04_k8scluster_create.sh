@@ -1,6 +1,4 @@
-#!/bin/bash
-
-set -e
+#!/usr/bin/env bash -euET -o pipefail -O inherit_errexit
 
 if [[ ! -d generated ]]; then
    echo "This file should be executed from the project directory"
@@ -18,7 +16,7 @@ export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 # Test CLI is able to connect
 echo "Platform ID: $(hpecp license platform-id)"
 
-AVAIL_K8S_WORKERS=($(hpecp k8sworker list --query "[?status == 'ready'][_links.self.href]" --output text))
+AVAIL_K8S_WORKERS=($(hpecp k8sworker list --query "sort_by(@, &_links.self.href) | [?status == 'ready'][_links.self.href]" --output text))
 
 K8S_WORKER_1=${AVAIL_K8S_WORKERS[0]}
 K8S_WORKER_2=${AVAIL_K8S_WORKERS[1]}
@@ -34,7 +32,10 @@ fi
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 17 --output text)
 
 echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | timeout=1200s"
-CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config $K8S_WORKER_1:master,$K8S_WORKER_2:worker --addons [istio])
+CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons [istio])
+
+echo $CLUSTER_ID
+
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1200
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
 

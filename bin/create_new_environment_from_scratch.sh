@@ -6,6 +6,8 @@ set -u # abort on undefined variable
 ./scripts/check_prerequisites.sh
 source "scripts/functions.sh"
 
+export HPECP_LOG_CONFIG_FILE=${PWD}/generated/hpecp_cli_logging.conf
+
 print_term_width '='
 
 while true; do
@@ -77,6 +79,7 @@ if [[ "$EXPERIMENTAL" == "1" ]]; then
    print_term_width '='
    echo "Recommended scripts:"
    echo "--------------------"
+   echo "export HPECP_LOG_CONFIG_FILE=${HPECP_LOG_CONFIG_FILE}"
    echo "./bin/experimental/epic_enable_virtual_node_assignment.sh"
    echo "./bin/experimental/epic_set_cpu_allocation_ratio.sh"
    echo "./bin/experimental/03_k8sworkers_add.sh 2 # add 2 EC2 hosts as k8s workers"

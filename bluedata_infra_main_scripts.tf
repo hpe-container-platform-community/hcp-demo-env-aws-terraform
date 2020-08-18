@@ -238,8 +238,8 @@ resource "local_file" "ssh_all" {
 }
 
 
-resource "local_file" "run_wireshark_on_mac" {
-  filename = "${path.module}/generated/run_wireshark_on_mac.sh"
+resource "local_file" "wireshark_on_mac" {
+  filename = "${path.module}/generated/wireshark_on_mac.sh"
   content = <<-EOF
   #!/bin/bash
     

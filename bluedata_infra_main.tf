@@ -16,6 +16,21 @@ resource "aws_key_pair" "main" {
 
 resource "random_uuid" "deployment_uuid" {}
 
+/******************* modules ********************/
+
+data "template_file" "cli_logging_config_template" {
+  template = file("etc/hpecp_cli_logging.conf")
+  vars = {
+    hpecp_cli_log_file = "${abspath(path.module)}/generated/hpecp_cli.log"
+  }
+}
+
+resource "local_file" "cli_logging_config_file" {
+  filename = "${path.module}/generated/hpecp_cli_logging.conf"
+  content =  data.template_file.cli_logging_config_template.rendered
+}
+
+
 // random_uuid.deployment_uuid.result
 
 /******************* modules ********************/
