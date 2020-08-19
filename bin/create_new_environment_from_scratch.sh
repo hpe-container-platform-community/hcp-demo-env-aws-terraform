@@ -6,8 +6,6 @@ set -u # abort on undefined variable
 ./scripts/check_prerequisites.sh
 source "scripts/functions.sh"
 
-export HPECP_LOG_CONFIG_FILE=${PWD}/generated/hpecp_cli_logging.conf
-
 print_term_width '='
 
 while true; do
@@ -18,6 +16,12 @@ while true; do
         * ) echo "Please answer y or n.";;
     esac
 done
+
+print_term_width '='
+
+export HPECP_LOG_CONFIG_FILE=${PWD}/generated/hpecp_cli_logging.conf
+pip3 uninstall -y hpecp || true # uninstall if exists
+pip3 install --upgrade --user hpecp
 
 print_term_width '='
 
