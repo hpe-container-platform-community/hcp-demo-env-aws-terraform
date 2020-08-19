@@ -61,9 +61,9 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 	maprcli acl set \
 			-type volume -name ${MAPR_VOL} -user ad_admin1:fc
 
-	hadoop fs -chgrp DemoTenantAdmins /demo_tenant_admins
+	#hadoop fs -chgrp DemoTenantAdmins /demo_tenant_admins
 
-	hadoop fs -chmod 770 /demo_tenant_admins
+	hadoop fs -chmod 777 /demo_tenant_admins
 ENDSSH
 
 print_term_width '-'
