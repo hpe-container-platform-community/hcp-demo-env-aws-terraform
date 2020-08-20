@@ -18,13 +18,13 @@ DOMAIN="samdom.example.com"
 
 MAPR_CLUSTER_NAME="demo.mapr.com"
 
-for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do 
+for MAPR_CLUSTER1_HOST in ${MAPR_CLUSTER1_HOSTS_PUB_IPS[@]}; do 
 
 	print_term_width '='
-	echo "Setting up SSSD on ${MAPR_HOST}"
+	echo "Setting up SSSD on ${MAPR_CLUSTER1_HOST}"
 	print_term_width '='
 
-	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} <<-SSH_EOF
+	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOST} <<-SSH_EOF
 	set -eu
 
 	# don't display login banners
@@ -121,7 +121,7 @@ for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do
 SSH_EOF
 
 print_term_width '-'
-ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} <<-SSH_EOF
+ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOST} <<-SSH_EOF
 
 	set -eu
 
@@ -140,26 +140,26 @@ SSH_EOF
 done
 
 print_term_width '-'
-for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do 
+for MAPR_CLUSTER1_HOST in ${MAPR_CLUSTER1_HOSTS_PUB_IPS[@]}; do 
 	# reboot - and if the reboot causes ssh to terminate with an error, ignore it
 	echo "Rebooting Host:"
-	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} "nohup sudo reboot </dev/null &" || true
+	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOST} "nohup sudo reboot </dev/null &" || true
 done
 
 print_term_width '-'
-for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[@]}; do 
-    echo "Waiting for host ${MAPR_HOST} to accept ssh connections"
-    while ! nc -w5 -z ${MAPR_HOST} 22; do printf "." -n ; sleep 1; done;
+for MAPR_CLUSTER1_HOST in ${MAPR_CLUSTER1_HOSTS_PUB_IPS[@]}; do 
+    echo "Waiting for host ${MAPR_CLUSTER1_HOST} to accept ssh connections"
+    while ! nc -w5 -z ${MAPR_CLUSTER1_HOST} 22; do printf "." -n ; sleep 1; done;
     echo 'Host is back online.'
 done
 
 # Only verify connectivity to CLDB from the first host
-for MAPR_HOST in ${MAPR_HOSTS_PUB_IPS[0]}; do 
+for MAPR_CLUSTER1_HOST in ${MAPR_CLUSTER1_HOSTS_PUB_IPS[0]}; do 
 	print_term_width '-'
 	echo "Verifing CLDB is online:"
 	print_term_width '-'
 	for i in {1..1000}; do
-		ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOST} \
+		ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOST} \
 			"echo mapr | maprlogin password -user mapr -cluster ${MAPR_CLUSTER_NAME}" \
 			&& break # if maprlogin command was successful, exit loop
 

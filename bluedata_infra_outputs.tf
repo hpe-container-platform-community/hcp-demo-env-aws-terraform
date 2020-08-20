@@ -120,21 +120,21 @@ output "worker_count" {
   value = ["${var.worker_count}"]
 }
 
-output "mapr_hosts_public_ip" {
-  value = ["${aws_instance.mapr_hosts.*.public_ip}"]
+output "mapr_cluster1_hosts_public_ip" {
+  value = ["${aws_instance.mapr_cluster1_hosts.*.public_ip}"]
 }
-output "mapr_hosts_public_dns" {
-  value = ["${aws_instance.mapr_hosts.*.public_dns}"]
+output "mapr_cluster1_hosts_public_dns" {
+  value = ["${aws_instance.mapr_cluster1_hosts.*.public_dns}"]
 }
-output "mapr_hosts_private_ip" {
-  value = ["${aws_instance.mapr_hosts.*.private_ip}"]
+output "mapr_cluster1_hosts_private_ip" {
+  value = ["${aws_instance.mapr_cluster1_hosts.*.private_ip}"]
 }
-output "mapr_hosts_private_dns" {
-  value = ["${aws_instance.mapr_hosts.*.private_dns}"]
+output "mapr_cluster1_hosts_private_dns" {
+  value = ["${aws_instance.mapr_cluster1_hosts.*.private_dns}"]
 }
 
-output "mapr_count" {
-  value = ["${var.mapr_count}"]
+output "mapr_cluster1_count" {
+  value = ["${var.mapr_cluster1_count}"]
 }
 
 
@@ -153,9 +153,9 @@ output "workers_ssh" {
   }
 }
 
-output "mapr_hosts_ssh" {
+output "mapr_cluster1_hosts_ssh" {
   value = {
-    for instance in aws_instance.mapr_hosts:
+    for instance in aws_instance.mapr_cluster1_hosts:
     instance.private_ip => "ssh -o StrictHostKeyChecking=no -i '${var.ssh_prv_key_path}' centos@${instance.public_ip}" 
   }
 }

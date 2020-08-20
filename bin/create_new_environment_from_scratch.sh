@@ -3,6 +3,10 @@
 set -e # abort on error
 set -u # abort on undefined variable
 
+export HPECP_LOG_CONFIG_FILE=${PWD}/generated/hpecp_cli_logging.conf
+pip3 uninstall -y hpecp || true # uninstall if exists
+pip3 install --upgrade hpecp
+
 ./scripts/check_prerequisites.sh
 source "scripts/functions.sh"
 
@@ -16,12 +20,6 @@ while true; do
         * ) echo "Please answer y or n.";;
     esac
 done
-
-print_term_width '='
-
-export HPECP_LOG_CONFIG_FILE=${PWD}/generated/hpecp_cli_logging.conf
-pip3 uninstall -y hpecp || true # uninstall if exists
-pip3 install --upgrade --user hpecp
 
 print_term_width '='
 
@@ -61,7 +59,7 @@ source ./scripts/variables.sh
 
 if [[ "$EXPERIMENTAL" == "1" ]]; then
 
-   if [[ "$MAPR_COUNT" == "3" ]]; then
+   if [[ "$MAPR_CLUSTER1_COUNT" == "3" ]]; then
       ./scripts/mapr_install.sh || true # ignore errors
       ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh || true # ignore errors
    fi
@@ -89,7 +87,7 @@ if [[ "$EXPERIMENTAL" == "1" ]]; then
    echo "./bin/experimental/03_k8sworkers_add.sh 2 # add 2 EC2 hosts as k8s workers"
    echo "./bin/experimental/04_k8scluster_create.sh"
 
-   if [[ "$MAPR_COUNT" == "3" ]]; then
+   if [[ "$MAPR_CLUSTER1_COUNT" == "3" ]]; then
       echo "./scripts/end_user_scripts/patch_datatap_5.1.1.sh"
       echo "./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh"
    fi

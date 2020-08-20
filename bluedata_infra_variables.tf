@@ -92,7 +92,7 @@ variable "install_with_ssl" {
 variable "ssh_prv_key_path" {}
 variable "ssh_pub_key_path" {}
 variable "worker_count" { default = 3 }
-variable "mapr_count" { default = 0 }
+variable "mapr_cluster1_count" { default = 0 }
 
 variable "gtw_instance_type" { default = "m4.2xlarge" }
 variable "ctr_instance_type" { default = "m4.2xlarge" }

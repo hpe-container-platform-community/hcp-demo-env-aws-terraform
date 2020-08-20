@@ -13,7 +13,7 @@ echo "Setting up DataTap to standalone MAPR"
 print_term_width '='
 
 
-MAPR_HOST=${MAPR_HOSTS_PRV_IPS[0]} # From variables.sh
+MAPR_CLUSTER1_HOST=${MAPR_CLUSTER1_HOSTS_PRV_IPS[0]} # From variables.sh
 MAPR_USER=ad_admin1
 MAPR_TCKT=ad_admin1_impersonation_ticket
 MAPR_TCKT_PATH=/tmp/${MAPR_TCKT}
@@ -25,7 +25,7 @@ MAPR_DTAP_NAME=ext-mapr
 TENANT_KEYTAB_DIR=/srv/bluedata/keytab/2/
 TENANT_KEYTAB_TCKT_FILE=${TENANT_KEYTAB_DIR}${MAPR_TCKT}
 
-echo MAPR_HOST=${MAPR_HOST}
+echo MAPR_CLUSTER1_HOST=${MAPR_CLUSTER1_HOST}
 echo MAPR_USER=${MAPR_USER}
 echo MAPR_TCKT=${MAPR_TCKT}
 echo MAPR_TCKT_PATH=${MAPR_TCKT_PATH}
@@ -41,7 +41,7 @@ echo "Setting up mapr acls and volumes"
 print_term_width '-'
 
 # create mapr volumes
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} << ENDSSH
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOSTS_PUB_IPS[0]} << ENDSSH
 	export MAPR_TICKETFILE_LOCATION=/home/ubuntu/mapr_user_ticket
 	echo mapr | maprlogin password -user mapr -cluster ${MAPR_CLUSTER_NAME} -out \${MAPR_TICKETFILE_LOCATION}
 
@@ -71,11 +71,11 @@ echo "Creating mapr ticket for ${MAPR_USER}"
 print_term_width '-'
 
 # create a mapr ticket for use with datatap
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} << ENDSSH
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOSTS_PUB_IPS[0]} << ENDSSH
 	echo pass123 | maprlogin password -user ${MAPR_USER} -cluster ${MAPR_CLUSTER_NAME}
 	maprlogin generateticket -type servicewithimpersonation -user ${MAPR_USER} -out maprfuseticket
 ENDSSH
-MAPRFUSETICKET=$(ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_HOSTS_PUB_IPS[0]} cat maprfuseticket)
+MAPRFUSETICKET=$(ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOSTS_PUB_IPS[0]} cat maprfuseticket)
 # echo MAPRFUSETICKET:${MAPRFUSETICKET}
 
 print_term_width '-'
@@ -165,7 +165,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		    "type": "mapr",
 		    "secure": true,
 		    "cldb": [
-		      "${MAPR_HOSTS_PRV_IPS[0]}", "${MAPR_HOSTS_PRV_IPS[1]}"
+		      "${MAPR_CLUSTER1_HOSTS_PRV_IPS[0]}", "${MAPR_CLUSTER1_HOSTS_PRV_IPS[1]}"
 		    ],
 		    "ticket_type": "servicewithimpersonation",
 		    "ticket_user": "${MAPR_USER}",

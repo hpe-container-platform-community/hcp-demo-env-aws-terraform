@@ -15,7 +15,7 @@ resource "local_file" "ca-key" {
 /// instance start/stop/status
 
 locals {
-  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} ${module.controller.id} ${module.gateway.id} ${join(" ", aws_instance.workers.*.id)} ${join(" ", aws_instance.mapr_hosts.*.id)}"
+  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} ${module.controller.id} ${module.gateway.id} ${join(" ", aws_instance.workers.*.id)} ${join(" ", aws_instance.mapr_cluster1_hosts.*.id)}"
 }
 
 resource "local_file" "cli_stop_ec2_instances" {
@@ -176,7 +176,7 @@ resource "local_file" "ssh_ad" {
 resource "local_file" "ssh_worker" {
   count = var.worker_count
 
-  filename = "${path.module}/generated/ssh_worker_${count.index + 1}.sh"
+  filename = "${path.module}/generated/ssh_worker_${count.index}.sh"
   content = <<-EOF
      #!/bin/bash
      source "${path.module}/scripts/variables.sh"
@@ -184,14 +184,14 @@ resource "local_file" "ssh_worker" {
   EOF
 }
 
-resource "local_file" "ssh_mapr_host" {
-  count = var.mapr_count
+resource "local_file" "ssh_mapr_cluster1_host" {
+  count = var.mapr_cluster1_count
 
-  filename = "${path.module}/generated/ssh_mapr_host_${count.index + 1}.sh"
+  filename = "${path.module}/generated/ssh_mapr_cluster1_host_${count.index}.sh"
   content = <<-EOF
      #!/bin/bash
      source "${path.module}/scripts/variables.sh"
-     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$${MAPR_HOSTS_PUB_IPS[${count.index}]} "$@"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$${MAPR_CLUSTER1_HOSTS_PUB_IPS[${count.index}]} "$@"
   EOF
 }
 
@@ -515,8 +515,8 @@ resource "local_file" "get_public_endpoints" {
     workers_public_ips    = j["workers_public_ip"]["value"][0]
     workers_public_dns    = j["workers_public_dns"]["value"][0]
 
-    mapr_hosts_public_ips    = j["mapr_hosts_public_ip"]["value"][0]
-    mapr_hosts_public_dns    = j["mapr_hosts_public_dns"]["value"][0]
+    mapr_cluster1_hosts_public_ips    = j["mapr_cluster1_hosts_public_ip"]["value"][0]
+    mapr_cluster1_hosts_public_dns    = j["mapr_cluster1_hosts_public_dns"]["value"][0]
 
     try:
         ad_server_public_ip  = j["ad_server_public_ip"]["value"]
@@ -525,20 +525,20 @@ resource "local_file" "get_public_endpoints" {
         ad_server_public_ip  = "NA"
         ad_server_public_dns = "NA"
 
-    print('------------  ----------------  --------------------------------------------------------  -----')
-    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "NAME", "IP", "DNS", "EIP?"))
-    print('------------  ----------------  --------------------------------------------------------  -----')
-    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "RDP Server", rdp_server_public_ip, rdp_server_public_dns, rdp_server_eip))
-    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "Controller", controller_public_ip, controller_public_dns, controller_eip))
-    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "Gateway",    gateway_public_ip,    gateway_public_dns,    gateway_eip))
-    print('{:>12}  {:>16}  {:>56}  {:>5}'.format( "AD",         ad_server_public_ip,  ad_server_public_dns,  "NA"))
+    print('-------------  ----------------  --------------------------------------------------------  -----')
+    print('{:>13}  {:>16}  {:>56}  {:>5}'.format( "NAME", "IP", "DNS", "EIP?"))
+    print('-------------  ----------------  --------------------------------------------------------  -----')
+    print('{:>13}  {:>16}  {:>56}  {:>5}'.format( "RDP Server", rdp_server_public_ip, rdp_server_public_dns, rdp_server_eip))
+    print('{:>13}  {:>16}  {:>56}  {:>5}'.format( "Controller", controller_public_ip, controller_public_dns, controller_eip))
+    print('{:>13}  {:>16}  {:>56}  {:>5}'.format( "Gateway",    gateway_public_ip,    gateway_public_dns,    gateway_eip))
+    print('{:>13}  {:>16}  {:>56}  {:>5}'.format( "AD",         ad_server_public_ip,  ad_server_public_dns,  "NA"))
 
     for num, ip in enumerate(workers_public_ips):
-       print('{:>9}{:>3}  {:>16}  {:>56}  {:>5}'.format( "Worker", num, ip, workers_public_dns[num], "NA"))
+       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "Worker", num, ip, workers_public_dns[num], "NA"))
 
-    for num, ip in enumerate(mapr_hosts_public_ips):
-       print('{:>9}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR", num, ip, mapr_hosts_public_dns[num], "NA"))
-    print('------------  ----------------  --------------------------------------------------------  -----')
+    for num, ip in enumerate(mapr_cluster1_hosts_public_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR CLUS1", num, ip, mapr_cluster1_hosts_public_dns[num], "NA"))
+    print('-------------  ----------------  --------------------------------------------------------  -----')
   EOF
 }
 
@@ -574,8 +574,8 @@ resource "local_file" "get_private_endpoints" {
     workers_private_ips    = j["workers_private_ip"]["value"][0]
     workers_private_dns    = j["workers_private_dns"]["value"][0]
 
-    mapr_hosts_private_ips    = j["mapr_hosts_private_ip"]["value"][0]
-    mapr_hosts_private_dns    = j["mapr_hosts_private_dns"]["value"][0]
+    mapr_cluster1_hosts_private_ips    = j["mapr_cluster1_hosts_private_ip"]["value"][0]
+    mapr_cluster1_hosts_private_dns    = j["mapr_cluster1_hosts_private_dns"]["value"][0]
     
     try:
         ad_server_private_ip  = j["ad_server_private_ip"]["value"]
@@ -584,19 +584,19 @@ resource "local_file" "get_private_endpoints" {
         ad_server_private_ip  = "NA"
         ad_server_private_dns = "NA"
 
-    print('------------  ----------------  --------------------------------------------------------')
-    print('{:>12}  {:>16}  {:>56}'.format( "NAME", "IP", "DNS"))
-    print('------------  ----------------  --------------------------------------------------------')
-    print('{:>12}  {:>16}  {:>56}'.format( "RDP Server", rdp_server_private_ip, rdp_server_private_dns))
-    print('{:>12}  {:>16}  {:>56}'.format( "Controller", controller_private_ip, controller_private_dns))
-    print('{:>12}  {:>16}  {:>56}'.format( "Gateway",    gateway_private_ip,    gateway_private_dns))
-    print('{:>12}  {:>16}  {:>56}'.format( "AD",         ad_server_private_ip,  ad_server_private_dns))
+    print('-------------  ----------------  --------------------------------------------------------')
+    print('{:>13}  {:>16}  {:>56}'.format( "NAME", "IP", "DNS"))
+    print('-------------  ----------------  --------------------------------------------------------')
+    print('{:>13}  {:>16}  {:>56}'.format( "RDP Server", rdp_server_private_ip, rdp_server_private_dns))
+    print('{:>13}  {:>16}  {:>56}'.format( "Controller", controller_private_ip, controller_private_dns))
+    print('{:>13}  {:>16}  {:>56}'.format( "Gateway",    gateway_private_ip,    gateway_private_dns))
+    print('{:>13}  {:>16}  {:>56}'.format( "AD",         ad_server_private_ip,  ad_server_private_dns))
 
     for num, ip in enumerate(workers_private_ips):
-       print('{:>9}{:>3}  {:>16}  {:>56}'.format( "Worker", num, ip, workers_private_dns[num]))
+       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "Worker", num, ip, workers_private_dns[num]))
 
-    for num, ip in enumerate(mapr_hosts_private_ips):
-       print('{:>9}{:>3}  {:>16}  {:>56}'.format( "MAPR", num, ip, mapr_hosts_private_dns[num]))
-    print('------------  ----------------  --------------------------------------------------------')
+    for num, ip in enumerate(mapr_cluster1_hosts_private_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "MAPR CLUS1", num, ip, mapr_cluster1_hosts_private_dns[num]))
+    print('-------------  ----------------  --------------------------------------------------------')
   EOF
 }

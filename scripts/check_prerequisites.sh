@@ -27,3 +27,9 @@ python3 -m ipcalc > /dev/null || {
     echo "Please install with: 'pip3 install --user ipcalc six'"
     exit 1
 }
+
+command -v hpecp > /dev/null || {
+    echo "I require 'hpecp' python module, but it's not installed.  Aborting."
+    echo "Please install with: 'pip3 install --user --upgrade hpecp'"
+    exit 1
+}

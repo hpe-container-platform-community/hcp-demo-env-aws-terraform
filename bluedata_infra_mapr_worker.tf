@@ -1,5 +1,5 @@
-resource "aws_instance" "mapr_hosts" {
-  count                  = var.mapr_count
+resource "aws_instance" "mapr_cluster1_hosts" {
+  count                  = var.mapr_cluster1_count
   ami                    = var.EC2_UBUNTU1804_AMIS[var.region]
   instance_type          = var.mapr_instance_type
   key_name               = aws_key_pair.main.key_name
@@ -25,7 +25,7 @@ resource "aws_instance" "mapr_hosts" {
 # /dev/sdd
 
 resource "aws_ebs_volume" "mapr-host-ebs-volumes-sdd" {
-  count             = var.mapr_count
+  count             = var.mapr_cluster1_count
   availability_zone = var.az
   size              = 1024
   type              = "gp2"
@@ -39,10 +39,10 @@ resource "aws_ebs_volume" "mapr-host-ebs-volumes-sdd" {
 }
 
 resource "aws_volume_attachment" "mapr-host-volume-attachment-sdd" {
-  count       = var.mapr_count
+  count       = var.mapr_cluster1_count
   device_name = "/dev/sdd"
   volume_id   = aws_ebs_volume.mapr-host-ebs-volumes-sdd.*.id[count.index]
-  instance_id = aws_instance.mapr_hosts.*.id[count.index]
+  instance_id = aws_instance.mapr_cluster1_hosts.*.id[count.index]
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true
@@ -51,7 +51,7 @@ resource "aws_volume_attachment" "mapr-host-volume-attachment-sdd" {
 # /dev/sde
 
 resource "aws_ebs_volume" "mapr-host-ebs-volumes-sde" {
-  count             = var.mapr_count
+  count             = var.mapr_cluster1_count
   availability_zone = var.az
   size              = 1024
   type              = "gp2"
@@ -65,10 +65,10 @@ resource "aws_ebs_volume" "mapr-host-ebs-volumes-sde" {
 }
 
 resource "aws_volume_attachment" "mapr-host-volume-attachment-sde" {
-  count       = var.mapr_count
+  count       = var.mapr_cluster1_count
   device_name = "/dev/sde"
   volume_id   = aws_ebs_volume.mapr-host-ebs-volumes-sde.*.id[count.index]
-  instance_id = aws_instance.mapr_hosts.*.id[count.index]
+  instance_id = aws_instance.mapr_cluster1_hosts.*.id[count.index]
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true
@@ -77,7 +77,7 @@ resource "aws_volume_attachment" "mapr-host-volume-attachment-sde" {
 # /dev/sdf
 
 resource "aws_ebs_volume" "mapr-host-ebs-volumes-sdf" {
-  count             = var.mapr_count
+  count             = var.mapr_cluster1_count
   availability_zone = var.az
   size              = 1024
   type              = "gp2"
@@ -91,10 +91,10 @@ resource "aws_ebs_volume" "mapr-host-ebs-volumes-sdf" {
 }
 
 resource "aws_volume_attachment" "mapr-host-volume-attachment-sdf" {
-  count       = var.mapr_count
+  count       = var.mapr_cluster1_count
   device_name = "/dev/sdf"
   volume_id   = aws_ebs_volume.mapr-host-ebs-volumes-sdf.*.id[count.index]
-  instance_id = aws_instance.mapr_hosts.*.id[count.index]
+  instance_id = aws_instance.mapr_cluster1_hosts.*.id[count.index]
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true

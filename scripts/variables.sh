@@ -195,13 +195,13 @@ WRKR_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys
 read -r -a WRKR_PRV_IPS <<< "$WRKR_PRV_IPS"
 read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
 
-MAPR_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_hosts_private_ip"]["value"][0], sep=" ")') 
-MAPR_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_hosts_public_ip"]["value"][0], sep=" ")') 
+MAPR_CLUSTER1_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster1_hosts_private_ip"]["value"][0], sep=" ")') 
+MAPR_CLUSTER1_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster1_hosts_public_ip"]["value"][0], sep=" ")') 
 
-read -r -a MAPR_HOSTS_PRV_IPS <<< "$MAPR_HOSTS_PRV_IPS"
-read -r -a MAPR_HOSTS_PUB_IPS <<< "$MAPR_HOSTS_PUB_IPS"
+read -r -a MAPR_CLUSTER1_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER1_HOSTS_PRV_IPS"
+read -r -a MAPR_CLUSTER1_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER1_HOSTS_PUB_IPS"
 
-MAPR_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_count"]["value"][0], sep=" ")') 
+MAPR_CLUSTER1_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster1_count"]["value"][0], sep=" ")') 
 
 
 AD_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_enabled"]["value"])')
