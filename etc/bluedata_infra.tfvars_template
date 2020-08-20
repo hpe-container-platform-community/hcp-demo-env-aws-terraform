@@ -49,6 +49,7 @@ worker_count = 3
 
 # specify how many MAPR instances you want (0 or 3)
 mapr_cluster1_count = 0
+mapr_cluster2_count = 0
 
 # you may need to change the instance types if the ones
 # listed below are not available in your region

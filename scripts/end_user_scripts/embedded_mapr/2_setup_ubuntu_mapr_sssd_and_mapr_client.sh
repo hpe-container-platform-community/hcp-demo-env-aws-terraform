@@ -7,6 +7,11 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/../../variables.sh"
 
+if [[ "$AD_SERVER_ENABLED" == False ]]; then
+   echo "Skipping script '$0' because AD Server is not enabled"
+   exit
+fi
+
 AD_PRIVATE_IP=$AD_PRV_IP
 LDAP_BASE_DN="CN=Users,DC=samdom,DC=example,DC=com"
 LDAP_BIND_DN="cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com" # the ad server in the demo environment has been created with this DN

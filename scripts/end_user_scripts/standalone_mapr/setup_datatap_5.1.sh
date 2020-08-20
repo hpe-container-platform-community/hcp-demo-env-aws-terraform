@@ -8,6 +8,11 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$SCRIPT_DIR/../../variables.sh"
 source "$SCRIPT_DIR/functions.sh"
 
+if [[ "$AD_SERVER_ENABLED" == False ]]; then
+   echo "Skipping script '$0' because AD Server is not enabled"
+   exit
+fi
+
 print_term_width '='
 echo "Setting up DataTap to standalone MAPR"
 print_term_width '='
@@ -19,7 +24,7 @@ MAPR_TCKT=ad_admin1_impersonation_ticket
 MAPR_TCKT_PATH=/tmp/${MAPR_TCKT}
 MAPR_VOL=demo_tenant_admins
 MAPR_VMNT=/demo_tenant_admins
-MAPR_CLUSTER_NAME=demo.mapr.com
+MAPR_CLUSTER_NAME=demo1.mapr.com
 MAPR_DTAP_NAME=ext-mapr
 # 2 = EPIC Demo Tenant
 TENANT_KEYTAB_DIR=/srv/bluedata/keytab/2/

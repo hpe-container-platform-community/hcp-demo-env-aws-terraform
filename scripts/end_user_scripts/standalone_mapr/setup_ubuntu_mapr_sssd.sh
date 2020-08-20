@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+CLUSTER_ID=$1
+
+if [[ -z $CLUSTER_ID ]]; then
+    echo Usage: $0 CLUSTER-ID 
+    echo        CLUSTER-ID can be 1 or 2
+    exit 1
+fi
+
 set -e # abort on error
 set -u # abort on undefined variable
 
@@ -9,6 +17,11 @@ source "$SCRIPT_DIR/../../variables.sh"
 source "$SCRIPT_DIR/functions.sh"
 source "$SCRIPT_DIR/verify_ad_server_config.sh"
 
+if [[ "$AD_SERVER_ENABLED" == False ]]; then
+   echo "Skipping script '$0' because AD Server is not enabled"
+   exit
+fi
+
 AD_PRIVATE_IP=$AD_PRV_IP
 LDAP_BASE_DN="CN=Users,DC=samdom,DC=example,DC=com"
 LDAP_BIND_DN="cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com" # the ad server in the demo environment has been created with this DN
@@ -16,15 +29,24 @@ LDAP_BIND_PASSWORD="5ambaPwd@"
 LDAP_ACCESS_FILTER="CN=Users,CN=Builtin,DC=samdom,DC=example,DC=com"
 DOMAIN="samdom.example.com"
 
-MAPR_CLUSTER_NAME="demo.mapr.com"
+MAPR_CLUSTER_NAME="demo${CLUSTER_ID}.mapr.com"
 
-for MAPR_CLUSTER1_HOST in ${MAPR_CLUSTER1_HOSTS_PUB_IPS[@]}; do 
+if [[ ${CLUSTER_ID} == 1 ]]; then
+    MAPR_CLUSTER_HOSTS_PRV_IPS=${MAPR_CLUSTER1_HOSTS_PRV_IPS[@]}
+    MAPR_CLUSTER_HOSTS_PUB_IPS=${MAPR_CLUSTER1_HOSTS_PUB_IPS[@]}
+else
+    MAPR_CLUSTER_HOSTS_PRV_IPS=${MAPR_CLUSTER2_HOSTS_PRV_IPS[@]}
+    MAPR_CLUSTER_HOSTS_PUB_IPS=${MAPR_CLUSTER2_HOSTS_PUB_IPS[@]}
+fi
+
+
+for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do 
 
 	print_term_width '='
-	echo "Setting up SSSD on ${MAPR_CLUSTER1_HOST}"
+	echo "Setting up SSSD on ${MAPR_CLUSTER_HOST}"
 	print_term_width '='
 
-	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOST} <<-SSH_EOF
+	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} <<-SSH_EOF
 	set -eu
 
 	# don't display login banners
@@ -121,7 +143,7 @@ for MAPR_CLUSTER1_HOST in ${MAPR_CLUSTER1_HOSTS_PUB_IPS[@]}; do
 SSH_EOF
 
 print_term_width '-'
-ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOST} <<-SSH_EOF
+ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} <<-SSH_EOF
 
 	set -eu
 
@@ -140,26 +162,26 @@ SSH_EOF
 done
 
 print_term_width '-'
-for MAPR_CLUSTER1_HOST in ${MAPR_CLUSTER1_HOSTS_PUB_IPS[@]}; do 
+for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do 
 	# reboot - and if the reboot causes ssh to terminate with an error, ignore it
 	echo "Rebooting Host:"
-	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOST} "nohup sudo reboot </dev/null &" || true
+	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} "nohup sudo reboot </dev/null &" || true
 done
 
 print_term_width '-'
-for MAPR_CLUSTER1_HOST in ${MAPR_CLUSTER1_HOSTS_PUB_IPS[@]}; do 
-    echo "Waiting for host ${MAPR_CLUSTER1_HOST} to accept ssh connections"
-    while ! nc -w5 -z ${MAPR_CLUSTER1_HOST} 22; do printf "." -n ; sleep 1; done;
+for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do 
+    echo "Waiting for host ${MAPR_CLUSTER_HOST} to accept ssh connections"
+    while ! nc -w5 -z ${MAPR_CLUSTER_HOST} 22; do printf "." -n ; sleep 1; done;
     echo 'Host is back online.'
 done
 
 # Only verify connectivity to CLDB from the first host
-for MAPR_CLUSTER1_HOST in ${MAPR_CLUSTER1_HOSTS_PUB_IPS[0]}; do 
+for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[0]}; do 
 	print_term_width '-'
 	echo "Verifing CLDB is online:"
 	print_term_width '-'
 	for i in {1..1000}; do
-		ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOST} \
+		ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} \
 			"echo mapr | maprlogin password -user mapr -cluster ${MAPR_CLUSTER_NAME}" \
 			&& break # if maprlogin command was successful, exit loop
 

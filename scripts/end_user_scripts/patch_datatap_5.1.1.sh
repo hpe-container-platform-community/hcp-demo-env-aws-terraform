@@ -7,6 +7,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/../variables.sh"
 
+echo "Retrieving presigned URL for s3://csnow-bins/libMapRClient_c.so.1"
 MAPR_BIN_DL_URL="$(aws s3 presign --region eu-west-1 s3://csnow-bins/libMapRClient_c.so.1)"
 echo MAPR_BIN_DL_URL=$MAPR_BIN_DL_URL
 
@@ -32,7 +33,7 @@ do
 
 				sudo rm -f /usr/lib64/libMapRClient_c.so
 
-				curl -s "${MAPR_BIN_DL_URL}" > /home/centos/libMapRClient_c.so.1 
+				wget -c --progress=bar -e dotbytes=1M -o /home/centos/libMapRClient_c.so.1 "${MAPR_BIN_DL_URL}" 
 
 				sudo mv /home/centos/libMapRClient_c.so.1 /usr/lib64/libMapRClient_c.so.1
 				sudo chown root:root /usr/lib64/libMapRClient_c.so.1

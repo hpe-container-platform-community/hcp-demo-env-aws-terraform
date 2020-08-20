@@ -195,6 +195,17 @@ resource "local_file" "ssh_mapr_cluster1_host" {
   EOF
 }
 
+resource "local_file" "ssh_mapr_cluster2_host" {
+  count = var.mapr_cluster2_count
+
+  filename = "${path.module}/generated/ssh_mapr_cluster2_host_${count.index}.sh"
+  content = <<-EOF
+     #!/bin/bash
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$${MAPR_CLUSTER2_HOSTS_PUB_IPS[${count.index}]} "$@"
+  EOF
+}
+
 resource "local_file" "ssh_workers" {
   count = var.worker_count
   filename = "${path.module}/generated/ssh_worker_all.sh"
@@ -518,6 +529,9 @@ resource "local_file" "get_public_endpoints" {
     mapr_cluster1_hosts_public_ips    = j["mapr_cluster1_hosts_public_ip"]["value"][0]
     mapr_cluster1_hosts_public_dns    = j["mapr_cluster1_hosts_public_dns"]["value"][0]
 
+    mapr_cluster2_hosts_public_ips    = j["mapr_cluster2_hosts_public_ip"]["value"][0]
+    mapr_cluster2_hosts_public_dns    = j["mapr_cluster2_hosts_public_dns"]["value"][0]
+
     try:
         ad_server_public_ip  = j["ad_server_public_ip"]["value"]
         ad_server_public_dns = "NA"
@@ -538,6 +552,9 @@ resource "local_file" "get_public_endpoints" {
 
     for num, ip in enumerate(mapr_cluster1_hosts_public_ips):
        print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR CLUS1", num, ip, mapr_cluster1_hosts_public_dns[num], "NA"))
+
+    for num, ip in enumerate(mapr_cluster2_hosts_public_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR CLUS2", num, ip, mapr_cluster2_hosts_public_dns[num], "NA"))
     print('-------------  ----------------  --------------------------------------------------------  -----')
   EOF
 }
@@ -576,6 +593,9 @@ resource "local_file" "get_private_endpoints" {
 
     mapr_cluster1_hosts_private_ips    = j["mapr_cluster1_hosts_private_ip"]["value"][0]
     mapr_cluster1_hosts_private_dns    = j["mapr_cluster1_hosts_private_dns"]["value"][0]
+
+    mapr_cluster2_hosts_private_ips    = j["mapr_cluster2_hosts_private_ip"]["value"][0]
+    mapr_cluster2_hosts_private_dns    = j["mapr_cluster2_hosts_private_dns"]["value"][0]
     
     try:
         ad_server_private_ip  = j["ad_server_private_ip"]["value"]
@@ -597,6 +617,9 @@ resource "local_file" "get_private_endpoints" {
 
     for num, ip in enumerate(mapr_cluster1_hosts_private_ips):
        print('{:>10}{:>3}  {:>16}  {:>56}'.format( "MAPR CLUS1", num, ip, mapr_cluster1_hosts_private_dns[num]))
+
+    for num, ip in enumerate(mapr_cluster2_hosts_private_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "MAPR CLUS2", num, ip, mapr_cluster2_hosts_private_dns[num]))
     print('-------------  ----------------  --------------------------------------------------------')
   EOF
 }

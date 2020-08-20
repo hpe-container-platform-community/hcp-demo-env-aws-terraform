@@ -60,8 +60,15 @@ source ./scripts/variables.sh
 if [[ "$EXPERIMENTAL" == "1" ]]; then
 
    if [[ "$MAPR_CLUSTER1_COUNT" == "3" ]]; then
-      ./scripts/mapr_install.sh || true # ignore errors
-      ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh || true # ignore errors
+      CLUSTER_ID=1
+      ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
+      ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
+   fi
+
+   if [[ "$MAPR_CLUSTER2_COUNT" == "3" ]]; then
+      CLUSTER_ID=2
+      ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
+      ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
    fi
    
    ./bin/experimental/install_hpecp_cli.sh # install the hpecp
@@ -81,7 +88,8 @@ if [[ "$EXPERIMENTAL" == "1" ]]; then
    print_term_width '='
    echo "Recommended scripts:"
    echo "--------------------"
-   echo "export HPECP_LOG_CONFIG_FILE=${HPECP_LOG_CONFIG_FILE}"
+   echo "export HPECP_CONFIG_FILE=generated/hpecp.conf"
+   echo "export HPECP_LOG_CONFIG_FILE=generated/hpecp_cli_logging.conf"
    echo "./bin/experimental/epic_enable_virtual_node_assignment.sh"
    echo "./bin/experimental/epic_set_cpu_allocation_ratio.sh"
    echo "./bin/experimental/03_k8sworkers_add.sh 2 # add 2 EC2 hosts as k8s workers"

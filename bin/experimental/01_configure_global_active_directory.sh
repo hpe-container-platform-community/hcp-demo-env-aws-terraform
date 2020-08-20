@@ -11,7 +11,10 @@ fi
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
-pip3 install --quiet --upgrade --user hpecp
+if [[ "$AD_SERVER_ENABLED" == False ]]; then
+   echo "Skipping script '$0' because AD Server is not enabled"
+   exit
+fi
 
 # use the project's HPECP CLI config file
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"

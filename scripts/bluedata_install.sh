@@ -35,8 +35,12 @@ echo GATW_PRV_DNS=$GATW_PRV_DNS
 echo GATW_PUB_DNS=$GATW_PUB_DNS
 echo GATW_PUB_HOST=$GATW_PUB_HOST
 echo GATW_PRV_HOST=$GATW_PRV_HOST
+
+set +u
 echo WRKR_PRV_IPS=${WRKR_PRV_IPS[@]}
 echo WRKR_PUB_IPS=${WRKR_PUB_IPS[@]}
+set -u
+
 echo INSTALL_WITH_SSL=${INSTALL_WITH_SSL}
 
 ###############################################################################
@@ -98,6 +102,7 @@ ENDSSH
 #
 
 # We have password SSH access from our local machines to EC2, so we can utiise this to copy the Controller SSH key to each Worker
+set +u
 for WRKR in ${WRKR_PUB_IPS[@]}; do 
     ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
         ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "cat >> /home/centos/.ssh/authorized_keys"
@@ -110,6 +115,7 @@ for WRKR in ${WRKR_PRV_IPS[@]}; do
         ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -T centos@${WRKR} "echo Connected!"
 ENDSSH
 done
+set -u
 
 ###############################################################################
 # Install RPMS
@@ -140,6 +146,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 # Workers
 #
 
+set +u
 for WRKR in ${WRKR_PUB_IPS[@]}; do 
    if [[ "$SELINUX_DISABLED" == "True" ]];
    then
@@ -151,6 +158,7 @@ for WRKR in ${WRKR_PUB_IPS[@]}; do
    # if the reboot causes ssh to terminate with an error, ignore it
    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
 done
+set -u
 
 #
 # Wait for Gateway, Controller and Workers to come online after reboot
@@ -164,11 +172,13 @@ echo 'Waiting for Controller ssh session '
 while ! nc -w5 -z ${CTRL_PUB_IP} 22; do printf "." -n ; done;
 echo 'Controller has rebooted'
 
+set +u
 for WRKR in ${WRKR_PUB_IPS[@]}; do 
     echo "Waiting for Worker ${WRKR} ssh session"
     while ! nc -w5 -z ${WRKR} 22; do printf "." -n ; done;
     echo 'Worker has rebooted'
 done
+set -u
 
 ###############################################################################
 # Install Controller
@@ -300,6 +310,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 #ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa' > generated/controller.prv_key
 #ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" centos@${CTRL_PUB_IP} 'cat ~/.ssh/id_rsa.pub' > generated/controller.pub_key
 
+set +u
 cat <<EOF>"$LOG_FILE"
 
 

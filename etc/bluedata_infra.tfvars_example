@@ -9,7 +9,8 @@ project_id         = "<<your-name>>-hcp"   # Change your name and project name. 
 user               = "<<your-name>>"       # Change your name. E.g. csnow (with no spaces)
 
 worker_count       = 2                     # How many hosts do you want for EPIC or K8S?
-mapr_cluster1_count         = 0                     # How many hosts do you want for MAPR? (0 or 3)
+mapr_cluster1_count         = 0                     # How many hosts do you want for MAPR CLUSTER1? (0 or 3)
+mapr_cluster2_count         = 0                     # How many hosts do you want for MAPR CLUSTER1? (0 or 3)
 
 ###########################################################################################
 # If you are not an HPE Container Platform Sales Engineers with an AWS account you do NOT #

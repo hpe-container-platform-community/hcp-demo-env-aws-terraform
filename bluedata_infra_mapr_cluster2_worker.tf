@@ -1,5 +1,5 @@
-resource "aws_instance" "mapr_cluster1_hosts" {
-  count                  = var.mapr_cluster1_count
+resource "aws_instance" "mapr_cluster2_hosts" {
+  count                  = var.mapr_cluster2_count
   ami                    = var.EC2_UBUNTU1804_AMIS[var.region]
   instance_type          = var.mapr_instance_type
   key_name               = aws_key_pair.main.key_name
@@ -15,7 +15,7 @@ resource "aws_instance" "mapr_cluster1_hosts" {
   }
 
   tags = {
-    Name = "${var.project_id}-instance-mapr-host-${count.index + 1}"
+    Name = "${var.project_id}-instance-mapr-cluster2-host-${count.index}"
     Project = "${var.project_id}"
     user = "${var.user}"
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
@@ -24,25 +24,25 @@ resource "aws_instance" "mapr_cluster1_hosts" {
 
 # /dev/sdd
 
-resource "aws_ebs_volume" "mapr-host-ebs-volumes-sdd" {
-  count             = var.mapr_cluster1_count
+resource "aws_ebs_volume" "mapr-cluster2-host-ebs-volumes-sdd" {
+  count             = var.mapr_cluster2_count
   availability_zone = var.az
   size              = 1024
   type              = "gp2"
 
   tags = {
-    Name = "${var.project_id}-mapr-host-${count.index + 1}-ebs-sdd"
+    Name = "${var.project_id}-mapr-cluster2-host-${count.index}-ebs-sdd"
     Project = "${var.project_id}"
     user = "${var.user}"
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }
 
-resource "aws_volume_attachment" "mapr-host-volume-attachment-sdd" {
-  count       = var.mapr_cluster1_count
+resource "aws_volume_attachment" "mapr-cluster2-host-volume-attachment-sdd" {
+  count       = var.mapr_cluster2_count
   device_name = "/dev/sdd"
-  volume_id   = aws_ebs_volume.mapr-host-ebs-volumes-sdd.*.id[count.index]
-  instance_id = aws_instance.mapr_cluster1_hosts.*.id[count.index]
+  volume_id   = aws_ebs_volume.mapr-cluster2-host-ebs-volumes-sdd.*.id[count.index]
+  instance_id = aws_instance.mapr_cluster2_hosts.*.id[count.index]
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true
@@ -50,25 +50,25 @@ resource "aws_volume_attachment" "mapr-host-volume-attachment-sdd" {
 
 # /dev/sde
 
-resource "aws_ebs_volume" "mapr-host-ebs-volumes-sde" {
-  count             = var.mapr_cluster1_count
+resource "aws_ebs_volume" "mapr-cluster2-host-ebs-volumes-sde" {
+  count             = var.mapr_cluster2_count
   availability_zone = var.az
   size              = 1024
   type              = "gp2"
 
   tags = {
-    Name = "${var.project_id}-mapr-host-${count.index + 1}-ebs-sde"
+    Name = "${var.project_id}-mapr-cluster2-host-${count.index}-ebs-sde"
     Project = "${var.project_id}"
     user = "${var.user}"
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }
 
-resource "aws_volume_attachment" "mapr-host-volume-attachment-sde" {
-  count       = var.mapr_cluster1_count
+resource "aws_volume_attachment" "mapr-cluster2-host-volume-attachment-sde" {
+  count       = var.mapr_cluster2_count
   device_name = "/dev/sde"
-  volume_id   = aws_ebs_volume.mapr-host-ebs-volumes-sde.*.id[count.index]
-  instance_id = aws_instance.mapr_cluster1_hosts.*.id[count.index]
+  volume_id   = aws_ebs_volume.mapr-cluster2-host-ebs-volumes-sde.*.id[count.index]
+  instance_id = aws_instance.mapr_cluster2_hosts.*.id[count.index]
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true
@@ -76,25 +76,25 @@ resource "aws_volume_attachment" "mapr-host-volume-attachment-sde" {
 
 # /dev/sdf
 
-resource "aws_ebs_volume" "mapr-host-ebs-volumes-sdf" {
-  count             = var.mapr_cluster1_count
+resource "aws_ebs_volume" "mapr-cluster2-host-ebs-volumes-sdf" {
+  count             = var.mapr_cluster2_count
   availability_zone = var.az
   size              = 1024
   type              = "gp2"
 
   tags = {
-    Name = "${var.project_id}-mapr-host-${count.index + 1}-ebs-sdf"
+    Name = "${var.project_id}-mapr-cluster2-host-${count.index}-ebs-sdf"
     Project = "${var.project_id}"
     user = "${var.user}"
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }
 
-resource "aws_volume_attachment" "mapr-host-volume-attachment-sdf" {
-  count       = var.mapr_cluster1_count
+resource "aws_volume_attachment" "mapr-cluster2-host-volume-attachment-sdf" {
+  count       = var.mapr_cluster2_count
   device_name = "/dev/sdf"
-  volume_id   = aws_ebs_volume.mapr-host-ebs-volumes-sdf.*.id[count.index]
-  instance_id = aws_instance.mapr_cluster1_hosts.*.id[count.index]
+  volume_id   = aws_ebs_volume.mapr-cluster2-host-ebs-volumes-sdf.*.id[count.index]
+  instance_id = aws_instance.mapr_cluster2_hosts.*.id[count.index]
 
   # hack to allow `terraform destroy ...` to work: https://github.com/hashicorp/terraform/issues/2957
   force_detach = true

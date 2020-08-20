@@ -6,6 +6,12 @@ set -u # abort on undefined variable
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/../../variables.sh"
+
+if [[ "$AD_SERVER_ENABLED" == False ]]; then
+   echo "Skipping script '$0' because AD Server is not enabled"
+   exit
+fi
+
 source "$SCRIPT_DIR/verify_ad_server_config.sh"
 
 AD_PRIVATE_IP=$AD_PRV_IP

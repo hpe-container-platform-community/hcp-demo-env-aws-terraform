@@ -3,6 +3,14 @@
 set -e # abort on error
 set -u # abort on undefined variable
 
+# save old options as we want to disable '-x' because it is too verbose
+if [[ $- == *x* ]]; then
+  was_x_set=1
+else
+  was_x_set=0
+fi
+set +x
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OUTPUT_JSON=$(cat "${SCRIPT_DIR}/../generated/output.json")
 
@@ -203,6 +211,14 @@ read -r -a MAPR_CLUSTER1_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER1_HOSTS_PUB_IPS"
 
 MAPR_CLUSTER1_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster1_count"]["value"][0], sep=" ")') 
 
+MAPR_CLUSTER2_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster2_hosts_private_ip"]["value"][0], sep=" ")') 
+MAPR_CLUSTER2_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster2_hosts_public_ip"]["value"][0], sep=" ")') 
+
+read -r -a MAPR_CLUSTER2_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER2_HOSTS_PRV_IPS"
+read -r -a MAPR_CLUSTER2_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER2_HOSTS_PUB_IPS"
+
+MAPR_CLUSTER2_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster2_count"]["value"][0], sep=" ")') 
+
 
 AD_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_enabled"]["value"])')
 
@@ -230,3 +246,9 @@ if [[ "$RDP_SERVER_ENABLED" == "True" ]]; then
       exit 1 
    fi
 fi
+
+if [[ was_x_set=1 ]]; then
+   set -x
+else
+   set +x
+fi 
