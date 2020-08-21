@@ -84,13 +84,12 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
    REPO_DIR="\${PWD}/mapr-ansible-cluster-${CLUSTER_ID}"
 
-   if [[ ! -d \$REPO_DIR ]]; then
-      git clone https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform-mapr-ansible \$REPO_DIR
+   rm -rf \$REPO_DIR
+   git clone https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform-mapr-ansible \$REPO_DIR
 
-      sed -i 's/cluster_name: demo.mapr.com/cluster_name: demo${CLUSTER_ID}.mapr.com/g' \$REPO_DIR/group_vars/all
-      sed -i '26i\ \ when: inventory_hostname == groups["mapr-spark-yarn"][0]' \$REPO_DIR/roles/mapr-spark-yarn-install/tasks/main.yml
-      sed -i 's/yarn_spark_shuffle: True/yarn_spark_shuffle: False/g' \$REPO_DIR/group_vars/all
-   fi
+   sed -i 's/cluster_name: demo.mapr.com/cluster_name: demo${CLUSTER_ID}.mapr.com/g' \$REPO_DIR/group_vars/all
+   sed -i '26i\ \ when: inventory_hostname == groups["mapr-spark-yarn"][0]' \$REPO_DIR/roles/mapr-spark-yarn-install/tasks/main.yml
+   sed -i 's/yarn_spark_shuffle: True/yarn_spark_shuffle: False/g' \$REPO_DIR/group_vars/all
 
    cp -f \$REPO_DIR/myhosts/hosts_3nodes hosts_cluster_${CLUSTER_ID}.xml
 
@@ -102,18 +101,21 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
    cp ~/.ssh/id_rsa .
 
+   rm -f ansible_log_${CLUSTER_ID}.txt
+
    # add -vvv to debug
    docker run \
       -v \$PWD:/app \
       -w /app \
       -e ANSIBLE_HOST_KEY_CHECKING=False \
       lexauw/ansible-alpine:latest \
-      ansible-playbook ./mapr-ansible/site-cluster.yml \
+      ansible-playbook \$REPO_DIR/site-cluster.yml \
       -i ./hosts_cluster_${CLUSTER_ID}.xml \
       -u ubuntu \
       -become \
       --key-file ./id_rsa \
-      -k | tee ansible_log.txt
+      -vvv \
+      -k | tee ansible_log_${CLUSTER_ID}.txt
       
 ENDSSH
 
