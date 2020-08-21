@@ -3,7 +3,8 @@
 set -e # abort on error
 set -u # abort on undefined variable
 
-# save old options as we want to disable '-x' because it is too verbose
+# disable '-x' because it is too verbose for this script
+# and is not useful for for this script
 if [[ $- == *x* ]]; then
   was_x_set=1
 else
@@ -247,7 +248,7 @@ if [[ "$RDP_SERVER_ENABLED" == "True" ]]; then
    fi
 fi
 
-if [[ was_x_set=1 ]]; then
+if [[ was_x_set == 1 ]]; then
    set -x
 else
    set +x
