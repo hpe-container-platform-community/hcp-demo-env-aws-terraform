@@ -81,8 +81,10 @@ done
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
    set -e
+   set -x
 
    REPO_DIR="\${PWD}/mapr-ansible-cluster-${CLUSTER_ID}"
+   echo REPO_DIR=\$REPO_DIR
 
    rm -rf \$REPO_DIR
    git clone https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform-mapr-ansible \$REPO_DIR
@@ -109,7 +111,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
       -w /app \
       -e ANSIBLE_HOST_KEY_CHECKING=False \
       lexauw/ansible-alpine:latest \
-      ansible-playbook \$REPO_DIR/site-cluster.yml \
+      ansible-playbook ./mapr-ansible-cluster-${CLUSTER_ID}/site-cluster.yml \
       -i ./hosts_cluster_${CLUSTER_ID}.xml \
       -u ubuntu \
       -become \
