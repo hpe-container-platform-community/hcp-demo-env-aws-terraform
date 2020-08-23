@@ -54,7 +54,7 @@ for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do
 	sudo chmod -x /etc/update-motd.d/*
 	
 	# Install the auth packages by executing the following command 
-	sudo apt-get -qq update && sudo apt-get -qq install -y pamtester sssd
+	sudo apt-get -qq update > /dev/null  && sudo apt-get -qq install -y pamtester sssd > /dev/null
 	
 	sudo bash -c "cat > /etc/sssd/sssd.conf <<-EOF
 		[domain/${DOMAIN}]

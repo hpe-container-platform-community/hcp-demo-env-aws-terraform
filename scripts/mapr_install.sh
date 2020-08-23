@@ -116,7 +116,6 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
       -u ubuntu \
       -become \
       --key-file ./id_rsa \
-      -vvv \
       -k | tee ansible_log_${CLUSTER_ID}.txt
       
 ENDSSH

@@ -13,6 +13,14 @@ mapr_cluster1_count         = 0                     # How many hosts do you want
 mapr_cluster2_count         = 0                     # How many hosts do you want for MAPR CLUSTER1? (0 or 3)
 
 ###########################################################################################
+# If you would like to run post installation setup scripts:                               #
+#                                                                                         #
+#    cp etc/postcreate.sh_template etc/postcreate.sh                                      #
+#                                                                                         #
+# ... then edit etc/postcreate.sh as required                                             #
+###########################################################################################
+
+###########################################################################################
 # If you are not an HPE Container Platform Sales Engineers with an AWS account you do NOT #
 # need to change the 'epic_dl_url*' settings, below                                       # 
 ###########################################################################################
