@@ -15,7 +15,7 @@ resource "local_file" "ca-key" {
 /// instance start/stop/status
 
 locals {
-  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} ${module.controller.id} ${module.gateway.id} ${join(" ", aws_instance.workers.*.id)} ${join(" ", aws_instance.mapr_cluster1_hosts.*.id)}"
+  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} ${module.controller.id} ${module.gateway.id} ${join(" ", aws_instance.workers.*.id)} ${join(" ", aws_instance.mapr_cluster_1_hosts.*.id)} ${join(" ", aws_instance.workers.*.id)} ${join(" ", aws_instance.mapr_cluster_2_hosts.*.id)}"
 }
 
 resource "local_file" "cli_stop_ec2_instances" {
@@ -94,7 +94,7 @@ resource "local_file" "cli_running_ec2_instances" {
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instances \
       --instance-ids ${local.instance_ids} \
       --output table \
-      --query "Reservations[*].Instances[*].{ExtIP:PublicIpAddress,IntIP:PrivateIpAddress,ID:InstanceId,Type:InstanceType,State:State.Name,Name:Tags[?Key=='Name']|[0].Value}"
+      --query "Reservations[*].Instances[*].{ExtIP:PublicIpAddress,IntIP:PrivateIpAddress,ID:InstanceId,Type:InstanceType,State:State.Name,Name:Tags[?Key=='Name']|[0].Value} | [][] | sort_by(@, &Name)"
   EOF  
 }
 
@@ -184,10 +184,10 @@ resource "local_file" "ssh_worker" {
   EOF
 }
 
-resource "local_file" "ssh_mapr_cluster1_host" {
-  count = var.mapr_cluster1_count
+resource "local_file" "ssh_mapr_cluster_1_host" {
+  count = var.mapr_cluster_1_count
 
-  filename = "${path.module}/generated/ssh_mapr_cluster1_host_${count.index}.sh"
+  filename = "${path.module}/generated/ssh_mapr_cluster_1_host_${count.index}.sh"
   content = <<-EOF
      #!/bin/bash
      source "${path.module}/scripts/variables.sh"
@@ -195,10 +195,10 @@ resource "local_file" "ssh_mapr_cluster1_host" {
   EOF
 }
 
-resource "local_file" "ssh_mapr_cluster2_host" {
-  count = var.mapr_cluster2_count
+resource "local_file" "ssh_mapr_cluster_2_host" {
+  count = var.mapr_cluster_2_count
 
-  filename = "${path.module}/generated/ssh_mapr_cluster2_host_${count.index}.sh"
+  filename = "${path.module}/generated/ssh_mapr_cluster_2_host_${count.index}.sh"
   content = <<-EOF
      #!/bin/bash
      source "${path.module}/scripts/variables.sh"
@@ -526,11 +526,11 @@ resource "local_file" "get_public_endpoints" {
     workers_public_ips    = j["workers_public_ip"]["value"][0]
     workers_public_dns    = j["workers_public_dns"]["value"][0]
 
-    mapr_cluster1_hosts_public_ips    = j["mapr_cluster1_hosts_public_ip"]["value"][0]
-    mapr_cluster1_hosts_public_dns    = j["mapr_cluster1_hosts_public_dns"]["value"][0]
+    mapr_cluster_1_hosts_public_ips    = j["mapr_cluster_1_hosts_public_ip"]["value"][0]
+    mapr_cluster_1_hosts_public_dns    = j["mapr_cluster_1_hosts_public_dns"]["value"][0]
 
-    mapr_cluster2_hosts_public_ips    = j["mapr_cluster2_hosts_public_ip"]["value"][0]
-    mapr_cluster2_hosts_public_dns    = j["mapr_cluster2_hosts_public_dns"]["value"][0]
+    mapr_cluster_2_hosts_public_ips    = j["mapr_cluster_2_hosts_public_ip"]["value"][0]
+    mapr_cluster_2_hosts_public_dns    = j["mapr_cluster_2_hosts_public_dns"]["value"][0]
 
     try:
         ad_server_public_ip  = j["ad_server_public_ip"]["value"]
@@ -550,11 +550,11 @@ resource "local_file" "get_public_endpoints" {
     for num, ip in enumerate(workers_public_ips):
        print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "Worker", num, ip, workers_public_dns[num], "NA"))
 
-    for num, ip in enumerate(mapr_cluster1_hosts_public_ips):
-       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR CLUS1", num, ip, mapr_cluster1_hosts_public_dns[num], "NA"))
+    for num, ip in enumerate(mapr_cluster_1_hosts_public_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR CLS 1", num, ip, mapr_cluster_1_hosts_public_dns[num], "NA"))
 
-    for num, ip in enumerate(mapr_cluster2_hosts_public_ips):
-       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR CLUS2", num, ip, mapr_cluster2_hosts_public_dns[num], "NA"))
+    for num, ip in enumerate(mapr_cluster_2_hosts_public_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR CLS 2", num, ip, mapr_cluster_2_hosts_public_dns[num], "NA"))
     print('-------------  ----------------  --------------------------------------------------------  -----')
   EOF
 }
@@ -591,11 +591,11 @@ resource "local_file" "get_private_endpoints" {
     workers_private_ips    = j["workers_private_ip"]["value"][0]
     workers_private_dns    = j["workers_private_dns"]["value"][0]
 
-    mapr_cluster1_hosts_private_ips    = j["mapr_cluster1_hosts_private_ip"]["value"][0]
-    mapr_cluster1_hosts_private_dns    = j["mapr_cluster1_hosts_private_dns"]["value"][0]
+    mapr_cluster_1_hosts_private_ips    = j["mapr_cluster_1_hosts_private_ip"]["value"][0]
+    mapr_cluster_1_hosts_private_dns    = j["mapr_cluster_1_hosts_private_dns"]["value"][0]
 
-    mapr_cluster2_hosts_private_ips    = j["mapr_cluster2_hosts_private_ip"]["value"][0]
-    mapr_cluster2_hosts_private_dns    = j["mapr_cluster2_hosts_private_dns"]["value"][0]
+    mapr_cluster_2_hosts_private_ips    = j["mapr_cluster_2_hosts_private_ip"]["value"][0]
+    mapr_cluster_2_hosts_private_dns    = j["mapr_cluster_2_hosts_private_dns"]["value"][0]
     
     try:
         ad_server_private_ip  = j["ad_server_private_ip"]["value"]
@@ -615,11 +615,11 @@ resource "local_file" "get_private_endpoints" {
     for num, ip in enumerate(workers_private_ips):
        print('{:>10}{:>3}  {:>16}  {:>56}'.format( "Worker", num, ip, workers_private_dns[num]))
 
-    for num, ip in enumerate(mapr_cluster1_hosts_private_ips):
-       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "MAPR CLUS1", num, ip, mapr_cluster1_hosts_private_dns[num]))
+    for num, ip in enumerate(mapr_cluster_1_hosts_private_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "MAPR CLS 1", num, ip, mapr_cluster_1_hosts_private_dns[num]))
 
-    for num, ip in enumerate(mapr_cluster2_hosts_private_ips):
-       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "MAPR CLUS2", num, ip, mapr_cluster2_hosts_private_dns[num]))
+    for num, ip in enumerate(mapr_cluster_2_hosts_private_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "MAPR CLS 2", num, ip, mapr_cluster_2_hosts_private_dns[num]))
     print('-------------  ----------------  --------------------------------------------------------')
   EOF
 }
