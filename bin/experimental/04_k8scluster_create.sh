@@ -1,4 +1,7 @@
-#!/usr/bin/env bash -euET -o pipefail -O inherit_errexit
+#!/bin/bash 
+
+set -e
+set -u
 
 if [[ ! -d generated ]]; then
    echo "This file should be executed from the project directory"
