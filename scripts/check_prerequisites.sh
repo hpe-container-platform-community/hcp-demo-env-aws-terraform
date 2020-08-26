@@ -22,6 +22,13 @@ command -v aws >/dev/null 2>&1  || {
     exit 1
 }
 
+# Ensure python is able to find packages
+REQUIRED_PATH="$(python3 -m site --user-base)/bin"
+if [[ :$PATH: != *:"$REQUIRED_PATH":* ]] ; then
+    echo "PATH variable does not include required '$REQUIRED_PATH'. Aborting."
+    exit 1
+fi
+
 python3 -m ipcalc > /dev/null || {
     echo "I require 'ipcalc' python module, but it's not installed.  Aborting."
     echo "Please install with: 'pip3 install --user ipcalc six'"
