@@ -37,7 +37,7 @@ K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-f
 echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | timeout=1200s"
 CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons [istio])
 
-echo $CLUSTER_ID
+echo "$CLUSTER_ID"
 
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1200
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
@@ -54,10 +54,10 @@ echo "K8S tenant created successfully - ID: ${TENANT_ID}"
 
 ADMIN_GROUP="CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
 ADMIN_ROLE=$(hpecp role list  --query "[?label.name == 'Admin'][_links.self.href] | [0][0]" --output json | tr -d '"')
-hpecp tenant add-external-user-group --tenant-id $TENANT_ID --group $ADMIN_GROUP --role-id $ADMIN_ROLE
+hpecp tenant add-external-user-group --tenant-id "$TENANT_ID" --group "$ADMIN_GROUP" --role-id "$ADMIN_ROLE"
 
 MEMBER_GROUP="CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
 MEMBER_ROLE=$(hpecp role list  --query "[?label.name == 'Member'][_links.self.href] | [0][0]" --output json | tr -d '"')
-hpecp tenant add-external-user-group --tenant-id $TENANT_ID --group $MEMBER_GROUP --role-id $MEMBER_ROLE
+hpecp tenant add-external-user-group --tenant-id "$TENANT_ID" --group "$MEMBER_GROUP" --role-id "$MEMBER_ROLE"
 
 echo "Configured tenant with AD groups Admins=DemoTenantAdmins... and Members=DemoTenantUsers..."

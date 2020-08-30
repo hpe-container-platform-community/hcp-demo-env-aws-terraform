@@ -18,11 +18,8 @@ echo "Deleting and creating lock"
 hpecp lock delete-all
 hpecp lock create "Install Gateway"
 
-echo "Configuring the Gateway"
-GATEWAY_ID=$(hpecp gateway create-with-ssh-key $GATW_PRV_IP $GATW_PRV_DNS --ssh-key-file ./generated/controller.prv_key)
-
-echo "Waiting for gateway to have state 'installed'"
-hpecp gateway wait-for-state ${GATEWAY_ID} --states "['installed']" --timeout-secs 1200
+echo "SSL info:"
+hpecp install get --query 'objects.gateway_ssl_cert_info' --output json
 
 if [[ -f generated/cert.pem ]] && [[ -f generated/key.pem ]]; then
    echo "Setting up Gateway SSL certificate and key"
@@ -38,7 +35,9 @@ if [[ -f generated/cert.pem ]] && [[ -f generated/key.pem ]]; then
    fi
 fi
 
+echo "SSL info:"
+hpecp install get --query 'objects.gateway_ssl_cert_info' --output json
+
 echo "Removing locks"
-hpecp gateway list
 hpecp lock delete-all --timeout-secs 1200
 

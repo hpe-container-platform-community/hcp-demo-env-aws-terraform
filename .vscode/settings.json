@@ -1,5 +1,9 @@
 {
     "files.exclude": {
         "**/.pyc": true
-    }
+    },
+    "shellcheck.enable": true,
+    "shellcheck.enableQuickFix": false,
+    "shellcheck.run": "onSave",
+    "shellcheck.executablePath": "/usr/local/bin/shellcheck"
 }

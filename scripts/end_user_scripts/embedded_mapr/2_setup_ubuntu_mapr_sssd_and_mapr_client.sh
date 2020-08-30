@@ -146,6 +146,22 @@ SSH_EOF
 	sudo chown root:root /opt/mapr/conf/ssl_truststore
 SSH_EOF
 
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${CTRL_PUB_IP} <<-SSH_EOF
+	set -eu
+
+	# Add Active Directory user and group
+
+	# ignore errors, e.g. if run multiple times - TODO: check if ACL exists before running
+	bdmapr maprcli acl edit \
+			-cluster hcp.mapr.cluster -type cluster -user ad_admin1:fc || true
+
+	# ignore errors, e.g. if run multiple times - TODO: check if ACL exists before running
+	bdmapr maprcli acl edit \
+			-cluster hcp.mapr.cluster -type cluster -group DemoTenantUsers:login,cv || true
+
+	bdmapr maprcli acl show -type cluster
+SSH_EOF
+
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
 	set -eu

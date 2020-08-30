@@ -21,8 +21,8 @@ export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 
 echo "Configuring AD authentication"
 JSON_FILE=$(mktemp)
-trap "{ rm -f $JSON_FILE; }" EXIT
-cat >$JSON_FILE<<-EOF
+trap '{ rm -f $JSON_FILE; }' EXIT
+cat >"$JSON_FILE"<<-EOF
 { 
     "external_identity_server":  {
         "bind_pwd":"5ambaPwd@",
@@ -38,4 +38,4 @@ cat >$JSON_FILE<<-EOF
     }
 }
 EOF
-hpecp httpclient post /api/v2/config/auth --json-file ${JSON_FILE}
+hpecp httpclient post /api/v2/config/auth --json-file "${JSON_FILE}"

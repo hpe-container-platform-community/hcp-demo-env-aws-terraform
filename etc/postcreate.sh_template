@@ -12,6 +12,8 @@ export HPECP_LOG_CONFIG_FILE=${PWD}/generated/hpecp_cli_logging.conf
 pip3 uninstall -y hpecp || true # uninstall if exists
 pip3 install --upgrade hpecp
 
+HPECP_VERSION=$(hpecp config get --query 'objects.[bds_global_version]' --output text)
+echo "HPECP Version: ${HPECP_VERSION}"
 
 if [[ "$MAPR_CLUSTER1_COUNT" == "3" ]]; then
    print_header "Installing MAPR Cluster 1"
@@ -33,13 +35,17 @@ print_header "Configuring Global Active Directory in HPE CP"
 print_header "Adding a Gateway to HPE CP"
 ./bin/experimental/02_gateway_add.sh
 
+print_header "Setting Gateway SSL"
+./bin/experimental/set_gateway_ssl.sh
+
 print_header "Configuring Active Directory in Demo Tenant"
 ./bin/experimental/setup_demo_tenant_ad.sh
 
-# The script below should one be run on 5.0
-# In 5.1 and above the sssd config is automatic.
-# print_header "Configuring Active Directory on HCP Embedded DF"
-# ./scripts/end_user_scripts/embedded_mapr/1_setup_epic_mapr_sssd.sh
+if [[ $HPECP_VERSION == "5.0"* ]]; then
+   # 5.1+ embedded mapr is configured automatically with SSSD
+   print_header "Configuring Active Directory on HCP Embedded DF"
+   ./scripts/end_user_scripts/embedded_mapr/1_setup_epic_mapr_sssd.sh
+fi
 
 print_header "Configure Active Directory on RDP Host"
 ./scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh

@@ -3,23 +3,9 @@
 set -e # abort on error
 set -u # abort on undefined variable
 
-export HPECP_LOG_CONFIG_FILE=${PWD}/generated/hpecp_cli_logging.conf
-pip3 uninstall -y hpecp || true # uninstall if exists
-pip3 install --upgrade hpecp
-
-./scripts/check_prerequisites.sh
 source "scripts/functions.sh"
 
 print_term_width '='
-
-# while true; do
-#     read -p "Do you wish to run experimental scripts y/n (enter no if unsure)? " yn
-#     case $yn in
-#         [Yy]* ) EXPERIMENTAL=1; break;;
-#         [Nn]* ) EXPERIMENTAL=0; break;;
-#         * ) echo "Please answer y or n.";;
-#     esac
-# done
 
 print_header "Starting to create infrastructure with Terraform"
 if [[ -f terraform.tfstate ]]; then
@@ -43,6 +29,8 @@ if [[ ! -f  "./generated/controller.prv_key" ]]; then
    mv "./generated/controller.prv_key.pub" "./generated/controller.pub_key"
    chmod 600 "./generated/controller.prv_key"
 fi
+
+./scripts/check_prerequisites.sh
 
 terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
 
