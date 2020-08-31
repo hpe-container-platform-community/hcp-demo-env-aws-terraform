@@ -23,9 +23,7 @@ hpecp config get --query 'objects.gateway_ssl_cert_info' --output json
 
 if [[ -f generated/cert.pem ]] && [[ -f generated/key.pem ]]; then
    echo "Setting up Gateway SSL certificate and key"
-   CERTIFICATE=$(cat generated/cert.pem | perl -e 'while(<>) { $_ =~ s/[\r\n]/\\n/g; print "$_" }')
-   KEY=$(cat generated/key.pem | perl -e 'while(<>) { $_ =~ s/[\r\n]/\\n/g; print "$_" }')
-   hpecp install set-gateway-ssl --cert-content "'${CERTIFICATE}'" --cert-file-name cert.pem --key-content "'${KEY}'" --key-file-name key.pem
+   hpecp install set-gateway-ssl --cert-file generated/cert.pem --key-file generated/key.pem
 
    GATEWAY_SSL_CONFIGURED=$(hpecp config get --query 'objects.gateway_ssl_cert_info | length(@)' --output json)
    if [[ ${GATEWAY_SSL_CONFIGURED} == 0 ]]; then
