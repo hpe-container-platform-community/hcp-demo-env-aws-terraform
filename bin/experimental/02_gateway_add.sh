@@ -24,20 +24,6 @@ GATEWAY_ID=$(hpecp gateway create-with-ssh-key $GATW_PRV_IP $GATW_PRV_DNS --ssh-
 echo "Waiting for gateway to have state 'installed'"
 hpecp gateway wait-for-state ${GATEWAY_ID} --states "['installed']" --timeout-secs 1200
 
-if [[ -f generated/cert.pem ]] && [[ -f generated/key.pem ]]; then
-   echo "Setting up Gateway SSL certificate and key"
-   CERTIFICATE=$(cat generated/cert.pem | perl -e 'while(<>) { $_ =~ s/[\r\n]/\\n/g; print "$_" }')
-   KEY=$(cat generated/key.pem | perl -e 'while(<>) { $_ =~ s/[\r\n]/\\n/g; print "$_" }')
-   JSON="{\"gateway_ssl_cert_info\": {\"cert_file\": {\"content\": \"${CERTIFICATE}\", \"file_name\": \"cert.pem\"}, \"key_file\": {\"content\": \"${KEY}\", \"file_name\": \"key.pem\"}}}"
-   hpecp httpclient put /api/v1/install/?install_reconfig --json-file <(echo $JSON)
-
-   GATEWAY_SSL_CONFIGURED=$(hpecp install get --query 'objects.gateway_ssl_cert_info | length(@)' --output json)
-   if [[ ${GATEWAY_SSL_CONFIGURED} == 0 ]]; then
-      echo "Gateway SSL was not configured. Aborting."
-      exit 1
-   fi
-fi
-
 echo "Removing locks"
 hpecp gateway list
 hpecp lock delete-all --timeout-secs 1200

@@ -19,16 +19,15 @@ hpecp lock delete-all
 hpecp lock create "Install Gateway"
 
 echo "SSL info:"
-hpecp install get --query 'objects.gateway_ssl_cert_info' --output json
+hpecp config get --query 'objects.gateway_ssl_cert_info' --output json
 
 if [[ -f generated/cert.pem ]] && [[ -f generated/key.pem ]]; then
    echo "Setting up Gateway SSL certificate and key"
    CERTIFICATE=$(cat generated/cert.pem | perl -e 'while(<>) { $_ =~ s/[\r\n]/\\n/g; print "$_" }')
    KEY=$(cat generated/key.pem | perl -e 'while(<>) { $_ =~ s/[\r\n]/\\n/g; print "$_" }')
-   JSON="{\"gateway_ssl_cert_info\": {\"cert_file\": {\"content\": \"${CERTIFICATE}\", \"file_name\": \"cert.pem\"}, \"key_file\": {\"content\": \"${KEY}\", \"file_name\": \"key.pem\"}}}"
-   hpecp httpclient put /api/v1/install/?install_reconfig --json-file <(echo $JSON)
+   hpecp install set-gateway-ssl --cert-content "'${CERTIFICATE}'" --cert-file-name cert.pem --key-content "'${KEY}'" --key-file-name key.pem
 
-   GATEWAY_SSL_CONFIGURED=$(hpecp install get --query 'objects.gateway_ssl_cert_info | length(@)' --output json)
+   GATEWAY_SSL_CONFIGURED=$(hpecp config get --query 'objects.gateway_ssl_cert_info | length(@)' --output json)
    if [[ ${GATEWAY_SSL_CONFIGURED} == 0 ]]; then
       echo "Gateway SSL was not configured. Aborting."
       exit 1
@@ -36,7 +35,7 @@ if [[ -f generated/cert.pem ]] && [[ -f generated/key.pem ]]; then
 fi
 
 echo "SSL info:"
-hpecp install get --query 'objects.gateway_ssl_cert_info' --output json
+hpecp config get --query 'objects.gateway_ssl_cert_info' --output json
 
 echo "Removing locks"
 hpecp lock delete-all --timeout-secs 1200
