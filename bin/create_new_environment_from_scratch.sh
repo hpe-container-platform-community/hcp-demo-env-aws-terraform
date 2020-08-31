@@ -9,6 +9,12 @@ print_term_width '='
 
 print_header "Starting to create infrastructure with Terraform"
 if [[ -f terraform.tfstate ]]; then
+
+   #python3 -mjson.tool "terraform.tfstate" > /dev/null || {
+   #   echo "The file terraform.tfstate does not appear to be valid json. Aborting."
+   #   exit 1
+   #} 
+
    TF_RESOURCES=$(cat  terraform.tfstate | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(len(obj["resources"]))')
 
    if [[ "$TF_RESOURCES" == "0" ]]; then
