@@ -61,9 +61,6 @@ set -e
 print_header "Enable Virtual Nodes on Controller"
 ./bin/experimental/epic_enable_virtual_node_assignment.sh
 
-print_header "Set HCP CPU allocation ratio to 2"
-./bin/experimental/epic_set_cpu_allocation_ratio.sh
-
 print_header "Setup two hosts as K8s workers"
 ./bin/experimental/03_k8sworkers_add.sh 2 # add 2 EC2 hosts as k8s workers
 
@@ -93,3 +90,11 @@ print_header "Installing EPIC Spark 23x Image"
 print_header "Check EPIC Image status"
 ./bin/experimental/epic_catalog_image_status.sh
 
+# uncomment to set the EPIC CPU allocation ratio
+# print_header "Set HCP CPU allocation ratio to 2"
+# ./bin/experimental/epic_set_cpu_allocation_ratio.sh
+
+# After setting CPU allocation ratio, SSL get erased
+# run the following to reset it.
+# print_header "Setting Gateway SSL"
+# ./bin/experimental/set_gateway_ssl.sh
