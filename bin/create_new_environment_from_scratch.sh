@@ -4,6 +4,7 @@ set -e # abort on error
 set -u # abort on undefined variable
 
 source "scripts/functions.sh"
+./scripts/check_prerequisites.sh
 
 print_term_width '='
 
@@ -35,8 +36,6 @@ if [[ ! -f  "./generated/controller.prv_key" ]]; then
    mv "./generated/controller.prv_key.pub" "./generated/controller.pub_key"
    chmod 600 "./generated/controller.prv_key"
 fi
-
-./scripts/check_prerequisites.sh
 
 terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
 
