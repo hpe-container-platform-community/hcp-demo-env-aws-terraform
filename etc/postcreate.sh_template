@@ -100,6 +100,9 @@ print_header "Installing EPIC Spark 23x Image"
 print_header "Check EPIC Image status"
 ./bin/experimental/epic_catalog_image_status.sh
 
+print_header "Add EPIC Spark Cluster"
+./bin/experimental/epic_cluster_deploy.sh
+
 # uncomment to set the EPIC CPU allocation ratio
 # print_header "Set HCP CPU allocation ratio to 2"
 # ./bin/experimental/epic_set_cpu_allocation_ratio.sh

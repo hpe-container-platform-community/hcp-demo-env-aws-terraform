@@ -16,6 +16,9 @@ verify_ssl = False
 warn_ssl = False
 username = admin
 password = admin123
+
+[tenant2]
+tenant = /api/v1/tenant/2
 EOF
 
 # add private key to RDP server to allow passwordless ssh to all other hosts

@@ -12,4 +12,12 @@ do
   hpecp catalog install $IMG_ID
 done
 
-. ${SCRIPT_DIR}/epic_catalog_image_status.sh
+for i  in {1..1000}; do
+  STATE=$(hpecp catalog list --query "[?_links.self.href=='/api/v1/catalog/3'] | [*].[state]" --output text)
+  echo "State: $STATE"
+  if [[ "$STATE" == "installed" ]]; then
+    break
+  else
+    sleep 60
+  fi
+done
