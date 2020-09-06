@@ -72,6 +72,9 @@ print_header "Setup two hosts as K8s workers"
 print_header "Create k8s cluster and tenant"
 ./bin/experimental/04_k8scluster_create.sh
 
+print_header "Add KD Spark Cluster"
+./bin/experimental/05_kubedirector_spark_create.sh
+
 WORKER_HOST_3_IP=${WRKR_PRV_IPS[2]}
 
 print_header "Setup one host as EPIC workers"
