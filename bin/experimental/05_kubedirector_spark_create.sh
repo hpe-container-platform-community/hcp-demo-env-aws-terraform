@@ -128,7 +128,7 @@ spec:
         size: "50Gi"
     - 
       id: "notebook-server"
-      members: 0
+      members: 1
       resources: 
         requests: 
           memory: "4Gi"
