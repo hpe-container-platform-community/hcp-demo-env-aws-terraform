@@ -19,7 +19,12 @@ if [[  "$AD_SERVER_ENABLED" != "True" && "$AD_PUB_IP" ]]; then
 fi
 
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@"${AD_PUB_IP}" <<-SSH_EOF
-   sudo yum install -y python-pip3
+
+   set -e
+   set -u
+   set -x
+
+   sudo yum install -y python3-pip
    pip3 install --quiet --upgrade --user hpecp
 
    # use the project's HPECP CLI config file
@@ -39,7 +44,9 @@ CAT_EOF
    # Test CLI is able to connect
    echo "Platform ID: $(hpecp license platform-id)"
 
+   CLUSTER_ID=\$(hpecp k8scluster list --query "[?label.name == 'c1'] | [0] | [_links.self.href]" --output text)
    TENANT_ID=\$(hpecp tenant list --query "[?tenant_type == 'k8s' && label.name == 'k8s-tenant-1'] | [0] | [_links.self.href]" --output text)
+   NAMESPACE=\$(hpecp tenant list --query "[?tenant_type == 'k8s' && label.name == 'k8s-tenant-1'] | [0] | [namespace]" --output text)
 
 cat >>~/hpecp.conf<<CAT_EOF
 
@@ -51,8 +58,9 @@ CAT_EOF
 
    cat ~/hpecp.conf
 
+   # hpecp k8scluster admin_kube_config --id \${CLUSTER_ID} > k8s-cluster-kubeconfig.conf
    export PROFILE=k8s-tenant-1
-   hpecp tenant k8skubeconfig > k8s-tenant-1-kubeconfig.conf
+   LOG_LEVEL=DEBUG hpecp tenant k8skubeconfig > k8s-tenant-1-kubeconfig.conf
 
    command -v kubectl > /dev/null || {
       curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -66,8 +74,8 @@ CAT_EOF
       sudo mv ./kubectl-hpecp /usr/local/bin/kubectl-hpecp
    }
 
-   echo y | kubectl hpecp authenticate --hpecp-user ad_admin1 --hpecp-pass pass123 --hpecp ${CTRL_PRV_IP}
    kubectl --kubeconfig k8s-tenant-1-kubeconfig.conf get pods
+   # kubectl --kubeconfig k8s-cluster-kubeconfig.conf get ns
 
 cat >~/spark245.yaml<<CAT_EOF
 ---
@@ -75,7 +83,7 @@ apiVersion: "kubedirector.hpe.com/v1beta1"
 kind: "KubeDirectorCluster"
 metadata: 
   name: "spark245-instance"
-  namespace: "hpecp-tenant-6-vzqcv"
+  namespace: "\${NAMESPACE}"
 spec: 
   app: "spark245"
   appCatalog: "local"
