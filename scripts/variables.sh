@@ -27,9 +27,9 @@ try:
    with open('${SCRIPT_DIR}/../generated/output.json') as f:
       json.load(f)
 except: 
-   print(80 * "*")
+   print(80 * '*')
    print("ERROR: Can't parse: '${SCRIPT_DIR}/../generated/output.json'")
-   print(80 * "*")
+   print(80 * '*')
    sys.exit(1)
 ____HERE
 
@@ -204,22 +204,29 @@ WRKR_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys
 read -r -a WRKR_PRV_IPS <<< "$WRKR_PRV_IPS"
 read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
 
-MAPR_CLUSTER1_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_private_ip"]["value"][0], sep=" ")') 
-MAPR_CLUSTER1_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_public_ip"]["value"][0], sep=" ")') 
-
-read -r -a MAPR_CLUSTER1_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER1_HOSTS_PRV_IPS"
-read -r -a MAPR_CLUSTER1_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER1_HOSTS_PUB_IPS"
-
 MAPR_CLUSTER1_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster_1_count"]["value"][0], sep=" ")') 
+if [[ "$MAPR_CLUSTER1_COUNT" == "3" ]]; then
+   MAPR_CLUSTER1_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_private_ip"]["value"][0], sep=" ")') 
+   MAPR_CLUSTER1_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_public_ip"]["value"][0], sep=" ")') 
 
-MAPR_CLUSTER2_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_private_ip"]["value"][0], sep=" ")') 
-MAPR_CLUSTER2_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_public_ip"]["value"][0], sep=" ")') 
-
-read -r -a MAPR_CLUSTER2_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER2_HOSTS_PRV_IPS"
-read -r -a MAPR_CLUSTER2_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER2_HOSTS_PUB_IPS"
+   read -r -a MAPR_CLUSTER1_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER1_HOSTS_PRV_IPS"
+   read -r -a MAPR_CLUSTER1_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER1_HOSTS_PUB_IPS"
+else
+   MAPR_CLUSTER1_HOSTS_PRV_IPS=()
+   MAPR_CLUSTER1_HOSTS_PUB_IPS=()
+fi
 
 MAPR_CLUSTER2_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster_2_count"]["value"][0], sep=" ")') 
+if [[ "$MAPR_CLUSTER2_COUNT" == "3" ]]; then
+   MAPR_CLUSTER2_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_private_ip"]["value"][0], sep=" ")') 
+   MAPR_CLUSTER2_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_public_ip"]["value"][0], sep=" ")') 
 
+   read -r -a MAPR_CLUSTER2_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER2_HOSTS_PRV_IPS"
+   read -r -a MAPR_CLUSTER2_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER2_HOSTS_PUB_IPS"
+else
+   MAPR_CLUSTER2_HOSTS_PRV_IPS=()
+   MAPR_CLUSTER2_HOSTS_PUB_IPS=()
+fi
 
 AD_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_enabled"]["value"])')
 
@@ -248,7 +255,7 @@ if [[ "$RDP_SERVER_ENABLED" == "True" ]]; then
    fi
 fi
 
-if [[ was_x_set == 1 ]]; then
+if [[ $was_x_set == 1 ]]; then
    set -x
 else
    set +x
