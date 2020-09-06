@@ -6,7 +6,15 @@ set -u # abort on undefined variable
 source "scripts/functions.sh"
 ./scripts/check_prerequisites.sh
 
+
+tput setaf 1
 print_term_width '='
+echo "IMPORTANT: Please ensure you are NOT connected to a corporate VPN."
+print_term_width '='
+tput sgr0
+
+sleep 10
+
 
 print_header "Starting to create infrastructure with Terraform"
 if [[ -f terraform.tfstate ]]; then
