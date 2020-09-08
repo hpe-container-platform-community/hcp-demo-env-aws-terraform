@@ -30,8 +30,8 @@ This project has been tested on **Linux** and **OSX** client machines - Windows 
 aws configure
 
 # clone this project
-git clone https://github.com/bluedata-community/bluedata-demo-env-aws-terraform
-cd bluedata-demo-env-aws-terraform
+git clone https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform
+cd hcp-demo-env-aws-terraform
 
 # create a copy 
 cp ./etc/bluedata_infra.tfvars_example ./etc/bluedata_infra.tfvars
