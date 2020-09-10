@@ -97,6 +97,9 @@ fi
 print_header "Installing EPIC Spark 23x Image"
 ./bin/experimental/epic_catalog_image_install_spark23.sh
 
+print_header "Installing EPIC Spark 24x Image"
+./bin/experimental/epic_catalog_image_install_spark24.sh
+
 # uncommment below to install all images
 #./bin/experimental/epic_catalog_image_install_all.sh
 
