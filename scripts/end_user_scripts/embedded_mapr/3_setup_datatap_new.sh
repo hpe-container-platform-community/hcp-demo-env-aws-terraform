@@ -39,7 +39,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
 	# ignore errors so this script is idempotent
 	bdmapr maprcli volume create -name global -path \${MAPR_VMNT} || true # ignore error
-	bdmapr maprcli acl set -type volume -name global -user ad_admin1:fc || true # ignore error
+	bdmapr maprcli acl set -type volume -name global -user ad_admin1:fc,a || true # ignore error
 
 	# create a mount point for the new volume
 	docker exec -i \$CONTAINER_ID bash <<-DOCKER_EOF
