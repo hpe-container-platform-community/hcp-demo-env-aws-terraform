@@ -9,8 +9,8 @@ project_id         = "<<your-name>>-hcp"   # Change your name and project name. 
 user               = "<<your-name>>"       # Change your name. E.g. csnow (with no spaces)
 
 worker_count       = 2                     # How many hosts do you want for EPIC or K8S?
-mapr_cluster_1_count         = 0                     # How many hosts do you want for MAPR CLUSTER1? (0 or 3)
-mapr_cluster_2_count         = 0                     # How many hosts do you want for MAPR CLUSTER1? (0 or 3)
+mapr_cluster_1_count         = 0                     # How many hosts do you want for MAPR CLUSTER 1? (0 or 3)
+mapr_cluster_2_count         = 0                     # How many hosts do you want for MAPR CLUSTER 2? (0 or 3)
 
 ###########################################################################################
 # If you would like to run post installation setup scripts:                               #
