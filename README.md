@@ -83,6 +83,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-MAPR-LDAP.md) for information on **setting up MAPR  with Active Directory/LDAP**.
 
+[README](./docs/README-EXTERNAL-MAPR.md) for information on **setting up External MAPR**.
+
 [README](./docs/README-VPN.md) how to **create a vpn** to your AWS deployment.
 
 [README](./docs/README-SHARING-NON-TERRAFORM.md) for information on **sharing the environment with non-terraform users**.

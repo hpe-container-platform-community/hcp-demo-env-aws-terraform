@@ -22,8 +22,8 @@ Two AD groups and two AD users were created automatically when the enviroment wa
 
 - `DemoTenantAdmins` group
 - `DemoTenantUsers` group
-- `ad_user1` in the `DemoTenantUsers` group with password `pass123`
-- `ad_admin1` in the `DemoTenantAdmins` group with password `pass123`
+- `ad_user1` and `ad_user2` in the `DemoTenantUsers` group with password `pass123`
+- `ad_admin1` and `ad_admin2` in the `DemoTenantAdmins` group with password `pass123`
 
 #### Adding an AD user
 
