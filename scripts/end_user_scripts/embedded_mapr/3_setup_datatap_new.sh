@@ -17,7 +17,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
 	MAPR_USER=ad_admin1
 	MAPR_TCKT=/tmp/ad_admin1_impersonation_ticket
-	MAPR_VMNT=/global/global1
+	MAPR_VMNT=/generic/example
 
 	# 2 = EPIC Demo Tenant
 	TENANT_KEYTAB_DIR=/srv/bluedata/keytab/2/
@@ -32,21 +32,21 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
 	# create a mount point for the new volume
 	docker exec -i \$CONTAINER_ID bash <<-DOCKER_EOF
-		[[ -d /mapr/mnt/hcp.mapr.cluster/global ]] || mkdir /mapr/mnt/hcp.mapr.cluster/global
-		chown -R mapr:mapr /mapr/mnt/hcp.mapr.cluster/global
-		chmod -R 777 /mapr/mnt/hcp.mapr.cluster/global
+		[[ -d /mapr/mnt/hcp.mapr.cluster/generic ]] || mkdir /mapr/mnt/hcp.mapr.cluster/generic
+		chown -R mapr:mapr /mapr/mnt/hcp.mapr.cluster/generic
+		chmod -R 777 /mapr/mnt/hcp.mapr.cluster/generic
 	DOCKER_EOF
 
 	# ignore errors so this script is idempotent
-	bdmapr maprcli volume create -name global -path \${MAPR_VMNT} || true # ignore error
-	bdmapr maprcli acl set -type volume -name global -user ad_admin1:fc,a || true # ignore error
+	bdmapr maprcli volume create -name generic -path \${MAPR_VMNT} || true # ignore error
+	bdmapr maprcli acl set -type volume -name generic -user ad_admin1:fc,a || true # ignore error
 
 	# create a mount point for the new volume
 	docker exec -i \$CONTAINER_ID bash <<-DOCKER_EOF
 		# upload some data
 		wget https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv
 		sed -i -e "s/\r/\n/g" airline-safety.csv # convert line endings
-		mv airline-safety.csv /mapr/mnt/hcp.mapr.cluster/global/global1/
+		mv airline-safety.csv /mapr/mnt/hcp.mapr.cluster/generic/example/
 	DOCKER_EOF
 
 	command -v hpecp >/dev/null 2>&1 || { 
@@ -133,8 +133,8 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		    "read_only": false
 		  },
 		  "label": {
-		    "name": "globalshare",
-		    "description": "mapr volume global share"
+		    "name": "int-mapr-generic",
+		    "description": "Integrated mapr generic volume"
 		  }
 		}
 	JSON_EOF
