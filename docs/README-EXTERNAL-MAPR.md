@@ -66,7 +66,40 @@ You can run the following script to create a DataTap to the Mapr 1 cluster in th
 
 ./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh
 
+#### Updating
 
+SSH into the controller, e.g.
 
+```
+./generated/ssh_controller.sh
+```
 
+Edit the file `hosts_cluster_1.xml` or `hosts_cluster_2.xml`.  
 
+E.g. to add NFS on all nodes, change: 
+
+```
+# NFS
+[mapr-nfs-v3]
+#node1
+#node2
+#node3
+```
+
+to 
+
+```
+# NFS
+[mapr-nfs-v3]
+node1
+node2
+node3
+```
+
+Exit the ssh session `exit`.
+
+Now run:
+
+```
+./scripts/mapr_update.sh 1 # or 2
+```
