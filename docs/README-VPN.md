@@ -23,7 +23,9 @@ Note:
 
 ## Mac OS VPN client management
 
-- run `sudo ./generated/vpn_mac_connect.sh` to create vpn and to connect to it.  
+- run `sudo ./bin/vpn_mac_connect.sh` to create vpn and to connect to it. 
+- run `sudo ./bin/vpn_mac_connect_with_keepalive` to create vpn and to connect to it, and periodically check it.
+
 
 ![vpn mac connect](./README-VPN/vpn_mac_connect.gif)
 
