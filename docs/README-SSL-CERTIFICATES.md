@@ -7,7 +7,7 @@
 
 ## HCP Installation Notes
 
-When HCP is installed with SSL, the certificate must be configured in a particular way.  
+Installing with SSL is automatically done when you set `install_with_ssl = true` in `etc/bluedata_infra.tfvars`.  This section is for informational purposes only and describes how the SSL is setup.
 
 The installation [docs](http://docs.bluedata.com/50_standard-installation) state the following:
 
