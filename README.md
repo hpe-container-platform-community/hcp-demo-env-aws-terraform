@@ -57,7 +57,7 @@ The [etc/postcreate.sh_template](etc/postcreate.sh_template) script contains fur
 cp ./etc/postcreate.sh_template ./etc/postcreate.sh
 ```
 
-Edit the script you copied to apply your own customisations.
+Edit the script `./etc/postcreate.sh` with your required customisations.
 
 ---
 
