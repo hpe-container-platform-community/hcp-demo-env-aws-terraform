@@ -47,6 +47,20 @@ For many more configuration options, see `etc/bluedata_infra.tfvars_template`.
 
 ![project init](./docs/README/project_init.gif)
 
+---
+
+**Recommended** - Define setup actions to run after environment is created
+
+The [etc/postcreate.sh_template](etc/postcreate.sh_template) script contains further setup actions that you can apply to your environment.
+
+```
+cp ./etc/postcreate.sh_template ./etc/postcreate.sh
+```
+
+Edit the script you copied to apply your own customisations.
+
+---
+
 We are now ready to automate the environment setup ...
 
 ```
