@@ -10,7 +10,7 @@ az                 = "eu-west-2a"
 # Set this to something meaningful.  it is used as a tag in aws 
 #
 
-project_id         = "csnow-scratch"
+project_id         = "csnow-scratch" # ** Max len 18 chars **
 user               = "csnow"
 
 #

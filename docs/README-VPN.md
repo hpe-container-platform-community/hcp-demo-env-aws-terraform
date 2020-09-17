@@ -11,19 +11,19 @@ Note:
 - The VPN server is provided by [SoftEther](https://www.softether.org/) running on the RDP Linux server.
 - SoftEther is used because it does not have the 2 user limitation like OpenVPN.
 - The SoftEther VPN server is only accessible by whitelisted client IP addresses, e.g. those managed by terraform.
-- You can enable an EIP by setting the variable `create_eip_rdp_linux_server = true` in your `./etc/bluedata_infra.tfvars` file.  
-- A static IP may be useful for giving other users access to the environment.
 - The Mac VPN client (described below) is setup NOT to route all traffic to it.
 
 ## Server setup
 
-- run `./generated/vpn_server_setup.sh` to create the vpn - you can run this multiple times (e.g. after adding new users).
+- run `./bin/vpn_server_setup.sh` to create the vpn - you can run this multiple times (e.g. after adding new users).
 
 ![vpn server setup](./README-VPN/vpn_server_setup.gif)
 
 ## Mac OS VPN client management
 
-- run `sudo ./generated/vpn_mac_connect.sh` to create vpn and to connect to it.  
+- run `sudo ./bin/vpn_mac_connect.sh` to create vpn and to connect to it. 
+- run `sudo ./bin/vpn_mac_connect_with_keepalive` to create vpn and to connect to it, and periodically check it.
+
 
 ![vpn mac connect](./README-VPN/vpn_mac_connect.gif)
 

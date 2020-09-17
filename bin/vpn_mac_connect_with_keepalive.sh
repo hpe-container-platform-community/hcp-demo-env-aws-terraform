@@ -74,6 +74,6 @@ do
   else
     echo "$(tput setaf 2)Connect to controller successful.$(tput sgr0)"
   fi
-  echo "$(tput setaf 3)Sleeping 20 seconds before next VPN status check$(tput sgr0)"
-  sleep 20
+  echo "$(tput setaf 3)Sleeping 5 seconds before next VPN status check$(tput sgr0)"
+  sleep 5
 done
