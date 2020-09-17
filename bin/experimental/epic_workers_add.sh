@@ -38,7 +38,7 @@ done
 echo "Waiting for workers to have state 'ready'"
 for WRKR in ${WRKR_IDS[@]}; do
     echo "   worker $WRKR"
-    hpecp epicworker wait-for-state ${WRKR} --states [ready] --timeout-secs 1200
+    hpecp epicworker wait-for-state ${WRKR} --states [ready] --timeout-secs 1800
 done
 
 echo "Setting worker storage"
@@ -50,9 +50,9 @@ done
 echo "Waiting for workers to have state 'installed'"
 for WRKR in ${WRKR_IDS[@]}; do
     echo "   worker $WRKR"
-    hpecp epicworker wait-for-state ${WRKR} --states [installed] --timeout-secs 1200
+    hpecp epicworker wait-for-state ${WRKR} --states [installed] --timeout-secs 1800
 done
 
 echo "Removing locks"
 hpecp gateway list
-hpecp lock delete-all --timeout-secs 1200
+hpecp lock delete-all --timeout-secs 1800

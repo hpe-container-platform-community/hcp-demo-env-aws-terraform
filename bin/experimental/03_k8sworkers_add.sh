@@ -34,7 +34,7 @@ done
 echo "Waiting for workers to have state 'storage_pending'"
 for WRKR in ${WRKR_IDS[@]}; do
     echo "   worker $WRKR"
-    hpecp k8sworker wait-for-status ${WRKR} --status  "['storage_pending']" --timeout-secs 1200
+    hpecp k8sworker wait-for-status ${WRKR} --status  "['storage_pending']" --timeout-secs 1800
 done
 
 echo "Setting worker storage"
@@ -46,5 +46,5 @@ done
 echo "Waiting for workers to have state 'ready'"
 for WRKR in ${WRKR_IDS[@]}; do
     echo "   worker $WRKR"
-    hpecp k8sworker wait-for-status ${WRKR} --status  "['ready']" --timeout-secs 1200
+    hpecp k8sworker wait-for-status ${WRKR} --status  "['ready']" --timeout-secs 1800
 done

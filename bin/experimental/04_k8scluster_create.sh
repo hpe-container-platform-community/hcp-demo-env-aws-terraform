@@ -34,22 +34,22 @@ fi
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 17 --output text)
 
-echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | timeout=1200s"
+echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | timeout=1800s"
 CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons [istio])
 
 echo "$CLUSTER_ID"
 
-hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1200
+hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1800
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
 
-echo "Adding addon [harbor] | timeout=1200s"
+echo "Adding addon [harbor] | timeout=1800s"
 hpecp k8scluster add-addons --id $CLUSTER_ID --addons [harbor]
-hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1200
+hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1800
 echo "Addon successfully added"
 
 echo "Creating tenant"
 TENANT_ID=$(hpecp tenant create --name "k8s-tenant-1" --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s)
-hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 1200
+hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 1800
 echo "K8S tenant created successfully - ID: ${TENANT_ID}"
 
 ADMIN_GROUP="CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
