@@ -210,7 +210,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
    # manually install epel due to https://stackoverflow.com/questions/62359639/unable-to-install-packages-via-yum-in-aws-errno-1-repomd-xml-does-not-match
    wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-   sudo yum install -y -q epel-release-latest-7.noarch.rpm
+   sudo yum install -y -q epel-release-latest-7.noarch.rpm || echo "Ignoring error installing epel"
 
 
    if [[ -e /home/centos/bd_installed ]]
