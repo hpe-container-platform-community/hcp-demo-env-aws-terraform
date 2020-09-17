@@ -138,5 +138,13 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		  }
 		}
 	JSON_EOF
-	PROFILE=tenant2 hpecp httpclient post /api/v1/dataconn --json-file datatap.json
+ 
+	# if the datatap doesn't already exist, an error is returned by the query and we create it
+	DATATAP_LOOKUP=\$(PROFILE=tenant2 hpecp datatap list --query "[?_embedded.label.name=='int-mapr-generic']" --output json)
+	if [[ \$DATATAP_LOOKUP == "[]" ]]; then
+           echo "Creating DataTap"
+	   PROFILE=tenant2 hpecp httpclient post /api/v1/dataconn --json-file datatap.json
+        else
+	   echo "DataTap exists already - skipping."
+        fi
 SSH_EOF
