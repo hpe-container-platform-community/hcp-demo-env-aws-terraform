@@ -124,23 +124,24 @@ set -u
 #
 # Gateway
 #
-
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "sudo yum update -y -q"
-# if the reboot causes ssh to terminate with an error, ignore it
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "nohup sudo reboot </dev/null &" || true
-
+{
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "sudo yum update -y -q"
+   # if the reboot causes ssh to terminate with an error, ignore it
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${GATW_PUB_IP} "nohup sudo reboot </dev/null &" || true
+} &
 
 #
 # Controller
 #
-
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "sudo yum update -y -q"
-
-# FIXME: Hack to allow HPE CP httpd service to use minica key and cert
-echo 'Disabling SELINUX on the Controller host'
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
-# if the reboot causes ssh to terminate with an error, ignore it
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "nohup sudo reboot </dev/null &" || true
+{
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "sudo yum update -y -q"
+   
+   # FIXME: Hack to allow HPE CP httpd service to use minica key and cert
+   echo 'Disabling SELINUX on the Controller host'
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
+   # if the reboot causes ssh to terminate with an error, ignore it
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "nohup sudo reboot </dev/null &" || true
+} &
 
 #
 # Workers
@@ -148,21 +149,25 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
 set +u
 for WRKR in ${WRKR_PUB_IPS[@]}; do 
-   if [[ "$SELINUX_DISABLED" == "True" ]];
-   then
-      echo "Disabling SELINUX on the worker host $WRKR"
-      ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
-   fi
+   {
+      if [[ "$SELINUX_DISABLED" == "True" ]];
+      then
+         echo "Disabling SELINUX on the worker host $WRKR"
+         ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
+      fi
 
-   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum update -y -q"
-   # if the reboot causes ssh to terminate with an error, ignore it
-   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
+      ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum update -y -q"
+      # if the reboot causes ssh to terminate with an error, ignore it
+      ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
+   } &
 done
 set -u
 
 #
 # Wait for Gateway, Controller and Workers to come online after reboot
 #
+
+wait # for processing above installations to finish
 
 echo 'Waiting for Gateway ssh session '
 while ! nc -w5 -z ${GATW_PUB_IP} 22; do printf "." -n ; done;

@@ -36,5 +36,5 @@ echo "SSL info:"
 hpecp config get --query 'objects.gateway_ssl_cert_info' --output json
 
 echo "Removing locks"
-hpecp lock delete-all --timeout-secs 1200
+hpecp lock delete-all --timeout-secs 1800
 
