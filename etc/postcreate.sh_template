@@ -15,14 +15,14 @@ pip3 install --upgrade hpecp
 HPECP_VERSION=$(hpecp config get --query 'objects.[bds_global_version]' --output text)
 echo "HPECP Version: ${HPECP_VERSION}"
 
-if [[ "$MAPR_CLUSTER1_COUNT" == "3" ]]; then
+if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; then
    print_header "Installing MAPR Cluster 1"
    CLUSTER_ID=1
    ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
    ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
 fi
 
-if [[ "$MAPR_CLUSTER2_COUNT" == "3" ]]; then
+if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; then
    print_header "Installing MAPR Cluster 2"
    CLUSTER_ID=2
    ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
