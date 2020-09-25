@@ -35,6 +35,47 @@ fi
 echo MAPR_CLUSTER_HOSTS_PRV_IPS=${MAPR_CLUSTER_HOSTS_PRV_IPS}
 echo MAPR_CLUSTER_HOSTS_PUB_IPS=${MAPR_CLUSTER_HOSTS_PUB_IPS}
 
+
+###############################################################################
+# Test SSH connectivity to EC2 instances from local machine
+###############################################################################
+
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} 'echo CONTROLLER: $(hostname)'
+
+for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do 
+   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} << ENDSSH
+   sudo chmod -x /etc/update-motd.d/*
+   touch .hushlogin
+   echo MAPR_CLUSTER_HOST: \$(hostname)
+ENDSSH
+done
+
+###############################################################################
+# Setup SSH keys for passwordless SSH
+###############################################################################
+
+# We have password SSH access from our local machines to EC2, so we can utiise this to copy the Controller SSH key to each Worker
+for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do 
+    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat /home/centos/.ssh/id_rsa.pub" | \
+        ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} "cat >> /home/ubuntu/.ssh/authorized_keys"
+done
+
+# test passwordless SSH connection from Controller to Workers
+for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PRV_IPS[@]}; do 
+    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+        echo CONTROLLER: Connecting to MAPR_CLUSTER_HOST ${MAPR_CLUSTER_HOST}...
+        ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -T ubuntu@${MAPR_CLUSTER_HOST} "echo Connected to ${MAPR_CLUSTER_HOST}!"
+ENDSSH
+done
+
+# test passwordless SSH connection from Controller to Workers
+for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do 
+    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} << ENDSSH
+        sudo apt-get -qq update 
+        sudo apt-get -qq install -y openjdk-8-jdk python-pymysql python3-pymysql
+ENDSSH
+done
+
 ###############################################################################
 # Update MAPR
 ###############################################################################
