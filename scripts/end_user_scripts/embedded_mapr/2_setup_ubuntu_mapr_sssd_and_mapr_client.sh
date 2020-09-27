@@ -199,3 +199,5 @@ SSH_EOF
 	mv airline-safety.csv /mapr/hcp.mapr.cluster/tmp/
 SSH_EOF
 
+
+exit 0
