@@ -12,6 +12,8 @@ else
 fi
 set +x
 
+EPIC_OPTIONS='--skipeula'
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OUTPUT_JSON=$(cat "${SCRIPT_DIR}/../generated/output.json")
 

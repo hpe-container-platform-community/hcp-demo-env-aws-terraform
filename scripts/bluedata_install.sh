@@ -256,9 +256,9 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
    # install EPIC (Note: minica puts the cert and key in a folder named after the first DNS domain)
    if [[ "${INSTALL_WITH_SSL}" == "True" ]]; then
-      ./${EPIC_FILENAME} --skipeula --ssl-cert /home/centos/${CTRL_PUB_DNS}/cert.pem --ssl-priv-key /home/centos/${CTRL_PUB_DNS}/key.pem
+      ./${EPIC_FILENAME} ${EPIC_OPTIONS} --ssl-cert /home/centos/${CTRL_PUB_DNS}/cert.pem --ssl-priv-key /home/centos/${CTRL_PUB_DNS}/key.pem
    else
-      ./${EPIC_FILENAME} --skipeula
+      ./${EPIC_FILENAME} ${EPIC_OPTIONS}
    fi
 
 ENDSSH
