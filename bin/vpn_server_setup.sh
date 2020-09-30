@@ -16,7 +16,9 @@ fi
 
 echo "Testing connectivity to $RDP_PUB_IP"
 ping -c 2 $RDP_PUB_IP || {
-   echo "Aborting. Could not ping RDP Linux Server - you may need to run ./bin/terraform_apply.sh"
+   echo "$(tput setaf 1)Aborting. Could not ping RDP Linux Server."
+   echo " - You may need to disconnect from your corporate VPN, and/or"
+   echo " - You may need to run ./bin/terraform_apply.sh$(tput sgr0)"
    exit 1
 }
 
