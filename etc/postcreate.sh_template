@@ -88,6 +88,9 @@ if [[ "$MAPR_CLUSTER1_COUNT" == "3" ]]; then
 
    print_header "Setup Datatap to external MAPR cluster 1"
    ./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh
+
+   print_header "Setup Fuse mount on RDP host to external MAPR cluster 1"
+   ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
 fi
 
 # install images last because operations requiring system to be quiesced 

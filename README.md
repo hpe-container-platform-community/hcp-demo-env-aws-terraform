@@ -85,6 +85,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-TROUBLESHOOTING.MD) for **troubleshooting help**.
 
+[README](./docs/README-COST-ESTIMATES.MD) for **basic cost estimates** for your AWS environment
+
 [README](./docs/README-EC2-START-STOP-STATUS.md) for **stopping**, **starting** and **viewing the status** of your EC2 instances
 
 [README](./docs/README-RDP.md) for **information** on your pre-configured **RDP Server** 
