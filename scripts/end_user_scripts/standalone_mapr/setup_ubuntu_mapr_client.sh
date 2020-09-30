@@ -14,7 +14,13 @@ fi
 
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
-	set -eu
+	set -eux
+
+	sudo service mapr-posix-client-platinum stop
+	[[ -f /opt/mapr/conf/mapr-clusters.conf ]] && {
+		cp /opt/mapr/conf/mapr-clusters.conf ~ubuntu/mapr-clusters.conf
+		sudo rm /opt/mapr/conf/mapr-clusters.conf
+	}
 
 	MAPR_HOST_1=${MAPR_CLUSTER1_HOSTS_PRV_IPS[0]}
 	MAPR_HOST_2=${MAPR_CLUSTER1_HOSTS_PRV_IPS[1]}
@@ -24,15 +30,20 @@ fi
 
 	rm -f ~ubuntu/external_mapr_cluster1_ssl_truststore
 	scp -o StrictHostKeyChecking=no ubuntu@\${MAPR_HOST_1}:/opt/mapr/conf/ssl_truststore ~ubuntu/external_mapr_cluster1_ssl_truststore
-	sudo /opt/mapr/server/manageSSLKeys.sh merge ~ubuntu/external_mapr_cluster1_ssl_truststore /opt/mapr/conf/ssl_truststore
 
-	# UNABLE TO PROCESS OTHER COMMANDS AFTER THE ABOVE STATEMENT, 
-	# SO CLOSE THIS SSH SESSION AND OPEN A NEW ONE
+	MATCHING_ENTRIES=\$(keytool -list -keystore /opt/mapr/conf/ssl_truststore -storepass mapr123 | grep -c demo1.mapr.com) || true 
+	if [[ \${MATCHING_ENTRIES} == 0 ]]; then
+		echo "/opt/mapr/conf/ssl_truststore does not contain demo1.mapr.com - adding."
+		sudo /opt/mapr/server/manageSSLKeys.sh merge ~ubuntu/external_mapr_cluster1_ssl_truststore /opt/mapr/conf/ssl_truststore
+	else
+		echo "/opt/mapr/conf/ssl_truststore contains demo1.mapr.com - not updating."
+	fi
+
 SSH_EOF
 
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
-	set -eu
+	set -eux
 
 	sudo su - ad_admin1
 	echo pass123 | maprlogin password -user ad_admin1 -cluster demo1.mapr.com
@@ -53,6 +64,11 @@ SSH_EOF
 	EOF
 	chmod +x restart_posix_client.sh
 
+	MATCHING_ENTRIES=\$(grep -c hcp.mapr.cluster /opt/mapr/conf/mapr-clusters.conf) || true 
+	if [[ \${MATCHING_ENTRIES} == 0 ]]; then
+		sudo cat /opt/mapr/conf/mapr-clusters.conf >>  ~ubuntu/mapr-clusters.conf
+		sudo cp -f ~ubuntu/mapr-clusters.conf /opt/mapr/conf/mapr-clusters.conf
+	fi
 	./restart_posix_client.sh
 
 	echo "Sleeping for 30s waiting for mount to come online"
