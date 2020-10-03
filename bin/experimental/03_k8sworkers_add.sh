@@ -31,20 +31,29 @@ for WRKR in ${HOST_IPS[@]}; do
     WRKR_IDS+=($WRKR_ID)
 done
 
-echo "Waiting for workers to have state 'storage_pending'"
+echo "Configuring ${#WRKR_IDS[@]} workers in parallel"
+
 for WRKR in ${WRKR_IDS[@]}; do
-    echo "   worker $WRKR"
+{
+    echo "Waiting for ${WRKR} to have state 'storage_pending'"
     hpecp k8sworker wait-for-status ${WRKR} --status  "['storage_pending']" --timeout-secs 1800
-done
-
-echo "Setting worker storage"
-for WRKR in ${WRKR_IDS[@]}; do
-    echo "   worker $WRKR"
+    echo "Setting ${WRKR} storage"
     hpecp k8sworker set-storage --id ${WRKR} --persistent-disks=/dev/nvme1n1 --ephemeral-disks=/dev/nvme2n1
+    echo "Waiting for worker ${WRKR} to have state 'ready'"
+    hpecp k8sworker wait-for-status ${WRKR} --status  "['ready']" --timeout-secs 1800
+} &
 done
 
-echo "Waiting for workers to have state 'ready'"
-for WRKR in ${WRKR_IDS[@]}; do
-    echo "   worker $WRKR"
-    hpecp k8sworker wait-for-status ${WRKR} --status  "['ready']" --timeout-secs 1800
-done
+wait # don't quit until all workers are configured
+
+#echo "Setting worker storage"
+# for WRKR in ${WRKR_IDS[@]}; do
+#     echo "   worker $WRKR"
+#     hpecp k8sworker set-storage --id ${WRKR} --persistent-disks=/dev/nvme1n1 --ephemeral-disks=/dev/nvme2n1
+# done
+
+# echo "Waiting for workers to have state 'ready'"
+# for WRKR in ${WRKR_IDS[@]}; do
+#     echo "   worker $WRKR"
+#     hpecp k8sworker wait-for-status ${WRKR} --status  "['ready']" --timeout-secs 1800
+# done
