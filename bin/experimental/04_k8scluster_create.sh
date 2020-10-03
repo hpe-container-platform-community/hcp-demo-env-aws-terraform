@@ -39,7 +39,7 @@ CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8sh
 
 echo "$CLUSTER_ID"
 
-hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1800
+hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 3600
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
 
 echo "Adding addon [harbor] | timeout=1800s"
