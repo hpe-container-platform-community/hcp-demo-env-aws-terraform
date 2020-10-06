@@ -12,8 +12,6 @@ else
 fi
 set +x
 
-EPIC_OPTIONS='--skipeula'
-
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OUTPUT_JSON=$(cat "${SCRIPT_DIR}/../generated/output.json")
 
@@ -85,6 +83,7 @@ EPIC_DL_URL="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys
 EPIC_FILENAME="$(echo ${EPIC_DL_URL##*/} | cut -d? -f1)"
 EPIC_DL_URL_NEEDS_PRESIGN="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epid_dl_url_needs_presign"]["value"])')"
 EPIC_DL_URL_PRESIGN_OPTIONS="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_dl_url_presign_options"]["value"])')"
+EPIC_OPTIONS="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["epic_options"]["value"])')"
 
 #echo EPIC_DL_URL=$EPIC_DL_URL
 #echo EPIC_FILENAME=$EPIC_FILENAME

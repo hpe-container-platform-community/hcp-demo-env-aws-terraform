@@ -54,6 +54,10 @@ output "epic_dl_url_presign_options" {
   value = "${var.epic_dl_url_presign_options}"
 }
 
+output "epic_options" {
+  value = "${var.epic_options}"
+}
+
 output "client_cidr_block" {
  value = "${var.client_cidr_block}"
 }
