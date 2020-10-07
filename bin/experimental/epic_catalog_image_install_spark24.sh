@@ -10,14 +10,15 @@ for IMG_ID in $CATALOG_IMAGES
 do
   echo "Installing: $IMG_ID"
   hpecp catalog install $IMG_ID
+
+  for i  in {1..1000}; do
+    STATE=$(hpecp catalog list --query "[?_links.self.href=='${IMG_ID}'] | [*].[state]" --output text)
+    echo "State: $STATE"
+    if [[ "$STATE" == "installed" ]]; then
+      break
+    else
+      sleep 60
+    fi
+  done
 done
 
-for i  in {1..1000}; do
-  STATE=$(hpecp catalog list --query "[?_links.self.href=='/api/v1/catalog/32'] | [*].[state]" --output text)
-  echo "State: $STATE"
-  if [[ "$STATE" == "installed" ]]; then
-    break
-  else
-    sleep 60
-  fi
-done
