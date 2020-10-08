@@ -103,6 +103,12 @@ print_header "Installing EPIC Spark 23x Image"
 print_header "Installing EPIC Spark 24x Image"
 ./bin/experimental/epic_catalog_image_install_spark24.sh
 
+print_header "Add EPIC TensorFlow113CPU Cluster"
+./bin/experimental/epic_catalog_image_install_by_name.sh TensorFlow113CPU
+
+print_header "Add EPIC CentOS 7.x Cluster"
+./bin/experimental/epic_catalog_image_install_by_name.sh "CentOS 7.x"
+
 # uncommment below to install all images
 #./bin/experimental/epic_catalog_image_install_all.sh
 
