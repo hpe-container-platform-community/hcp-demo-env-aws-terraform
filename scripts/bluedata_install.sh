@@ -249,7 +249,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 
    echo "Downloading ${EPIC_DL_URL} to ${EPIC_FILENAME}"
 
-   wget -c --progress=bar -e dotbytes=10M -O ${EPIC_FILENAME} "${EPIC_DL_URL}"
+   wget -c --progress=bar -e dotbytes=10M -O ${EPIC_FILENAME} "${WGET_OPTIONS}" "${EPIC_DL_URL}"
    chmod +x ${EPIC_FILENAME}
 
    echo "Running EPIC install"
