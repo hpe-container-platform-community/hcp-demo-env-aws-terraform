@@ -184,6 +184,17 @@ resource "local_file" "ssh_worker" {
   EOF
 }
 
+resource "local_file" "ssh_worker_gpu" {
+  count = var.gpu_worker_count
+
+  filename = "${path.module}/generated/ssh_worker_gpu_${count.index}.sh"
+  content = <<-EOF
+     #!/bin/bash
+     source "${path.module}/scripts/variables.sh"
+     ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" centos@$${WRKR_GPU_PUB_IPS[${count.index}]} "$@"
+  EOF
+}
+
 resource "local_file" "ssh_mapr_cluster_1_host" {
   count = var.mapr_cluster_1_count
 
@@ -526,6 +537,9 @@ resource "local_file" "get_public_endpoints" {
     workers_public_ips    = j["workers_public_ip"]["value"][0]
     workers_public_dns    = j["workers_public_dns"]["value"][0]
 
+    workers_gpu_public_ips    = j["workers_gpu_public_ip"]["value"][0]
+    workers_gpu_public_dns    = j["workers_gpu_public_dns"]["value"][0]
+
     mapr_cluster_1_hosts_public_ips    = j["mapr_cluster_1_hosts_public_ip"]["value"][0]
     mapr_cluster_1_hosts_public_dns    = j["mapr_cluster_1_hosts_public_dns"]["value"][0]
 
@@ -560,7 +574,10 @@ resource "local_file" "get_public_endpoints" {
     print('{:>13}  {:>16}  {:>56}  {:>5}'.format( "AD",         ad_server_public_ip,  ad_server_public_dns,  "NA"))
 
     for num, ip in enumerate(workers_public_ips):
-       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "Worker", num, ip, workers_public_dns[num], "NA"))
+       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "WRKR", num, ip, workers_public_dns[num], "NA"))
+
+    for num, ip in enumerate(workers_gpu_public_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "WRKR GPU", num, ip, workers_gpu_public_dns[num], "NA"))
 
     for num, ip in enumerate(mapr_cluster_1_hosts_public_ips):
        print('{:>10}{:>3}  {:>16}  {:>56}  {:>5}'.format( "MAPR CLS 1", num, ip, mapr_cluster_1_hosts_public_dns[num], "NA"))
@@ -603,6 +620,9 @@ resource "local_file" "get_private_endpoints" {
     workers_private_ips    = j["workers_private_ip"]["value"][0]
     workers_private_dns    = j["workers_private_dns"]["value"][0]
 
+    workers_gpu_private_ips    = j["workers_gpu_private_ip"]["value"][0]
+    workers_gpu_private_dns    = j["workers_gpu_private_dns"]["value"][0]
+
     mapr_cluster_1_hosts_private_ips    = j["mapr_cluster_1_hosts_private_ip"]["value"][0]
     mapr_cluster_1_hosts_private_dns    = j["mapr_cluster_1_hosts_private_dns"]["value"][0]
 
@@ -637,7 +657,10 @@ resource "local_file" "get_private_endpoints" {
     print('{:>13}  {:>16}  {:>56}'.format( "AD",         ad_server_private_ip,  ad_server_private_dns))
 
     for num, ip in enumerate(workers_private_ips):
-       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "Worker", num, ip, workers_private_dns[num]))
+       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "WRKR", num, ip, workers_private_dns[num]))
+
+    for num, ip in enumerate(workers_gpu_private_ips):
+       print('{:>10}{:>3}  {:>16}  {:>56}'.format( "WRKR GPU", num, ip, workers_gpu_private_dns[num]))
 
     for num, ip in enumerate(mapr_cluster_1_hosts_private_ips):
        print('{:>10}{:>3}  {:>16}  {:>56}'.format( "MAPR CLS 1", num, ip, mapr_cluster_1_hosts_private_dns[num]))

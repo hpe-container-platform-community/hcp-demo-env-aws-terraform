@@ -74,6 +74,8 @@ output "create_eip_rdp_linux_server" {
   value = "${var.create_eip_rdp_linux_server}"
 }
 
+//// Gateway
+
 output "gateway_private_ip" {
   value = "${module.gateway.private_ip}"
 }
@@ -86,6 +88,8 @@ output "gateway_public_ip" {
 output "gateway_public_dns" {
   value = "${module.gateway.public_dns}"
 }
+
+//// Controllers
 
 output "controller_public_ip" {
   value = "${module.controller.public_ip}"
@@ -107,6 +111,8 @@ output "controller_private_dns" {
   value = "${module.controller.private_dns}"
 }
 
+/// workers
+
 output "workers_public_ip" {
   value = ["${aws_instance.workers.*.public_ip}"]
 }
@@ -124,6 +130,27 @@ output "worker_count" {
   value = ["${var.worker_count}"]
 }
 
+/// GPU workers
+
+output "workers_gpu_public_ip" {
+  value = ["${aws_instance.workers_gpu.*.public_ip}"]
+}
+output "workers_gpu_public_dns" {
+  value = ["${aws_instance.workers_gpu.*.public_dns}"]
+}
+output "workers_gpu_private_ip" {
+  value = ["${aws_instance.workers_gpu.*.private_ip}"]
+}
+output "workers_gpu_private_dns" {
+  value = ["${aws_instance.workers_gpu.*.private_dns}"]
+}
+
+output "gpu_worker_count" {
+  value = ["${var.gpu_worker_count}"]
+}
+
+//// MAPR Cluster 1
+
 output "mapr_cluster_1_hosts_public_ip" {
   value = ["${aws_instance.mapr_cluster_1_hosts.*.public_ip}"]
 }
@@ -140,6 +167,8 @@ output "mapr_cluster_1_hosts_private_dns" {
 output "mapr_cluster_1_count" {
   value = ["${var.mapr_cluster_1_count}"]
 }
+
+/// MAPR Cluster 2
 
 output "mapr_cluster_2_hosts_public_ip" {
   value = ["${aws_instance.mapr_cluster_2_hosts.*.public_ip}"]

@@ -62,6 +62,10 @@ ad_instance_type   = "t2.small"
 rdp_instance_type  = "t2.xlarge"
 mapr_instance_type = "m4.4xlarge" # Paris: "m5.4xlarge"
 
+gpu_worker_count   = 0 
+gpu_worker_instance_type = ""
+gpu_worker_has_disk_for_df = false 
+
 # Whether to install HPECP with ssl certificates.  It may be useful to 
 # set this to false if you want to view network traffic (e.g. for debugging api calls).
 

@@ -1,9 +1,7 @@
 locals {
-  gpu_worker_count = 0
-  gpu_worker_instance_type = "g4dn.xlarge" # change this for your region
-  gpu_worker_has_disk_for_df = false # create /dev/sdc for data fabric - true or false 
-
-  ## don't change below
+  gpu_worker_count = var.gpu_worker_count
+  gpu_worker_instance_type = var.gpu_worker_instance_type
+  gpu_worker_has_disk_for_df = var.gpu_worker_has_disk_for_df
   gpu_worker_instance_type_error = "gpu_worker_instance_type '${local.gpu_worker_instance_type}' is invalid for Region '${var.region}'"
 }
 

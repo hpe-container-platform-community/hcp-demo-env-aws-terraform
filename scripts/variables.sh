@@ -197,6 +197,8 @@ GATW_PRV_HOST=$(echo $GATW_PRV_DNS | cut -d"." -f1)
 [ "$GATW_PUB_HOST" ] || ( echo "ERROR: GATW_PUB_HOST is empty - is the instance running?" && exit 1 )
 [ "$GATW_PRV_HOST" ] || ( echo "ERROR: GATW_PRV_HOST is empty - is the instance running?" && exit 1 )
 
+#### WORKERS
+
 WORKER_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["worker_count"]["value"][0], sep=" ")') 
 
 WRKR_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_private_ip"]["value"][0], sep=" ")') 
@@ -204,6 +206,18 @@ WRKR_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys
 
 read -r -a WRKR_PRV_IPS <<< "$WRKR_PRV_IPS"
 read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
+
+#### GPU WORKERS
+
+GPU_WORKER_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gpu_worker_count"]["value"][0], sep=" ")') 
+
+WRKR_GPU_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_private_ip"]["value"][0], sep=" ")') 
+WRKR_GPU_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_public_ip"]["value"][0], sep=" ")') 
+
+read -r -a WRKR_GPU_PRV_IPS <<< "$WRKR_GPU_PRV_IPS"
+read -r -a WRKR_GPU_PUB_IPS <<< "$WRKR_GPU_PUB_IPS"
+
+#### MAPR CLUSTER 1
 
 MAPR_CLUSTER1_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster_1_count"]["value"][0], sep=" ")') 
 if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; then

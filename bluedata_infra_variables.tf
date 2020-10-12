@@ -95,6 +95,14 @@ variable "worker_count" { default = 3 }
 variable "mapr_cluster_1_count" { default = 0 }
 variable "mapr_cluster_2_count" { default = 0 }
 
+variable "gpu_worker_count" { default = 0 }
+variable "gpu_worker_instance_type" {
+  default = ""
+}
+variable "gpu_worker_has_disk_for_df" {
+  default = false
+} 
+
 variable "gtw_instance_type" { default = "m4.2xlarge" }
 variable "ctr_instance_type" { default = "m4.2xlarge" }
 variable "wkr_instance_type" { default = "m4.2xlarge" }
