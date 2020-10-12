@@ -15,7 +15,28 @@ resource "local_file" "ca-key" {
 /// instance start/stop/status
 
 locals {
-  instance_ids = "${module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""} ${module.ad_server.instance_id != null ? module.ad_server.instance_id : ""} ${module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""} ${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""} ${module.controller.id} ${module.gateway.id} ${join(" ", aws_instance.workers.*.id)} ${join(" ", aws_instance.workers_gpu.*.id)} ${join(" ", aws_instance.mapr_cluster_1_hosts.*.id)} ${join(" ", aws_instance.mapr_cluster_2_hosts.*.id)}"
+  instance_id_controller  = module.controller.id
+  instance_id_gateway     = module.gateway.id
+  instance_id_nfs         = module.nfs_server.instance_id != null ? module.nfs_server.instance_id : ""
+  instance_id_ad          = module.ad_server.instance_id != null ? module.ad_server.instance_id : ""
+  instance_id_rdp         = module.rdp_server.instance_id != null ? module.rdp_server.instance_id : ""
+  instance_id_rdp_linux   = module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""
+  instance_id_workers     = join(" ", aws_instance.workers.*.id)
+  instance_id_workers_gpu = join(" ", aws_instance.workers_gpu.*.id)
+  instance_id_mapr_cls_1  = join(" ", aws_instance.mapr_cluster_1_hosts.*.id)
+  instance_id_mapr_cls_2  = join(" ", aws_instance.mapr_cluster_2_hosts.*.id)
+  instance_ids = join(" ", [
+    local.instance_id_nfs,
+    local.instance_id_ad,
+    local.instance_id_rdp,
+    local.instance_id_rdp_linux,
+    local.instance_id_controller,
+    local.instance_id_gateway,
+    local.instance_id_workers,
+    local.instance_id_workers_gpu,
+    local.instance_id_mapr_cls_1,
+    local.instance_id_mapr_cls_2
+   ])
 }
 
 resource "local_file" "cli_stop_ec2_instances" {
@@ -29,14 +50,19 @@ resource "local_file" "cli_stop_ec2_instances" {
 
     echo "Sending 'sudo halt -n' to all hosts for graceful shutdown."
 
-    if [[ -z WRKR_PUB_IPS ]]; then
+    if [[ -n $WRKR_PUB_IPS ]]; then
        for HOST in $${WRKR_PUB_IPS[@]}; do
          ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$HOST "$CMD" || true
        done
     fi
 
-    ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$GATW_PUB_IP "$CMD" || true
-    ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$CMD" || true
+    if [[ -n $GATW_PUB_IP ]]; then
+      ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$GATW_PUB_IP "$CMD" || true
+    fi
+
+    if [[ -n $CTRL_PUB_IP ]]; then
+      ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$CMD" || true
+    fi
 
     echo "Sleeping 120s allowing halt to complete before issuing 'ec2 stop-instances' command"
     sleep 120
@@ -44,6 +70,37 @@ resource "local_file" "cli_stop_ec2_instances" {
     echo "Stopping instances"
     aws --region ${var.region} --profile ${var.profile} ec2 stop-instances \
         --instance-ids ${local.instance_ids} \
+        --output table \
+        --query "StoppingInstances[*].{ID:InstanceId,State:CurrentState.Name}"
+  EOF
+}
+
+resource "local_file" "cli_stop_ec2_gpu_instances" {
+  filename = "${path.module}/generated/cli_stop_ec2_gpu_instances.sh"
+  content =  <<-EOF
+    #!/bin/bash
+
+    OUTPUT_JSON=$(cat "${path.module}/generated/output.json")
+    WRKR_GPU_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_public_ip"]["value"][0], sep=" ")') 
+    read -r -a WRKR_GPU_PUB_IPS <<< "$WRKR_GPU_PUB_IPS"
+
+    SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=1 -q"
+    CMD='nohup sudo halt -n </dev/null &'
+
+    echo "Sending 'sudo halt -n' to all hosts for graceful shutdown."
+
+    if [[ -n $WRKR_GPU_PUB_IPS ]]; then
+       for HOST in $${WRKR_GPU_PUB_IPS[@]}; do
+         ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$HOST "$CMD" || true
+       done
+    fi
+
+    echo "Sleeping 120s allowing halt to complete before issuing 'ec2 stop-instances' command"
+    sleep 120
+
+    echo "Stopping instances"
+    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances \
+        --instance-ids ${local.instance_id_workers_gpu} \
         --output table \
         --query "StoppingInstances[*].{ID:InstanceId,State:CurrentState.Name}"
   EOF
@@ -61,6 +118,43 @@ resource "local_file" "cli_start_ec2_instances" {
 
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances \
         --instance-ids ${local.instance_ids} \
+        --output table \
+        --query "StartingInstances[*].{ID:InstanceId,State:CurrentState.Name}"
+
+    CURR_CLIENT_CIDR_BLOCK="$(curl -s http://ifconfig.me/ip)/32"
+
+    # check if the client IP address has changed
+    if [[ "$CLIENT_CIDR_BLOCK" = "$CURR_CLIENT_CIDR_BLOCK" ]]; then
+      UPDATE_COMMAND="refresh"
+    else
+      UPDATE_COMMAND="apply"
+    fi
+
+    echo "***********************************************************************************************************"
+    echo "IMPORTANT: You need to run the following command to update your local state:"
+    echo
+    echo "           ./bin/terraform_$UPDATE_COMMAND.sh"
+    echo 
+    echo "           If you encounter an error running ./bin/terraform_$UPDATE_COMMAND.sh it is probably because your"
+    echo "           instances are not ready yet.  You can check the instances status with:"
+    echo 
+    echo "           ./generated/cli_running_ec2_instances.sh"
+    echo "***********************************************************************************************************"
+  EOF
+}
+
+resource "local_file" "cli_start_ec2_gpu_instances" {
+  filename = "${path.module}/generated/cli_start_ec2_gpu_instances.sh"
+  content = <<-EOF
+    #!/bin/bash
+
+    OUTPUT_JSON=$(cat "${path.module}/generated/output.json")
+
+    CLIENT_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["client_cidr_block"]["value"])')
+    [ "$CLIENT_CIDR_BLOCK" ] || ( echo "ERROR: CLIENT_CIDR_BLOCK is empty" && exit 1 )
+
+    aws --region ${var.region} --profile ${var.profile} ec2 start-instances \
+        --instance-ids ${local.instance_id_workers_gpu} \
         --output table \
         --query "StartingInstances[*].{ID:InstanceId,State:CurrentState.Name}"
 

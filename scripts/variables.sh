@@ -118,7 +118,7 @@ CTRL_PRV_HOST=$(echo $CTRL_PRV_DNS | cut -d"." -f1)
 
 [ "$CTRL_PRV_IP" ] || {
    echo "***********************************************************************************"
-   echo "ERROR: CTRL_PRV_IP is empty - is the EC2 instance running?"
+   echo "WARNING: CTRL_PRV_IP is empty - is the EC2 instance running?"
    echo
    echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
    echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
@@ -128,7 +128,7 @@ CTRL_PRV_HOST=$(echo $CTRL_PRV_DNS | cut -d"." -f1)
 
 [ "$CTRL_PUB_IP" ] || {
    echo "***********************************************************************************"
-   echo "ERROR: CTRL_PUB_IP is empty - is the EC2 instance running?"
+   echo "WARNING: CTRL_PUB_IP is empty - is the EC2 instance running?"
    echo
    echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
    echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
@@ -138,7 +138,7 @@ CTRL_PRV_HOST=$(echo $CTRL_PRV_DNS | cut -d"." -f1)
 
 [ "$CTRL_PRV_DNS" ] || {
    echo "***********************************************************************************"
-   echo "ERROR: CTRL_PRV_DNS is empty - is the EC2 instance running?"
+   echo "WARNING: CTRL_PRV_DNS is empty - is the EC2 instance running?"
    echo
    echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
    echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
@@ -148,7 +148,7 @@ CTRL_PRV_HOST=$(echo $CTRL_PRV_DNS | cut -d"." -f1)
 
 [ "$CTRL_PUB_DNS" ] || {
    echo "***********************************************************************************"
-   echo "ERROR: CTRL_PUB_DNS is empty - is the EC2 instance running?"
+   echo "WARNING: CTRL_PUB_DNS is empty - is the EC2 instance running?"
    echo
    echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
    echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
@@ -158,7 +158,7 @@ CTRL_PRV_HOST=$(echo $CTRL_PRV_DNS | cut -d"." -f1)
 
 [ "$CTRL_PUB_HOST" ] || {
    echo "***********************************************************************************"
-   echo "ERROR: CTRL_PUB_HOST is empty - is the EC2 instance running?"
+   echo "WARNING: CTRL_PUB_HOST is empty - is the EC2 instance running?"
    echo
    echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
    echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
@@ -168,12 +168,11 @@ CTRL_PRV_HOST=$(echo $CTRL_PRV_DNS | cut -d"." -f1)
 
 [ "$CTRL_PRV_HOST" ] || {
    echo "***********************************************************************************"
-   echo "ERROR: CTRL_PRV_HOST is empty - is the EC2 instance running?"
+   echo "WARNING: CTRL_PRV_HOST is empty - is the EC2 instance running?"
    echo
    echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
    echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
    echo "***********************************************************************************"
-   exit 1 
 }
 
 GATW_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_private_ip"]["value"])') 
