@@ -2,7 +2,10 @@ locals {
   gpu_worker_count = var.gpu_worker_count
   gpu_worker_instance_type = var.gpu_worker_instance_type
   gpu_worker_has_disk_for_df = var.gpu_worker_has_disk_for_df
-  gpu_worker_instance_type_error = "gpu_worker_instance_type '${local.gpu_worker_instance_type}' is invalid for Region '${var.region}'"
+  gpu_worker_instance_type_error = join("\n", [
+    "gpu_worker_instance_type '${local.gpu_worker_instance_type}' is invalid for Region '${var.region}'.",
+    "You can check available gpu instance types with './bin/ec2_gpu_instances_types.sh ${var.region}'"
+  ])
 }
 
 ########## ASSERT GPU WORKER INSTANCE TYPE IS VALID FOR AZ ##########
