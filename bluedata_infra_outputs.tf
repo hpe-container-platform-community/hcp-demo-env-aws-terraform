@@ -2,6 +2,10 @@ output "project_dir" {
   value = "${abspath(path.module)}"
 }
 
+output "aws_profile" {
+  value = "${var.profile}"
+}
+
 output "aws_region" {
   value = "${var.region}"
 }
@@ -76,6 +80,9 @@ output "create_eip_rdp_linux_server" {
 
 //// Gateway
 
+output "gateway_instance_id" {
+  value = "${module.gateway.id}"
+}
 output "gateway_private_ip" {
   value = "${module.gateway.private_ip}"
 }
@@ -90,6 +97,10 @@ output "gateway_public_dns" {
 }
 
 //// Controllers
+
+output "controller_instance_id" {
+  value = "${module.controller.id}"
+}
 
 output "controller_public_ip" {
   value = "${module.controller.public_ip}"
@@ -113,6 +124,9 @@ output "controller_private_dns" {
 
 /// workers
 
+output "workers_instance_id" {
+  value = ["${aws_instance.workers.*.id}"]
+}
 output "workers_public_ip" {
   value = ["${aws_instance.workers.*.public_ip}"]
 }
@@ -132,6 +146,9 @@ output "worker_count" {
 
 /// GPU workers
 
+output "workers_gpu_instance_id" {
+  value = ["${aws_instance.workers_gpu.*.id}"]
+}
 output "workers_gpu_public_ip" {
   value = ["${aws_instance.workers_gpu.*.public_ip}"]
 }
@@ -151,6 +168,9 @@ output "gpu_worker_count" {
 
 //// MAPR Cluster 1
 
+output "mapr_cluster_1_hosts_instance_id" {
+  value = ["${aws_instance.mapr_cluster_1_hosts.*.id}"]
+}
 output "mapr_cluster_1_hosts_public_ip" {
   value = ["${aws_instance.mapr_cluster_1_hosts.*.public_ip}"]
 }
@@ -170,6 +190,9 @@ output "mapr_cluster_1_count" {
 
 /// MAPR Cluster 2
 
+output "mapr_cluster_2_hosts_instance_id" {
+  value = ["${aws_instance.mapr_cluster_2_hosts.*.id}"]
+}
 output "mapr_cluster_2_hosts_public_ip" {
   value = ["${aws_instance.mapr_cluster_2_hosts.*.public_ip}"]
 }
@@ -213,6 +236,14 @@ output "mapr_cluster_1_hosts_ssh" {
 
 // NFS Server Output
 
+output "nfs_server_enabled" {
+  value = var.nfs_server_enabled
+}
+
+output "nfs_server_instance_id" {
+  value = module.nfs_server.instance_id
+}
+
 output "nfs_server_private_ip" {
   value = module.nfs_server.private_ip
 }
@@ -226,6 +257,10 @@ output "nfs_server_ssh_command" {
 }
 
 // AD Server Output
+
+output "ad_server_instance_id" {
+  value = module.ad_server.instance_id
+}
 
 output "ad_server_private_ip" {
   value = module.ad_server.private_ip

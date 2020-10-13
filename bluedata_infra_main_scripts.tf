@@ -43,35 +43,7 @@ resource "local_file" "cli_stop_ec2_instances" {
   filename = "${path.module}/generated/cli_stop_ec2_instances.sh"
   content =  <<-EOF
     #!/bin/bash
-    source "${path.module}/scripts/variables.sh"
-
-    SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=1 -q"
-    CMD='nohup sudo halt -n </dev/null &'
-
-    echo "Sending 'sudo halt -n' to all hosts for graceful shutdown."
-
-    if [[ -n $WRKR_PUB_IPS ]]; then
-       for HOST in $${WRKR_PUB_IPS[@]}; do
-         ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$HOST "$CMD" || true
-       done
-    fi
-
-    if [[ -n $GATW_PUB_IP ]]; then
-      ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$GATW_PUB_IP "$CMD" || true
-    fi
-
-    if [[ -n $CTRL_PUB_IP ]]; then
-      ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$CTRL_PUB_IP "$CMD" || true
-    fi
-
-    echo "Sleeping 120s allowing halt to complete before issuing 'ec2 stop-instances' command"
-    sleep 120
-
-    echo "Stopping instances"
-    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances \
-        --instance-ids ${local.instance_ids} \
-        --output table \
-        --query "StoppingInstances[*].{ID:InstanceId,State:CurrentState.Name}"
+    echo "Deprecated.  Please use ./bin/ec2_stop_all_instances.sh"
   EOF
 }
 
@@ -217,10 +189,7 @@ resource "local_file" "cli_running_ec2_instances" {
   filename = "${path.module}/generated/cli_running_ec2_instances.sh"
   content = <<-EOF
     #!/bin/bash
-    aws --region ${var.region} --profile ${var.profile} ec2 describe-instances \
-      --instance-ids ${local.instance_ids} \
-      --output table \
-      --query "Reservations[*].Instances[*].{ExtIP:PublicIpAddress,IntIP:PrivateIpAddress,ID:InstanceId,Type:InstanceType,State:State.Name,Name:Tags[?Key=='Name']|[0].Value} | [][] | sort_by(@, &Name)"
+    echo "Deprecated. Please use ./bin/ec2_instance_status.sh"
   EOF  
 }
 

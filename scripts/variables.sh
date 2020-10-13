@@ -50,6 +50,9 @@ CLIENT_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.loa
 VPC_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["vpc_cidr_block"]["value"])')
 [ "$VPC_CIDR_BLOCK" ] || ( echo "ERROR: VPC_CIDR_BLOCK is empty" && exit 1 )
 
+PROFILE=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["aws_profile"]["value"])')
+[ "$PROFILE" ] || ( echo "ERROR: PROFILE is empty" && exit 1 )
+
 REGION=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["aws_region"]["value"])')
 [ "$REGION" ] || ( echo "ERROR: REGION is empty" && exit 1 )
 
@@ -99,6 +102,8 @@ SELINUX_DISABLED="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.loa
 #echo SELINUX_DISABLED=$SELINUX_DISABLED
 [ "$SELINUX_DISABLED" ] || ( echo "ERROR: SELINUX_DISABLED is empty" && exit 1 )
 
+CTRL_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_instance_id"]["value"])') 
+
 CTRL_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_private_ip"]["value"])') 
 CTRL_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_public_ip"]["value"])') 
 CTRL_PRV_DNS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["controller_private_dns"]["value"])') 
@@ -116,64 +121,33 @@ CTRL_PRV_HOST=$(echo $CTRL_PRV_DNS | cut -d"." -f1)
 
 ### TODO: refactor this checks below to a method
 
+IP_WARNING=()
+
 [ "$CTRL_PRV_IP" ] || {
-   echo "***********************************************************************************"
-   echo "WARNING: CTRL_PRV_IP is empty - is the EC2 instance running?"
-   echo
-   echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
-   echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
-   echo "***********************************************************************************"
-   exit 1 
+   IP_WARNING+=("CTRL_PRV_IP")
 }
 
 [ "$CTRL_PUB_IP" ] || {
-   echo "***********************************************************************************"
-   echo "WARNING: CTRL_PUB_IP is empty - is the EC2 instance running?"
-   echo
-   echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
-   echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
-   echo "***********************************************************************************"
-   exit 1 
+   IP_WARNING+=("CTRL_PUB_IP")
 }
 
 [ "$CTRL_PRV_DNS" ] || {
-   echo "***********************************************************************************"
-   echo "WARNING: CTRL_PRV_DNS is empty - is the EC2 instance running?"
-   echo
-   echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
-   echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
-   echo "***********************************************************************************"
-   exit 1 
+   IP_WARNING+=("CTRL_PRV_DNS")
 }
 
 [ "$CTRL_PUB_DNS" ] || {
-   echo "***********************************************************************************"
-   echo "WARNING: CTRL_PUB_DNS is empty - is the EC2 instance running?"
-   echo
-   echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
-   echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
-   echo "***********************************************************************************"
-   exit 1 
+   IP_WARNING+=("CTRL_PUB_DNS")
 }
 
 [ "$CTRL_PUB_HOST" ] || {
-   echo "***********************************************************************************"
-   echo "WARNING: CTRL_PUB_HOST is empty - is the EC2 instance running?"
-   echo
-   echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
-   echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
-   echo "***********************************************************************************"
-   exit 1 
+   IP_WARNING+=("CTRL_PUB_HOST")
 }
 
 [ "$CTRL_PRV_HOST" ] || {
-   echo "***********************************************************************************"
-   echo "WARNING: CTRL_PRV_HOST is empty - is the EC2 instance running?"
-   echo
-   echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
-   echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
-   echo "***********************************************************************************"
+   IP_WARNING+=("CTRL_PRV_HOST")
 }
+
+GATW_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_instance_id"]["value"])') 
 
 GATW_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_private_ip"]["value"])') 
 GATW_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_public_ip"]["value"])') 
@@ -189,17 +163,18 @@ GATW_PRV_HOST=$(echo $GATW_PRV_DNS | cut -d"." -f1)
 #echo GATW_PUB_HOST=$GATW_PUB_HOST
 #echo GATW_PRV_HOST=$GATW_PRV_HOST
 
-[ "$GATW_PRV_IP" ] || ( echo "ERROR: GATW_PRV_IP is empty - is the instance running?" && exit 1 )
-[ "$GATW_PUB_IP" ] || ( echo "ERROR: GATW_PUB_IP is empty - is the instance running?" && exit 1 )
-[ "$GATW_PRV_DNS" ] || ( echo "ERROR: GATW_PRV_DNS is empty - is the instance running?" && exit 1 )
-[ "$GATW_PUB_DNS" ] || ( echo "ERROR: GATW_PUB_DNS is empty - is the instance running?" && exit 1 )
-[ "$GATW_PUB_HOST" ] || ( echo "ERROR: GATW_PUB_HOST is empty - is the instance running?" && exit 1 )
-[ "$GATW_PRV_HOST" ] || ( echo "ERROR: GATW_PRV_HOST is empty - is the instance running?" && exit 1 )
+[ "$GATW_PRV_IP" ] || IP_WARNING+=("GATW_PRV_IP")
+[ "$GATW_PUB_IP" ] || IP_WARNING+=("GATW_PUB_IP")
+[ "$GATW_PRV_DNS" ] || IP_WARNING+=("GATW_PRV_DNS")
+[ "$GATW_PUB_DNS" ] || IP_WARNING+=("GATW_PUB_DNS")
+[ "$GATW_PUB_HOST" ] || IP_WARNING+=("GATW_PUB_HOST")
+[ "$GATW_PRV_HOST" ] || IP_WARNING+=("GATW_PRV_HOST")
 
 #### WORKERS
 
 WORKER_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["worker_count"]["value"][0], sep=" ")') 
 
+WRKR_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_instance_id"]["value"][0], sep=" ")') 
 WRKR_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_private_ip"]["value"][0], sep=" ")') 
 WRKR_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_public_ip"]["value"][0], sep=" ")') 
 
@@ -210,6 +185,7 @@ read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
 
 GPU_WORKER_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gpu_worker_count"]["value"][0], sep=" ")') 
 
+WRKR_GPU_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_instance_id"]["value"][0], sep=" ")') 
 WRKR_GPU_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_private_ip"]["value"][0], sep=" ")') 
 WRKR_GPU_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_public_ip"]["value"][0], sep=" ")') 
 
@@ -220,24 +196,29 @@ read -r -a WRKR_GPU_PUB_IPS <<< "$WRKR_GPU_PUB_IPS"
 
 MAPR_CLUSTER1_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster_1_count"]["value"][0], sep=" ")') 
 if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; then
+   MAPR_CLUSTER1_HOSTS_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_instance_id"]["value"][0], sep=" ")') 
    MAPR_CLUSTER1_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_private_ip"]["value"][0], sep=" ")') 
    MAPR_CLUSTER1_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_public_ip"]["value"][0], sep=" ")') 
 
    read -r -a MAPR_CLUSTER1_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER1_HOSTS_PRV_IPS"
    read -r -a MAPR_CLUSTER1_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER1_HOSTS_PUB_IPS"
 else
+   MAPR_CLUSTER1_HOSTS_INSTANCE_IDS=""
    MAPR_CLUSTER1_HOSTS_PRV_IPS=()
    MAPR_CLUSTER1_HOSTS_PUB_IPS=()
 fi
 
+
 MAPR_CLUSTER2_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster_2_count"]["value"][0], sep=" ")') 
 if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; then
+   MAPR_CLUSTER2_HOSTS_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_instance_id"]["value"][0], sep=" ")') 
    MAPR_CLUSTER2_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_private_ip"]["value"][0], sep=" ")') 
    MAPR_CLUSTER2_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_public_ip"]["value"][0], sep=" ")') 
 
    read -r -a MAPR_CLUSTER2_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER2_HOSTS_PRV_IPS"
    read -r -a MAPR_CLUSTER2_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER2_HOSTS_PUB_IPS"
 else
+   MAPR_CLUSTER2_HOSTS_INSTANCE_IDS=""
    MAPR_CLUSTER2_HOSTS_PRV_IPS=()
    MAPR_CLUSTER2_HOSTS_PUB_IPS=()
 fi
@@ -245,8 +226,19 @@ fi
 AD_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_enabled"]["value"])')
 
 if [[ "$AD_SERVER_ENABLED" == "True" ]]; then
+   AD_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_instance_id"]["value"])') 
    AD_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_private_ip"]["value"])') 
    AD_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_server_public_ip"]["value"])') 
+else
+   AD_INSTANCE_ID=""
+fi
+
+NFS_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["nfs_server_enabled"]["value"])')
+
+if [[ "$NFS_SERVER_ENABLED" == "True" ]]; then
+   NFS_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["nfs_server_instance_id"]["value"])') 
+else
+   NFS_INSTANCE_ID=""
 fi
 
 RDP_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_enabled"]["value"])')
@@ -254,19 +246,16 @@ RDP_SERVER_OPERATING_SYSTEM=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;ob
 CREATE_EIP_RDP_LINUX_SERVER=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["create_eip_rdp_linux_server"]["value"])')
 
 if [[ "$RDP_SERVER_ENABLED" == "True" ]]; then
+   RDP_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_instance_id"]["value"])') 
    RDP_PRV_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_private_ip"]["value"])') 
    RDP_PUB_IP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_public_ip"]["value"])') 
    RDP_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["rdp_server_instance_id"]["value"])') 
 
    if [[ "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" && ! "$RDP_PUB_IP"  ]]; then
-      echo "***********************************************************************************"
-      echo "ERROR: RDP_PUB_IP is empty - is the EC2 instance running?"
-      echo
-      echo "       You can check instance status with: ./generated/cli_running_ec2_instances.sh"
-      echo "       You can start instances with: ./generated/cli_start_ec2_instances.sh"
-      echo "***********************************************************************************"
-      exit 1 
+      IP_WARNING+=("RDP_PUB_IP")
    fi
+else
+   RDP_INSTANCE_ID=()
 fi
 
 if [[ $was_x_set == 1 ]]; then
@@ -274,3 +263,22 @@ if [[ $was_x_set == 1 ]]; then
 else
    set +x
 fi 
+
+# TODO: complete this
+
+ALL_CP_INSTANCE_IDS="${CTRL_INSTANCE_ID} ${GATW_INSTANCE_ID} ${WRKR_INSTANCE_IDS} ${WRKR_GPU_INSTANCE_IDS} ${NFS_INSTANCE_ID} ${AD_INSTANCE_ID} ${RDP_INSTANCE_ID}"
+
+ALL_INSTANCE_IDS="${ALL_CP_INSTANCE_IDS} ${MAPR_CLUSTER1_HOSTS_INSTANCE_IDS} ${MAPR_CLUSTER2_HOSTS_INSTANCE_IDS}"
+
+if [[ ${#IP_WARNING[@]} != 0 ]]; then
+   tput setaf 3
+   echo "***********************************************************************************"
+   for WARNING in ${IP_WARNING[@]}; do
+      echo "WARNING: $WARNING is empty - is the instance running?"
+   done
+   echo
+   echo "+ You can check instance status with: ./generated/cli_running_ec2_instances.sh"
+   echo "+ You can start instances with: ./generated/cli_start_ec2_instances.sh"
+   echo "***********************************************************************************"
+   tput sgr0
+fi
