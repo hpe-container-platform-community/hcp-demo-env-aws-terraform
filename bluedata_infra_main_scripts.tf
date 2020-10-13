@@ -51,30 +51,7 @@ resource "local_file" "cli_stop_ec2_gpu_instances" {
   filename = "${path.module}/generated/cli_stop_ec2_gpu_instances.sh"
   content =  <<-EOF
     #!/bin/bash
-
-    OUTPUT_JSON=$(cat "${path.module}/generated/output.json")
-    WRKR_GPU_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_public_ip"]["value"][0], sep=" ")') 
-    read -r -a WRKR_GPU_PUB_IPS <<< "$WRKR_GPU_PUB_IPS"
-
-    SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ConnectionAttempts=1 -q"
-    CMD='nohup sudo halt -n </dev/null &'
-
-    echo "Sending 'sudo halt -n' to all hosts for graceful shutdown."
-
-    if [[ -n $WRKR_GPU_PUB_IPS ]]; then
-       for HOST in $${WRKR_GPU_PUB_IPS[@]}; do
-         ssh $SSH_OPTS -i "${var.ssh_prv_key_path}" centos@$HOST "$CMD" || true
-       done
-    fi
-
-    echo "Sleeping 120s allowing halt to complete before issuing 'ec2 stop-instances' command"
-    sleep 120
-
-    echo "Stopping instances"
-    aws --region ${var.region} --profile ${var.profile} ec2 stop-instances \
-        --instance-ids ${local.instance_id_workers_gpu} \
-        --output table \
-        --query "StoppingInstances[*].{ID:InstanceId,State:CurrentState.Name}"
+    echo "Deprecated.  Please use ./bin/ec2_stop_worker_gpu_instances.sh"
   EOF
 }
 
