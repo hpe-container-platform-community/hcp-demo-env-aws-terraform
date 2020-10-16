@@ -2,6 +2,10 @@ output "project_dir" {
   value = "${abspath(path.module)}"
 }
 
+output "user" {
+  value = "${var.user}"
+}
+
 output "aws_profile" {
   value = "${var.profile}"
 }
