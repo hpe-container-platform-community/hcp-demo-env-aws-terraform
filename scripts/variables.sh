@@ -50,6 +50,9 @@ CLIENT_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.loa
 VPC_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["vpc_cidr_block"]["value"])')
 [ "$VPC_CIDR_BLOCK" ] || ( echo "ERROR: VPC_CIDR_BLOCK is empty" && exit 1 )
 
+USER_TAG=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["user"]["value"])')
+[ "$USER_TAG" ] || ( echo "ERROR: USER_TAG is empty" && exit 1 )
+
 PROFILE=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["aws_profile"]["value"])')
 [ "$PROFILE" ] || ( echo "ERROR: PROFILE is empty" && exit 1 )
 
