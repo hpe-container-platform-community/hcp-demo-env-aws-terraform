@@ -528,6 +528,12 @@ resource "local_file" "get_public_endpoints" {
     workers_gpu_public_ips    = j["workers_gpu_public_ip"]["value"][0]
     workers_gpu_public_dns    = j["workers_gpu_public_dns"]["value"][0]
 
+    if workers_gpu_public_ips is None:
+      workers_gpu_public_ips = []
+
+    if workers_gpu_public_dns is None:
+      workers_gpu_public_dns = []
+
     mapr_cluster_1_hosts_public_ips    = j["mapr_cluster_1_hosts_public_ip"]["value"][0]
     mapr_cluster_1_hosts_public_dns    = j["mapr_cluster_1_hosts_public_dns"]["value"][0]
 
@@ -610,6 +616,12 @@ resource "local_file" "get_private_endpoints" {
 
     workers_gpu_private_ips    = j["workers_gpu_private_ip"]["value"][0]
     workers_gpu_private_dns    = j["workers_gpu_private_dns"]["value"][0]
+
+    if workers_gpu_private_ips is None:
+      workers_gpu_private_ips = []
+
+    if workers_gpu_private_dns is None:
+      workers_gpu_private_dns = []
 
     mapr_cluster_1_hosts_private_ips    = j["mapr_cluster_1_hosts_private_ip"]["value"][0]
     mapr_cluster_1_hosts_private_dns    = j["mapr_cluster_1_hosts_private_dns"]["value"][0]
