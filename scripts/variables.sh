@@ -188,12 +188,18 @@ read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
 
 GPU_WORKER_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gpu_worker_count"]["value"][0], sep=" ")') 
 
-WRKR_GPU_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_instance_id"]["value"][0], sep=" ")') 
-WRKR_GPU_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_private_ip"]["value"][0], sep=" ")') 
-WRKR_GPU_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_public_ip"]["value"][0], sep=" ")') 
+if [[ "$GPU_WORKER_COUNT" != "0" ]]; then
+   WRKR_GPU_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_instance_id"]["value"][0], sep=" ")') 
+   WRKR_GPU_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_private_ip"]["value"][0], sep=" ")') 
+   WRKR_GPU_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_gpu_public_ip"]["value"][0], sep=" ")') 
 
-read -r -a WRKR_GPU_PRV_IPS <<< "$WRKR_GPU_PRV_IPS"
-read -r -a WRKR_GPU_PUB_IPS <<< "$WRKR_GPU_PUB_IPS"
+   read -r -a WRKR_GPU_PRV_IPS <<< "$WRKR_GPU_PRV_IPS"
+   read -r -a WRKR_GPU_PUB_IPS <<< "$WRKR_GPU_PUB_IPS"
+else
+   WRKR_GPU_INSTANCE_IDS=""
+   WRKR_GPU_PRV_IPS=()
+   WRKR_GPU_PUB_IPS=()
+fi
 
 #### MAPR CLUSTER 1
 
@@ -287,3 +293,4 @@ if [[ ${#IP_WARNING[@]} != 0 ]]; then
    echo "***********************************************************************************"
    tput sgr0
 fi
+
