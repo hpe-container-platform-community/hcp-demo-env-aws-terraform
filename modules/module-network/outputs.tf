@@ -14,6 +14,10 @@ output "security_group_allow_all_from_client_ip" {
   value = aws_security_group.allow_all_from_specified_ips.id
 }
 
+output "vpc_main_id" {
+  value = aws_vpc.main.id
+}
+
 output "subnet_main_id" {
   value = aws_subnet.main.id
 }
