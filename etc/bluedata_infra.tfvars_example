@@ -11,9 +11,14 @@ project_id         = "<<your-name>>-hcp"   # Change your name and project name.
 user               = "<<your-name>>"       # Change your name. E.g. csnow (with no spaces)
 
 worker_count       = 3                     # How many hosts do you want for EPIC or K8S (without GPUs)?
+
 gpu_worker_count   = 0                     # How many hosts do you want for EPIC or K8S (with GPUs)?
 gpu_worker_instance_type = "g4dn.xlarge"   # Specify the GPU worker host instance type 
 gpu_worker_has_disk_for_df = false         # Should the GPU worker hsot have a persistent disk for Data Fabric? 
+
+#
+# NOTE: you have to manually install GPU drivers on GPU workers before adding to HPE CP
+#
 
 mapr_cluster_1_count         = 0                     # How many hosts do you want for MAPR CLUSTER 1? (0 or 3)
 mapr_cluster_2_count         = 0                     # How many hosts do you want for MAPR CLUSTER 2? (0 or 3)
