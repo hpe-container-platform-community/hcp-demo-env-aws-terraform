@@ -86,6 +86,17 @@ resource "aws_network_acl_rule" "allow_rdp" {
   to_port     = 3389
 }
 
+resource "aws_network_acl_rule" "allow_all_in_subnet" {
+  network_acl_id = aws_network_acl.main.id
+  rule_number = "171"
+  egress      = false
+  protocol    = "tcp"
+  rule_action = "allow"
+  cidr_block  = var.client_cidr_block
+  from_port   = 0
+  to_port     = 0
+}
+
 // egress
 
 resource "aws_network_acl_rule" "allow_response_traffic_from_hosts_to_internet" {
