@@ -85,6 +85,10 @@ variable "create_eip_rdp_linux_server" {
   default = false
 }
 
+variable "create_eks_cluster" { 
+  default = false
+}
+
 variable "install_with_ssl" {
     default = true
 }
