@@ -264,7 +264,7 @@ if [[ "$RDP_SERVER_ENABLED" == "True" ]]; then
       IP_WARNING+=("RDP_PUB_IP")
    fi
 else
-   RDP_INSTANCE_ID=()
+   RDP_INSTANCE_ID=""
 fi
 
 if [[ $was_x_set == 1 ]]; then
