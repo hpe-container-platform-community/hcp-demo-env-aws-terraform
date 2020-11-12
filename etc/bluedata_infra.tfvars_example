@@ -23,6 +23,13 @@ gpu_worker_has_disk_for_df = false         # Should the GPU worker hsot have a p
 mapr_cluster_1_count         = 0                     # How many hosts do you want for MAPR CLUSTER 1? (0 or 3)
 mapr_cluster_2_count         = 0                     # How many hosts do you want for MAPR CLUSTER 2? (0 or 3)
 
+
+create_eks_cluster = false
+eks_subnet2_cidr_block = "10.1.2.0/24"
+eks_subnet3_cidr_block = "10.1.3.0/24"
+eks_subnet2_az_suffix = "b"
+eks_subnet3_az_suffix = "c"
+
 ###########################################################################################
 # If you would like to run post installation setup scripts:                               #
 #                                                                                         #

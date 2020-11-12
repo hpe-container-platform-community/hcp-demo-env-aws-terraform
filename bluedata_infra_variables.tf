@@ -88,6 +88,18 @@ variable "create_eip_rdp_linux_server" {
 variable "create_eks_cluster" { 
   default = false
 }
+variable "eks_subnet2_cidr_block" {
+  default = "10.1.2.0/24"
+}
+variable "eks_subnet3_cidr_block" {
+  default = "10.1.3.0/24"
+}
+variable "eks_subnet2_az_suffix" {
+  default = "b"
+}
+variable "eks_subnet3_az_suffix" {
+  default = "c"
+}
 
 variable "install_with_ssl" {
     default = true

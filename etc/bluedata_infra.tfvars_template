@@ -66,6 +66,12 @@ gpu_worker_count   = 0
 gpu_worker_instance_type = ""
 gpu_worker_has_disk_for_df = false 
 
+create_eks_cluster = false
+eks_subnet2_cidr_block = "10.1.2.0/24"
+eks_subnet3_cidr_block = "10.1.3.0/24"
+eks_subnet2_az_suffix = "b"
+eks_subnet3_az_suffix = "c"
+
 # Whether to install HPECP with ssl certificates.  It may be useful to 
 # set this to false if you want to view network traffic (e.g. for debugging api calls).
 
