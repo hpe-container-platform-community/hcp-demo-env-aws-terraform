@@ -272,14 +272,14 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEC2ContainerRegistryRea
 
 /// outputs
 
-output "eks-endpoint" {
+output "eks-server-url" {
   value = var.create_eks_cluster ? aws_eks_cluster.example[0].endpoint : ""
 }
 
-output "eks-certificate-authority-data" {
+output "eks-ca-certificate" {
   value = var.create_eks_cluster ? aws_eks_cluster.example[0].certificate_authority[0].data : ""
 }
 
-output "eks-token" {
+output "eks-bearer-token" {
   value = var.create_eks_cluster ? base64encode(data.aws_eks_cluster_auth.example[0].token) : ""
 }
