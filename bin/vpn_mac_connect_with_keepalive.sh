@@ -45,8 +45,8 @@ function start_vpn {
   # VPN Status
   scutil --nc list | grep hpe-container-platform-aws
 
-  route -n delete -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip) || true # ignore error
-  route -n add -net $(terraform output subnet_cidr_block) $(terraform output softether_rdp_ip)
+  route -n delete -net $(terraform output vpc_cidr_block) $(terraform output softether_rdp_ip) || true # ignore error
+  route -n add -net $(terraform output vpc_cidr_block) $(terraform output softether_rdp_ip)
 
   # VPC DNS Server is base of VPC network range plus 2 - https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
   VPC_DNS_SERVER=$(python3 -c "import ipcalc; print(str((ipcalc.Network('$VPC_CIDR_BLOCK')+2)).split('/')[0])")
