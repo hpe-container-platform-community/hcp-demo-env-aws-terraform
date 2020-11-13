@@ -267,6 +267,9 @@ else
    RDP_INSTANCE_ID=""
 fi
 
+CREATE_EKS_CLUSTER=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["create_eks_cluster"]["value"])')
+
+
 if [[ $was_x_set == 1 ]]; then
    set -x
 else

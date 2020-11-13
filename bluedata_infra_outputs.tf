@@ -82,6 +82,10 @@ output "create_eip_rdp_linux_server" {
   value = "${var.create_eip_rdp_linux_server}"
 }
 
+output "create_eks_cluster" {
+  value = "${var.create_eks_cluster}"
+}
+
 //// Gateway
 
 output "gateway_instance_id" {
