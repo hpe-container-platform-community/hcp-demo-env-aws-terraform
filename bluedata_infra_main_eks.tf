@@ -2,6 +2,107 @@ locals {
   cluster_name = random_uuid.deployment_uuid.result
 }
 
+
+//////////////////////////
+
+resource "aws_eks_node_group" "example" {
+  count = var.create_eks_cluster ? 1 : 0
+  cluster_name    = aws_eks_cluster.example[count.index].name
+  node_group_name = random_uuid.deployment_uuid.result
+  node_role_arn   = aws_iam_role.eks-node-group-example[count.index].arn
+  launch_template {
+    id = aws_launch_template.eks-node-launch-template.id
+    version = aws_launch_template.eks-node-launch-template.latest_version
+  }
+
+  subnet_ids      = [
+    aws_subnet.main2.id, 
+    aws_subnet.main3.id
+    ]
+
+  scaling_config {
+    desired_size = 2
+    max_size     = 5
+    min_size     = 1
+  }
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.example-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.example-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.example-AmazonEC2ContainerRegistryReadOnly,
+  ]
+
+  tags = {
+    Name = "${var.project_id}-eks-nodegroup-1"
+    Project = "${var.project_id}"
+    user = "${var.user}"
+    deployment_uuid = local.cluster_name  
+  }
+}
+
+
+resource "aws_launch_template" "eks-node-launch-template" {
+  name                   = "${local.cluster_name}-eks-launch-template"
+  update_default_version = true
+  instance_type = "t3.2xlarge"
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "${var.project_id}-eks-instance"
+      Project = "${var.project_id}"
+      user = "${var.user}"  
+      deployment_uuid = local.cluster_name  
+    }
+  }
+} 
+
+//  You can have multiple node groups
+
+resource "aws_eks_node_group" "example2" {
+  count = 0 // manually disabled - set to 1 to enable
+  cluster_name    = aws_eks_cluster.example[count.index].name
+  node_group_name = "${random_uuid.deployment_uuid.result}-2"
+  node_role_arn   = aws_iam_role.eks-node-group-example[count.index].arn
+  launch_template {
+    // you may want to use a different launch template to use
+    // different instance types
+    id = aws_launch_template.eks-node-launch-template.id
+    version = aws_launch_template.eks-node-launch-template.latest_version
+  }
+
+  subnet_ids      = [
+    aws_subnet.main2.id, 
+    aws_subnet.main3.id
+    ]
+
+  scaling_config {
+    desired_size = 2
+    max_size     = 5
+    min_size     = 1
+  }
+
+  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
+  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
+  depends_on = [
+    aws_iam_role_policy_attachment.example-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.example-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.example-AmazonEC2ContainerRegistryReadOnly,
+  ]
+
+  tags = {
+    Name = "${var.project_id}-eks-nodegroup-2"
+    Project = "${var.project_id}"
+    user = "${var.user}"
+    deployment_uuid = local.cluster_name  
+  }
+}
+
+////////////////////////////////////
+
 resource "aws_subnet" "main2" {
   vpc_id                  = module.network.vpc_main_id
   cidr_block              = var.eks_subnet2_cidr_block
@@ -165,32 +266,6 @@ resource "aws_eks_cluster" "example" {
     user = "${var.user}"
     deployment_uuid = local.cluster_name
   }
-}
-
-
-resource "aws_eks_node_group" "example" {
-  count = var.create_eks_cluster ? 1 : 0
-  cluster_name    = aws_eks_cluster.example[count.index].name
-  node_group_name = random_uuid.deployment_uuid.result
-  node_role_arn   = aws_iam_role.eks-node-group-example[count.index].arn
-  subnet_ids      = [
-    aws_subnet.main2.id, 
-    aws_subnet.main3.id
-    ]
-
-  scaling_config {
-    desired_size = 1
-    max_size     = 5
-    min_size     = 1
-  }
-
-  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
-  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
-  depends_on = [
-    aws_iam_role_policy_attachment.example-AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.example-AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.example-AmazonEC2ContainerRegistryReadOnly,
-  ]
 }
 
 data "aws_eks_cluster_auth" "example" {
