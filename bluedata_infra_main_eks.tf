@@ -46,11 +46,14 @@ resource "aws_eks_node_group" "example" {
 resource "aws_launch_template" "eks-node-launch-template" {
   name                   = "${local.cluster_name}-eks-launch-template"
   update_default_version = true
-  instance_type = "t3.2xlarge"
-
+  instance_type          = "t3.2xlarge"
+  key_name               = aws_key_pair.main.key_name
+  vpc_security_group_ids = [
+    module.network.security_group_allow_all_from_client_ip,
+    module.network.security_group_main_id
+  ]
   tag_specifications {
     resource_type = "instance"
-
     tags = {
       Name = "${var.project_id}-eks-instance"
       Project = "${var.project_id}"
@@ -63,7 +66,7 @@ resource "aws_launch_template" "eks-node-launch-template" {
 //  You can have multiple node groups
 
 resource "aws_eks_node_group" "example2" {
-  count = 0 // manually disabled - set to 1 to enable
+  count = var.create_eks_cluster ? 1 : 0
   cluster_name    = aws_eks_cluster.example[count.index].name
   node_group_name = "${random_uuid.deployment_uuid.result}-2"
   node_role_arn   = aws_iam_role.eks-node-group-example[count.index].arn
@@ -357,6 +360,8 @@ provider "kubernetes" {
 }
 
 resource "kubernetes_service_account" "example" {
+  count = var.create_eks_cluster ? 1 : 0
+
   metadata {
     name = "hpecp-k8s-service-account"
   }
@@ -367,13 +372,19 @@ resource "kubernetes_service_account" "example" {
   depends_on = [
     aws_eks_cluster.example[0]
   ]
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = all
+  }
 }
 
 resource "kubernetes_secret" "example" {
+  count = var.create_eks_cluster ? 1 : 0
+
   metadata {
     name = "hpecp-k8s-secret"
     annotations = {
-      "kubernetes.io/service-account.name" = kubernetes_service_account.example.metadata.0.name
+      "kubernetes.io/service-account.name" = kubernetes_service_account.example[0].metadata.0.name
     }
   }
   type = "kubernetes.io/service-account-token"
@@ -381,9 +392,15 @@ resource "kubernetes_secret" "example" {
   depends_on = [
     aws_eks_cluster.example[0]
   ]
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = all
+  }
 }
 
 resource "kubernetes_cluster_role_binding" "example" {
+  count = var.create_eks_cluster ? 1 : 0
+
   metadata {
     name = "hpecp-k8s-role-binding"
   }
@@ -394,12 +411,16 @@ resource "kubernetes_cluster_role_binding" "example" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account.example.metadata.0.name
+    name      = kubernetes_service_account.example[0].metadata.0.name
     namespace = "default"
   }
   depends_on = [
     aws_eks_cluster.example[0]
   ]
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = all
+  }
 }
 
 /// outputs
@@ -417,9 +438,10 @@ output "eks-server-url" {
 # }
 
 output "eks-hpecp-k8s-service-account-ca-certificate" {
-  value       = kubernetes_secret.example != null && kubernetes_secret.example.data != null ? base64encode(lookup(kubernetes_secret.example.data, "ca.crt", "")) : ""
+  value       = var.create_eks_cluster && kubernetes_secret.example[0] != null && kubernetes_secret.example[0].data != null ? base64encode(lookup(kubernetes_secret.example[0].data, "ca.crt", "")) : ""
 }
 
 output "eks-hpecp-k8s-service-account-bearer-token" {
-  value       = kubernetes_secret.example != null && kubernetes_secret.example.data != null ? base64encode(lookup(kubernetes_secret.example.data, "token", "")) : ""
+  value       = var.create_eks_cluster && kubernetes_secret.example[0] != null && kubernetes_secret.example[0].data != null ? base64encode(lookup(kubernetes_secret.example[0].data, "token", "")) : ""
 }
+
