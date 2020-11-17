@@ -21,9 +21,9 @@ resource "aws_eks_node_group" "example" {
     ]
 
   scaling_config {
-    desired_size = 2
-    max_size     = 5
-    min_size     = 1
+    desired_size = var.eks_scaling_config_desired_size
+    max_size     = var.eks_scaling_config_max_size
+    min_size     = var.eks_scaling_config_min_size
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
@@ -46,7 +46,7 @@ resource "aws_eks_node_group" "example" {
 resource "aws_launch_template" "eks-node-launch-template" {
   name                   = "${local.cluster_name}-eks-launch-template"
   update_default_version = true
-  instance_type          = "t3.2xlarge"
+  instance_type          = var.eks_instance_type
   key_name               = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     module.network.security_group_allow_all_from_client_ip,
@@ -66,7 +66,7 @@ resource "aws_launch_template" "eks-node-launch-template" {
 //  You can have multiple node groups
 
 resource "aws_eks_node_group" "example2" {
-  count = var.create_eks_cluster ? 1 : 0
+  count = 0 // DISABLED
   cluster_name    = aws_eks_cluster.example[count.index].name
   node_group_name = "${random_uuid.deployment_uuid.result}-2"
   node_role_arn   = aws_iam_role.eks-node-group-example[count.index].arn
@@ -348,100 +348,20 @@ resource "aws_iam_role_policy_attachment" "example-AmazonEC2ContainerRegistryRea
   role       = aws_iam_role.eks-node-group-example[count.index].name
 }
 
-//// Kubernetes setup
-
-provider "kubernetes" {
-  version = "~> 1.9"
-
-  host                   = aws_eks_cluster.example[0].endpoint
-  cluster_ca_certificate = base64decode(aws_eks_cluster.example[0].certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.example[0].token
-  load_config_file       = false
-}
-
-resource "kubernetes_service_account" "example" {
-  count = var.create_eks_cluster ? 1 : 0
-
-  metadata {
-    name = "hpecp-k8s-service-account"
-  }
-  secret {
-    name = "hpecp-k8s-secret"
-  }
-
-  depends_on = [
-    aws_eks_cluster.example[0]
-  ]
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes = all
-  }
-}
-
-resource "kubernetes_secret" "example" {
-  count = var.create_eks_cluster ? 1 : 0
-
-  metadata {
-    name = "hpecp-k8s-secret"
-    annotations = {
-      "kubernetes.io/service-account.name" = kubernetes_service_account.example[0].metadata.0.name
-    }
-  }
-  type = "kubernetes.io/service-account-token"
-
-  depends_on = [
-    aws_eks_cluster.example[0]
-  ]
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes = all
-  }
-}
-
-resource "kubernetes_cluster_role_binding" "example" {
-  count = var.create_eks_cluster ? 1 : 0
-
-  metadata {
-    name = "hpecp-k8s-role-binding"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.example[0].metadata.0.name
-    namespace = "default"
-  }
-  depends_on = [
-    aws_eks_cluster.example[0]
-  ]
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes = all
-  }
-}
-
 /// outputs
 
 output "eks-server-url" {
   value = var.create_eks_cluster ? aws_eks_cluster.example[0].endpoint : ""
 }
 
-# output "eks-ca-certificate" {
-#   value = var.create_eks_cluster ? aws_eks_cluster.example[0].certificate_authority[0].data : ""
-# }
-
-# output "eks-bearer-token" {
-#   value = var.create_eks_cluster ? base64encode(data.aws_eks_cluster_auth.example[0].token) : ""
-# }
-
-output "eks-hpecp-k8s-service-account-ca-certificate" {
-  value       = var.create_eks_cluster && kubernetes_secret.example[0] != null && kubernetes_secret.example[0].data != null ? base64encode(lookup(kubernetes_secret.example[0].data, "ca.crt", "")) : ""
+output "eks-ca-certificate" {
+  value = var.create_eks_cluster ? aws_eks_cluster.example[0].certificate_authority[0].data : ""
 }
 
-output "eks-hpecp-k8s-service-account-bearer-token" {
-  value       = var.create_eks_cluster && kubernetes_secret.example[0] != null && kubernetes_secret.example[0].data != null ? base64encode(lookup(kubernetes_secret.example[0].data, "token", "")) : ""
+output "eks-bearer-token" {
+  value = var.create_eks_cluster ? base64encode(data.aws_eks_cluster_auth.example[0].token) : ""
 }
 
+output "eks-cluster-name" {
+  value = local.cluster_name
+}

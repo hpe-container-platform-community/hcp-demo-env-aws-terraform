@@ -100,6 +100,19 @@ variable "eks_subnet2_az_suffix" {
 variable "eks_subnet3_az_suffix" {
   default = "c"
 }
+variable "eks_scaling_config_desired_size" {
+  default = 1
+}
+variable "eks_scaling_config_max_size" {
+  default = 1
+}
+variable "eks_scaling_config_min_size" {
+  default = 1
+}
+variable "eks_instance_type" {
+  default = "t2.micro"
+}
+
 
 variable "install_with_ssl" {
     default = true

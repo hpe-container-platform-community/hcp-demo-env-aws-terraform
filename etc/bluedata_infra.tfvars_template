@@ -67,10 +67,14 @@ gpu_worker_instance_type = ""
 gpu_worker_has_disk_for_df = false 
 
 create_eks_cluster = false
-eks_subnet2_cidr_block = "10.1.2.0/24"
-eks_subnet3_cidr_block = "10.1.3.0/24"
-eks_subnet2_az_suffix = "b"
-eks_subnet3_az_suffix = "c"
+eks_instance_type     = "t2.micro" # E.g. "t3.2xlarge"
+eks_scaling_config_desired_size = 1    # must be >= 1
+eks_scaling_config_max_size     = 1    # must be >= 1
+eks_scaling_config_min_size     = 1    # must be >= 1
+eks_subnet2_cidr_block = "10.1.2.0/24" # you shouldn't need to change this
+eks_subnet3_cidr_block = "10.1.3.0/24" # you shouldn't need to change this
+eks_subnet2_az_suffix = "b"            # you shouldn't need to change this
+eks_subnet3_az_suffix = "c"            # you shouldn't need to change this
 
 # Whether to install HPECP with ssl certificates.  It may be useful to 
 # set this to false if you want to view network traffic (e.g. for debugging api calls).
