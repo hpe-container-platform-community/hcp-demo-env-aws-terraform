@@ -12,21 +12,19 @@ SA_TOKEN=$(kubectl --kubeconfig generated/eks_kubeconfig get serviceaccount/abc1
 kubectl --kubeconfig generated/eks_kubeconfig get secret $SA_TOKEN  -o jsonpath={'.data.token'} > generated/eks_token.base64
 kubectl --kubeconfig generated/eks_kubeconfig get secret $SA_TOKEN  -o jsonpath={'.data.ca\.crt'} > generated/eks_ca.crt.base64
 
+bold=$(tput bold)
+normal=$(tput sgr0)
 
 echo
-echo EKS SERVER
-echo ----------
-cat generated/eks_server_url
 echo
-
-echo EKS CA CERT
-echo -----------
+echo ${bold}Pod DNS Domain${normal}: cluster.local
+echo ${bold}EKS SERVER${normal}: $(cat generated/eks_server_url)
+echo ${bold}EKS CA CERT${normal}:
 cat generated/eks_ca.crt.base64
 echo
-
-echo EKS TOKEN
-echo ---------
+echo ${bold}EKS TOKEN${normal}:
 cat generated/eks_token.base64
+echo
 echo
 
 
