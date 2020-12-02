@@ -97,6 +97,8 @@ Use a Remote Desktop Client or open a webbrowser into the RDP host. You are then
 
 [README](./docs/README-AD.md) for information on **setting up HCP with Active Directory/LDAP**.
 
+[README](./docs/README-EKS.md) for information on **setting up HCP with an imported EKS Cluster**.
+
 [README](./docs/README-MAPR-LDAP.md) for information on **setting up MAPR  with Active Directory/LDAP**.
 
 [README](./docs/README-EXTERNAL-MAPR.md) for information on **setting up External MAPR**.
