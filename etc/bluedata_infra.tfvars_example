@@ -60,7 +60,7 @@ eks_subnet3_az_suffix = "c"            # you shouldn't need to change this
 epic_options = "--skipeula --default-password admin123"   # epic >= 5.2
 
 # This is a private bucket: change the epic_dl_url to your s3 url
-epic_dl_url = "s3://csnow-bins/bluedata-epic-entdoc-minimal-release-5.0-3008.bin"
+epic_dl_url = "s3://csnow-bins/hpe-cp-rhel-release-5.2-3020.bin"
 
 # set to true for private buckets
 epid_dl_url_needs_presign = true 
