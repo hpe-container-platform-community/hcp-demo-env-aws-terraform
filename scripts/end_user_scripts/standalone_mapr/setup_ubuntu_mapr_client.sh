@@ -26,17 +26,17 @@ fi
 	MAPR_HOST_2=${MAPR_CLUSTER1_HOSTS_PRV_IPS[1]}
 
 	# Replace IP addresses with HCP controller private IP
-	sudo /opt/mapr/server/configure.sh -N demo1.mapr.com -C \${MAPR_HOST_1}:7222,\${MAPR_HOST_2}:7222 -c -secure
+	sudo /opt/mapr/server/configure.sh -N ${MAPR_CLUSTER1_NAME} -C \${MAPR_HOST_1}:7222,\${MAPR_HOST_2}:7222 -c -secure
 
 	rm -f ~ubuntu/external_mapr_cluster1_ssl_truststore
 	scp -o StrictHostKeyChecking=no ubuntu@\${MAPR_HOST_1}:/opt/mapr/conf/ssl_truststore ~ubuntu/external_mapr_cluster1_ssl_truststore
 
-	MATCHING_ENTRIES=\$(keytool -list -keystore /opt/mapr/conf/ssl_truststore -storepass mapr123 | grep -c demo1.mapr.com) || true 
+	MATCHING_ENTRIES=\$(keytool -list -keystore /opt/mapr/conf/ssl_truststore -storepass mapr123 | grep -c ${MAPR_CLUSTER1_NAME}) || true 
 	if [[ \${MATCHING_ENTRIES} == 0 ]]; then
-		echo "/opt/mapr/conf/ssl_truststore does not contain demo1.mapr.com - adding."
+		echo "/opt/mapr/conf/ssl_truststore does not contain ${MAPR_CLUSTER1_NAME} - adding."
 		sudo /opt/mapr/server/manageSSLKeys.sh merge ~ubuntu/external_mapr_cluster1_ssl_truststore /opt/mapr/conf/ssl_truststore
 	else
-		echo "/opt/mapr/conf/ssl_truststore contains demo1.mapr.com - not updating."
+		echo "/opt/mapr/conf/ssl_truststore contains ${MAPR_CLUSTER1_NAME} - not updating."
 	fi
 
 SSH_EOF
@@ -46,7 +46,7 @@ SSH_EOF
 	set -eux
 
 	sudo su - ad_admin1
-	echo pass123 | maprlogin password -user ad_admin1 -cluster demo1.mapr.com
+	echo pass123 | maprlogin password -user ad_admin1 -cluster ${MAPR_CLUSTER1_NAME}
 	maprlogin generateticket -type servicewithimpersonation -user ad_admin1 -out maprfuseticket
 	exit # return to ubuntu/local user
 	
@@ -76,13 +76,13 @@ SSH_EOF
 
 	# Test
 	sudo su - ad_admin1
-	[[ -d /mapr/demo1.mapr.com/ ]] || { echo "Error: /mapr/demo1.mapr.com was not mounted. Aborting."; exit 1; }
-	ls -l /mapr/demo1.mapr.com/ 
+	[[ -d /mapr/${MAPR_CLUSTER1_NAME}/ ]] || { echo "Error: /mapr/${MAPR_CLUSTER1_NAME} was not mounted. Aborting."; exit 1; }
+	ls -l /mapr/${MAPR_CLUSTER1_NAME}/ 
 
 	# upload some data
 	wget https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv
 	sed -i -e "s/\r/\n/g" airline-safety.csv # convert line endings
-	mv airline-safety.csv /mapr/demo1.mapr.com/tmp/
+	mv airline-safety.csv /mapr/${MAPR_CLUSTER1_NAME}/tmp/
 SSH_EOF
 
 

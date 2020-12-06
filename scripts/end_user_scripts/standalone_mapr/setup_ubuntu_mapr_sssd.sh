@@ -29,7 +29,7 @@ LDAP_BIND_PASSWORD="5ambaPwd@"
 LDAP_ACCESS_FILTER="CN=Users,CN=Builtin,DC=samdom,DC=example,DC=com"
 DOMAIN="samdom.example.com"
 
-MAPR_CLUSTER_NAME="demo${CLUSTER_ID}.mapr.com"
+MAPR_CLUSTER_NAME=${MAPR_CLUSTER1_NAME}
 
 if [[ ${CLUSTER_ID} == 1 ]]; then
     MAPR_CLUSTER_HOSTS_PRV_IPS=${MAPR_CLUSTER1_HOSTS_PRV_IPS[@]}

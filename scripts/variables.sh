@@ -205,6 +205,7 @@ fi
 
 MAPR_CLUSTER1_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster_1_count"]["value"][0], sep=" ")') 
 if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; then
+   MAPR_CLUSTER1_NAME=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster_1_name"]["value"][0], sep=" ")') 
    MAPR_CLUSTER1_HOSTS_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_instance_id"]["value"][0], sep=" ")') 
    MAPR_CLUSTER1_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_private_ip"]["value"][0], sep=" ")') 
    MAPR_CLUSTER1_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_1_hosts_public_ip"]["value"][0], sep=" ")') 
@@ -212,6 +213,7 @@ if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; then
    read -r -a MAPR_CLUSTER1_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER1_HOSTS_PRV_IPS"
    read -r -a MAPR_CLUSTER1_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER1_HOSTS_PUB_IPS"
 else
+   MAPR_CLUSTER1_NAME=""
    MAPR_CLUSTER1_HOSTS_INSTANCE_IDS=""
    MAPR_CLUSTER1_HOSTS_PRV_IPS=()
    MAPR_CLUSTER1_HOSTS_PUB_IPS=()
@@ -220,6 +222,7 @@ fi
 
 MAPR_CLUSTER2_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster_2_count"]["value"][0], sep=" ")') 
 if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; then
+   MAPR_CLUSTER2_NAME=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["mapr_cluster_2_name"]["value"][0], sep=" ")') 
    MAPR_CLUSTER2_HOSTS_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_instance_id"]["value"][0], sep=" ")') 
    MAPR_CLUSTER2_HOSTS_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_private_ip"]["value"][0], sep=" ")') 
    MAPR_CLUSTER2_HOSTS_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["mapr_cluster_2_hosts_public_ip"]["value"][0], sep=" ")') 
@@ -227,6 +230,7 @@ if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; then
    read -r -a MAPR_CLUSTER2_HOSTS_PRV_IPS <<< "$MAPR_CLUSTER2_HOSTS_PRV_IPS"
    read -r -a MAPR_CLUSTER2_HOSTS_PUB_IPS <<< "$MAPR_CLUSTER2_HOSTS_PUB_IPS"
 else
+   MAPR_CLUSTER2_NAME=""
    MAPR_CLUSTER2_HOSTS_INSTANCE_IDS=""
    MAPR_CLUSTER2_HOSTS_PRV_IPS=()
    MAPR_CLUSTER2_HOSTS_PUB_IPS=()
