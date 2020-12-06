@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+DEFAULT_TENANT_ID=2 # 2 = EPIC Demo Tenant
+DEFAULT_MAPR_VMNT=/demo_tenant_admins
+
+TENANT_ID=${1:-$DEFAULT_TENANT_ID}
+MAPR_VMNT=${2:-$DEFAULT_MAPR_VMNT} 
+
 set -e # abort on error
 set -u # abort on undefined variable
 
@@ -23,11 +29,10 @@ MAPR_USER=ad_admin1
 MAPR_TCKT=ad_admin1_impersonation_ticket
 MAPR_TCKT_PATH=/tmp/${MAPR_TCKT}
 MAPR_VOL=demo_tenant_admins
-MAPR_VMNT=/demo_tenant_admins
 MAPR_CLUSTER_NAME=${MAPR_CLUSTER1_NAME}
 MAPR_DTAP_NAME=ext-mapr
-# 2 = EPIC Demo Tenant
-TENANT_KEYTAB_DIR=/srv/bluedata/keytab/2/
+
+TENANT_KEYTAB_DIR=/srv/bluedata/keytab/${TENANT_ID}/
 TENANT_KEYTAB_TCKT_FILE=${TENANT_KEYTAB_DIR}${MAPR_TCKT}
 
 echo MAPR_CLUSTER1_HOST=${MAPR_CLUSTER1_HOST}
@@ -142,7 +147,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		]
 	}
 	JSON_EOF
-	hpecp httpclient put /api/v1/tenant/2?external_user_groups --json-file tenant_ad_auth.json
+	hpecp httpclient put /api/v1/tenant/${TENANT_ID}?external_user_groups --json-file tenant_ad_auth.json
 
 	# The datatap needs to be created as a tenant administrator, not as global admin
 	cat > ~/.hpecp.conf <<-CAT_EOF
@@ -154,7 +159,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		warn_ssl = False
 
 		[tenant2]
-		tenant   = /api/v1/tenant/2
+		tenant   = /api/v1/tenant/${TENANT_ID}
 		username = ad_admin1
 		password = pass123
 	CAT_EOF
