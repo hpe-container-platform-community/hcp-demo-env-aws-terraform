@@ -48,8 +48,10 @@ additional_client_ip_list = []  # E.g. [ "1.1.1.1/24","2.2.2.2/32" ]
 worker_count = 3
 
 # specify how many MAPR instances you want (0 or 3)
-mapr_cluster_1_count = 0
-mapr_cluster_2_count = 0
+mapr_cluster_1_count         = 0                     # How many hosts do you want for MAPR CLUSTER 1? (0 or 3)
+mapr_cluster_1_name          = "demo1.mapr.com"
+mapr_cluster_2_count         = 0                     # How many hosts do you want for MAPR CLUSTER 2? (0 or 3)
+mapr_cluster_2_name          = "demo2.mapr.com"
 
 # you may need to change the instance types if the ones
 # listed below are not available in your region

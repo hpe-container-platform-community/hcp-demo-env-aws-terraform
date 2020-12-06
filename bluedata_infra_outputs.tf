@@ -191,9 +191,11 @@ output "mapr_cluster_1_hosts_private_ip" {
 output "mapr_cluster_1_hosts_private_dns" {
   value = ["${aws_instance.mapr_cluster_1_hosts.*.private_dns}"]
 }
-
 output "mapr_cluster_1_count" {
   value = ["${var.mapr_cluster_1_count}"]
+}
+output "mapr_cluster_1_name" {
+  value = ["${var.mapr_cluster_1_name}"]
 }
 
 /// MAPR Cluster 2
@@ -213,11 +215,12 @@ output "mapr_cluster_2_hosts_private_ip" {
 output "mapr_cluster_2_hosts_private_dns" {
   value = ["${aws_instance.mapr_cluster_2_hosts.*.private_dns}"]
 }
-
 output "mapr_cluster_2_count" {
   value = ["${var.mapr_cluster_2_count}"]
 }
-
+output "mapr_cluster_2_name" {
+  value = ["${var.mapr_cluster_2_name}"]
+}
 
 
 output "controller_ssh_command" {

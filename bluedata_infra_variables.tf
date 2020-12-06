@@ -121,8 +121,11 @@ variable "install_with_ssl" {
 variable "ssh_prv_key_path" {}
 variable "ssh_pub_key_path" {}
 variable "worker_count" { default = 3 }
+
 variable "mapr_cluster_1_count" { default = 0 }
+variable "mapr_cluster_1_name" { default = "demo1.mapr.com" }
 variable "mapr_cluster_2_count" { default = 0 }
+variable "mapr_cluster_2_name" { default = "demo2.mapr.com" }
 
 variable "gpu_worker_count" { default = 0 }
 variable "gpu_worker_instance_type" {

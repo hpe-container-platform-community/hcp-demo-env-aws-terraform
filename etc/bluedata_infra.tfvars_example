@@ -21,7 +21,9 @@ gpu_worker_has_disk_for_df = false         # Should the GPU worker hsot have a p
 #
 
 mapr_cluster_1_count         = 0                     # How many hosts do you want for MAPR CLUSTER 1? (0 or 3)
+mapr_cluster_1_name          = "demo1.mapr.com"
 mapr_cluster_2_count         = 0                     # How many hosts do you want for MAPR CLUSTER 2? (0 or 3)
+mapr_cluster_2_name          = "demo2.mapr.com"
 
 # You can specify an EKS cluster here
 
