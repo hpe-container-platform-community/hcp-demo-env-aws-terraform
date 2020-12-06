@@ -134,21 +134,21 @@ IP_WARNING=()
    IP_WARNING+=("CTRL_PUB_IP")
 }
 
-[ "$CTRL_PRV_DNS" ] || {
-   IP_WARNING+=("CTRL_PRV_DNS")
-}
+# [ "$CTRL_PRV_DNS" ] || {
+#    IP_WARNING+=("CTRL_PRV_DNS")
+# }
 
-[ "$CTRL_PUB_DNS" ] || {
-   IP_WARNING+=("CTRL_PUB_DNS")
-}
+# [ "$CTRL_PUB_DNS" ] || {
+#    IP_WARNING+=("CTRL_PUB_DNS")
+# }
 
-[ "$CTRL_PUB_HOST" ] || {
-   IP_WARNING+=("CTRL_PUB_HOST")
-}
+# [ "$CTRL_PUB_HOST" ] || {
+#    IP_WARNING+=("CTRL_PUB_HOST")
+# }
 
-[ "$CTRL_PRV_HOST" ] || {
-   IP_WARNING+=("CTRL_PRV_HOST")
-}
+# [ "$CTRL_PRV_HOST" ] || {
+#    IP_WARNING+=("CTRL_PRV_HOST")
+# }
 
 GATW_INSTANCE_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["gateway_instance_id"]["value"])') 
 
@@ -168,10 +168,10 @@ GATW_PRV_HOST=$(echo $GATW_PRV_DNS | cut -d"." -f1)
 
 [ "$GATW_PRV_IP" ] || IP_WARNING+=("GATW_PRV_IP")
 [ "$GATW_PUB_IP" ] || IP_WARNING+=("GATW_PUB_IP")
-[ "$GATW_PRV_DNS" ] || IP_WARNING+=("GATW_PRV_DNS")
-[ "$GATW_PUB_DNS" ] || IP_WARNING+=("GATW_PUB_DNS")
-[ "$GATW_PUB_HOST" ] || IP_WARNING+=("GATW_PUB_HOST")
-[ "$GATW_PRV_HOST" ] || IP_WARNING+=("GATW_PRV_HOST")
+# [ "$GATW_PRV_DNS" ] || IP_WARNING+=("GATW_PRV_DNS")
+# [ "$GATW_PUB_DNS" ] || IP_WARNING+=("GATW_PUB_DNS")
+# [ "$GATW_PUB_HOST" ] || IP_WARNING+=("GATW_PUB_HOST")
+# [ "$GATW_PRV_HOST" ] || IP_WARNING+=("GATW_PRV_HOST")
 
 #### WORKERS
 
@@ -286,14 +286,7 @@ ALL_INSTANCE_IDS="${ALL_CP_INSTANCE_IDS} ${MAPR_CLUSTER1_HOSTS_INSTANCE_IDS} ${M
 
 if [[ ${#IP_WARNING[@]} != 0 ]]; then
    tput setaf 3
-   echo "***********************************************************************************"
-   for WARNING in ${IP_WARNING[@]}; do
-      echo "WARNING: $WARNING is empty - is the instance running?"
-   done
-   echo
-   echo "+ You can check instance status with: ./generated/cli_running_ec2_instances.sh"
-   echo "+ You can start instances with: ./generated/cli_start_ec2_instances.sh"
-   echo "***********************************************************************************"
+   echo "WARNING: ${IP_WARNING[@]} could not be retrieved -> is the instance(s) running?"
    tput sgr0
 fi
 
