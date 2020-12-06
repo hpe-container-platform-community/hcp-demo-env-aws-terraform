@@ -356,6 +356,10 @@ resource "local_file" "rdp_linux_credentials" {
     #!/bin/bash
     source "${path.module}/scripts/variables.sh"
     echo 
+    if [[ $RDP_PUB_IP == "" ]]; then
+      echo "RDP_PUB_IP could not be retrieved - is the instance running?"
+      exit
+    fi
     echo ================================= RDP Credentials  =====================================
     echo 
     if [[ "$CREATE_EIP_RDP_LINUX_SERVER" == "False" ]]; then
