@@ -75,11 +75,23 @@ Run this from your terraform project folder:
 
 ### Configure cross-cluster security
 
+- Run from the terraform project folder:
+
+```
+./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c 'cat > /tmp/localmaprhosts'" <<< $(terraform output mapr_cluster_1_hosts_private_ip_flat)
+./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c 'cat > /tmp/remotemaprhosts'" <<< $(terraform output mapr_cluster_2_hosts_private_ip_flat)
+
+./generated/ssh_mapr_cluster_1_host_0.sh "sudo apt-get -y install expect pssh"
+```
+
 - Run `./generated/ssh_mapr_cluster_1_host_0.sh`
 
 ```
 # both passwords are `mapr`
-/opt/mapr/server/configure-crosscluster.sh create all -localuser mapr -remoteuser mapr -remoteip $INT_IP_MAPR_CLUSTER_2_HOST_0 
+sudo -u mapr /opt/mapr/server/configure-crosscluster.sh create all \
+   -localuser mapr -localhosts /tmp/localmaprhosts  \
+   -remoteuser mapr -remotehosts /tmp/remotemaprhosts \
+   -remoteip $(head -n1 /tmp/remotemaprhosts)
 
 # verify with
 maprlogin password -cluster edge1.enterprise.org
