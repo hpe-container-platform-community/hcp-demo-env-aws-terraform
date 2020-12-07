@@ -5,8 +5,35 @@
 
 - You have the application code: `data-fabric-edge-core-cloud-master.zip`
 
+### Create MAPR HQ Cluster
+
+- Ensure you have the following in your `etc/bluedata_infra.tfvars`:
+
+```
+mapr_cluster_1_count         = 3
+mapr_cluster_1_name          = "dc1.enterprise.org"
+```
+
+- Run `./bin/terraform_apply.sh`
+- Run `./scripts/mapr_install.sh 1`
+- Run `./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 1`
+
+### Create MAPR Edge Cluster
+
+- Ensure you have the following in your `etc/bluedata_infra.tfvars`:
+
+```
+mapr_cluster_2_count         = 3
+mapr_cluster_2_name          = "edge1.enterprise.org"
+```
+
+- Run `./bin/terraform_apply.sh`
+- Run `./scripts/mapr_install.sh 2`
+- Run `./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 2`
 
 ### HQ <--> Edge Passwordless SSH
+
+Run this from your terraform project folder:
 
 ```
 ./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c '[[ -d /home/mapr/.ssh ]] || mkdir /home/mapr/.ssh && chmod 700 /home/mapr/.ssh'" && \
@@ -46,23 +73,15 @@
 ./generated/ssh_mapr_cluster_2_host_2.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/authorized_keys'" < generated/controller.pub_key ;
 ```
 
+### Configure cross-cluster security
 
-### HQ Setup
-
-#### Create MAPR HQ Cluster
-
-- Ensure you have the following in your `etc/bluedata_infra.tfvars`:
+- Run `./generated/ssh_mapr_cluster_1_host_0.sh`
 
 ```
-mapr_cluster_1_count         = 3
-mapr_cluster_1_name          = "dc1.enterprise.org"
+/opt/mapr/server/configure-crosscluster.sh create all -remoteip $INT_IP_MAPR_CLUSTER_2_HOST_0
 ```
 
-- Run `./bin/terraform_apply.sh`
-- Run `./scripts/mapr_install.sh 1`
-- Run `./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 1`
-
-#### Setup HQ Dashboard
+### Setup HQ Dashboard
 
 - Run `./generated/ssh_mapr_cluster_1_host_0.sh "cat > data-fabric-edge-core-cloud-master.zip" < /Users/christophersnow/Downloads/data-fabric-edge-core-cloud-master.zip` (replace /Users/christophersnow/Downloads with the location of your zip file)
 - SSH into the MAPR Cluster `./generated/ssh_mapr_cluster_1_host_0.sh`, then:
@@ -81,22 +100,7 @@ cd microservices-dashboard
 ./runDashboard.sh hq
 ```
 
-### Edge Setup
-
-#### Create MAPR Edge Cluster
-
-- Ensure you have the following in your `etc/bluedata_infra.tfvars`:
-
-```
-mapr_cluster_2_count         = 3
-mapr_cluster_2_name          = "edge1.enterprise.org"
-```
-
-- Run `./bin/terraform_apply.sh`
-- Run `./scripts/mapr_install.sh 2`
-- Run `./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 2`
-
-#### Setup Edge Dashboard
+### Setup Edge Dashboard
 
 - Run `./generated/ssh_mapr_cluster_2_host_0.sh "cat > data-fabric-edge-core-cloud-master.zip" < /Users/christophersnow/Downloads/data-fabric-edge-core-cloud-master.zip` (replace /Users/christophersnow/Downloads with the location of your zip file)
 - SSH into the MAPR Cluster `./generated/ssh_mapr_cluster_2_host_0.sh`, then:
@@ -116,9 +120,3 @@ cd microservices-dashboard
 ./installDemo.sh edge
 ./runDashboard.sh edge
 ```
-
-
-#### K8S DataTap Setup (optional)
-
-- Retrieve the tenant ID
-- Run `./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh $TENANT_ID /`
