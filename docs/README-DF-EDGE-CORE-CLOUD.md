@@ -34,6 +34,9 @@ bash
 unzip /home/mapr/data-fabric-edge-core-cloud-master.zip
 mv data-fabric-edge-core-cloud-master microservices-dashboard
 echo mapr | maprlogin password -user mapr
+cd microservices-dashboard
+./installDemo.sh hq
+./runDashboard.sh hq
 ```
 
 #### K8S DataTap Setup (optional)
