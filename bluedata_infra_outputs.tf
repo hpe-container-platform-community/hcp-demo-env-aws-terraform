@@ -188,6 +188,9 @@ output "mapr_cluster_1_hosts_public_dns" {
 output "mapr_cluster_1_hosts_private_ip" {
   value = ["${aws_instance.mapr_cluster_1_hosts.*.private_ip}"]
 }
+output "mapr_cluster_1_hosts_private_ip_flat" {
+  value = join("\n", aws_instance.mapr_cluster_1_hosts.*.private_ip)
+}
 output "mapr_cluster_1_hosts_private_dns" {
   value = ["${aws_instance.mapr_cluster_1_hosts.*.private_dns}"]
 }
@@ -211,6 +214,9 @@ output "mapr_cluster_2_hosts_public_dns" {
 }
 output "mapr_cluster_2_hosts_private_ip" {
   value = ["${aws_instance.mapr_cluster_2_hosts.*.private_ip}"]
+}
+output "mapr_cluster_2_hosts_private_ip_flat" {
+  value = join("\n", aws_instance.mapr_cluster_2_hosts.*.private_ip)
 }
 output "mapr_cluster_2_hosts_private_dns" {
   value = ["${aws_instance.mapr_cluster_2_hosts.*.private_dns}"]
