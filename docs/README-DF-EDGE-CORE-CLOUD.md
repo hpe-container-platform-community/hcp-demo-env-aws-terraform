@@ -78,7 +78,11 @@ Run this from your terraform project folder:
 - Run `./generated/ssh_mapr_cluster_1_host_0.sh`
 
 ```
-/opt/mapr/server/configure-crosscluster.sh create all -remoteip $INT_IP_MAPR_CLUSTER_2_HOST_0
+# both passwords are `mapr`
+/opt/mapr/server/configure-crosscluster.sh create all -localuser mapr -remoteuser mapr -remoteip $INT_IP_MAPR_CLUSTER_2_HOST_0 
+
+# verify with
+maprlogin password -cluster edge1.enterprise.org
 ```
 
 ### Setup HQ Dashboard
