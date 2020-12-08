@@ -153,7 +153,7 @@ tar cf microservices-dashboard-app.tar microservices-dashboard/
 ./installDemo.sh edge
 EOF
 
-sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && ./runDashboard.sh edge"
+sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && EDGE_HOSTNAME=$(hostname -f) ./runDashboard.sh edge"
 ```
 
 ### License both clusters
