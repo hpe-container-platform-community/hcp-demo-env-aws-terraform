@@ -127,7 +127,7 @@ cd microservices-dashboard
 ./installDemo.sh hq
 EOF
 
-sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && ./runDashboard.sh hq"
+
 ```
 
 ### Setup Edge Dashboard
@@ -147,8 +147,26 @@ cd /home/mapr
 unzip /home/mapr/data-fabric-edge-core-cloud-master.zip
 mv data-fabric-edge-core-cloud-master microservices-dashboard
 echo mapr | maprlogin password -user mapr
-cd microservices-dashboard
+cd microservices-dashboard/eclipse
+rm microservices-dashboard-app.tar
+tar cf microservices-dashboard-app.tar microservices-dashboard/
 ./installDemo.sh edge
-./runDashboard.sh edge
 EOF
+
+sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && ./runDashboard.sh edge"
+```
+
+### License both clusters
+
+- TODO
+
+### Register services
+
+```
+./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c '. /home/mapr/microservices-dashboard/scripts/hq/create-edge-replica.sh'"
+```
+
+```
+./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c 'echo mapr | maprlogin password -cluster dc1.enterprise.org -user mapr'"
+./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c '. /home/mapr/microservices-dashboard/scripts/edge/createMirror.sh'"
 ```
