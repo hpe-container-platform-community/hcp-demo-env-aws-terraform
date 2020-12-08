@@ -3,6 +3,7 @@
 
 ### Prerequisites
 
+- HPE CP needs to have been installed (i.e. using ./scripts/bluedata_install.sh)
 - You have the application code: `data-fabric-edge-core-cloud-master.zip`
 
 ### Create MAPR HQ and Edge Cluster
