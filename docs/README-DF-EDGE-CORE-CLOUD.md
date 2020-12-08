@@ -126,8 +126,10 @@ echo mapr | maprlogin password -user mapr
 cd microservices-dashboard
 ./installDemo.sh hq
 EOF
+```
 
-
+```
+sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && ./runDashboard.sh hq"
 ```
 
 ### Setup Edge Dashboard
