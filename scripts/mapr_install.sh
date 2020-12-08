@@ -22,9 +22,11 @@ echo LOCAL_SSH_PRV_KEY_PATH=${LOCAL_SSH_PRV_KEY_PATH}
 echo CTRL_PUB_IP=$CTRL_PUB_IP
 
 if [[ ${CLUSTER_ID} == 1 ]]; then
+	MAPR_CLUSTER_NAME=${MAPR_CLUSTER1_NAME}
     MAPR_CLUSTER_HOSTS_PRV_IPS=(${MAPR_CLUSTER1_HOSTS_PRV_IPS[@]})
     MAPR_CLUSTER_HOSTS_PUB_IPS=(${MAPR_CLUSTER1_HOSTS_PUB_IPS[@]})
 elif [[ ${CLUSTER_ID} == 2 ]]; then
+	MAPR_CLUSTER_NAME=${MAPR_CLUSTER2_NAME}
     MAPR_CLUSTER_HOSTS_PRV_IPS=(${MAPR_CLUSTER2_HOSTS_PRV_IPS[@]})
     MAPR_CLUSTER_HOSTS_PUB_IPS=(${MAPR_CLUSTER2_HOSTS_PUB_IPS[@]})
 else
@@ -90,7 +92,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    git clone https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform-mapr-ansible \$REPO_DIR
 
 
-   sed -i 's/cluster_name: demo.mapr.com/cluster_name: ${MAPR_CLUSTER1_NAME}/g' \$REPO_DIR/group_vars/all
+   sed -i 's/cluster_name: demo.mapr.com/cluster_name: ${MAPR_CLUSTER_NAME}/g' \$REPO_DIR/group_vars/all
    sed -i '26i\ \ when: inventory_hostname == groups["mapr-spark-yarn"][0]' \$REPO_DIR/roles/mapr-spark-yarn-install/tasks/main.yml
    sed -i 's/yarn_spark_shuffle: True/yarn_spark_shuffle: False/g' \$REPO_DIR/group_vars/all
 
