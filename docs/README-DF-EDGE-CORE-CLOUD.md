@@ -65,7 +65,9 @@ Run this from your terraform project folder (paste and run these blocks separate
 ./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa.pub'" < generated/controller.pub_key && \
 ./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c 'chmod 600 /home/mapr/.ssh/id_rsa'" && \
 ./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/authorized_keys'" < generated/controller.pub_key ;
+```
 
+```
 ./generated/ssh_mapr_cluster_2_host_1.sh "sudo -u mapr bash -c '[[ -d /home/mapr/.ssh ]] || mkdir /home/mapr/.ssh && chmod 700 /home/mapr/.ssh'" && \
 ./generated/ssh_mapr_cluster_2_host_1.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa'" < generated/controller.prv_key && \
 ./generated/ssh_mapr_cluster_2_host_1.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa.pub'" < generated/controller.pub_key && \
@@ -102,7 +104,7 @@ sudo -u mapr /opt/mapr/server/configure-crosscluster.sh create all \
    -remoteip $(head -n1 /tmp/remotemaprhosts)
 
 # verify with
-maprlogin password -cluster edge1.enterprise.org
+sudo -u mapr maprlogin password -cluster edge1.enterprise.org
 ```
 
 ### Setup HQ Dashboard
