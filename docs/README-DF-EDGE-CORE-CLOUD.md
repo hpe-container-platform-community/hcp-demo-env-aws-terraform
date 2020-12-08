@@ -5,35 +5,30 @@
 
 - You have the application code: `data-fabric-edge-core-cloud-master.zip`
 
-### Create MAPR HQ Cluster
+### Create MAPR HQ and Edge Cluster
 
 - Ensure you have the following in your `etc/bluedata_infra.tfvars`:
 
 ```
 mapr_cluster_1_count         = 3
 mapr_cluster_1_name          = "dc1.enterprise.org"
-```
-
-- Run `./bin/terraform_apply.sh`
-- Run `./scripts/mapr_install.sh 1`
-- Run `./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 1`
-
-### Create MAPR Edge Cluster
-
-- Ensure you have the following in your `etc/bluedata_infra.tfvars`:
-
-```
 mapr_cluster_2_count         = 3
 mapr_cluster_2_name          = "edge1.enterprise.org"
 ```
 
-- Run `./bin/terraform_apply.sh`
-- Run `./scripts/mapr_install.sh 2`
-- Run `./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 2`
+- Run the following from your terraform project folder:
+
+```
+./bin/terraform_apply.sh
+./scripts/mapr_install.sh 1
+./scripts/mapr_install.sh 2
+./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 1
+./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 2
+```
 
 ### HQ <--> Edge Passwordless SSH
 
-Run this from your terraform project folder (paste and run these blocks separately):
+Run this from your terraform project folder (paste and run each block separately):
 
 ```
 ./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c '[[ -d /home/mapr/.ssh ]] || mkdir /home/mapr/.ssh && chmod 700 /home/mapr/.ssh'" && \
