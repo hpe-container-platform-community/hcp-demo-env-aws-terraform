@@ -116,14 +116,17 @@ sudo -u mapr maprlogin password -cluster edge1.enterprise.org
 sudo service mapr-posix-client-basic restart
 sudo mv ~/data-fabric-edge-core-cloud-master.zip /home/mapr/
 sudo chown mapr:mapr /home/mapr/data-fabric-edge-core-cloud-master.zip
-sudo su - mapr
-bash
+
+
+sudo -E -u mapr bash <<EOF
+cd /home/mapr
 unzip /home/mapr/data-fabric-edge-core-cloud-master.zip
 mv data-fabric-edge-core-cloud-master microservices-dashboard
 echo mapr | maprlogin password -user mapr
 cd microservices-dashboard
 ./installDemo.sh hq
 ./runDashboard.sh hq
+EOF
 ```
 
 ### Setup Edge Dashboard
@@ -137,12 +140,14 @@ cd microservices-dashboard
 sudo service mapr-posix-client-basic restart
 sudo mv ~/data-fabric-edge-core-cloud-master.zip /home/mapr/
 sudo chown mapr:mapr /home/mapr/data-fabric-edge-core-cloud-master.zip
-sudo su - mapr
-bash
+
+sudo -E -u mapr bash <<EOF
+cd /home/mapr
 unzip /home/mapr/data-fabric-edge-core-cloud-master.zip
 mv data-fabric-edge-core-cloud-master microservices-dashboard
 echo mapr | maprlogin password -user mapr
 cd microservices-dashboard
 ./installDemo.sh edge
 ./runDashboard.sh edge
+EOF
 ```
