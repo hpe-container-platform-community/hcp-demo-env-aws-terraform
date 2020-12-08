@@ -160,10 +160,16 @@ sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && EDGE_HOSTNAME=$(h
 ### Register services
 
 ```
-./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c '. /home/mapr/microservices-dashboard/scripts/hq/create-edge-replica.sh'"
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "sudo -u mapr bash -c '. /home/mapr/microservices-dashboard/scripts/hq/create-edge-replica.sh'"
 ```
 
 ```
-./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c 'echo mapr | maprlogin password -cluster dc1.enterprise.org -user mapr'"
-./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c '. /home/mapr/microservices-dashboard/scripts/edge/createMirror.sh'"
+./generated/ssh_mapr_cluster_2_host_0.sh \
+   "sudo -u mapr bash -c 'echo mapr | maprlogin password -cluster dc1.enterprise.org -user mapr'"
+```
+
+```
+./generated/ssh_mapr_cluster_2_host_0.sh \
+   "sudo -u mapr bash -c '. /home/mapr/microservices-dashboard/scripts/edge/createMirror.sh'"
 ```
