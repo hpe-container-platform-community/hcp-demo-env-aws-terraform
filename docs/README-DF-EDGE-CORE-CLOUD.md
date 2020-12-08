@@ -167,7 +167,7 @@ sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && EDGE_HOSTNAME=$(h
 
 ```
 ./generated/ssh_mapr_cluster_2_host_0.sh \
-   "sudo -u mapr bash -c 'echo mapr | maprlogin password -cluster dc1.enterprise.org -user mapr'"
+   "sudo -u mapr bash -c 'echo mapr | maprlogin password -user mapr -cluster dc1.enterprise.org'"
 ```
 
 ```
