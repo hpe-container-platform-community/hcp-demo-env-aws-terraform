@@ -178,7 +178,7 @@ EOF
 
 - Login to MCS on both clusters (MCS runs on Host 0)
   - You can find the host external IPs with `./bin/ec2_instance_status.sh`
-  - Login to https://EXTIP:8443 (user:password = mapr:mapr)
+  - Login to `https://EXTIP:8443` (user:password = mapr:mapr)
   - Navigate to **Admin -> Cluster Settings -> Licenses**
   - Click **Get a Free Trial License**
   - Login or Register
