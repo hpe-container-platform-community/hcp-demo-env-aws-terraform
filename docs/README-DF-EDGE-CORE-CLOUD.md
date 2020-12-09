@@ -48,6 +48,11 @@ If you don't have tmux installed:
 - Run from the terraform project folder:
 
 ```
+for I in 0 1 2; do
+   ./generated/ssh_mapr_cluster_1_host_0.sh "sudo cat /opt/mapr/conf/mapruserticket" | \
+      ./generated/ssh_mapr_cluster_2_host_$I.sh "sudo bash -c 'cat > /opt/mapr/conf/mapruserticket'"
+done
+
 terraform output mapr_cluster_1_hosts_private_ip_flat > localmaprhosts
 terraform output mapr_cluster_2_hosts_private_ip_flat > remotemaprhosts
 
