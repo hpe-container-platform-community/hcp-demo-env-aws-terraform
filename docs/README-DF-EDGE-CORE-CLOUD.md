@@ -96,7 +96,7 @@ This should report:
 
 ```
 # 
-# IMPORTANT: Replace `/Users/christophersnow/Downloads` with the location of your zip file)
+# IMPORTANT: Replace `/Users/christophersnow/Downloads` with the location of your zip file
 #
 
 ./generated/ssh_mapr_cluster_1_host_0.sh \
