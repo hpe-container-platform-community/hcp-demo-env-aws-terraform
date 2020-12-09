@@ -92,27 +92,39 @@ This should report:
 
 ### Setup HQ Dashboard
 
-- Run `./generated/ssh_mapr_cluster_1_host_0.sh "cat > data-fabric-edge-core-cloud-master.zip" < /Users/christophersnow/Downloads/data-fabric-edge-core-cloud-master.zip` (replace /Users/christophersnow/Downloads with the location of your zip file)
-- SSH into the MAPR Cluster `./generated/ssh_mapr_cluster_1_host_0.sh`, then:
-
-```console
-sudo service mapr-posix-client-basic restart
-sudo mv ~/data-fabric-edge-core-cloud-master.zip /home/mapr/
-sudo chown mapr:mapr /home/mapr/data-fabric-edge-core-cloud-master.zip
-
-
-sudo -E -u mapr bash <<EOF
-cd /home/mapr
-unzip /home/mapr/data-fabric-edge-core-cloud-master.zip
-mv data-fabric-edge-core-cloud-master microservices-dashboard
-echo mapr | maprlogin password -user mapr
-cd microservices-dashboard
-./installDemo.sh hq
-EOF
-```
+- Run the following:
 
 ```
-sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && ./runDashboard.sh hq"
+# 
+# IMPORTANT: Replace `/Users/christophersnow/Downloads` with the location of your zip file)
+#
+
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "cat > data-fabric-edge-core-cloud-master.zip" < /Users/christophersnow/Downloads/data-fabric-edge-core-cloud-master.zip
+
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "sudo service mapr-posix-client-basic restart
+   sudo mv ~/data-fabric-edge-core-cloud-master.zip /home/mapr/
+   sudo chown mapr:mapr /home/mapr/data-fabric-edge-core-cloud-master.zip"
+
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "sudo -u mapr bash -c 'cd /home/mapr && unzip /home/mapr/data-fabric-edge-core-cloud-master.zip'"
+   
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "sudo -u mapr bash -c 'cd /home/mapr && mv data-fabric-edge-core-cloud-master microservices-dashboard'"
+
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "sudo -u mapr bash -c 'cd /home/mapr && echo mapr | maprlogin password -user mapr'"
+
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard && ./installDemo.sh hq'"
+```
+
+- Open a new terminal to run the HQ dashboard:
+
+```
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && ./runDashboard.sh hq"
 ```
 
 ### Setup Edge Dashboard
