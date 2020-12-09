@@ -23,26 +23,16 @@ And then run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAP
 
 - Run the following from your terraform project folder:
 
-If you have TMUX installed (recommended):
-
 ```
-wget https://gist.githubusercontent.com/snowch/03a374bfa7a8b1923ef8cc8e172e0819/raw/3fe69641800606ca3ced3e81582459481592de1d/tmux-sync.sh
-chmod +x tmux-sync.sh
-./tmux-sync.sh mapr-install "./scripts/mapr_install.sh 1" "./scripts/mapr_install.sh 2"
+nohup $(pwd)/scripts/mapr_install.sh 1 > nohup1.out &
+nohup $(pwd)/scripts/mapr_install.sh 2 > nohup2.out &
+tail -f nohup1.out nohup2.out
+# CTRL-C when finished
 
-# ctrl-D to quit tmux sessions when they have finished
-
-./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 1
-./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 2
-```
-
-If you don't have tmux installed:
-
-```
-./scripts/mapr_install.sh 1
-./scripts/mapr_install.sh 2
-./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 1
-./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 2
+nohup $(pwd)/scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 1 >> nohup1.out &
+nohup $(pwd)/scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 2 >> nohup2.out &
+tail -f nohup1.out nohup2.out
+# CTRL-C when finished
 ```
 
 ### Configure cross-cluster security
