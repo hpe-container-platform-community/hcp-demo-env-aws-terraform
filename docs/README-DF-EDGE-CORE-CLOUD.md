@@ -101,23 +101,20 @@ This should report:
 
 ./generated/ssh_mapr_cluster_1_host_0.sh \
    "cat > data-fabric-edge-core-cloud-master.zip" < /Users/christophersnow/Downloads/data-fabric-edge-core-cloud-master.zip
+```
 
-./generated/ssh_mapr_cluster_1_host_0.sh \
-   "sudo service mapr-posix-client-basic restart
-   sudo mv ~/data-fabric-edge-core-cloud-master.zip /home/mapr/
-   sudo chown mapr:mapr /home/mapr/data-fabric-edge-core-cloud-master.zip"
-
-./generated/ssh_mapr_cluster_1_host_0.sh \
-   "sudo -u mapr bash -c 'cd /home/mapr && unzip /home/mapr/data-fabric-edge-core-cloud-master.zip'"
-   
-./generated/ssh_mapr_cluster_1_host_0.sh \
-   "sudo -u mapr bash -c 'cd /home/mapr && mv data-fabric-edge-core-cloud-master microservices-dashboard'"
-
-./generated/ssh_mapr_cluster_1_host_0.sh \
-   "sudo -u mapr bash -c 'cd /home/mapr && echo mapr | maprlogin password -user mapr'"
-
-./generated/ssh_mapr_cluster_1_host_0.sh \
-   "sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard && ./installDemo.sh hq'"
+```
+./generated/ssh_mapr_cluster_1_host_0.sh << EOF
+   set -e
+   sudo service mapr-posix-client-basic restart
+   sudo cp -f /home/ubuntu/data-fabric-edge-core-cloud-master.zip /home/mapr/
+   sudo chown mapr:mapr /home/mapr/data-fabric-edge-core-cloud-master.zip
+   sudo rm -rf /home/mapr/microservices-dashboard
+   sudo -u mapr bash -c 'cd /home/mapr && unzip -o /home/mapr/data-fabric-edge-core-cloud-master.zip'
+   sudo -u mapr bash -c 'cd /home/mapr && mv data-fabric-edge-core-cloud-master microservices-dashboard'
+   sudo -u mapr bash -c 'cd /home/mapr && echo mapr | maprlogin password -user mapr'
+   sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard && ./installDemo.sh hq'
+EOF
 ```
 
 ### Run HQ Dashboard
