@@ -5,6 +5,7 @@
 
 - Active Directory server needs to have been installed and running
 - You have downloaded the application code: `data-fabric-edge-core-cloud-master.zip`
+- You have the cluster IP addresses: `./bin/ec2_instance_status.sh`
 
 ### Create MAPR HQ and Edge Cluster
 
