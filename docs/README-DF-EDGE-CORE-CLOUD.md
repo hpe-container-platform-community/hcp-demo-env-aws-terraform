@@ -186,7 +186,7 @@ EOF
     - Enter **Cluster ID**
     - Enter **Cluster Name** (dc1.enterprise.org or edge1.enterprise.org)
     - Select M5, M7 License
-    - Click **View Key and copy text
+    - Click **View Key** and copy license 
   - In MCS click **Copy/Paste License**
     - Paste License
     - Click Submit
