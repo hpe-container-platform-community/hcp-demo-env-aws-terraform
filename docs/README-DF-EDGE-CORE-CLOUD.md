@@ -109,6 +109,8 @@ This should report:
    "cat > data-fabric-edge-core-cloud-master.zip" < /Users/christophersnow/Downloads/data-fabric-edge-core-cloud-master.zip
 ```
 
+- Install the dashboard
+
 ```
 ./generated/ssh_mapr_cluster_1_host_0.sh << EOF
    set -e
@@ -134,29 +136,38 @@ EOF
 
 ### Setup Edge Dashboard
 
-- Run `./generated/ssh_mapr_cluster_2_host_0.sh "cat > data-fabric-edge-core-cloud-master.zip" < /Users/christophersnow/Downloads/data-fabric-edge-core-cloud-master.zip` (replace /Users/christophersnow/Downloads with the location of your zip file)
-- SSH into the MAPR Cluster `./generated/ssh_mapr_cluster_2_host_0.sh`, then:
+- Run the following:
 
-
-
-```console
-sudo service mapr-posix-client-basic restart
-sudo mv ~/data-fabric-edge-core-cloud-master.zip /home/mapr/
-sudo chown mapr:mapr /home/mapr/data-fabric-edge-core-cloud-master.zip
-
-sudo -E -u mapr bash <<EOF
-cd /home/mapr
-unzip /home/mapr/data-fabric-edge-core-cloud-master.zip
-mv data-fabric-edge-core-cloud-master microservices-dashboard
-echo mapr | maprlogin password -user mapr
-cd microservices-dashboard/eclipse
-rm microservices-dashboard-app.tar
-tar cf microservices-dashboard-app.tar microservices-dashboard/
-./installDemo.sh edge
-EOF
-
-sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && EDGE_HOSTNAME=$(hostname -f) ./runDashboard.sh edge"
 ```
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "sudo -u mapr bash -c 'scp ./data-fabric-edge-core-cloud-master.zip mapr@$(terraform output mapr_cluster_2_hosts_private_ip_flat | head -n1):~/'"
+```
+
+- Install the dashboard
+
+```
+./generated/ssh_mapr_cluster_2_host_0.sh << EOF
+   set -e
+   sudo service mapr-posix-client-basic restart
+   sudo rm -rf /home/mapr/microservices-dashboard
+   sudo -u mapr bash -c 'cd /home/mapr; unzip -d /home/mapr -o /home/mapr/data-fabric-edge-core-cloud-master.zip'
+   sudo -u mapr bash -c 'cd /home/mapr; mv data-fabric-edge-core-cloud-master microservices-dashboard'
+   sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard/eclipse; rm -f microservices-dashboard-app.tar'
+   sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard/eclipse; tar cf microservices-dashboard-app.tar microservices-dashboard/'
+   sudo -u mapr bash -c 'cd /home/mapr; echo mapr | maprlogin password -user mapr'
+   sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard; ./installDemo.sh edge'
+EOF
+```
+
+### Run HQ Dashboard
+
+- Open a new terminal to run the HQ dashboard:
+
+```
+./generated/ssh_mapr_cluster_2_host_0.sh \
+   "sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard; EDGE_HOSTNAME=$(hostname -f) ./runDashboard.sh edge'"
+```
+
 
 ### License both clusters
 
