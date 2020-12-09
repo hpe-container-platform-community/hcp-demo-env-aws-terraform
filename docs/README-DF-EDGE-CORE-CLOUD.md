@@ -77,6 +77,19 @@ This should report:
 
 > MapR credentials of user 'mapr' for cluster 'edge1.enterprise.org' are written to '/tmp/maprticket_5000'
 
+
+- Verify EDGE can connect to HQ:
+
+```
+echo mapr | ./generated/ssh_mapr_cluster_2_host_0.sh -t \
+   sudo -u mapr maprlogin password -cluster dc1.enterprise.org
+```
+
+This should report:
+
+> MapR credentials of user 'mapr' for cluster 'dc1.enterprise.org' are written to '/tmp/maprticket_5000'
+
+
 ### Setup HQ Dashboard
 
 - Run `./generated/ssh_mapr_cluster_1_host_0.sh "cat > data-fabric-edge-core-cloud-master.zip" < /Users/christophersnow/Downloads/data-fabric-edge-core-cloud-master.zip` (replace /Users/christophersnow/Downloads with the location of your zip file)
