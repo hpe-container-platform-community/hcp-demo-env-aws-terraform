@@ -110,10 +110,10 @@ This should report:
    sudo cp -f /home/ubuntu/data-fabric-edge-core-cloud-master.zip /home/mapr/
    sudo chown mapr:mapr /home/mapr/data-fabric-edge-core-cloud-master.zip
    sudo rm -rf /home/mapr/microservices-dashboard
-   sudo -u mapr bash -c 'cd /home/mapr && unzip -o /home/mapr/data-fabric-edge-core-cloud-master.zip'
-   sudo -u mapr bash -c 'cd /home/mapr && mv data-fabric-edge-core-cloud-master microservices-dashboard'
-   sudo -u mapr bash -c 'cd /home/mapr && echo mapr | maprlogin password -user mapr'
-   sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard && ./installDemo.sh hq'
+   sudo -u mapr bash -c 'cd /home/mapr; unzip -d /home/mapr -o /home/mapr/data-fabric-edge-core-cloud-master.zip'
+   sudo -u mapr bash -c 'cd /home/mapr; mv data-fabric-edge-core-cloud-master microservices-dashboard'
+   sudo -u mapr bash -c 'cd /home/mapr; echo mapr | maprlogin password -user mapr'
+   sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard; ./installDemo.sh hq'
 EOF
 ```
 
@@ -123,7 +123,7 @@ EOF
 
 ```
 ./generated/ssh_mapr_cluster_1_host_0.sh \
-   sudo -u mapr bash -c "cd /home/mapr/microservices-dashboard && ./runDashboard.sh hq"
+   sudo -u mapr "/home/mapr/microservices-dashboard/runDashboard.sh hq"
 ```
 
 ### Setup Edge Dashboard
