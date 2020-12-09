@@ -49,6 +49,11 @@ If you don't have tmux installed:
 - Run from the terraform project folder:
 
 ```
+for I in 1 2; do
+   ./generated/ssh_mapr_cluster_1_host_0.sh "sudo cat /opt/mapr/conf/mapruserticket" | \
+      ./generated/ssh_mapr_cluster_1_host_$I.sh "sudo bash -c 'cat > /opt/mapr/conf/mapruserticket'"
+done
+
 for I in 0 1 2; do
    ./generated/ssh_mapr_cluster_1_host_0.sh "sudo cat /opt/mapr/conf/mapruserticket" | \
       ./generated/ssh_mapr_cluster_2_host_$I.sh "sudo bash -c 'cat > /opt/mapr/conf/mapruserticket'"
