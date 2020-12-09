@@ -3,8 +3,8 @@
 
 ### Prerequisites
 
-- HPE CP needs to have been installed (i.e. using `./scripts/bluedata_install.sh`)
-- You have the application code: `data-fabric-edge-core-cloud-master.zip`
+- Active Directory server needs to have been installed and running
+- You have downloaded the application code: `data-fabric-edge-core-cloud-master.zip`
 
 ### Create MAPR HQ and Edge Cluster
 
@@ -17,66 +17,30 @@ mapr_cluster_2_count         = 3
 mapr_cluster_2_name          = "edge1.enterprise.org"
 ```
 
+And then run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAPR
+
 - Run the following from your terraform project folder:
 
+If you have TMUX installed (recommended):
+
 ```
-./bin/terraform_apply.sh
-./scripts/mapr_install.sh 1
-./scripts/mapr_install.sh 2
+wget https://gist.githubusercontent.com/snowch/03a374bfa7a8b1923ef8cc8e172e0819/raw/3fe69641800606ca3ced3e81582459481592de1d/tmux-sync.sh
+chmod +x tmux-sync.sh
+./tmux-sync.sh mapr-install "./scripts/mapr_install.sh 1" "./scripts/mapr_install.sh 2"
+
+# ctrl-D to quit tmux sessions when they have finished
+
 ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 1
 ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 2
 ```
 
-### HQ <--> Edge Passwordless SSH
-
-Run this from your terraform project folder (paste and run each block separately):
+If you don't have tmux installed:
 
 ```
-./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c '[[ -d /home/mapr/.ssh ]] || mkdir /home/mapr/.ssh && chmod 700 /home/mapr/.ssh'" && \
-./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa'" < generated/controller.prv_key && \
-./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa.pub'" < generated/controller.pub_key && \
-./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c 'chmod 600 /home/mapr/.ssh/id_rsa'" && \
-./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/authorized_keys'" < generated/controller.pub_key ;
-```
-
-```
-./generated/ssh_mapr_cluster_1_host_1.sh "sudo -u mapr bash -c '[[ -d /home/mapr/.ssh ]] || mkdir /home/mapr/.ssh && chmod 700 /home/mapr/.ssh'" && \
-./generated/ssh_mapr_cluster_1_host_1.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa'" < generated/controller.prv_key && \
-./generated/ssh_mapr_cluster_1_host_1.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa.pub'" < generated/controller.pub_key && \
-./generated/ssh_mapr_cluster_1_host_1.sh "sudo -u mapr bash -c 'chmod 600 /home/mapr/.ssh/id_rsa'" && \
-./generated/ssh_mapr_cluster_1_host_1.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/authorized_keys'" < generated/controller.pub_key ;
-```
-
-```
-./generated/ssh_mapr_cluster_1_host_2.sh "sudo -u mapr bash -c '[[ -d /home/mapr/.ssh ]] || mkdir /home/mapr/.ssh && chmod 700 /home/mapr/.ssh'" && \
-./generated/ssh_mapr_cluster_1_host_2.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa'" < generated/controller.prv_key && \
-./generated/ssh_mapr_cluster_1_host_2.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa.pub'" < generated/controller.pub_key && \
-./generated/ssh_mapr_cluster_1_host_2.sh "sudo -u mapr bash -c 'chmod 600 /home/mapr/.ssh/id_rsa'" && \
-./generated/ssh_mapr_cluster_1_host_2.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/authorized_keys'" < generated/controller.pub_key ;
-```
-
-```
-./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c '[[ -d /home/mapr/.ssh ]] || mkdir /home/mapr/.ssh && chmod 700 /home/mapr/.ssh'" && \
-./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa'" < generated/controller.prv_key && \
-./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa.pub'" < generated/controller.pub_key && \
-./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c 'chmod 600 /home/mapr/.ssh/id_rsa'" && \
-./generated/ssh_mapr_cluster_2_host_0.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/authorized_keys'" < generated/controller.pub_key ;
-```
-
-```
-./generated/ssh_mapr_cluster_2_host_1.sh "sudo -u mapr bash -c '[[ -d /home/mapr/.ssh ]] || mkdir /home/mapr/.ssh && chmod 700 /home/mapr/.ssh'" && \
-./generated/ssh_mapr_cluster_2_host_1.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa'" < generated/controller.prv_key && \
-./generated/ssh_mapr_cluster_2_host_1.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa.pub'" < generated/controller.pub_key && \
-./generated/ssh_mapr_cluster_2_host_1.sh "sudo -u mapr bash -c 'chmod 600 /home/mapr/.ssh/id_rsa'" && \
-./generated/ssh_mapr_cluster_2_host_1.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/authorized_keys'" < generated/controller.pub_key ;
-```
-
-```
-./generated/ssh_mapr_cluster_2_host_2.sh "sudo -u mapr bash -c '[[ -d /home/mapr/.ssh ]] || mkdir /home/mapr/.ssh && chmod 700 /home/mapr/.ssh'" && \
-./generated/ssh_mapr_cluster_2_host_2.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa'" < generated/controller.prv_key && \
-./generated/ssh_mapr_cluster_2_host_2.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/id_rsa.pub'" < generated/controller.pub_key && \
-./generated/ssh_mapr_cluster_2_host_2.sh "sudo -u mapr bash -c 'chmod 600 /home/mapr/.ssh/id_rsa'" && \
-./generated/ssh_mapr_cluster_2_host_2.sh "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/authorized_keys'" < generated/controller.pub_key ;
+./scripts/mapr_install.sh 1
+./scripts/mapr_install.sh 2
+./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 1
+./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh 2
 ```
 
 ### Configure cross-cluster security
@@ -84,24 +48,34 @@ Run this from your terraform project folder (paste and run each block separately
 - Run from the terraform project folder:
 
 ```
-./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c 'cat > /tmp/localmaprhosts'" <<< $(terraform output mapr_cluster_1_hosts_private_ip_flat)
-./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr bash -c 'cat > /tmp/remotemaprhosts'" <<< $(terraform output mapr_cluster_2_hosts_private_ip_flat)
+terraform output mapr_cluster_1_hosts_private_ip_flat > localmaprhosts
+terraform output mapr_cluster_2_hosts_private_ip_flat > remotemaprhosts
+
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "sudo -u mapr bash -c 'cat > /tmp/localmaprhosts && cat /tmp/localmaprhosts'" < localmaprhosts
+   
+./generated/ssh_mapr_cluster_1_host_0.sh \
+   "sudo -u mapr bash -c 'cat > /tmp/remotemaprhosts && cat /tmp/remotemaprhosts'" < remotemaprhosts
 
 ./generated/ssh_mapr_cluster_1_host_0.sh "sudo apt-get -y install expect pssh"
+
+printf "mapr\nmapr" | ./generated/ssh_mapr_cluster_1_host_0.sh -t \
+   "sudo -u mapr bash -c '/opt/mapr/server/configure-crosscluster.sh create all \
+      -localuser mapr -localhosts /tmp/localmaprhosts \
+      -remoteuser mapr -remotehosts /tmp/remotemaprhosts \
+      -remoteip $(terraform output mapr_cluster_2_hosts_private_ip_flat | head -n1)'"
 ```
 
-- Run `./generated/ssh_mapr_cluster_1_host_0.sh`
+- Verify HQ can connect to EDGE:
 
 ```
-# both passwords are `mapr`
-sudo -u mapr /opt/mapr/server/configure-crosscluster.sh create all \
-   -localuser mapr -localhosts /tmp/localmaprhosts  \
-   -remoteuser mapr -remotehosts /tmp/remotemaprhosts \
-   -remoteip $(head -n1 /tmp/remotemaprhosts)
-
-# verify with
-sudo -u mapr maprlogin password -cluster edge1.enterprise.org
+echo mapr | ./generated/ssh_mapr_cluster_1_host_0.sh -t \
+   sudo -u mapr maprlogin password -cluster edge1.enterprise.org
 ```
+
+This should report:
+
+> MapR credentials of user 'mapr' for cluster 'edge1.enterprise.org' are written to '/tmp/maprticket_5000'
 
 ### Setup HQ Dashboard
 
