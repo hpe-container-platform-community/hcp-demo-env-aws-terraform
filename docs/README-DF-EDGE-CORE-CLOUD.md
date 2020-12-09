@@ -50,13 +50,26 @@ If you don't have tmux installed:
 
 ```
 for I in 1 2; do
-   ./generated/ssh_mapr_cluster_1_host_0.sh "sudo cat /opt/mapr/conf/mapruserticket" | \
+   ./generated/ssh_mapr_cluster_1_host_0.sh "sudo head -n1 /opt/mapr/conf/mapruserticket'" | \
       ./generated/ssh_mapr_cluster_1_host_$I.sh "sudo bash -c 'cat > /opt/mapr/conf/mapruserticket'"
+
+   ./generated/ssh_mapr_cluster_2_host_0.sh "sudo head -n1 /opt/mapr/conf/mapruserticket'" | \
+      ./generated/ssh_mapr_cluster_2_host_$I.sh "sudo bash -c 'cat > /opt/mapr/conf/mapruserticket'"
 done
 
 for I in 0 1 2; do
-   ./generated/ssh_mapr_cluster_1_host_0.sh "sudo cat /opt/mapr/conf/mapruserticket" | \
-      ./generated/ssh_mapr_cluster_2_host_$I.sh "sudo bash -c 'cat > /opt/mapr/conf/mapruserticket'"
+   ./generated/ssh_mapr_cluster_1_host_0.sh "sudo head -n1 /opt/mapr/conf/mapruserticket" | \
+      ./generated/ssh_mapr_cluster_2_host_$I.sh "sudo bash -c 'cat >> /opt/mapr/conf/mapruserticket'"
+      
+   ./generated/ssh_mapr_cluster_2_host_0.sh "sudo head -n1 /opt/mapr/conf/mapruserticket" | \
+      ./generated/ssh_mapr_cluster_1_host_$I.sh "sudo bash -c 'cat >> /opt/mapr/conf/mapruserticket'"
+done
+
+for i in 1 2; do   
+  for j in 0 1 2; do    
+    echo CLUSTER $i HOST $j;   
+    ./generated/ssh_mapr_cluster_${i}_host_${j}.sh "sudo cat /opt/mapr/conf/mapruserticket"
+  done;
 done
 
 terraform output mapr_cluster_1_hosts_private_ip_flat > localmaprhosts
