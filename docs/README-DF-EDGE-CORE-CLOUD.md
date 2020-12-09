@@ -120,6 +120,8 @@ This should report:
    "sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard && ./installDemo.sh hq'"
 ```
 
+### Run HQ Dashboard
+
 - Open a new terminal to run the HQ dashboard:
 
 ```
