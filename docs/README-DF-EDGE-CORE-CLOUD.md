@@ -123,7 +123,7 @@ EOF
 
 ```
 ./generated/ssh_mapr_cluster_1_host_0.sh \
-   sudo -u mapr "/home/mapr/microservices-dashboard/runDashboard.sh hq"
+   "sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard; ./runDashboard.sh hq'"
 ```
 
 ### Setup Edge Dashboard
