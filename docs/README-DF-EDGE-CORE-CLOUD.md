@@ -234,3 +234,34 @@ EOF
 ./generated/ssh_mapr_cluster_2_host_0.sh \
    "sudo -u mapr bash -c '. /home/mapr/microservices-dashboard/scripts/edge/createMirror.sh'"
 ```
+
+- Setup auditing
+
+```
+./generated/ssh_mapr_cluster_2_host_0.sh <<EOF
+   sudo -u mapr bash <<BASH_EOF
+      maprcli config save -values "{\"mfs.enable.audit.as.stream\":\"1\"}"
+      maprcli audit data -enabled true -retention 1
+      maprcli volume audit -name mapr.apps -enabled true -dataauditops +create,+delete,+tablecreate,-setattr,-chown,-chperm,-chgrp,-getxattr,-listxattr,-setxattr,-removexattr,-read,-write,-mkdir,-readdir,-rmdir,-createsym,-lookup,-rename,-createdev,-truncate,-tablecfcreate,-tablecfdelete,-tablecfmodify,-tablecfScan,-tableget,-tableput,-tablescan,-tableinfo,-tablemodify,-getperm,-getpathforfid,-hardlink
+      maprcli volume info -name mapr.apps -json
+      hadoop mfs -setaudit on /apps/pipeline/data
+      hadoop mfs -ls /apps/pipeline
+BASH_EOF
+EOF
+```
+
+### Monitior
+
+- Monitor DC files
+
+```
+./generated/ssh_mapr_cluster_1_host_0.sh -t \
+   "bash -c 'watch ls /mapr/dc1.enterprise.org/apps/pipeline/data/files-missionX'"
+```
+
+- Monitor EDGE files
+
+```
+./generated/ssh_mapr_cluster_2_host_0.sh -t \
+   "bash -c 'watch ls /mapr/edge1.enterprise.org/apps/pipeline/data/files-missionX'"
+```
