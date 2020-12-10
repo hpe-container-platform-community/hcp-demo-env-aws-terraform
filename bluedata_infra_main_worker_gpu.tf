@@ -13,7 +13,7 @@ locals {
 data "aws_ec2_instance_type_offerings" "gpu_worker_instance_types" {
   filter {
     name   = "instance-type"
-    values = [ "${local.gpu_worker_instance_type}" ]
+    values = [ local.gpu_worker_instance_type ]
   }
   filter {
     name   = "location"
