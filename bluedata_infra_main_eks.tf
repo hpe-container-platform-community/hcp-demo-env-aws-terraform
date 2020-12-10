@@ -36,8 +36,8 @@ resource "aws_eks_node_group" "example" {
 
   tags = {
     Name = "${var.project_id}-eks-nodegroup-1"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = local.cluster_name  
   }
 }
