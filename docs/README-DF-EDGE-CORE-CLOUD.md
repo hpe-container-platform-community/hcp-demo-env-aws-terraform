@@ -85,8 +85,8 @@ done;
 ```
 
 ```
-terraform output mapr_cluster_1_hosts_private_ip_flat > localmaprhosts
-terraform output mapr_cluster_2_hosts_private_ip_flat > remotemaprhosts
+terraform output mapr_cluster_1_hosts_private_ip_flat | sed '/^.*EOT$/d' > localmaprhosts
+terraform output mapr_cluster_2_hosts_private_ip_flat | sed '/^.*EOT$/d' > remotemaprhosts
 
 ./generated/ssh_mapr_cluster_1_host_0.sh \
    "sudo -u mapr bash -c 'cat > /tmp/localmaprhosts && cat /tmp/localmaprhosts'" < localmaprhosts
@@ -95,12 +95,22 @@ terraform output mapr_cluster_2_hosts_private_ip_flat > remotemaprhosts
    "sudo -u mapr bash -c 'cat > /tmp/remotemaprhosts && cat /tmp/remotemaprhosts'" < remotemaprhosts
 
 ./generated/ssh_mapr_cluster_1_host_0.sh "sudo apt-get -y install expect pssh"
+```
 
-printf "mapr\nmapr" | ./generated/ssh_mapr_cluster_1_host_0.sh -t \
-   "sudo -u mapr bash -c '/opt/mapr/server/configure-crosscluster.sh create all \
-      -localuser mapr -localhosts /tmp/localmaprhosts \
-      -remoteuser mapr -remotehosts /tmp/remotemaprhosts \
-      -remoteip $(terraform output mapr_cluster_2_hosts_private_ip_flat | head -n1)'"
+```
+./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr expect" <<EOF
+
+   set remoteip [exec head -n1 /tmp/remotemaprhosts]
+   
+   spawn /opt/mapr/server/configure-crosscluster.sh create all \
+         -localuser mapr -localhosts /tmp/localmaprhosts \
+         -remoteuser mapr -remotehosts /tmp/remotemaprhosts \
+         -remoteip \$remoteip
+
+   expect "Enter password for mapr user (mapr) for local cluster:" { send "mapr\r" }
+   expect "Enter password for mapr user (mapr) for remote cluster:" { send "mapr\r" }
+   expect eof
+EOF
 ```
 
 - Verify HQ can connect to EDGE:
