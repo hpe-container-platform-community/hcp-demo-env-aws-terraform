@@ -18,7 +18,7 @@ resource "aws_instance" "mapr_cluster_2_hosts" {
     Name = "${var.project_id}-instance-mapr-cluster-2-host-${count.index}"
     Project = var.project_id
     user = var.user
-    deployment_uuid = "${random_uuid.deployment_uuid.result}"
+    deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
 
@@ -34,7 +34,7 @@ resource "aws_ebs_volume" "mapr-cluster-2-host-ebs-volumes-sdd" {
     Name = "${var.project_id}-mapr-cluster-2-host-${count.index}-ebs-sdd"
     Project = var.project_id
     user = var.user
-    deployment_uuid = "${random_uuid.deployment_uuid.result}"
+    deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
 
@@ -60,7 +60,7 @@ resource "aws_ebs_volume" "mapr-cluster-2-host-ebs-volumes-sde" {
     Name = "${var.project_id}-mapr-cluster-2-host-${count.index}-ebs-sde"
     Project = var.project_id
     user = var.user
-    deployment_uuid = "${random_uuid.deployment_uuid.result}"
+    deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
 
@@ -86,7 +86,7 @@ resource "aws_ebs_volume" "mapr-cluster-2-host-ebs-volumes-sdf" {
     Name = "${var.project_id}-mapr-cluster-2-host-${count.index}-ebs-sdf"
     Project = var.project_id
     user = var.user
-    deployment_uuid = "${random_uuid.deployment_uuid.result}"
+    deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
 

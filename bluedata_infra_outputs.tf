@@ -23,7 +23,7 @@ output "vpc_cidr_block" {
 }
 
 output "deployment_uuid" {
-  value = "${random_uuid.deployment_uuid.result}"
+  value = random_uuid.deployment_uuid.result
 }
 
 output "selinux_disabled" {

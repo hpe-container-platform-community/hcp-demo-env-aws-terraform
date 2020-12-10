@@ -18,7 +18,7 @@ resource "aws_instance" "workers" {
     Name = "${var.project_id}-instance-worker-${count.index + 1}"
     Project = var.project_id
     user = var.user
-    deployment_uuid = "${random_uuid.deployment_uuid.result}"
+    deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
 
@@ -50,7 +50,7 @@ resource "aws_ebs_volume" "worker-ebs-volumes-sdb" {
     Name = "${var.project_id}-worker-${count.index + 1}-ebs-sdb"
     Project = var.project_id
     user = var.user
-    deployment_uuid = "${random_uuid.deployment_uuid.result}"
+    deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
 
@@ -76,7 +76,7 @@ resource "aws_ebs_volume" "worker-ebs-volumes-sdc" {
     Name = "${var.project_id}-worker-${count.index + 1}-ebs-sdc"
     Project = var.project_id
     user = var.user
-    deployment_uuid = "${random_uuid.deployment_uuid.result}"
+    deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
 
