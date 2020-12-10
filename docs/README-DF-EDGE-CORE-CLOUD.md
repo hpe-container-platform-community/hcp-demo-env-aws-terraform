@@ -262,7 +262,7 @@ EOF
 Open a new terminal and run:
 
 ```
-./generated/ssh_mapr_cluster_1_host_0.sh -t \
+./generated/ssh_mapr_cluster_1_host_0.sh \
    "bash -c 'watch ls -lr /mapr/dc1.enterprise.org/apps/pipeline/data/files-missionX'"
 ```
 
@@ -271,7 +271,7 @@ Open a new terminal and run:
 Open a new terminal and run:
 
 ```
-./generated/ssh_mapr_cluster_2_host_0.sh -t \
+./generated/ssh_mapr_cluster_2_host_0.sh \
    "bash -c 'watch ls -lr /mapr/edge1.enterprise.org/apps/pipeline/data/files-missionX'"
 ```
 
