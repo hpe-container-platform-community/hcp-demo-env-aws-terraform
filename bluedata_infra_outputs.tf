@@ -11,7 +11,7 @@ output "aws_profile" {
 }
 
 output "aws_region" {
-  value = "${var.region}"
+  value = var.region
 }
 
 output "subnet_cidr_block" {

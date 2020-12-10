@@ -17,7 +17,7 @@ data "aws_ec2_instance_type_offerings" "gpu_worker_instance_types" {
   }
   filter {
     name   = "location"
-    values = [ "${var.region}" ]
+    values = [ var.region ]
   }
   location_type = "region"
 }
