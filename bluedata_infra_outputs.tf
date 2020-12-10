@@ -1,5 +1,5 @@
 output "project_dir" {
-  value = "${abspath(path.module)}"
+  value = abspath(path.module)
 }
 
 output "user" {
