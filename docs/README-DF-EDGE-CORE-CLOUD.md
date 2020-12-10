@@ -232,10 +232,5 @@ EOF
 
 ```
 ./generated/ssh_mapr_cluster_2_host_0.sh \
-   "sudo -u mapr bash -c 'echo mapr | maprlogin password -user mapr -cluster dc1.enterprise.org'"
-```
-
-```
-./generated/ssh_mapr_cluster_2_host_0.sh \
    "sudo -u mapr bash -c '. /home/mapr/microservices-dashboard/scripts/edge/createMirror.sh'"
 ```
