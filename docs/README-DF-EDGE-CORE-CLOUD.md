@@ -116,7 +116,7 @@ EOF
 - Verify HQ can connect to EDGE:
 
 ```
-echo mapr | ./generated/ssh_mapr_cluster_1_host_0.sh -t \
+echo mapr | ./generated/ssh_mapr_cluster_1_host_0.sh \
    sudo -u mapr maprlogin password -cluster edge1.enterprise.org
 ```
 
@@ -128,7 +128,7 @@ This should report:
 - Verify EDGE can connect to HQ:
 
 ```
-echo mapr | ./generated/ssh_mapr_cluster_2_host_0.sh -t \
+echo mapr | ./generated/ssh_mapr_cluster_2_host_0.sh \
    sudo -u mapr maprlogin password -cluster dc1.enterprise.org
 ```
 
