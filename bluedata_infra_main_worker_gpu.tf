@@ -69,7 +69,7 @@ resource "null_resource" "yum_update_workers_gpu" {
     type        = "ssh"
     user        = "centos"
     host        = aws_instance.workers_gpu.*.public_ip[count.index]
-    private_key = file("${var.ssh_prv_key_path}")
+    private_key = file(var.ssh_prv_key_path)
     agent       = false
   }
 

@@ -44,7 +44,7 @@ resource "aws_instance" "gateway" {
       type        = "ssh"
       user        = "centos"
       host        = aws_instance.gateway.public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     inline = [

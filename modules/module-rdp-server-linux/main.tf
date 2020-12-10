@@ -72,7 +72,7 @@ resource "aws_instance" "rdp_server" {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     inline = [
@@ -103,7 +103,7 @@ resource "aws_instance" "rdp_server" {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     source        = "${path.module}/Desktop/"
@@ -115,7 +115,7 @@ resource "aws_instance" "rdp_server" {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     content        = data.template_file.mcs_desktop_link.rendered
@@ -127,7 +127,7 @@ resource "aws_instance" "rdp_server" {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     content        = data.template_file.hcp_desktop_link.rendered
@@ -139,7 +139,7 @@ resource "aws_instance" "rdp_server" {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     content        = data.template_file.hcp_links_desktop_link.rendered
@@ -152,7 +152,7 @@ resource "aws_instance" "rdp_server" {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     inline = [
@@ -168,7 +168,7 @@ resource "aws_instance" "rdp_server" {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     destination   = "/home/ubuntu/hcp-ca-cert.pem"
@@ -180,7 +180,7 @@ resource "aws_instance" "rdp_server" {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     source        = "${path.module}/ca-certs-setup.sh"
@@ -192,7 +192,7 @@ resource "aws_instance" "rdp_server" {
       type        = "ssh"
       user        = "ubuntu"
       host        = aws_instance.rdp_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
     inline = [

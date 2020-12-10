@@ -35,7 +35,7 @@ output "ssh_pub_key_path" {
 }
 
 output "ssh_prv_key_path" {
-  value = "${var.ssh_prv_key_path}"
+  value = var.ssh_prv_key_path
 }
 
 output "install_with_ssl" {

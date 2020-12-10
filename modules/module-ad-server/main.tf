@@ -26,7 +26,7 @@ resource "aws_instance" "ad_server" {
       type        = "ssh"
       user        = "centos"
       host        = aws_instance.ad_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent   = false
     }
     source        = "${path.module}/files/"
@@ -38,7 +38,7 @@ resource "aws_instance" "ad_server" {
       type        = "ssh"
       user        = "centos"
       host        = aws_instance.ad_server[0].public_ip
-      private_key = file("${var.ssh_prv_key_path}")
+      private_key = file(var.ssh_prv_key_path)
       agent   = false
     }
     inline = [
