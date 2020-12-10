@@ -64,7 +64,9 @@ if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINU
 		xdg-mime default gedit.desktop text/plain
 	EOF
 
-    ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "echo ${WRKR_PRV_IPS[@]} > ~/Desktop/HCP_WORKER_HOSTS.txt"
+	if [[ "$WORKER_COUNT" != "0" ]]; then
+    	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "echo ${WRKR_PRV_IPS[@]} > ~/Desktop/HCP_WORKER_HOSTS.txt"
+	fi
 
     # add private key to AD server to allow passwordless ssh to all other hosts
     if [[  "$AD_SERVER_ENABLED" == "True" && "$AD_PUB_IP" ]]; then
