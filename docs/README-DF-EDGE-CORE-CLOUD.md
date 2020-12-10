@@ -111,6 +111,23 @@ This should report:
 > MapR credentials of user 'mapr' for cluster 'dc1.enterprise.org' are written to '/tmp/maprticket_5000'
 
 
+### License both clusters
+
+- Login to MCS on both clusters (MCS runs on Host 0)
+  - You can find the host external IPs with `./bin/ec2_instance_status.sh`
+  - Login to `https://EXTIP:8443` (user:password = mapr:mapr)
+  - Navigate to **Admin -> Cluster Settings -> Licenses**
+  - Click **Get a Free Trial License**
+  - Login or Register
+  - Click **Add Cluster**
+    - Enter **Cluster ID**
+    - Enter **Cluster Name** (dc1.enterprise.org or edge1.enterprise.org)
+    - Select M5, M7 License
+    - Click **View Key** and copy license 
+  - In MCS click **Copy/Paste License**
+    - Paste License
+    - Click Submit
+
 ### Setup HQ Dashboard
 
 - Run the following:
@@ -182,24 +199,6 @@ EOF
 ./generated/ssh_mapr_cluster_2_host_0.sh \
    "sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard; EDGE_HOSTNAME=$(hostname -f) ./runDashboard.sh edge'"
 ```
-
-
-### License both clusters
-
-- Login to MCS on both clusters (MCS runs on Host 0)
-  - You can find the host external IPs with `./bin/ec2_instance_status.sh`
-  - Login to `https://EXTIP:8443` (user:password = mapr:mapr)
-  - Navigate to **Admin -> Cluster Settings -> Licenses**
-  - Click **Get a Free Trial License**
-  - Login or Register
-  - Click **Add Cluster**
-    - Enter **Cluster ID**
-    - Enter **Cluster Name** (dc1.enterprise.org or edge1.enterprise.org)
-    - Select M5, M7 License
-    - Click **View Key** and copy license 
-  - In MCS click **Copy/Paste License**
-    - Paste License
-    - Click Submit
 
 ### Register services
 
