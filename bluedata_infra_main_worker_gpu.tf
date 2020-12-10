@@ -52,8 +52,8 @@ resource "aws_instance" "workers_gpu" {
 
   tags = {
     Name = "${var.project_id}-instance-worker-gpu-${count.index + 1}"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 
@@ -88,8 +88,8 @@ resource "aws_ebs_volume" "worker-gpu-ebs-volumes-sdb" {
 
   tags = {
     Name = "${var.project_id}-worker-gpu-${count.index + 1}-ebs-sdb"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }
@@ -114,8 +114,8 @@ resource "aws_ebs_volume" "worker-gpu-ebs-volumes-sdc" {
 
   tags = {
     Name = "${var.project_id}-worker-gpu-${count.index + 1}-ebs-sdc"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }

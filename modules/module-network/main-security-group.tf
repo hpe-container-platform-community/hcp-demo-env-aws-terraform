@@ -4,9 +4,9 @@ resource "aws_default_security_group" "main" {
 
   tags = {
     Name = "${var.project_id}-default-security-group"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }
 
@@ -17,9 +17,9 @@ resource "aws_security_group" "main" {
 
   tags = {
     Name = "${var.project_id}-main-security-group"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }
 
@@ -64,9 +64,9 @@ resource "aws_security_group" "allow_all_from_specified_ips" {
 
   tags = {
     Name = "${var.project_id}-allow-all-from-specified-ips-security-group"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 
   ingress {
@@ -94,9 +94,9 @@ resource "aws_security_group" "allow_ssh_from_world" {
 
   tags = {
     Name = "${var.project_id}-allow-ssh-from-world-security-group"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 
   // DISABLED - uncomment to enable, but don't do this without good reason
@@ -122,9 +122,9 @@ resource "aws_security_group" "allow_rdp_from_world" {
 
   tags = {
     Name = "${var.project_id}-allow-rdp-from-world-security-group"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 
   // DISABLED - uncomment to enable, but don't do this without good reason

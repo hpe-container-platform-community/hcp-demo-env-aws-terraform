@@ -42,8 +42,8 @@ resource "aws_instance" "rdp_server" {
 
   tags = {
     Name = "${var.project_id}-instance-rdp-server"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }

@@ -16,8 +16,8 @@ resource "aws_instance" "mapr_cluster_2_hosts" {
 
   tags = {
     Name = "${var.project_id}-instance-mapr-cluster-2-host-${count.index}"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }
@@ -32,8 +32,8 @@ resource "aws_ebs_volume" "mapr-cluster-2-host-ebs-volumes-sdd" {
 
   tags = {
     Name = "${var.project_id}-mapr-cluster-2-host-${count.index}-ebs-sdd"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }
@@ -58,8 +58,8 @@ resource "aws_ebs_volume" "mapr-cluster-2-host-ebs-volumes-sde" {
 
   tags = {
     Name = "${var.project_id}-mapr-cluster-2-host-${count.index}-ebs-sde"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }
@@ -84,8 +84,8 @@ resource "aws_ebs_volume" "mapr-cluster-2-host-ebs-volumes-sdf" {
 
   tags = {
     Name = "${var.project_id}-mapr-cluster-2-host-${count.index}-ebs-sdf"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }
 }

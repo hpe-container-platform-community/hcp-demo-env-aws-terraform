@@ -3,7 +3,7 @@ output "project_dir" {
 }
 
 output "user" {
-  value = "${var.user}"
+  value = var.user
 }
 
 output "aws_profile" {

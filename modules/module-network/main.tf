@@ -8,9 +8,9 @@ resource "aws_vpc" "main" {
 
   tags = {
     Name = "${var.project_id}-vpc"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }
 
@@ -27,9 +27,9 @@ resource "aws_subnet" "main" {
 
   tags = {
     Name = "${var.project_id}-subnet"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }
 
@@ -40,9 +40,9 @@ resource "aws_route_table" "main" {
 
   tags = {
     Name = "${var.project_id}-main-route-table"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }
 
@@ -71,8 +71,8 @@ resource "aws_internet_gateway" "main" {
 
   tags = {
     Name = "${var.project_id}-internet-gateway"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }

@@ -48,7 +48,7 @@ resource "aws_ebs_volume" "worker-ebs-volumes-sdb" {
 
   tags = {
     Name = "${var.project_id}-worker-${count.index + 1}-ebs-sdb"
-    Project = "${var.project_id}"
+    Project = var.project_id
     user = var.user
     deployment_uuid = "${random_uuid.deployment_uuid.result}"
   }

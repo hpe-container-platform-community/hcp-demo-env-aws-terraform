@@ -5,9 +5,9 @@ resource "aws_eip" "rdp_server" {
   count = var.create_eip ? 1 : 0
   tags = {
     Name = "${var.project_id}-rdp-linux-server"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }
 
@@ -203,8 +203,8 @@ resource "aws_instance" "rdp_server" {
 
   tags = {
     Name = "${var.project_id}-instance-rdp-server-linux"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }

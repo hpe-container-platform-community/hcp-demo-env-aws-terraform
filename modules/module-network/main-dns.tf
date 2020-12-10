@@ -9,7 +9,7 @@ resource "aws_vpc_dhcp_options" "mydhcp" {
         Name = "${var.project_id}-vpc-dhcp-options"
         Project = var.project_id
         user = var.user
-        deployment_uuid = "${var.deployment_uuid}"
+        deployment_uuid = var.deployment_uuid
     }
 }
 resource "aws_vpc_dhcp_options_association" "dns_resolver" {

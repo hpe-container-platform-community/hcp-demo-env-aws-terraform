@@ -4,9 +4,9 @@ resource "aws_eip" "gateway" {
   count = var.create_eip ? 1 : 0
   tags = {
     Name = "${var.project_id}-gateway"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 }
 
@@ -34,9 +34,9 @@ resource "aws_instance" "gateway" {
 
   tags = {
     Name = "${var.project_id}-instance-gateway"
-    Project = "${var.project_id}"
-    user = "${var.user}"
-    deployment_uuid = "${var.deployment_uuid}"
+    Project = var.project_id
+    user = var.user
+    deployment_uuid = var.deployment_uuid
   }
 
   provisioner "remote-exec" {
