@@ -183,8 +183,18 @@ EOF
 - Run the following:
 
 ```
+CLUSTER2_NODE0="$(terraform output mapr_cluster_2_hosts_private_ip_flat | head -n1)"
+echo $CLUSTER2_NODE0
+
 ./generated/ssh_mapr_cluster_1_host_0.sh \
-   "sudo -u mapr bash -c 'scp ./data-fabric-edge-core-cloud-master.zip mapr@$(terraform output mapr_cluster_2_hosts_private_ip_flat | head -n1):~/'"
+   "sudo -u mapr bash -c 'scp -o StrictHostKeyChecking=no ./data-fabric-edge-core-cloud-master.zip mapr@${CLUSTER2_NODE0}:~/'"
+```
+
+- Verify data-fabric-edge-core-cloud-master.zip has been copied to /home/mapr 
+
+```
+./generated/ssh_mapr_cluster_2_host_0.sh \
+   "sudo -u mapr ls -l /home/mapr"
 ```
 
 - Install the dashboard
@@ -194,9 +204,10 @@ EOF
    set -e
    sudo service mapr-posix-client-basic restart
    sudo rm -rf /home/mapr/microservices-dashboard
-   sudo -u mapr bash -c 'cd /home/mapr; unzip -d /home/mapr -o /home/mapr/data-fabric-edge-core-cloud-master.zip'
-   sudo -u mapr bash -c 'cd /home/mapr; mv data-fabric-edge-core-cloud-master microservices-dashboard'
-   sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard/eclipse; rm -f microservices-dashboard-app.tar'
+   
+   sudo -u mapr bash -c 'unzip -d /home/mapr -o /home/mapr/data-fabric-edge-core-cloud-master.zip'
+   sudo -u mapr bash -c 'mv /home/mapr/data-fabric-edge-core-cloud-master /home/mapr/microservices-dashboard'
+   sudo -u mapr bash -c 'rm -f /home/mapr/microservices-dashboard/eclipse/microservices-dashboard-app.tar'
    sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard/eclipse; tar cf microservices-dashboard-app.tar microservices-dashboard/'
    sudo -u mapr bash -c 'cd /home/mapr; echo mapr | maprlogin password -user mapr'
    sudo -u mapr bash -c 'cd /home/mapr/microservices-dashboard; ./installDemo.sh edge'
