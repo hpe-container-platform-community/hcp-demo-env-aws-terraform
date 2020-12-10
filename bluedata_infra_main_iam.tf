@@ -5,7 +5,7 @@ resource "aws_iam_user" "iam_user" {
     Name = "${var.project_id}-iam-user"
     Project = var.project_id
     user = var.user
-    deployment_uuid = "${random_uuid.deployment_uuid.result}"
+    deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
 
