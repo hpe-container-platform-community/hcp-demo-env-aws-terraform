@@ -256,12 +256,12 @@ EOF
 
 ```
 ./generated/ssh_mapr_cluster_1_host_0.sh -t \
-   "bash -c 'watch ls /mapr/dc1.enterprise.org/apps/pipeline/data/files-missionX'"
+   "bash -c 'watch ls -lr /mapr/dc1.enterprise.org/apps/pipeline/data/files-missionX'"
 ```
 
 - Monitor EDGE files
 
 ```
 ./generated/ssh_mapr_cluster_2_host_0.sh -t \
-   "bash -c 'watch ls /mapr/edge1.enterprise.org/apps/pipeline/data/files-missionX'"
+   "bash -c 'watch ls -lr /mapr/edge1.enterprise.org/apps/pipeline/data/files-missionX'"
 ```
