@@ -56,8 +56,8 @@ resource "aws_launch_template" "eks-node-launch-template" {
     resource_type = "instance"
     tags = {
       Name = "${var.project_id}-eks-instance"
-      Project = "${var.project_id}"
-      user = "${var.user}"  
+      Project = var.project_id
+      user = var.user
       deployment_uuid = local.cluster_name  
     }
   }
@@ -98,8 +98,8 @@ resource "aws_eks_node_group" "example2" {
 
   tags = {
     Name = "${var.project_id}-eks-nodegroup-2"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = local.cluster_name  
   }
 }
@@ -114,8 +114,8 @@ resource "aws_subnet" "main2" {
 
   tags = {
     Name = "${var.project_id}-eks-subnet2"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = local.cluster_name
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
   }
@@ -129,8 +129,8 @@ resource "aws_subnet" "main3" {
 
   tags = {
     Name = "${var.project_id}-eks-subnet3"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = local.cluster_name
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
   }
@@ -155,8 +155,8 @@ resource "aws_network_acl" "main-eks" {
 
   tags = {
     Name = "${var.project_id}-eks-network-acl"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = local.cluster_name  
   }
 }
@@ -265,8 +265,8 @@ resource "aws_eks_cluster" "example" {
 
   tags = {
     Name = "${var.project_id}-eks"
-    Project = "${var.project_id}"
-    user = "${var.user}"
+    Project = var.project_id
+    user = var.user
     deployment_uuid = local.cluster_name
   }
 }
