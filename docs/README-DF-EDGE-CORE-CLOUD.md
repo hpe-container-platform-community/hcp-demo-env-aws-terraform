@@ -197,7 +197,7 @@ EOF
 - Run the following:
 
 ```
-CLUSTER2_NODE0="$(terraform output mapr_cluster_2_hosts_private_ip_flat | head -n1)"
+CLUSTER2_NODE0="$(terraform output mapr_cluster_2_hosts_private_ip_flat | head -n1)" && \
 echo $CLUSTER2_NODE0
 
 ./generated/ssh_mapr_cluster_1_host_0.sh \
