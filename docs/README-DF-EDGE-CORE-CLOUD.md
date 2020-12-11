@@ -228,7 +228,7 @@ echo $CLUSTER2_NODE0
 EOF
 ```
 
-### Run HQ Dashboard
+### Run Edge Dashboard
 
 - Open a new terminal to run the HQ dashboard:
 
