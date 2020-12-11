@@ -354,10 +354,13 @@ resource "local_file" "rdp_linux_credentials" {
   count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
   content = <<-EOF
     #!/bin/bash
+
+    HIDE_WARNINGS=$${HIDE_WARNINGS:-0}
+
     source "${path.module}/scripts/variables.sh"
     echo 
-    if [[ $RDP_PUB_IP == "" ]]; then
-      echo "Unable to display RDP credentials because RDP_PUB_IP could not be retrieved - is the instance running?"
+    if [[ $RDP_PUB_IP == "" && $HIDE_WARNINGS == 0 ]]; then
+      echo "WARNING: Unable to display RDP credentials because RDP_PUB_IP could not be retrieved - is the instance running?"
       exit
     fi
     echo ================================= RDP Credentials  =====================================

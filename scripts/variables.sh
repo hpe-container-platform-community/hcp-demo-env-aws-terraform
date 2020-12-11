@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+HIDE_WARNINGS=${HIDE_WARNINGS:-0}
+
 set -e # abort on error
 set -u # abort on undefined variable
 
@@ -294,7 +296,7 @@ ALL_MAPR_INSTANCE_IDS="${MAPR_CLUSTER1_HOSTS_INSTANCE_IDS} ${MAPR_CLUSTER2_HOSTS
 
 ALL_INSTANCE_IDS="${ALL_CP_INSTANCE_IDS} ${MAPR_CLUSTER1_HOSTS_INSTANCE_IDS} ${MAPR_CLUSTER2_HOSTS_INSTANCE_IDS}"
 
-if [[ ${#IP_WARNING[@]} != 0 ]]; then
+if [[ ${#IP_WARNING[@]} != 0 && ${HIDE_WARNINGS} == 0 ]]; then
    tput setaf 3
    echo "WARNING: ${IP_WARNING[@]} could not be retrieved -> is the instance(s) running?"
    tput sgr0
