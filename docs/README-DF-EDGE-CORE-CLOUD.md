@@ -46,12 +46,12 @@ tail -f nohup1.out nohup2.out
 IMPORTANT: Copy and paste each block separately.
 
 ```
-DC_MAPR_USERTICKET="$(./generated/ssh_mapr_cluster_1_host_0.sh 'sudo head -n1 /opt/mapr/conf/mapruserticket')"
+DC_MAPR_USERTICKET="$(./generated/ssh_mapr_cluster_1_host_0.sh 'sudo head -n1 /opt/mapr/conf/mapruserticket')" && \
 echo "$DC_MAPR_USERTICKET"
 ```
 
 ```
-EDGE_MAPR_USERTICKET="$(./generated/ssh_mapr_cluster_2_host_0.sh 'sudo head -n1 /opt/mapr/conf/mapruserticket')"
+EDGE_MAPR_USERTICKET="$(./generated/ssh_mapr_cluster_2_host_0.sh 'sudo head -n1 /opt/mapr/conf/mapruserticket')" && \
 echo "$EDGE_MAPR_USERTICKET"
 ```
 
@@ -85,8 +85,8 @@ done;
 ```
 
 ```
-terraform output mapr_cluster_1_hosts_private_ip_flat > localmaprhosts
-terraform output mapr_cluster_2_hosts_private_ip_flat > remotemaprhosts
+printf $(terraform output -json mapr_cluster_1_hosts_private_ip_flat) | sed 's/"//' > localmaprhosts
+printf $(terraform output -json mapr_cluster_2_hosts_private_ip_flat) | sed 's/"//' > remotemaprhosts
 
 ./generated/ssh_mapr_cluster_1_host_0.sh \
    "sudo -u mapr bash -c 'cat > /tmp/localmaprhosts && cat /tmp/localmaprhosts'" < localmaprhosts
@@ -95,18 +95,28 @@ terraform output mapr_cluster_2_hosts_private_ip_flat > remotemaprhosts
    "sudo -u mapr bash -c 'cat > /tmp/remotemaprhosts && cat /tmp/remotemaprhosts'" < remotemaprhosts
 
 ./generated/ssh_mapr_cluster_1_host_0.sh "sudo apt-get -y install expect pssh"
+```
 
-printf "mapr\nmapr" | ./generated/ssh_mapr_cluster_1_host_0.sh -t \
-   "sudo -u mapr bash -c '/opt/mapr/server/configure-crosscluster.sh create all \
-      -localuser mapr -localhosts /tmp/localmaprhosts \
-      -remoteuser mapr -remotehosts /tmp/remotemaprhosts \
-      -remoteip $(terraform output mapr_cluster_2_hosts_private_ip_flat | head -n1)'"
+```
+./generated/ssh_mapr_cluster_1_host_0.sh "sudo -u mapr expect" <<EOF
+
+   set remoteip [exec head -n1 /tmp/remotemaprhosts]
+   
+   spawn /opt/mapr/server/configure-crosscluster.sh create all \
+         -localuser mapr -localhosts /tmp/localmaprhosts \
+         -remoteuser mapr -remotehosts /tmp/remotemaprhosts \
+         -remoteip \$remoteip
+
+   expect "Enter password for mapr user (mapr) for local cluster:" { send "mapr\r" }
+   expect "Enter password for mapr user (mapr) for remote cluster:" { send "mapr\r" }
+   expect eof
+EOF
 ```
 
 - Verify HQ can connect to EDGE:
 
 ```
-echo mapr | ./generated/ssh_mapr_cluster_1_host_0.sh -t \
+echo mapr | ./generated/ssh_mapr_cluster_1_host_0.sh \
    sudo -u mapr maprlogin password -cluster edge1.enterprise.org
 ```
 
@@ -118,7 +128,7 @@ This should report:
 - Verify EDGE can connect to HQ:
 
 ```
-echo mapr | ./generated/ssh_mapr_cluster_2_host_0.sh -t \
+echo mapr | ./generated/ssh_mapr_cluster_2_host_0.sh \
    sudo -u mapr maprlogin password -cluster dc1.enterprise.org
 ```
 
@@ -187,7 +197,7 @@ EOF
 - Run the following:
 
 ```
-CLUSTER2_NODE0="$(terraform output mapr_cluster_2_hosts_private_ip_flat | head -n1)"
+CLUSTER2_NODE0="$(printf $(terraform output -json mapr_cluster_2_hosts_private_ip_flat) | sed 's/"//' | head -n1)" && \
 echo $CLUSTER2_NODE0
 
 ./generated/ssh_mapr_cluster_1_host_0.sh \
