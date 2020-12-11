@@ -85,8 +85,8 @@ done;
 ```
 
 ```
-terraform output mapr_cluster_1_hosts_private_ip_flat | sed '/^.*EOT$/d' > localmaprhosts
-terraform output mapr_cluster_2_hosts_private_ip_flat | sed '/^.*EOT$/d' > remotemaprhosts
+printf $(terraform output -json mapr_cluster_1_hosts_private_ip_flat) | sed 's/"//' > localmaprhosts
+printf $(terraform output -json mapr_cluster_2_hosts_private_ip_flat) | sed 's/"//' > remotemaprhosts
 
 ./generated/ssh_mapr_cluster_1_host_0.sh \
    "sudo -u mapr bash -c 'cat > /tmp/localmaprhosts && cat /tmp/localmaprhosts'" < localmaprhosts
