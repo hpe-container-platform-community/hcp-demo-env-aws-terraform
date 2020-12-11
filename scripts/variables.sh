@@ -177,12 +177,18 @@ GATW_PRV_HOST=$(echo $GATW_PRV_DNS | cut -d"." -f1)
 
 WORKER_COUNT=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["worker_count"]["value"][0], sep=" ")') 
 
-WRKR_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_instance_id"]["value"][0], sep=" ")') 
-WRKR_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_private_ip"]["value"][0], sep=" ")') 
-WRKR_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_public_ip"]["value"][0], sep=" ")') 
+if [[ "$WORKER_COUNT" != "0" ]]; then
+   WRKR_INSTANCE_IDS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_instance_id"]["value"][0], sep=" ")') 
+   WRKR_PRV_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_private_ip"]["value"][0], sep=" ")') 
+   WRKR_PUB_IPS=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["workers_public_ip"]["value"][0], sep=" ")') 
 
-read -r -a WRKR_PRV_IPS <<< "$WRKR_PRV_IPS"
-read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
+   read -r -a WRKR_PRV_IPS <<< "$WRKR_PRV_IPS"
+   read -r -a WRKR_PUB_IPS <<< "$WRKR_PUB_IPS"
+else
+   WRKR_INSTANCE_IDS=""
+   WRKR_PRV_IPS=()
+   WRKR_PUB_IPS=()
+fi
 
 #### GPU WORKERS
 

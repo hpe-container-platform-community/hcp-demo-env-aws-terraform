@@ -357,7 +357,7 @@ resource "local_file" "rdp_linux_credentials" {
     source "${path.module}/scripts/variables.sh"
     echo 
     if [[ $RDP_PUB_IP == "" ]]; then
-      echo "RDP_PUB_IP could not be retrieved - is the instance running?"
+      echo "Unable to display RDP credentials because RDP_PUB_IP could not be retrieved - is the instance running?"
       exit
     fi
     echo ================================= RDP Credentials  =====================================
