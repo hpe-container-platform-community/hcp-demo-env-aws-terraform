@@ -68,6 +68,8 @@ You can run the following script to create a DataTap to the Mapr 1 cluster in th
 
 #### Updating
 
+IMPORTANT: This section is deprecated and no longer works.
+
 SSH into the controller, e.g.
 
 ```
