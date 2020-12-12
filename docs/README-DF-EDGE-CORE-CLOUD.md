@@ -46,12 +46,12 @@ tail -f nohup1.out nohup2.out
 IMPORTANT: Copy and paste each block separately.
 
 ```
-DC_MAPR_USERTICKET="$(./generated/ssh_mapr_cluster_1_host_0.sh 'sudo head -n1 /opt/mapr/conf/mapruserticket')" && \
+DC_MAPR_USERTICKET="$(HIDE_WARNINGS=1 ./generated/ssh_mapr_cluster_1_host_0.sh 'sudo head -n1 /opt/mapr/conf/mapruserticket')" && \
 echo "$DC_MAPR_USERTICKET"
 ```
 
 ```
-EDGE_MAPR_USERTICKET="$(./generated/ssh_mapr_cluster_2_host_0.sh 'sudo head -n1 /opt/mapr/conf/mapruserticket')" && \
+EDGE_MAPR_USERTICKET="$(HIDE_WARNINGS=1 ./generated/ssh_mapr_cluster_2_host_0.sh 'sudo head -n1 /opt/mapr/conf/mapruserticket')" && \
 echo "$EDGE_MAPR_USERTICKET"
 ```
 
