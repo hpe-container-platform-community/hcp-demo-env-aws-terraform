@@ -6,6 +6,8 @@ set -u # abort on undefined variable
 source "./scripts/variables.sh"
 source "./scripts/functions.sh"
 
+HIDE_WARNINGS=1
+
 ################################################################################ 
 print_header "Register License"
 ################################################################################ 
