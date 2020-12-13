@@ -41,12 +41,11 @@ if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; then
          | sed 's!^"!!g' \
          | sed 's!"\$!!g' \
          | sed 's!\\\\"!"!g' \
+         | perl -pe 's/\\\\n/\\n/g' \
+         | perl -pe 's/\\\\r/\\r/g' \
          > license.txt
-         
-      perl -pe 's/\\\\n/\\n/g' license.txt > license2.txt
-      perl -pe 's/\\\\r/\\r/g' license2.txt > license3.txt
 
-      maprcli license add -cluster $MAPR_CLUSTER1_NAME -license license3.txt -is_file true
+      maprcli license add -cluster $MAPR_CLUSTER1_NAME -license license.txt -is_file true
 EOF
 fi
 
