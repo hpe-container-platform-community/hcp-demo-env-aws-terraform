@@ -33,6 +33,7 @@ And then run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAP
 
 ### Register License
 
+- This requires an account on https://mapr.com/user - create one if you don't have one alread.
 ```
 ./scripts/end_user_scripts/standalone_mapr/register_license.sh
 ```
