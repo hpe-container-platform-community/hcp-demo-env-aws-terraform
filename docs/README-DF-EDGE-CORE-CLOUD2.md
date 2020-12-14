@@ -23,7 +23,8 @@ mapr_cluster_2_count         = 3
 mapr_cluster_2_name          = "edge1.enterprise.org"
 ```
 
-And then run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAPR
+ - run `git pull` to get the latest code
+ - run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAPR
 
 ### Install and Setup MAPR
 
