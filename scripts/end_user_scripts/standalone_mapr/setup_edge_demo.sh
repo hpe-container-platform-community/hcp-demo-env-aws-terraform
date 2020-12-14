@@ -22,7 +22,7 @@ if [[ ! -e $filename ]]; then
    exit 1
 fi
 
-actual_md5=$(python -sBc "import hashlib;print hashlib.md5(open('$filename','rb').read()).hexdigest()")
+actual_md5=$(python3 -sBc "import hashlib;print(hashlib.md5(open('$filename','rb').read()).hexdigest())")
 expected_md5="dc43193e237fbf26138db03d43aaec6e"
 
 if [[ "$actual_md5" != "$expected_md5" ]]; then
