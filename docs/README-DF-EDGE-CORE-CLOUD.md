@@ -1,6 +1,6 @@
 ## Data Fabric - Edge Core Cloud Demo
 
-IMPORTANT: A newer version of this document is available here: [./README-DF-EDGE-CORE-CLOUD2.md](./README-DF-EDGE-CORE-CLOUD2.md]
+IMPORTANT: A newer version of this document is available here: [./README-DF-EDGE-CORE-CLOUD2.md](./README-DF-EDGE-CORE-CLOUD2.md)
 
 ### Overview
 
