@@ -23,7 +23,8 @@ mapr_cluster_2_count         = 3
 mapr_cluster_2_name          = "edge1.enterprise.org"
 ```
 
-And then run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAPR
+ - run `git pull` to get the latest code
+ - run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAPR
 
 ### Install and Setup MAPR
 
@@ -33,6 +34,7 @@ And then run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAP
 
 ### Register License
 
+- This requires an account on https://mapr.com/user - create one if you don't have one alread.
 ```
 ./scripts/end_user_scripts/standalone_mapr/register_license.sh
 ```
@@ -51,12 +53,24 @@ And then run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAP
 ./bin/mapr_edge_demo_hq_start.sh
 ```
 
+### Get HQ Dashboard and MCS URLs
+
+```
+./bin/mapr_edge_demo_hq_urls.sh
+```
+
 ### Run Edge Dashboard
 
 - Open a New terminal, then
 
 ```
 ./bin/mapr_edge_demo_edge_start.sh
+```
+
+### Get Edge Dashboard and MCS URLs
+
+```
+./bin/mapr_edge_demo_edge_urls.sh
 ```
 
 ### Setup Mirroring, Replication, etc
