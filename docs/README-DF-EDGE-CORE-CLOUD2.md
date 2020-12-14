@@ -55,6 +55,8 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 
 ### Get HQ Dashboard and MCS URLs
 
+- Open a New terminal, then
+
 ```
 ./bin/mapr_edge_demo_hq_urls.sh
 ```
@@ -68,6 +70,8 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 ```
 
 ### Get Edge Dashboard and MCS URLs
+
+- Open a New terminal, then
 
 ```
 ./bin/mapr_edge_demo_edge_urls.sh
