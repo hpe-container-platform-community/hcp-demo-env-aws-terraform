@@ -51,12 +51,24 @@ And then run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAP
 ./bin/mapr_edge_demo_hq_start.sh
 ```
 
+### Get HQ Dashboard and MCS URLs
+
+```
+./bin/mapr_edge_demo_hq_urls.sh
+```
+
 ### Run Edge Dashboard
 
 - Open a New terminal, then
 
 ```
 ./bin/mapr_edge_demo_edge_start.sh
+```
+
+### Get Edge Dashboard and MCS URLs
+
+```
+./bin/mapr_edge_demo_edge_urls.sh
 ```
 
 ### Setup Mirroring, Replication, etc
