@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HIDE_WARNINGS=1
+export HIDE_WARNINGS=1
 
 source "./scripts/variables.sh"
 
