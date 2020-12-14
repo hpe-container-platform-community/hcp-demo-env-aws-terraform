@@ -45,6 +45,10 @@ if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; then
          | perl -pe 's/\\\\r/\\r/g' \
          > license.txt
 
+      cat license.txt
+
+      echo mapr | maprlogin password -user mapr
+
       maprcli license add -cluster $MAPR_CLUSTER1_NAME -license license.txt -is_file true
       RESPONSE=$?
 
@@ -79,6 +83,10 @@ if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; then
          | perl -pe 's/\\\\n/\\n/g' \
          | perl -pe 's/\\\\r/\\r/g' \
          > license.txt
+
+      cat license.txt
+
+      echo mapr | maprlogin password -user mapr
 
       maprcli license add -cluster $MAPR_CLUSTER2_NAME -license license.txt -is_file true
       RESPONSE=$?
