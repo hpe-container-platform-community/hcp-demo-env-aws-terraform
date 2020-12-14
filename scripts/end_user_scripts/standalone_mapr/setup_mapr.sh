@@ -30,11 +30,14 @@ fi
 
 FAIL=0
 
+jobs -p
+
 for job in $(jobs -p); do
-    wait $job || FAIL=1
+   echo $job
+   wait $job || FAIL=1
 done
 
-if [ "$FAIL" != "0" ]; then
+if [[ "$FAIL" != "0" ]]; then
    echo "ERROR: failed to install MAPR"
    exit 1
 fi
