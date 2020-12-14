@@ -1,5 +1,7 @@
 ## Data Fabric - Edge Core Cloud Demo
 
+IMPORTANT: A newer version of this document is available here: [./README-DF-EDGE-CORE-CLOUD2.md](./README-DF-EDGE-CORE-CLOUD2.md]
+
 ### Overview
 
 This section describes how to create the demo that is available on [BrightTalk](https://www.brighttalk.com/webcast/12641/445912/stretching-hpe-ezmeral-data-fabric-from-edge-to-cloud) (demo starts around 32 mins 10 seconds).
