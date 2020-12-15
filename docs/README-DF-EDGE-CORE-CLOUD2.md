@@ -55,6 +55,8 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 
 ### Get HQ Dashboard and MCS URLs
 
+- Open a New terminal, then
+
 ```
 ./bin/mapr_edge_demo_hq_urls.sh
 ```
@@ -68,6 +70,8 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 ```
 
 ### Get Edge Dashboard and MCS URLs
+
+- Open a New terminal, then
 
 ```
 ./bin/mapr_edge_demo_edge_urls.sh
@@ -98,7 +102,7 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 Open a new terminal and run:
 
 ```
-./generated/ssh_mapr_cluster_1_host_0.sh \
+./generated/ssh_mapr_cluster_1_host_0.sh -t \
    "bash -c 'watch ls -lr /mapr/dc1.enterprise.org/apps/pipeline/data/files-missionX'"
 ```
 
@@ -107,6 +111,6 @@ Open a new terminal and run:
 Open a new terminal and run:
 
 ```
-./generated/ssh_mapr_cluster_2_host_0.sh \
+./generated/ssh_mapr_cluster_2_host_0.sh -t \
    "bash -c 'watch ls -lr /mapr/edge1.enterprise.org/apps/pipeline/data/files-missionX'"
 ```
