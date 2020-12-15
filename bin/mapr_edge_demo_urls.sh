@@ -17,5 +17,5 @@ echo
 echo "============"
 echo "Edge Cluster"
 echo "============"
-echo "Dashboard url: http://${EDGE_HOST}:8080/dashboard/dashboardHQ.html"
+echo "Dashboard url: http://${EDGE_HOST}:8080/dashboard/dashboardEdge.html"
 echo "MCS url:       https://${EDGE_HOST}:8443"
