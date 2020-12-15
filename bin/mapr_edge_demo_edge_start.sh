@@ -9,10 +9,13 @@ source "./scripts/variables.sh"
    sudo kill -TERM \$(ps -eaf | grep -i dashboard | awk '{ print \$2 }')
 
    set -e
+   set -x
+   
    sudo service mapr-posix-client-basic restart
 
    sudo -u mapr bash <<EOF2
       set -e
+      set -x
       echo mapr | maprlogin password -user mapr
 
       cd /home/mapr/microservices-dashboard
