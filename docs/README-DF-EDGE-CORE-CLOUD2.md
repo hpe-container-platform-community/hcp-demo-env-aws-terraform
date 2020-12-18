@@ -45,38 +45,21 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 ./scripts/end_user_scripts/standalone_mapr/setup_edge_demo.sh
 ```
 
-### Run HQ Dashboard
+### Run Dashboards
 
-- Open a New terminal, then
 
-```
-./bin/mapr_edge_demo_hq_start.sh
-```
-
-### Run Edge Dashboard
-
-- Open a New terminal, then
+- Open a New terminal, then run
 
 ```
-./bin/mapr_edge_demo_edge_start.sh
-```
-
-### Get Dashboard and MCS URLs
-
-- Open a New terminal, then
-
-```
-./bin/mapr_edge_demo_urls.sh
+./bin/mapr_edge_demo_start.sh
 ```
 
 ### Setup Mirroring, Replication, etc
 
-- Open a New terminal, then
+- Open a New terminal, then run
 
 ```
-./bin/mapr_edge_demo_poststartup_edge_replica.sh
-./bin/mapr_edge_demo_poststartup_mirror.sh
-./bin/mapr_edge_demo_poststartup_auditing.sh
+./bin/mapr_edge_demo_poststartup.sh
 ```
 
 ### Restart Volume Mirror
@@ -94,15 +77,5 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 Open a new terminal and run:
 
 ```
-./generated/ssh_mapr_cluster_1_host_0.sh -t \
-   "bash -c 'watch ls -lr /mapr/dc1.enterprise.org/apps/pipeline/data/files-missionX'"
-```
-
-- Monitor EDGE files
-
-Open a new terminal and run:
-
-```
-./generated/ssh_mapr_cluster_2_host_0.sh -t \
-   "bash -c 'watch ls -lr /mapr/edge1.enterprise.org/apps/pipeline/data/files-missionX'"
+./bin/mapr_edge_demo_watch_mirror.sh
 ```
