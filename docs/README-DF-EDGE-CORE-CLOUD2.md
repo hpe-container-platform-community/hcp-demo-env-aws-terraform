@@ -53,14 +53,6 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 ./bin/mapr_edge_demo_hq_start.sh
 ```
 
-### Get HQ Dashboard and MCS URLs
-
-- Open a New terminal, then
-
-```
-./bin/mapr_edge_demo_hq_urls.sh
-```
-
 ### Run Edge Dashboard
 
 - Open a New terminal, then
@@ -69,12 +61,12 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 ./bin/mapr_edge_demo_edge_start.sh
 ```
 
-### Get Edge Dashboard and MCS URLs
+### Get Dashboard and MCS URLs
 
 - Open a New terminal, then
 
 ```
-./bin/mapr_edge_demo_edge_urls.sh
+./bin/mapr_edge_demo_urls.sh
 ```
 
 ### Setup Mirroring, Replication, etc
