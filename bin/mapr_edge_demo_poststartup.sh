@@ -30,6 +30,8 @@ source "./scripts/variables.sh"
         -force true \
         -cluster dc1.enterprise.org || true
 
+    rm -rf /mapr/dc1.enterprise.org/apps/pipeline/data/files-missionX
+
     maprcli volume create \
         -name files-missionX \
         -path /apps/pipeline/data/files-missionX \
