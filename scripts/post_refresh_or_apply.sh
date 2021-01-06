@@ -39,20 +39,19 @@ cat >generated/get_admin_kubeconfig.sh<<EOF
 #!/bin/bash
 
 display_usage() { 
-	echo -e "\nUsage: \$0 clustername namespace s\n" 
+	echo -e "\nUsage: \$0 clustername > your_kubeconfig.conf\n" 
 } 
 
-if [[  \$# -le 2 ]]; then
+if [[  \$# -lt 1 ]]; then
 	display_usage
 	exit 1
 fi
 
 CLUSTER_NAME=\$1
-NAMESPACE=\$2
 
 CLUSTER_ID=\$(hpecp k8scluster list --query "[?label.name == '\${CLUSTER_NAME}'] | [0] | [_links.self.href]" --output text)
 
-hpecp k8scluster --id \$CLUSTER_ID get-admin-kubeconfig
+hpecp k8scluster --id \$CLUSTER_ID admin-kube-config
 EOF
 
 chmod +x generated/get_admin_kubeconfig.sh
