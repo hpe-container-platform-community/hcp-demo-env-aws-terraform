@@ -39,7 +39,8 @@ cat >generated/get_admin_kubeconfig_private.sh<<EOF
 #!/bin/bash
 
 display_usage() { 
-	echo "Usage: \$0 clustername" 
+	echo "Usage: \$0 clustername"
+	echo
 	echo "Example:"
 	echo "  kubectl --kubeconfig <(\$0 myclustername) get pods --all-namespaces"
 } 
