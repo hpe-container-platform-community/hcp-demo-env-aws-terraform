@@ -42,7 +42,7 @@ display_usage() {
 	echo "Usage: \$0 clustername"
 	echo
 	echo "Example:"
-	echo "  kubectl --kubeconfig <(\$0 myclustername) get pods --all-namespaces"
+	echo "  kubectl --insecure-skip-tls-verify --kubeconfig <(\$0 myclustername) get pods --all-namespaces"
 } 
 
 if [[  \$# -lt 1 ]]; then
