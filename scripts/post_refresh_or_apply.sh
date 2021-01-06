@@ -35,7 +35,7 @@ password = admin123
 tenant = /api/v1/tenant/2
 EOF
 
-cat >generated/get_admin_kubeconfig.sh<<EOF
+cat >generated/get_admin_kubeconfig_private.sh<<EOF
 #!/bin/bash
 
 display_usage() { 
@@ -51,10 +51,24 @@ CLUSTER_NAME=\$1
 CLUSTER_ID=\$(hpecp k8scluster list --query "[?label.name == '\${CLUSTER_NAME}'] | [0] | [_links.self.href]" --output text)
 
 CONF_FILE=$(mktemp)
-hpecp k8scluster --id \$CLUSTER_ID admin-kube-config | sed s@https://.*:@https://${GATW_PUB_IP}:@
+hpecp k8scluster --id \$CLUSTER_ID admin-kube-config
 EOF
+chmod +x generated/get_admin_kubeconfig_private.sh
 
-chmod +x generated/get_admin_kubeconfig.sh
+
+
+cat >generated/get_admin_kubeconfig_public.sh<<EOF
+#!/bin/bash
+
+SCRIPT_DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+./\$SCRIPT_DIR/get_admin_kubeconfig_private.sh | sed s@https://.*:@https://\${GATW_PUB_IP}:@
+EOF
+chmod +x generated/get_admin_kubeconfig_public.sh
+
+
+
+# | sed s@https://.*:@https://${GATW_PUB_IP}:@
 
 # add private key to RDP server to allow passwordless ssh to all other hosts
 if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINUX" && "$RDP_PUB_IP" && -f generated/controller.prv_key ]]; then
@@ -73,7 +87,7 @@ if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINU
     cat generated/hpecp_private.conf | \
         ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/.hpecp.conf"
 
-    cat generated/get_admin_kubeconfig.sh | \
+    cat generated/get_admin_kubeconfig_private.sh | \
         ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/get_admin_kubeconfig.sh"
 
 	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "chmod +x ~/get_admin_kubeconfig.sh"
