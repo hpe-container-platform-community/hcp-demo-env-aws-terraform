@@ -21,6 +21,20 @@ password = admin123
 tenant = /api/v1/tenant/2
 EOF
 
+cat >generated/hpecp_private.conf<<EOF
+[default]
+api_host = ${CTRL_PRV_IP}
+api_port = 8080
+use_ssl = ${INSTALL_WITH_SSL}
+verify_ssl = False
+warn_ssl = False
+username = admin
+password = admin123
+
+[tenant2]
+tenant = /api/v1/tenant/2
+EOF
+
 # add private key to RDP server to allow passwordless ssh to all other hosts
 if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINUX" && "$RDP_PUB_IP" && -f generated/controller.prv_key ]]; then
 
@@ -35,7 +49,7 @@ if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINU
     cat generated/controller.prv_key | \
         ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/Desktop/HCP_controller.prv_key" 
 
-    cat generated/hpecp.conf | \
+    cat generated/hpecp_private.conf | \
         ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/.hpecp.conf" 
 
     #ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP}  "[[ -d .ssh ]] || mkdir -p ~/.ssh"
