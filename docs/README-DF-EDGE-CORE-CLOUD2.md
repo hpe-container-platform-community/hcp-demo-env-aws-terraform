@@ -12,6 +12,8 @@ This section describes how to create the demo that is available on [BrightTalk](
    - If you don't have access contact chris dot snow at hpe dot com
 - You have the cluster IP addresses: `./bin/ec2_instance_status.sh`
 
+## Setup the demo
+
 ### Create MAPR HQ and Edge Infastructure
 
 - Ensure you have the following in your `etc/bluedata_infra.tfvars`:
@@ -45,6 +47,8 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 ./scripts/end_user_scripts/standalone_mapr/setup_edge_demo.sh
 ```
 
+## Run the demo
+
 ### Run Dashboards
 
 
@@ -52,6 +56,12 @@ mapr_cluster_2_name          = "edge1.enterprise.org"
 
 ```
 ./bin/mapr_edge_demo_start.sh
+```
+
+### Open dashboards
+
+```
+./bin/mapr_edge_demo_urls.sh
 ```
 
 ### Setup Mirroring, Replication, etc
