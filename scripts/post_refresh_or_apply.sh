@@ -35,6 +35,28 @@ password = admin123
 tenant = /api/v1/tenant/2
 EOF
 
+cat >generated/get_admin_kubeconfig.sh<<EOF
+#!/bin/bash
+
+display_usage() { 
+	echo -e "\nUsage: \$0 clustername namespace s\n" 
+} 
+
+if [[  $# -le 2 ]]; then
+	display_usage
+	exit 1
+fi
+
+CLUSTER_NAME=$1
+NAMESPACE=$2
+
+CLUSTER_ID=$(hpecp k8scluster list --query "[?label.name == '\${CLUSTER_NAME}'] | [0] | [_links.self.href]" --output text)
+
+hpecp k8scluster --id \$CLUSTER_ID get-admin-kubeconfig
+EOF
+
+chmod +x generated/kubectl.sh
+
 # add private key to RDP server to allow passwordless ssh to all other hosts
 if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINUX" && "$RDP_PUB_IP" && -f generated/controller.prv_key ]]; then
 
