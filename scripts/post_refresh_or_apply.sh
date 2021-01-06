@@ -35,6 +35,9 @@ if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINU
     cat generated/controller.prv_key | \
         ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/Desktop/HCP_controller.prv_key" 
 
+    cat generated/hpecp.conf | \
+        ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "cat > ~/.hpecp.conf" 
+
     #ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP}  "[[ -d .ssh ]] || mkdir -p ~/.ssh"
     #ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP}  "[[ -f .ssh/id_rsa ]] || mv ~/Desktop/controller.prv_key ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
 
