@@ -42,7 +42,7 @@ display_usage() {
 	echo -e "\nUsage: \$0 clustername namespace s\n" 
 } 
 
-if [[  $# -le 2 ]]; then
+if [[  \$# -le 2 ]]; then
 	display_usage
 	exit 1
 fi
