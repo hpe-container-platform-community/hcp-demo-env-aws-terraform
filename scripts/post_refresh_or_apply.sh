@@ -54,7 +54,6 @@ fi
 CLUSTER_NAME=\$1
 CLUSTER_ID=\$(hpecp k8scluster list --query "[?label.name == '\${CLUSTER_NAME}'] | [0] | [_links.self.href]" --output text)
 
-CONF_FILE=$(mktemp)
 hpecp k8scluster --id \$CLUSTER_ID admin-kube-config
 EOF
 chmod +x generated/get_admin_kubeconfig_private.sh
@@ -80,7 +79,6 @@ fi
 CLUSTER_NAME=\$1
 CLUSTER_ID=\$(hpecp k8scluster list --query "[?label.name == '\${CLUSTER_NAME}'] | [0] | [_links.self.href]" --output text)
 
-CONF_FILE=$(mktemp)
 hpecp k8scluster --id \$CLUSTER_ID admin-kube-config| sed s@https://.*:@https://${GATW_PUB_IP}:@
 EOF
 chmod +x generated/get_admin_kubeconfig_public.sh
