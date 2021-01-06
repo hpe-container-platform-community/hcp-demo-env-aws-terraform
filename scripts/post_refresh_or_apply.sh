@@ -62,7 +62,7 @@ cat >generated/get_admin_kubeconfig_public.sh<<EOF
 
 SCRIPT_DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-./\$SCRIPT_DIR/get_admin_kubeconfig_private.sh | sed s@https://.*:@https://\${GATW_PUB_IP}:@
+. /\$SCRIPT_DIR/get_admin_kubeconfig_private.sh | sed s@https://.*:@https://${GATW_PUB_IP}:@
 EOF
 chmod +x generated/get_admin_kubeconfig_public.sh
 
