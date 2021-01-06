@@ -43,7 +43,7 @@ display_usage() {
 	echo
 	echo "Example:"
 	echo "  CLUSTERNAME=your_cluster_name"
-	echo "  kubectl --kubeconfig <(\$0 \\$CLUSTERNAME) get pods --all-namespaces"
+	echo "  kubectl --kubeconfig <(\$0 \\\$CLUSTERNAME) get pods --all-namespaces"
 } 
 
 if [[  \$# -lt 1 ]]; then
@@ -69,7 +69,7 @@ display_usage() {
 	echo
 	echo "Example:"
 	echo "  CLUSTERNAME=your_cluster_name"
-	echo "  kubectl --insecure-skip-tls-verify --kubeconfig <(\$0 \\$CLUSTERNAME) get pods --all-namespaces"
+	echo "  kubectl --insecure-skip-tls-verify --kubeconfig <(\$0 \\\$CLUSTERNAME) get pods --all-namespaces"
 } 
 
 if [[  \$# -lt 1 ]]; then
