@@ -25,7 +25,11 @@ mapr_cluster_2_count         = 3
 mapr_cluster_2_name          = "edge1.enterprise.org"
 ```
 
-**IMPORTANT**: Ensure the mapr hosts have nvme drives.
+```diff
+- IMPORTANT:  Ensure the mapr hosts have nvme drives (e.g. m4.4xlarge in Ireland region doesn't, but m5.4xlarge does)
+```
+
+
 
  - run `git pull` to get the latest code
  - run `./bin/terraform_apply.sh` to create the AWS infrastructure for MAPR
