@@ -297,9 +297,9 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    # install application workbench
    sudo yum install -y -q epel-release
    sudo yum install -y -q python-pip
-   sudo pip install --upgrade pip
-   sudo pip install --upgrade setuptools
-   sudo pip install --upgrade bdworkbench
+   # sudo pip install --upgrade pip
+   # sudo pip install --upgrade setuptools
+   # sudo pip install --upgrade bdworkbench
 
    touch /home/centos/bd_installed
 ENDSSH
