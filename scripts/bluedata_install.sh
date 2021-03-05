@@ -264,8 +264,20 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 ENDSSH
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-   set -eu
+   set -e
 
+sudo bash -c "cat >/etc/profile.d/local_python.sh" <<'EOF'
+#!/bin/bash
+PYTHONPATH=\$PYTHONPATH:/opt/bluedata/ezpylib/
+export PYTHONPATH
+EOF
+
+ENDSSH
+
+ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+   set -e
+
+   set -u
    # do initial configuration
    KERB_OPTION="-k no"
    LOCAL_TENANT_STORAGE=""
