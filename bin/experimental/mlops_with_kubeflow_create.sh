@@ -43,15 +43,25 @@ AD_SERVER_PRIVATE_IP=$(terraform output ad_server_private_ip)
 EXTERNAL_IDENTITY_SERVER="{\"bind_pwd\":\"5ambaPwd@\",\"user_attribute\":\"CN\",\"bind_type\":\"search_bind\",\"bind_dn\":\"cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com\",\"host\":\"${AD_SERVER_PRIVATE_IP}\",\"group_attribute\":\"member\",\"security_protocol\":\"ldaps\",\"base_dn\":\"CN=Users,DC=samdom,DC=example,DC=com\",\"verify_peer\":false,\"type\":\"Active Directory\",\"port\":636}"
 
 echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[kubeflow] | timeout=1800s"
-CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons [kubeflow] --external-identity-server "${EXTERNAL_IDENTITY_SERVER}")
+CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons ["kubeflow"] --external-identity-server "${EXTERNAL_IDENTITY_SERVER}")
 
 echo "$CLUSTER_ID"
 
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 3600
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
 
+echo "Adding addon [kubeflow] | timeout=1800s"
+hpecp k8scluster add-addons --id $CLUSTER_ID --addons [kubeflow]
+hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1800
+echo "Addon successfully added"
+
 echo 'Patching cluster'
-kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n hpecp patch hpecpconfig hpecp-global-config --type=json -p '[ { "op":"add", "path": "/spec/tenantServiceImports/-", "value": {"category":"default","importName":"kf-dashboard","targetName":"istio-ingressgateway","targetNamespace":"istio-system","targetPorts":[{"importName":"http-80","targetName":"http-80"}]} } ]'
+ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
+
+   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+	-n hpecp patch hpecpconfig hpecp-global-config --type=json \
+	-p '[ { "op":"add", "path": "/spec/tenantServiceImports/-", "value": {"category":"default","importName":"kf-dashboard","targetName":"istio-ingressgateway","targetNamespace":"istio-system","targetPorts":[{"importName":"http-80","targetName":"http-80"}]} } ]'
+EOF1
 
 echo "Creating tenant"
 TENANT_ID=$(hpecp tenant create --name "k8s-tenant-1" --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s --features '{ ml_project: true }' --quota-cores 1000)
