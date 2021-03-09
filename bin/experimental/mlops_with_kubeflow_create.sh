@@ -58,6 +58,10 @@ echo "Addon successfully added"
 echo 'Patching cluster'
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
 
+   # kubeconfig contains the internal cluster IP address (10.x.x.x) so will only be reachable if the
+   # caller has local network connectivity.  The easiest way to ensure this is to run the script on 
+   # the RDP server
+
    kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
 	-n hpecp patch hpecpconfig hpecp-global-config --type=json \
 	-p '[ { "op":"add", "path": "/spec/tenantServiceImports/-", "value": {"category":"default","importName":"kf-dashboard","targetName":"istio-ingressgateway","targetNamespace":"istio-system","targetPorts":[{"importName":"http-80","targetName":"http-80"}]} } ]'
