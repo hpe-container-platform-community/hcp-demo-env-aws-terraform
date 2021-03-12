@@ -61,10 +61,11 @@ eks_subnet3_az_suffix = "c"            # you shouldn't need to change this
 # epic_options = "--skipeula"                             # epic < 5.2 
 epic_options = "--skipeula --default-password admin123"   # epic >= 5.2
 
-# This is a private bucket: change the epic_dl_url to your s3 url
+# This is a private bucket
+# When using private buckets set the epic_dl_url to your s3 url else use a https url
 epic_dl_url = "s3://csnow-bins/hpe-cp-rhel-release-5.2-3020.bin"
 
-# set to true for private buckets
+# set to true for private buckets (s3://...) otherwise set to false
 epid_dl_url_needs_presign = true 
 
 # you may need to set this if you are deploying your instances in a different region to the s3 bucket on your install binary
