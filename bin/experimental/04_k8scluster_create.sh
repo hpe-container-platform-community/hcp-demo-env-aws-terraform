@@ -34,8 +34,14 @@ fi
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 17 --output text)
 
+if [[ -z "$K8S_VERSION" ]]; then
+   K8S_VERSION_OPT=""
+else
+   K8S_VERSION_OPT="--k8s-version $K8S_VERSION"
+fi
+
 echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | timeout=1800s"
-CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons [istio])
+CLUSTER_ID=$(hpecp k8scluster create --name c1 $K8S_VERSION_OPT --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons [istio])
 
 echo "$CLUSTER_ID"
 
