@@ -55,18 +55,6 @@ hpecp k8scluster add-addons --id $CLUSTER_ID --addons [kubeflow]
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1800
 echo "Addon successfully added"
 
-echo 'Patching cluster'
-ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
-
-   # kubeconfig contains the internal cluster IP address (10.x.x.x) so will only be reachable if the
-   # caller has local network connectivity.  The easiest way to ensure this is to run the script on 
-   # the RDP server
-
-   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-	-n hpecp patch hpecpconfig hpecp-global-config --type=json \
-	-p '[ { "op":"add", "path": "/spec/tenantServiceImports/-", "value": {"category":"default","importName":"kf-dashboard","targetName":"istio-ingressgateway","targetNamespace":"istio-system","targetPorts":[{"importName":"http-80","targetName":"http-80"}]} } ]'
-EOF1
-
 echo "Creating tenant"
 TENANT_ID=$(hpecp tenant create --name "k8s-tenant-1" --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s --features '{ ml_project: true }' --quota-cores 1000)
 hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 1800
