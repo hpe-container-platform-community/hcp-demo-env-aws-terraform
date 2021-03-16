@@ -43,7 +43,7 @@ AD_SERVER_PRIVATE_IP=$(terraform output ad_server_private_ip)
 EXTERNAL_IDENTITY_SERVER="{\"bind_pwd\":\"5ambaPwd@\",\"user_attribute\":\"CN\",\"bind_type\":\"search_bind\",\"bind_dn\":\"cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com\",\"host\":\"${AD_SERVER_PRIVATE_IP}\",\"group_attribute\":\"member\",\"security_protocol\":\"ldaps\",\"base_dn\":\"CN=Users,DC=samdom,DC=example,DC=com\",\"verify_peer\":false,\"type\":\"Active Directory\",\"port\":636}"
 
 echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[kubeflow] | timeout=1800s"
-CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons ["kubeflow"] --external-identity-server "${EXTERNAL_IDENTITY_SERVER}")
+CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons ["kubeflow"] --external-identity-server "${EXTERNAL_IDENTITY_SERVER}" --external-groups '["CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"]')
 
 echo "$CLUSTER_ID"
 
