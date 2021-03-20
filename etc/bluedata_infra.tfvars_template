@@ -47,6 +47,9 @@ additional_client_ip_list = []  # E.g. [ "1.1.1.1/24","2.2.2.2/32" ]
 # specify how many BlueData workers you want
 worker_count = 3
 
+# Set to true to install HPE CP with embedded DF (mapr)
+embedded_df = true
+
 # specify how many MAPR instances you want (0 or 3)
 mapr_cluster_1_count         = 0                     # How many hosts do you want for MAPR CLUSTER 1? (0 or 3)
 mapr_cluster_1_name          = "demo1.mapr.com"

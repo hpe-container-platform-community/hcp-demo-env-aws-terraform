@@ -7,6 +7,11 @@ set -o pipefail # abort on subprocess failure
 source "./scripts/variables.sh"
 source "./scripts/functions.sh"
 
+if [[ "$EMBEDDED_DF" == "False" ]]; then
+   echo "Aborting. This script is only supported on clusters with embedded DF".
+   exit 1
+fi
+
 WORKER_HOST_IPS=("$@")
 
 if [[ "${#WORKER_HOST_IPS[@]}" -lt 3 ]]; then
@@ -22,6 +27,7 @@ if [[ "${#WORKER_HOST_IPS[@]}" -lt 3 ]]; then
    hpecp k8sworker list
    echo
    print_header "End usage."
+
    exit 1
 fi
 
@@ -39,8 +45,15 @@ if [[ "${HPECP_VERSION}" != "5.3" ]]; then
    exit 1
 fi
 
+set -x
+
 print_header "Setup hosts as K8s workers"
-WORKER_IDS=$(./bin/experimental/03_k8sworkers_add.sh "${WORKER_HOST_IPS[@]}" | tail -n 1)
+echo Using the following WORKER_HOST_IPS="${WORKER_HOST_IPS[@]}"
+./bin/experimental/03_k8sworkers_add.sh "${WORKER_HOST_IPS[@]}"
+QUERY="[*] | @[?contains('${WORKER_HOST_IPS[@]}', ipaddr)] | [*][_links.self.href]" 
+WORKER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
+
+echo Using the following WORKER_IDS="${WORKER_IDS[@]}"
 
 print_header "Create MLOPS cluster and tenant"
-./bin/experimental/mlops_with_kubeflow_create.sh "$WORKER_IDS"
+./bin/experimental/mlops_with_kubeflow_create.sh $WORKER_IDS

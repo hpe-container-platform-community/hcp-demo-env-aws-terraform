@@ -57,3 +57,5 @@ wait # don't quit until all workers are configured
 #     echo "   worker $WRKR"
 #     hpecp k8sworker wait-for-status ${WRKR} --status  "['ready']" --timeout-secs 1800
 # done
+
+echo "${WRKR_IDS[@]}"

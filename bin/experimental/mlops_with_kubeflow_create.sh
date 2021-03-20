@@ -75,6 +75,10 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
 
    ADMIN_ID=\$(hpecp user list --query "[?label.name=='admin'] | [0] | [_links.self.href]" --output text | cut -d '/' -f 5)
    TENANT_NS=\$(hpecp tenant get /api/v1/tenant/4 | grep "^namespace: " | cut -d " " -f 2)
+
+   # TODO: The secret needs to be generated, see
+   # https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/issues/24  
+
    KC_SECRET=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n \$TENANT_NS get secrets | grep hpecp-kc-secret | cut -d " " -f 1)
 
    echo TENANT_NS=\$TENANT_NS
@@ -94,7 +98,7 @@ spec:
   connections: 
     secrets: 
       - hpecp-ext-auth-secret
-      - \$KC_SECRET
+    #  - \$KC_SECRET 
   roles: 
     - 
       id: "controller"

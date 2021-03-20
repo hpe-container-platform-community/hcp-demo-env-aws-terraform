@@ -152,6 +152,10 @@ output "worker_count" {
   value = [var.worker_count]
 }
 
+output "embedded_df" {
+  value = var.embedded_df
+}
+
 /// GPU workers
 
 output "workers_gpu_instance_id" {
