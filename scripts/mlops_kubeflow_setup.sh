@@ -13,6 +13,7 @@ if [[ "$EMBEDDED_DF" == "False" ]]; then
 fi
 
 WORKER_HOST_IPS=("$@")
+echo "Inside script: '$0' with parameters: ${WORKER_HOST_IPS[@]}"
 
 if [[ "${#WORKER_HOST_IPS[@]}" -lt 3 ]]; then
    
