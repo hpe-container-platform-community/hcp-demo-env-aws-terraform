@@ -4,6 +4,7 @@ HOST_IPS=( "$@" )
 
 set -e # abort on error
 set -u # abort on undefined variable
+set -o pipefail
 
 if [[ ! -d generated ]]; then
    echo "This file should be executed from the project directory"
