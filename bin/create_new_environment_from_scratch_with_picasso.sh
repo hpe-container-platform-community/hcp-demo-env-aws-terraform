@@ -10,6 +10,12 @@ WORKER_HOSTS_INDEX='3:'
 
 ./bin/terraform_destroy_accept.sh
 ./bin/create_new_environment_from_scratch.sh
+
+if [[ "$EMBEDDED_DF" == "True" ]]; then
+   echo "Aborting. This script is can not run on deplyments that have the embedded DF".
+   exit 1
+fi
+
 bash etc/postcreate_core.sh_template
 
 MASTER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $MASTER_HOSTS_INDEX)
@@ -37,4 +43,13 @@ echo K8S_HOST_CONFIG=$K8S_HOST_CONFIG
 echo "Creating k8s cluster with version ${K8S_VERSION}"
 CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_HOST_CONFIG" --external-identity-server "${EXTERNAL_IDENTITY_SERVER}" --external-groups '["CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com","CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"]' --datafabric true --datafabric-name=dfdemo)
 
+echo CONTROLLER URL: $(terraform output controller_public_url)
 
+date
+echo "Waiting up to 1 hour for status == error|ready"
+hpecp k8scluster wait-for-status '[error,ready]' --id $CLUSTER_ID --timeout-secs 3600
+date
+
+hpecp k8scluster list
+
+hpecp config get | grep  bds_global_
