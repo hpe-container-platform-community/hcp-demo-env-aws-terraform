@@ -11,6 +11,7 @@ WORKER_HOSTS_INDEX='3:'
 ./bin/terraform_destroy_accept.sh
 ./bin/create_new_environment_from_scratch.sh
 
+source "./scripts/variables.sh"
 if [[ "$EMBEDDED_DF" == "True" ]]; then
    echo "Aborting. This script is can not run on deplyments that have the embedded DF".
    exit 1
