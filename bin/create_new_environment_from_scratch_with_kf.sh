@@ -4,6 +4,12 @@ set -u
 set -e
 set -o pipefail
 
+if grep '^\s*embedded_df\s*=\s*false\s*' etc/bluedata_infra.tfvars; 
+then
+   echo "'embedded_df' must be set to 'true' in 'etc/bluedata_infra.tfvars'"
+   exit 1
+fi
+
 # Three hosts are required for the KF demo - let's select the first three from terraform
 KF_HOSTS_INDEX='0:3'
 
