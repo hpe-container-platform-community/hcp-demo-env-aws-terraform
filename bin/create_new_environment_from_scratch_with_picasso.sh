@@ -4,25 +4,36 @@ set -u
 set -e
 set -o pipefail
 
-# Three hosts are required for the KF demo - let's select the first three from terraform
+# select the first three ECP worker hosts from terraform as the k8s masters
 MASTER_HOSTS_INDEX='0:3'
+
+# select the remaining ECP worker host hosts from terraform as the k8s workers
 WORKER_HOSTS_INDEX='3:'
 
+# verify terraform isn't deploying ECP  with embedded DF
 if grep '^\s*embedded_df\s*=\s*true\s*' etc/bluedata_infra.tfvars;
 then
    echo "'embedded_df' must be set to 'false' in 'etc/bluedata_infra.tfvars'"
    exit 1
 fi
 
+# start from a clean slate - remove all trace of previous runs
 ./bin/terraform_destroy_accept.sh
+
+# create AWS infra and install  ECP
 ./bin/create_new_environment_from_scratch.sh
 
+# perform post ECP installation setup (add gateways, etc)
 bash etc/postcreate_core.sh_template
 
+# select the IP addresses of the k8s hosts
 MASTER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $MASTER_HOSTS_INDEX)
 WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $WORKER_HOSTS_INDEX)
 
+# Add ECP workers without tags
 ./bin/experimental/03_k8sworkers_add.sh $MASTER_HOSTS
+
+# Add ECP workers with picasso tags
 ./bin/experimental/03_k8sworkers_add_with_picasso_tag.sh $WORKER_HOSTS
 
 QUERY="[*] | @[?contains('${MASTER_HOSTS}', ipaddr)] | [*][_links.self.href]"
@@ -30,7 +41,6 @@ MASTER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' '
 
 QUERY="[*] | @[?contains('${WORKER_HOSTS}', ipaddr)] | [*][_links.self.href]"
 WORKER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
-
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 20 --output text)
 
