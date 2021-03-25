@@ -8,14 +8,14 @@ set -o pipefail
 MASTER_HOSTS_INDEX='0:3'
 WORKER_HOSTS_INDEX='3:'
 
-./bin/terraform_destroy_accept.sh
-./bin/create_new_environment_from_scratch.sh
-
-source "./scripts/variables.sh"
-if [[ "$EMBEDDED_DF" == "True" ]]; then
-   echo "Aborting. This script is can not run on deplyments that have the embedded DF".
+if grep '^\s*embedded_df\s*=\s*true\s*' etc/bluedata_infra.tfvars;
+then
+   echo "'embedded_df' must be set to 'false' in 'etc/bluedata_infra.tfvars'"
    exit 1
 fi
+
+./bin/terraform_destroy_accept.sh
+./bin/create_new_environment_from_scratch.sh
 
 bash etc/postcreate_core.sh_template
 
