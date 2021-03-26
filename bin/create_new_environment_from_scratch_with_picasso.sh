@@ -64,3 +64,6 @@ date
 hpecp k8scluster list
 
 hpecp config get | grep  bds_global_
+
+
+# TODO https://docs.containerplatform.hpe.com/52/reference/hpe-ezmeral-data-fabric-admini/Creating_a_New_Data_Fabric_Cluster.html?hl=creating%2Cnew%2Cdata%2Cfabric%2Ccluster#v52_creating-a-new-data-fabric-cluster__step6
