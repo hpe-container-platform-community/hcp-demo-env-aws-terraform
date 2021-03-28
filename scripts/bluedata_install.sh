@@ -280,7 +280,12 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    set -u
    # do initial configuration
    KERB_OPTION="-k no"
-   LOCAL_TENANT_STORAGE=""
+
+   if [[ "$EMBEDDED_DF" == "True" ]]; then
+      LOCAL_TENANT_STORAGE=""
+   else
+      LOCAL_TENANT_STORAGE="--no-local-tenant-storage"
+   fi
    LOCAL_FS_TYPE=""
    WORKER_LIST=""
    CLUSTER_IP=""
