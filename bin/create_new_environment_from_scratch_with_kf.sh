@@ -10,6 +10,12 @@ then
    exit 1
 fi
 
+if [[ $(grep ^worker_count etc/bluedata_infra.tfvars | awk '$3 > 1 {print "true"}') != "true" ]];
+then
+  echo "worker_count in etc/bluedata_infra.tfvars must be > 1"
+  exit 1
+fi
+
 # Three hosts are required for the KF demo - let's select the first three from terraform
 KF_HOSTS_INDEX='0:3'
 
