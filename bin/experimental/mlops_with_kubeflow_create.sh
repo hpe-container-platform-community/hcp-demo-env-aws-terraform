@@ -21,18 +21,22 @@ echo "Platform ID: $(hpecp license platform-id)"
 
 set +u
 
-K8S_WORKER_1=$1
-K8S_WORKER_2=$2
+MASTER_IDS="${@:1:1}"  # FIRST ARGUMENT
+WORKER_IDS=("${@:2}")  # REMAINING ARGUMENTS
 
+echo "${MASTER_IDS}"
+echo "${WORKER_IDS[@]}"
 
-if [[ $K8S_WORKER_1 =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]] && [[ $K8S_WORKER_2 =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]]; 
+if [[ $MASTER_IDS =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]] && [[ ${WORKER_IDS[0]} =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]]; 
 then
    echo 
 else
-   echo "Usage: $0 /api/v2/worker/k8shost/[0-9] /api/v2/worker/k8shost/[0-9]"
+   echo "Usage: $0 /api/v2/worker/k8shost/[0-9] /api/v2/worker/k8shost/[0-9] [ ... /api/v2/worker/k8shost/NNN ]"
    exit 1
 fi
 
+K8S_HOST_CONFIG="$(echo $MASTER_IDS | sed 's/ /:master,/g'):master,$(echo ${WORKER_IDS[@]} | sed 's/ /:worker,/g'):worker"
+echo K8S_HOST_CONFIG=$K8S_HOST_CONFIG
 
 set -u
 
@@ -40,10 +44,24 @@ K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-f
 
 AD_SERVER_PRIVATE_IP=$(terraform output ad_server_private_ip)
 
-EXTERNAL_IDENTITY_SERVER="{\"bind_pwd\":\"5ambaPwd@\",\"user_attribute\":\"CN\",\"bind_type\":\"search_bind\",\"bind_dn\":\"cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com\",\"host\":\"${AD_SERVER_PRIVATE_IP}\",\"group_attribute\":\"member\",\"security_protocol\":\"ldaps\",\"base_dn\":\"CN=Users,DC=samdom,DC=example,DC=com\",\"verify_peer\":false,\"type\":\"Active Directory\",\"port\":636}"
-
 echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[kubeflow] | timeout=1800s"
-CLUSTER_ID=$(hpecp k8scluster create --name c1 --k8s-version $K8S_VERSION --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons ["kubeflow"] --external-identity-server "${EXTERNAL_IDENTITY_SERVER}" --external-groups '["CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com","CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"]')
+CLUSTER_ID=$(hpecp k8scluster create \
+  --name c1 \
+  --k8s-version "$K8S_VERSION" \
+  --k8shosts-config "$K8S_HOST_CONFIG" \
+  --addons ["kubeflow"] \
+  --ext_id_svr_bind_pwd "5ambaPwd@" \
+  --ext_id_svr_user_attribute "CN" \
+  --ext_id_svr_bind_type "search_bind" \
+  --ext_id_svr_bind_dn "cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com" \
+  --ext_id_svr_host "${AD_SERVER_PRIVATE_IP}" \
+  --ext_id_svr_group_attribute "member" \
+  --ext_id_svr_security_protocol "ldaps" \
+  --ext_id_svr_base_dn "CN=Users,DC=samdom,DC=example,DC=com" \
+  --ext_id_svr_verify_peer false \
+  --ext_id_svr_type "Active Directory" \
+  --ext_id_svr_port 636 \
+  --external-groups '["CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com","CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"]')
 
 echo "$CLUSTER_ID"
 
@@ -118,4 +136,5 @@ spec:
 EOF_YAML
 
 EOF1
+
 
