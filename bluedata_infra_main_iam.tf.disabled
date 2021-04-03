@@ -4,7 +4,7 @@ resource "aws_iam_user" "iam_user" {
   tags = {
     Name = "${var.project_id}-iam-user"
     Project = var.project_id
-    user = var.user
+    user = local.user
     deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
@@ -35,7 +35,7 @@ resource "aws_iam_user_policy" "start_stop_ec2_instances" {
               "Condition": {
                   "StringEquals": {
                       "ec2:ResourceTag/Project": "${var.project_id}",
-                      "ec2:ResourceTag/user": "${var.user}"
+                      "ec2:ResourceTag/user": "${local.user}"
                   }
               }
           }

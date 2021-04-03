@@ -57,6 +57,12 @@ resource "aws_instance" "rdp_server" {
   root_block_device {
     volume_type = "gp2"
     volume_size = 41
+    tags = {
+      Name = "${var.project_id}-rdp-server-linux-root-ebs"
+      Project = var.project_id
+      user = var.user
+      deployment_uuid = var.deployment_uuid
+    }
   }
 
   // ready for hibernation support
@@ -65,6 +71,12 @@ resource "aws_instance" "rdp_server" {
     device_name = "/dev/sdb"
     volume_type = "gp2"
     volume_size = 40
+    tags = {
+      Name = "${var.project_id}-rdp-server-linux-ebs"
+      Project = var.project_id
+      user = var.user
+      deployment_uuid = var.deployment_uuid
+    }
   }
 
   provisioner "remote-exec" {

@@ -93,8 +93,8 @@ resource "local_file" "cli_running_ec2_instances_all_regions" {
     #!/bin/bash
     export AWS_DEFAULT_REGION=${var.region}
     for region in `aws ec2 describe-regions --output text | cut -f4`; do
-      echo -e "\nListing Running Instances in region:'$region' ... matching '${var.user}' ";
-      aws ec2 describe-instances --query "Reservations[*].Instances[*].{IP:PublicIpAddress,ID:InstanceId,Type:InstanceType,State:State.Name,Name:Tags[0].Value}" --filters Name=instance-state-name,Values=running --output=table --region $region | grep -i ${var.user}
+      echo -e "\nListing Running Instances in region:'$region' ... matching '${local.user}' ";
+      aws ec2 describe-instances --query "Reservations[*].Instances[*].{IP:PublicIpAddress,ID:InstanceId,Type:InstanceType,State:State.Name,Name:Tags[0].Value}" --filters Name=instance-state-name,Values=running --output=table --region $region | grep -i ${local.user}
     done
   EOF  
 }

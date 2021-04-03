@@ -11,7 +11,6 @@ az                 = "eu-west-2a"
 #
 
 project_id         = "csnow-scratch" # ** Max len 18 chars **
-user               = "csnow"
 
 #
 # Before setting the vpc cidr block, manually verify the vpc cidr doesn't already exist in your region

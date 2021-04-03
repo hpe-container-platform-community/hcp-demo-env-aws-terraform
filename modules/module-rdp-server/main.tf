@@ -38,6 +38,12 @@ resource "aws_instance" "rdp_server" {
   root_block_device {
     volume_type = "gp2"
     volume_size = 400
+    tags = {
+      Name = "${var.project_id}-rdp-server-root-ebs"
+      Project = var.project_id
+      user = var.user
+      deployment_uuid = var.deployment_uuid
+    }
   }
 
   tags = {
