@@ -21,6 +21,7 @@ variable "EC2_CENTOS7_AMIS" {
     eu-west-2      = "ami-00846a67" # London
     eu-west-3      = "ami-262e9f5b" # Paris
     eu-north-1     = "ami-b133bccf" # Stockholm
+    ca-central-1   = "ami-e802818c" # Canada
   } 
 }
 
@@ -37,6 +38,7 @@ variable "EC2_UBUNTU1804_AMIS" {
     eu-west-2      = "ami-0978f2d57755c6503" # London
     eu-west-3      = "ami-0d857c06968b4f4fb" # Paris
     eu-north-1     = "ami-0991deb71c7c7537f" # Stockholm
+    ca-central-1   = "ami-0aefe348b9802b0fd" # Canada
   } 
 } 
 
@@ -53,6 +55,7 @@ variable "EC2_WIN_RDP_AMIS" {
     eu-west-2      = "ami-0648c16a1a9bd20dc" # London
     eu-west-3      = "ami-044bb8de8c5a4ebde" # Paris
     eu-north-1     = "ami-08b3a48a0df290fce" # Stockholm
+    ca-central-1   = "ami-08b3a48a0df290fce" # Dummy Canada
   } 
 } 
 
@@ -69,6 +72,7 @@ variable "EC2_LIN_RDP_AMIS" {
     eu-west-2      = "ami-05748056eed47d81b" # London
     eu-west-3      = "ami-0c432dc2d9e9a1420" # Paris
     eu-north-1     = "ami-01a16aeb746ea52eb" # Stockholm
+    ca-central-1   = "ami-02b791c5ee1dc0751" # Canada
   } 
 } 
 
