@@ -41,10 +41,12 @@ MASTER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $MASTER_
 WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $WORKER_HOSTS_INDEX)
 
 # Add ECP workers without tags
-./bin/experimental/03_k8sworkers_add.sh $MASTER_HOSTS
+./bin/experimental/03_k8sworkers_add.sh $MASTER_HOSTS &
 
 # Add ECP workers with picasso tags
-./bin/experimental/03_k8sworkers_add_with_picasso_tag.sh $WORKER_HOSTS
+./bin/experimental/03_k8sworkers_add_with_picasso_tag.sh $WORKER_HOSTS &
+
+wait
 
 QUERY="[*] | @[?contains('${MASTER_HOSTS}', ipaddr)] | [*][_links.self.href]"
 MASTER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
@@ -89,6 +91,7 @@ date
 hpecp k8scluster list
 
 hpecp config get | grep  bds_global_
+
 
 
 # TODO https://docs.containerplatform.hpe.com/52/reference/hpe-ezmeral-data-fabric-admini/Creating_a_New_Data_Fabric_Cluster.html?hl=creating%2Cnew%2Cdata%2Cfabric%2Ccluster#v52_creating-a-new-data-fabric-cluster__step6
