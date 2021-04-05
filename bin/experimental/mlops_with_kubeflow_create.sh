@@ -51,11 +51,11 @@ CLUSTER_ID=$(hpecp k8scluster create \
   --k8shosts-config "$K8S_HOST_CONFIG" \
   --addons ["kubeflow"] \
   --ext_id_svr_bind_pwd "5ambaPwd@" \
-  --ext_id_svr_user_attribute "CN" \
+  --ext_id_svr_user_attribute "sAMAccountName" \
   --ext_id_svr_bind_type "search_bind" \
   --ext_id_svr_bind_dn "cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com" \
   --ext_id_svr_host "${AD_SERVER_PRIVATE_IP}" \
-  --ext_id_svr_group_attribute "member" \
+  --ext_id_svr_group_attribute "memberOf" \
   --ext_id_svr_security_protocol "ldaps" \
   --ext_id_svr_base_dn "CN=Users,DC=samdom,DC=example,DC=com" \
   --ext_id_svr_verify_peer false \
