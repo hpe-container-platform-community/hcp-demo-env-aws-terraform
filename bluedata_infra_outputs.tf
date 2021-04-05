@@ -6,6 +6,10 @@ output "user" {
   value = local.user
 }
 
+output "project_id" {
+  value = var.project_id
+}
+
 output "aws_profile" {
   value = var.profile
 }
