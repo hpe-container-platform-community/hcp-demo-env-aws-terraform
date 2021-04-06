@@ -86,6 +86,8 @@ MEMBER_GROUP="CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
 MEMBER_ROLE=$(hpecp role list  --query "[?label.name == 'Member'][_links.self.href] | [0][0]" --output json | tr -d '"')
 hpecp tenant add-external-user-group --tenant-id "$TENANT_ID" --group "$MEMBER_GROUP" --role-id "$MEMBER_ROLE"
 
+#{"method":"post","apiurl":"https://127.0.0.1:8080","timeout":239,data":{"name":"admin","createdByUser":"6","namespace":"hpecp-ten"ant-4-2bm2f","port":9500},"op":"get_kubeconfig_secret"}
+
 echo "Configured tenant with AD groups Admins=DemoTenantAdmins... and Members=DemoTenantUsers..."
 
 echo "Launching Jupyter Notebook as 'admin' user"
@@ -101,6 +103,65 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
 
    echo TENANT_NS=\$TENANT_NS
    echo KC_SECRET=\$KC_SECRET
+   
+###
+### MLFLOW Secret
+###
+
+cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n \$TENANT_NS apply -f -
+apiVersion: v1 
+data: 
+  MLFLOW_ARTIFACT_ROOT: czM6Ly9tbGZsb3c= #s3://mlflow 
+  AWS_ACCESS_KEY_ID: YWRtaW4= #admin 
+  AWS_SECRET_ACCESS_KEY: YWRtaW4xMjM= #admin123 
+kind: Secret
+metadata: 
+  name: mlflow-sc 
+  labels: 
+    kubedirector.hpe.com/secretType: mlflow 
+type: Opaque 
+EOF_YAML
+
+###
+### MLFLOW Cluster
+###
+
+cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n \$TENANT_NS apply -f -
+apiVersion: "kubedirector.hpe.com/v1beta1"
+kind: "KubeDirectorCluster"
+metadata: 
+  name: "mlflow"
+  namespace: "\$TENANT_NS"
+  labels: 
+    description: "mlflow"
+spec: 
+  app: "mlflow"
+  namingScheme: "CrNameRole"
+  appCatalog: "local"
+  connections:
+    secrets:
+      - mlflow-sc
+  roles: 
+    - 
+      id: "controller"
+      members: 1
+      resources: 
+        requests: 
+          cpu: "2"
+          memory: "4Gi"
+          nvidia.com/gpu: "0"
+        limits: 
+          cpu: "2"
+          memory: "4Gi"
+          nvidia.com/gpu: "0"
+      #Note: "if the application is based on hadoop3 e.g. using StreamCapabilities interface, then change the below dtap label to 'hadoop3', otherwise for most applications use the default 'hadoop2'"
+      #podLabels: 
+        #hpecp.hpe.com/dtap: "hadoop2"
+EOF_YAML
+
+###
+### Jupyter Notebook
+###
 
 cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n \$TENANT_NS apply -f -
 apiVersion: "kubedirector.hpe.com/v1beta1"
