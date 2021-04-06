@@ -351,34 +351,8 @@ resource "local_file" "rdp_windows_credentials" {
 
 resource "local_file" "rdp_linux_credentials" {
   filename = "${path.module}/generated/rdp_credentials.sh"
-  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
   content = <<-EOF
-    #!/bin/bash
-
-    HIDE_WARNINGS=$${HIDE_WARNINGS:-0}
-
-    source "${path.module}/scripts/variables.sh"
-    echo 
-    if [[ $RDP_PUB_IP == "" && $HIDE_WARNINGS == 0 ]]; then
-      echo "WARNING: Unable to display RDP credentials because RDP_PUB_IP could not be retrieved - is the instance running?"
-      exit
-    fi
-    echo ================================= RDP Credentials  =====================================
-    echo 
-    if [[ "$CREATE_EIP_RDP_LINUX_SERVER" == "False" ]]; then
-    echo Note: The RDP IP addresses listed below change each time the RDP instance is restarted.
-    else
-    echo Note: The RDP IP addresses listed below are provided by an EIP and are static.
-    fi
-    echo
-    echo Host IP:   "$RDP_PUB_IP"
-    echo Web Url:   "https://$RDP_PUB_IP (Chrome is recommended)"
-    echo RDP URL:   "rdp://full%20address=s:$RDP_PUB_IP:3389&username=s:ubuntu"
-    echo Username:  "ubuntu"
-    echo Password:  "$RDP_INSTANCE_ID"
-    echo 
-    echo ========================================================================================
-    echo
+    echo "Deprecated.  Use ./bin/rdp_credentials.sh"
   EOF
 }
 
@@ -405,11 +379,9 @@ resource "local_file" "rdp_post_setup" {
 
 resource "local_file" "ssh_rdp_linux" {
   filename = "${path.module}/generated/ssh_rdp_linux_server.sh"
-  count = var.rdp_server_enabled == true && var.rdp_server_operating_system == "LINUX" ? 1 : 0
-  content = <<-EOF
+  content =  <<-EOF
     #!/bin/bash
-    source "${path.module}/scripts/variables.sh"
-    ssh -o StrictHostKeyChecking=no -i "${var.ssh_prv_key_path}" ubuntu@$RDP_PUB_IP "$@"    
+    echo "Deprecated.  Please use ./bin/ssh_rdp_linux_server.sh"
   EOF
 }
 
