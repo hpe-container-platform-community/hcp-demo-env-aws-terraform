@@ -41,25 +41,30 @@ echo MAPR_CLUSTER_HOSTS_PUB_IPS=${MAPR_CLUSTER_HOSTS_PUB_IPS}
 # Test SSH connectivity to EC2 instances from local machine
 ###############################################################################
 
-echo "Testing connectivity to $AD_PUB_IP"
-ping -c 5 $AD_PUB_IP || {
-    echo "$(tput setaf 1)Aborting. Could not ping Active Directory host."
-    echo " - This script requires connectivity to the Active Directory host"
-    echo " - You may need to disconnect from your corporate VPN, and/or"
-    echo " - You may need to run ./bin/terraform_apply.sh$(tput sgr0)"
-    exit 1
-}
-
-for HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do
-    echo "Testing connectivity to $HOST"
-    ping -c 5 $HOST || {
-        echo "$(tput setaf 1)Aborting. Could not ping host $HOST."
-        echo " - This script requires connectivity to the HPE CP Controller"
+if [[ -z C9_HOST ]];
+then
+    echo "Testing connectivity to $AD_PUB_IP"
+    ping -c 5 $AD_PUB_IP || {
+        echo "$(tput setaf 1)Aborting. Could not ping Active Directory host."
+        echo " - This script requires connectivity to the Active Directory host"
         echo " - You may need to disconnect from your corporate VPN, and/or"
         echo " - You may need to run ./bin/terraform_apply.sh$(tput sgr0)"
         exit 1
     }
-done
+    
+    for HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do
+        echo "Testing connectivity to $HOST"
+        ping -c 5 $HOST || {
+            echo "$(tput setaf 1)Aborting. Could not ping host $HOST."
+            echo " - This script requires connectivity to the HPE CP Controller"
+            echo " - You may need to disconnect from your corporate VPN, and/or"
+            echo " - You may need to run ./bin/terraform_apply.sh$(tput sgr0)"
+            exit 1
+        }
+    done
+else
+    echo "Skipping ping test from Cloud 9 environment"
+fi
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${AD_PUB_IP} "sudo yum install -y git"
 
