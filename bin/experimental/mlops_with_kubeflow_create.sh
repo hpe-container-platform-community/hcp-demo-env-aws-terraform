@@ -181,6 +181,7 @@ spec:
   connections: 
     secrets: 
       - hpecp-ext-auth-secret
+      - mlflow-sc
     #  - \$KC_SECRET 
   roles: 
     - 

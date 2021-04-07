@@ -49,13 +49,13 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   # Copy example files to notebook pod  
   
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    cp train.ipynb $TENANT_NS/\$POD:/home/ad_admin1/train.ipynb
+    cp train.ipynb $TENANT_NS/\$POD:/home/ad_admin1/mlflow-train.ipynb
     
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     cp wine-quality.csv $TENANT_NS/\$POD:/home/ad_admin1/wine-quality.csv
 
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    cp train.ipynb $TENANT_NS/\$POD:/home/ad_user1/train.ipynb
+    cp train.ipynb $TENANT_NS/\$POD:/home/ad_user1/mlflow-train.ipynb
     
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     cp wine-quality.csv $TENANT_NS/\$POD:/home/ad_user1/wine-quality.csv
