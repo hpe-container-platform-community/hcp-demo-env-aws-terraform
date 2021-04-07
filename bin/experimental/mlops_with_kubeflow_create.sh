@@ -158,8 +158,8 @@ spec:
           memory: "4Gi"
           nvidia.com/gpu: "0"
       #Note: "if the application is based on hadoop3 e.g. using StreamCapabilities interface, then change the below dtap label to 'hadoop3', otherwise for most applications use the default 'hadoop2'"
-      #podLabels: 
-        #hpecp.hpe.com/dtap: "hadoop2"
+      podLabels: 
+        hpecp.hpe.com/dtap: "hadoop2"
 EOF_YAML
 
 ###
