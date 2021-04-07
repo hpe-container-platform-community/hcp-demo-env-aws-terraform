@@ -214,11 +214,20 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   STATE=\$(kubectl --kubeconfig <(./get_admin_kubeconfig.sh $CLUSTERNAME) get kubedirectorcluster \
             -n $TENANT_NS $NB_CLUSTER_NAME  -o 'jsonpath={.status.state}')
   
-  until [[ "\$STATE" == "configured" ]]
-  do
-     STATE=\$(kubectl --kubeconfig <(./get_admin_kubeconfig.sh $CLUSTERNAME) get kubedirectorcluster \
-                -n $TENANT_NS $NB_CLUSTER_NAME  -o 'jsonpath={.status.state}')
-  done
+timeout 30m bash <<EOF
+    until [[ "\$STATE" == "configured" ]]
+    do
+       STATE=\$(kubectl --kubeconfig <(./get_admin_kubeconfig.sh $CLUSTERNAME) get kubedirectorcluster \
+                  -n $TENANT_NS $NB_CLUSTER_NAME  -o 'jsonpath={.status.state}')
+       sleep 1m
+    done
+EOF
+
+if [[ "\$?" == "124" ]];
+then
+  echo Timeout waiting for notebook cluster to reach state == configured
+  exit 1
+fi
 
   # Retrieve the notebook pod
 
