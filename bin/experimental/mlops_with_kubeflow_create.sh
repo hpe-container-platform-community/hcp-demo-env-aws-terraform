@@ -214,8 +214,8 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
 timeout 30m bash <<EOF
     until [[ "\$STATE" == "configured" ]]
     do
-       STATE=\$(kubectl --kubeconfig <(./get_admin_kubeconfig.sh $CLUSTERNAME) get kubedirectorcluster \
-                  -n $TENANT_NS $NB_CLUSTER_NAME  -o 'jsonpath={.status.state}')
+       STATE=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+                  get kubedirectorcluster -n $TENANT_NS $NB_CLUSTER_NAME  -o 'jsonpath={.status.state}')
        sleep 1m
     done
 EOF
