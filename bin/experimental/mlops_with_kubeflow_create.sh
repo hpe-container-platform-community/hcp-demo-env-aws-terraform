@@ -237,13 +237,16 @@ fi
   echo TENANT_NS=$TENANT_NS
   echo POD=\$POD
   
-  # Copy example files to notebook pod
+
+  # Login to create home folders
   
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     exec -it $TENANT_NS/\$POD -- sudo su - ad_admin1
     
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     exec -it $TENANT_NS/\$POD -- sudo su - ad_user1
+  
+  # Copy example files to notebook pod  
   
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     cp train.ipynb $TENANT_NS/\$POD:/home/ad_admin1/train.ipynb
