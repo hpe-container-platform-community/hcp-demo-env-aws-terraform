@@ -107,7 +107,7 @@ resource "aws_instance" "rdp_server" {
       "sudo mv terraform /usr/local/bin/",
       "rm terraform_0.12.24_linux_amd64.zip",
       "mkdir /home/ubuntu/Desktop",
-      "sudo -H pip3 install hpecp",
+      "sudo -H pip3 install --quiet hpecp",
       "echo 'source <(hpecp autocomplete bash)' >>~/.bashrc"
     ]
   }

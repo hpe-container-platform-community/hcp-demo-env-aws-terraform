@@ -46,8 +46,6 @@ if [[ "${HPECP_VERSION}" != "5.3" ]]; then
    exit 1
 fi
 
-set -x
-
 print_header "Setup hosts as K8s workers"
 echo Using the following WORKER_HOST_IPS="${WORKER_HOST_IPS[@]}"
 ./bin/experimental/03_k8sworkers_add.sh "${WORKER_HOST_IPS[@]}"

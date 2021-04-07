@@ -10,7 +10,7 @@ print_header "Installing HPECP CLI to local machine"
 export HPECP_CONFIG_FILE=generated/hpecp.conf
 export HPECP_LOG_CONFIG_FILE=${PWD}/generated/hpecp_cli_logging.conf
 pip3 uninstall -y hpecp || true # uninstall if exists
-pip3 install --user --upgrade hpecp
+pip3 install --user --upgrade --quiet hpecp
 
 HPECP_VERSION=$(hpecp config get --query 'objects.[bds_global_version]' --output text)
 echo "HPECP Version: ${HPECP_VERSION}"

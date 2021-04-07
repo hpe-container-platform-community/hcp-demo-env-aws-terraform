@@ -34,12 +34,12 @@ set +u
 #   exit 1
 # fi
 
-echo -n "aws_access_key_id: "
+echo -n "Enter aws_access_key_id: "
 read -s AWS_ACCESS_KEY_ID
 export AWS_ACCESS_KEY_ID
 echo
 
-echo -n "aws_secret_access_key: "
+echo -n "Enter aws_secret_access_key: "
 read -s AWS_SECRET_ACCESS_KEY
 export AWS_SECRET_ACCESS_KEY
 echo
@@ -49,7 +49,13 @@ VELERO_IAM_USER=${PROJECT_ID}-${USER}-velero
 
 if aws s3api list-buckets | grep $BUCKET;
 then
-   aws s3api delete-bucket --bucket $BUCKET
+    read -p "Delete existing aws bucket $BUCKET? " -n 1 -r
+    echo    # (optional) move to a new line
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
+    then
+        exit 1
+    fi
+    aws s3api delete-bucket --bucket $BUCKET
 fi
 
 if aws iam list-access-keys --user-name $VELERO_IAM_USER
@@ -187,3 +193,4 @@ EOF
     fi
     
 ENDSSH
+
