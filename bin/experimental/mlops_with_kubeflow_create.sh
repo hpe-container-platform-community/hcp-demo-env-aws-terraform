@@ -211,9 +211,6 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
 
   # Wait for Notebook to be configured
   
-  STATE=\$(kubectl --kubeconfig <(./get_admin_kubeconfig.sh $CLUSTERNAME) get kubedirectorcluster \
-            -n $TENANT_NS $NB_CLUSTER_NAME  -o 'jsonpath={.status.state}')
-  
 timeout 30m bash <<EOF
     until [[ "\$STATE" == "configured" ]]
     do
