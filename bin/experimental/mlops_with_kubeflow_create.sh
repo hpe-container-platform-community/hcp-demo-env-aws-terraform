@@ -243,7 +243,7 @@ fi
     exec -it $TENANT_NS/\$POD -- sudo su - ad_admin1
     
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    exec -it $TENANT_NS/\$POD -- sudo su - ad_admin1
+    exec -it $TENANT_NS/\$POD -- sudo su - ad_user1
   
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     cp train.ipynb $TENANT_NS/\$POD:/home/ad_admin1/train.ipynb
