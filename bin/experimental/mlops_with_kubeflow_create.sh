@@ -22,7 +22,6 @@ echo "Platform ID: $(hpecp license platform-id)"
 set +u
 
 MLFLOW_CLUSTER_NAME=mlflow
-NB_CLUSTER_NAME=nb
 AD_SERVER_PRIVATE_IP=$AD_PRV_IP
 
 MASTER_IDS="${@:1:1}"  # FIRST ARGUMENT
@@ -91,90 +90,11 @@ MEMBER_GROUP="CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
 MEMBER_ROLE=$(hpecp role list  --query "[?label.name == 'Member'][_links.self.href] | [0][0]" --output json | tr -d '"')
 hpecp tenant add-external-user-group --tenant-id "$TENANT_ID" --group "$MEMBER_GROUP" --role-id "$MEMBER_ROLE"
 
-ADMIN_ID=$(hpecp user list --query "[?label.name=='admin'] | [0] | [_links.self.href]" --output text | cut -d '/' -f 5)
-AD_ADMIN_ID=$(hpecp user list --query "[?label.name=='ad_admin1'] | [0] | [_links.self.href]" --output text | cut -d '/' -f 5)
-AD_USER_ID=$(hpecp user list --query "[?label.name=='ad_user1'] | [0] | [_links.self.href]" --output text | cut -d '/' -f 5)
-
 echo "Configured tenant with AD groups Admins=DemoTenantAdmins... and Members=DemoTenantUsers..."
-
-export ADMIN_SECRET_HASH=$(python3 -c "import hashlib; print(hashlib.md5('$ADMIN_ID-admin'.encode('utf-8')).hexdigest())")
-export ADMIN_KC_SECRET="hpecp-kc-secret-$ADMIN_SECRET_HASH"
-
-export AD_ADMIN_SECRET_HASH=$(python3 -c "import hashlib; print(hashlib.md5('$AD_ADMIN_ID-ad_admin1'.encode('utf-8')).hexdigest())")
-export AD_ADMIN_KC_SECRET="hpecp-kc-secret-$AD_ADMIN_SECRET_HASH"
-
-export AD_USER_SECRET_HASH=$(python3 -c "import hashlib; print(hashlib.md5('$AD_USER_ID-ad_user1'.encode('utf-8')).hexdigest())")
-export AD_USER_KC_SECRET="hpecp-kc-secret-$AD_USER_SECRET_HASH"
 
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
 
   set -x
-
-export DATA_BASE64=$(base64 -w 0 <<END
-{
-  "stringData": {
-    "config": "\$(hpecp k8scluster --id $CLUSTER_ID admin-kube-config)"
-  },
-  "kind": "Secret",
-  "apiVersion": "v1",
-  "metadata": {
-    "labels": {
-      "kubedirector.hpe.com/username": "admin",
-      "kubedirector.hpe.com/userid": "$ADMIN_ID",
-      "kubedirector.hpe.com/secretType": "kubeconfig"
-    },
-    "namespace": "$TENANT_NS",
-    "name": "$ADMIN_KC_SECRET"
-  }
-}
-END
-)
-
-hpecp httpclient post $CLUSTER_ID/kubectl <(echo -n '{"data":"'\$DATA_BASE64'","op":"create"}')
-
-export DATA_BASE64=$(base64 -w 0 <<END
-{
-  "stringData": {
-    "config": "\$(hpecp k8scluster --id $CLUSTER_ID admin-kube-config)"
-  },
-  "kind": "Secret",
-  "apiVersion": "v1",
-  "metadata": {
-    "labels": {
-      "kubedirector.hpe.com/username": "ad_admin1",
-      "kubedirector.hpe.com/userid": "$AD_ADMIN_ID",
-      "kubedirector.hpe.com/secretType": "kubeconfig"
-    },
-    "namespace": "$TENANT_NS",
-    "name": "$AD_ADMIN_KC_SECRET"
-  }
-}
-END
-)
-
-hpecp httpclient post $CLUSTER_ID/kubectl <(echo -n '{"data":"'\$DATA_BASE64'","op":"create"}')
-
-export DATA_BASE64=$(base64 -w 0 <<END
-{
-  "stringData": {
-    "config": "\$(hpecp k8scluster --id $CLUSTER_ID admin-kube-config)"
-  },
-  "kind": "Secret",
-  "apiVersion": "v1",
-  "metadata": {
-    "labels": {
-      "kubedirector.hpe.com/username": "ad_user1",
-      "kubedirector.hpe.com/userid": "$AD_USER_ID",
-      "kubedirector.hpe.com/secretType": "kubeconfig"
-    },
-    "namespace": "$TENANT_NS",
-    "name": "$AD_USER_KC_SECRET"
-  }
-}
-END
-)
-
-hpecp httpclient post $CLUSTER_ID/kubectl <(echo -n '{"data":"'\$DATA_BASE64'","op":"create"}')
    
 ###
 ### MLFLOW Secret
@@ -233,52 +153,7 @@ spec:
         hpecp.hpe.com/dtap: "hadoop2"
 EOF_YAML
 
-###
-### Jupyter Notebook
-###
-
-echo "Launching Jupyter Notebook as 'admin' user"
-cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS apply -f -
-apiVersion: "kubedirector.hpe.com/v1beta1"
-kind: "KubeDirectorCluster"
-metadata: 
-  name: "$NB_CLUSTER_NAME"
-  namespace: "$TENANT_NS"
-  labels: 
-    "kubedirector.hpe.com/createdBy": "$ADMIN_ID"
-spec: 
-  app: "jupyter-notebook"
-  appCatalog: "local"
-  connections: 
-    secrets: 
-      - hpecp-ext-auth-secret
-      - mlflow-sc
-      - $ADMIN_KC_SECRET 
-      - $AD_ADMIN_KC_SECRET
-      - $AD_USER_KC_SECRET
-  roles: 
-    - 
-      id: "controller"
-      members: 1
-      resources: 
-        requests: 
-          cpu: "2"
-          memory: "4Gi"
-          nvidia.com/gpu: "0"
-        limits: 
-          cpu: "2"
-          memory: "4Gi"
-          nvidia.com/gpu: "0"
-      #Note: "if the application is based on hadoop3 e.g. using StreamCapabilities interface, then change the below dtap label to 'hadoop3', otherwise for most applications use the default 'hadoop2'"
-      podLabels: 
-        hpecp.hpe.com/dtap: "hadoop2"
-EOF_YAML
-
 EOF1
 
-export CLUSTER_ID=$CLUSTER_ID
-export NB_CLUSTER_NAME=$NB_CLUSTER_NAME
-export TENANT_NS=$TENANT_NS
-
-./bin/experimental/setup_notebook.sh
+./bin/experimental/setup_notebook.sh $TENANT_ID
 
