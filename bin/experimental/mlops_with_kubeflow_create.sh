@@ -95,15 +95,38 @@ ADMIN_ID=$(hpecp user list --query "[?label.name=='admin'] | [0] | [_links.self.
 
 echo "Configured tenant with AD groups Admins=DemoTenantAdmins... and Members=DemoTenantUsers..."
 
+export SECRET_HASH=$(python3 -c "import hashlib; print(hashlib.md5('$ADMIN_ID-admin'.encode('utf-8')).hexdigest())")
+export KC_SECRET="hpecp-kc-secret-$SECRET_HASH"
+
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
 
-   # TODO: The secret needs to be generated, see
-   # https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/issues/24  
-  
-   KC_SECRET=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS get secrets | grep hpecp-kc-secret | cut -d " " -f 1)
+  set -x
 
    echo TENANT_NS=$TENANT_NS
-   echo KC_SECRET=\$KC_SECRET
+   echo SECRET_HASH=$SECRET_HASH
+   echo KC_SECRET=$KC_SECRET
+   
+export DATA_BASE64=$(base64 -w 0 <<END
+{
+  "stringData": {
+    "config": "\$(hpecp k8scluster --id $CLUSTER_ID admin-kube-config)"
+  },
+  "kind": "Secret",
+  "apiVersion": "v1",
+  "metadata": {
+    "labels": {
+      "kubedirector.hpe.com/username": "admin",
+      "kubedirector.hpe.com/userid": "$ADMIN_ID",
+      "kubedirector.hpe.com/secretType": "kubeconfig"
+    },
+    "namespace": "$TENANT_NS",
+    "name": "$KC_SECRET"
+  }
+}
+END
+)
+
+   hpecp httpclient post $CLUSTER_ID/kubectl <(echo -n '{"data":"'\$DATA_BASE64'","op":"create"}')
    
 ###
 ### MLFLOW Secret
@@ -182,7 +205,7 @@ spec:
     secrets: 
       - hpecp-ext-auth-secret
       - mlflow-sc
-    #  - \$KC_SECRET 
+      - $KC_SECRET 
   roles: 
     - 
       id: "controller"

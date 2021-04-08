@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DEFAULT_TENANT_ID=2 # 2 = EPIC Demo Tenant
-DEFAULT_MAPR_VMNT=/demo_tenant_admins
+DEFAULT_MAPR_VMNT=/
 
 TENANT_ID=${1:-$DEFAULT_TENANT_ID}
 MAPR_VMNT=${2:-$DEFAULT_MAPR_VMNT} 
@@ -62,18 +62,18 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 	maprcli acl edit \
 			-cluster ${MAPR_CLUSTER_NAME} -type cluster -group DemoTenantAdmins:login,cv
 
-	maprcli acl show -type cluster
+	# maprcli acl show -type cluster
 	
-	# note: ignore errors so script can be idempotent
-	maprcli volume create \
-			-name ${MAPR_VOL} -path ${MAPR_VMNT} || echo "^ Ignoring error ^"
+	# # note: ignore errors so script can be idempotent
+	# maprcli volume create \
+	# 		-name ${MAPR_VOL} -path ${MAPR_VMNT} || echo "^ Ignoring error ^"
 
-	maprcli acl set \
-			-type volume -name ${MAPR_VOL} -user ad_admin1:fc
+	# maprcli acl set \
+	# 		-type volume -name ${MAPR_VOL} -user ad_admin1:fc
 
-	#hadoop fs -chgrp DemoTenantAdmins /demo_tenant_admins
+	# #hadoop fs -chgrp DemoTenantAdmins /demo_tenant_admins
 
-	hadoop fs -chmod 777 /demo_tenant_admins
+	# hadoop fs -chmod 777 /demo_tenant_admins
 ENDSSH
 
 print_term_width '-'

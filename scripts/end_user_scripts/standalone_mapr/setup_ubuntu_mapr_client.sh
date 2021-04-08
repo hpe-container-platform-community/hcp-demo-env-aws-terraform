@@ -14,9 +14,25 @@ fi
 
 [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
 	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
+	set -eu
+
+	sudo bash -c "echo 'deb https://package.mapr.com/releases/v6.1.0/ubuntu binary trusty' > /etc/apt/sources.list.d/mapr.list"
+	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BFDDB60966B3F0D6
+	sudo apt-get -qq update || echo "Ignoring: apt-get -qq update failure"
+	sudo apt-get -qq install -y mapr-posix-client-platinum openjdk-8-jdk
+	sudo modprobe fuse
+
+	# Create required mapr:mapr user/group
+	sudo bash -c "getent group mapr || groupadd -g 5000 mapr"
+	sudo bash -c "getent passwd mapr || useradd -u 5000 -s /bin/bash -d /home/mapr -g 5000 mapr"
+
+SSH_EOF
+
+[[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
+	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
 	set -eux
 
-	sudo service mapr-posix-client-platinum stop
+	sudo service mapr-posix-client-platinum stop || true # ignore errors
 	[[ -f /opt/mapr/conf/mapr-clusters.conf ]] && {
 		cp /opt/mapr/conf/mapr-clusters.conf ~ubuntu/mapr-clusters.conf
 		sudo rm /opt/mapr/conf/mapr-clusters.conf
@@ -31,12 +47,18 @@ fi
 	rm -f ~ubuntu/external_mapr_cluster1_ssl_truststore
 	scp -o StrictHostKeyChecking=no ubuntu@\${MAPR_HOST_1}:/opt/mapr/conf/ssl_truststore ~ubuntu/external_mapr_cluster1_ssl_truststore
 
-	MATCHING_ENTRIES=\$(keytool -list -keystore /opt/mapr/conf/ssl_truststore -storepass mapr123 | grep -c ${MAPR_CLUSTER1_NAME}) || true 
-	if [[ \${MATCHING_ENTRIES} == 0 ]]; then
-		echo "/opt/mapr/conf/ssl_truststore does not contain ${MAPR_CLUSTER1_NAME} - adding."
-		sudo /opt/mapr/server/manageSSLKeys.sh merge ~ubuntu/external_mapr_cluster1_ssl_truststore /opt/mapr/conf/ssl_truststore
+	if [[ -f /opt/mapr/conf/ssl_truststore ]]
+	then
+		MATCHING_ENTRIES=\$(keytool -list -keystore /opt/mapr/conf/ssl_truststore -storepass mapr123 | grep -c ${MAPR_CLUSTER1_NAME}) || true 
+		if [[ \${MATCHING_ENTRIES} == 0 ]]; then
+			echo "/opt/mapr/conf/ssl_truststore does not contain ${MAPR_CLUSTER1_NAME} - adding."
+			sudo /opt/mapr/server/manageSSLKeys.sh merge ~ubuntu/external_mapr_cluster1_ssl_truststore /opt/mapr/conf/ssl_truststore
+		else
+			echo "/opt/mapr/conf/ssl_truststore contains ${MAPR_CLUSTER1_NAME} - not updating."
+		fi
 	else
-		echo "/opt/mapr/conf/ssl_truststore contains ${MAPR_CLUSTER1_NAME} - not updating."
+		sudo cp ~ubuntu/external_mapr_cluster1_ssl_truststore /opt/mapr/conf/ssl_truststore
+		sudo chown mapr:mapr /opt/mapr/conf/ssl_truststore
 	fi
 
 SSH_EOF

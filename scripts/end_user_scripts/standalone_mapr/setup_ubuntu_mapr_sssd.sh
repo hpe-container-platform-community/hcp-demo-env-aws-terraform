@@ -40,6 +40,99 @@ else
     MAPR_CLUSTER_HOSTS_PUB_IPS=${MAPR_CLUSTER2_HOSTS_PUB_IPS[@]}
 fi
 
+[[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]] && \
+	ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
+	set -eu
+	
+	# Install the auth packages by executing the following command 
+	sudo apt-get -qq update || echo "Ignoring: apt-get -qq update failure"
+	sudo apt-get -qq install -y pamtester sssd
+	
+	sudo bash -c "cat > /etc/sssd/sssd.conf <<-EOF
+		[domain/${DOMAIN}]
+		debug_level = 3
+		autofs_provider = ldap
+		cache_credentials = True
+		id_provider = ldap
+		auth_provider = ldap
+		chpass_provider = ldap
+		access_provider = ldap
+		ldap_uri = ldap://${AD_PRIVATE_IP}:389
+		ldap_search_base = ${LDAP_BASE_DN}
+		ldap_id_use_start_tls = False
+		ldap_tls_cacertdir = /etc/openldap/cacerts
+		ldap_tls_reqcert = never
+		ldap_user_member_of = memberOf
+		ldap_access_order = filter
+		ldap_access_filter = (|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))
+		ldap_id_mapping = False
+		ldap_schema = ad
+		ldap_user_gid_number = gidNumber
+		ldap_group_gid_number = gidNumber
+		ldap_user_object_class = posixAccount
+		ldap_idmap_range_size = 200000
+		ldap_user_gecos = gecos
+		fallback_homedir = /home/%u
+		ldap_user_home_directory = homeDirectory
+		default_shell = /bin/bash
+		ldap_group_object_class = posixGroup
+		ldap_user_uid_number = uidNumber
+		ldap_referrals = False
+		ldap_idmap_range_max = 2000200000
+		ldap_idmap_range_min = 200000
+		ldap_group_name = cn
+		ldap_user_name = cn
+		ldap_default_bind_dn = ${LDAP_BIND_DN}
+		ldap_user_shell = loginShell
+		ldap_default_authtok = ${LDAP_BIND_PASSWORD}
+		ldap_user_fullname = cn
+		
+		[sssd]
+		services = nss, pam, autofs
+		domains = ${DOMAIN}
+		
+		[nss]
+		
+		homedir_substring = /home
+		
+		[pam]
+		
+		[sudo]
+		
+		[autofs]
+		
+		[ssh]
+		
+		[pac]
+		
+		[ifp]
+		
+		[secrets]
+		
+		[session_recording]
+		
+	EOF"
+	
+	sudo rm -f /var/log/sssd/*.log
+	
+	sudo chown root:root /etc/sssd/sssd.conf
+	sudo chmod 600 /etc/sssd/sssd.conf
+	sudo systemctl enable sssd
+	sudo systemctl stop sssd
+	sudo systemctl restart sssd
+	
+	if ! grep 'pam_mkhomedir.so' /etc/pam.d/common-session; then
+		sudo sed -i '/^session\s*required\s*pam_unix.so\s*$/a session required    pam_mkhomedir.so skel=/etc/skel/ umask=0022' /etc/pam.d/common-session
+	fi
+	cat /etc/pam.d/common-session
+
+	sudo pamtester login ad_user1 open_session
+	sudo id ad_user1
+	sudo getent passwd ad_user1
+	sudo getent group DemoTenantUsers
+	
+	echo 'Done setting up SSSD.'
+SSH_EOF
 
 for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do 
 
