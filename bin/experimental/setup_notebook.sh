@@ -14,7 +14,11 @@ source ./scripts/variables.sh
 
 echo TENANT_ID=$1
 
-export  NB_CLUSTER_NAME=nb
+export NB_CLUSTER_NAME=nb
+echo NB_CLUSTER_NAME=$NB_CLUSTER_NAME
+
+export MLFLOW_CLUSTER_NAME=mlflow
+echo MLFLOW_CLUSTER_NAME=$MLFLOW_CLUSTER_NAME
 
 export CLUSTER_ID=$(hpecp tenant list --query "[?_links.self.href == '/api/v1/tenant/4'] | [0] | [_links.k8scluster]" --output text)
 echo CLUSTER_ID=$CLUSTER_ID
@@ -88,7 +92,9 @@ metadata:
 spec: 
   app: "jupyter-notebook"
   appCatalog: "local"
-  connections: 
+  connections:
+    clusters:
+      - $MLFLOW_CLUSTER_NAME
     secrets: 
       - hpecp-ext-auth-secret
       - mlflow-sc
