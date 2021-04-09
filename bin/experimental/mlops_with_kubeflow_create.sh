@@ -155,5 +155,12 @@ EOF_YAML
 
 EOF1
 
+echo "Retrieving minio gateway host and port"
+MINIO_HOST_AND_PORT=$(./bin/experimental/minio_get_gw_host_and_port.sh $TENANT_ID mlflow)
+
+echo "Creating minio bucket"
+./bin/experimental/minio_create_bucket.py $MINIO_HOST_AND_PORT
+
+echo "Setting up Notebook"
 ./bin/experimental/setup_notebook.sh $TENANT_ID
 

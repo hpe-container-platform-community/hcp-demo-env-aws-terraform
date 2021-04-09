@@ -4,6 +4,7 @@
 source ./scripts/variables.sh
 
 export HOST=$1
+echo HOST=$HOST
 
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-SSH_EOF
 
@@ -33,6 +34,7 @@ client = Minio(
 found = client.bucket_exists("mlflow")
 if not found:
     client.make_bucket("mlflow")
+    print("Created bucket 'mflow'")
 else:
     print("Bucket 'mlflow' already exists")
 
