@@ -26,3 +26,4 @@ bluedata_infra_main_bigip.tf
 etc/postcreate.sh
 
 credentials-velero
+velero-policy.json

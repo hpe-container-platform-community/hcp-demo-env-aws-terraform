@@ -55,7 +55,7 @@ then
     then
         exit 1
     fi
-    aws s3api delete-bucket --bucket $BUCKET
+    aws s3 rb $BUCKET  --force
 fi
 
 if aws iam list-access-keys --user-name $VELERO_IAM_USER
