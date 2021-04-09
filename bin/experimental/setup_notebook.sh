@@ -12,7 +12,8 @@ set -u
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
-echo TENANT_ID=$1
+export TENANT_ID=$1
+echo $TENANT_ID
 
 export NB_CLUSTER_NAME=nb
 echo NB_CLUSTER_NAME=$NB_CLUSTER_NAME
