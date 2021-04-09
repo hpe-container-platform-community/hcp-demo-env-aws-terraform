@@ -16,6 +16,9 @@ then
   exit 1
 fi
 
+# use the project's HPECP CLI config file
+export HPECP_CONFIG_FILE="./generated/hpecp.conf"
+
 # Three hosts are required for the KF demo - let's select the first three from terraform
 KF_HOSTS_INDEX='0:3'
 
