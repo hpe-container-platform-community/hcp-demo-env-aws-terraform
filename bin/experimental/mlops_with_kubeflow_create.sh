@@ -2,6 +2,7 @@
 
 set -e
 set -u
+set -o pipefail
 
 if [[ ! -d generated ]]; then
    echo "This file should be executed from the project directory"
@@ -155,12 +156,16 @@ EOF_YAML
 
 EOF1
 
-echo "Retrieving minio gateway host and port"
-MINIO_HOST_AND_PORT=$(./bin/experimental/minio_get_gw_host_and_port.sh $TENANT_ID mlflow)
-
-echo "Creating minio bucket"
-./bin/experimental/minio_create_bucket.py $MINIO_HOST_AND_PORT
-
 echo "Setting up Notebook"
 ./bin/experimental/setup_notebook.sh $TENANT_ID
+
+echo "Waiting for mlflow KD app to have state==configured"
+./bin/experimental/minio_wait_for_mlflow_configured_state.sh $TENANT_ID mlflow
+
+echo "Retrieving minio gateway host and port"
+MINIO_HOST_AND_PORT="$(./bin/experimental/minio_get_gw_host_and_port.sh $TENANT_ID mlflow)"
+echo MINIO_HOST_AND_PORT=$MINIO_HOST_AND_PORT
+
+echo "Creating minio bucket"
+./bin/experimental/minio_create_bucket.sh "$MINIO_HOST_AND_PORT"
 
