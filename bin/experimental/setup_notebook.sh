@@ -14,6 +14,9 @@ set -u
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
+# use the project's HPECP CLI config file
+export HPECP_CONFIG_FILE="./generated/hpecp.conf"
+
 export TENANT_ID=$1
 echo $TENANT_ID
 
@@ -42,6 +45,11 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   export AD_USER_SECRET_HASH=\$(python3 -c "import hashlib; print(hashlib.md5('\$AD_USER_ID-ad_user1'.encode('utf-8')).hexdigest())")
   export AD_USER_KC_SECRET="hpecp-kc-secret-\$AD_USER_SECRET_HASH"
 
+  kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) -n \$TENANT_NS get secret \$AD_USER_KC_SECRET
+  if [[ $? == 0 ]]; then
+    echo "Secret \$AD_USER_KC_SECRET exists - removing"
+    kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) -n \$TENANT_NS delete secret \$AD_USER_KC_SECRET
+  fi
 
 cat > ~/.hpecp_tenant.conf <<CAT_EOF
 [default]
@@ -60,7 +68,7 @@ CAT_EOF
 cat ~/.hpecp_tenant.conf
 	
 export AD_USER_KUBECONFIG="\$(PROFILE=tenant HPECP_CONFIG_FILE=~/.hpecp_tenant.conf hpecp tenant k8skubeconfig | sed -z 's/\n/\\\n/g')"
-printf "AD_USER_KUBECONFIG=\$AD_USER_KUBECONFIG"
+# printf "AD_USER_KUBECONFIG=\$AD_USER_KUBECONFIG"
 
 echo
 
@@ -245,7 +253,7 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   echo TENANT_NS=\$TENANT_NS
   echo POD=\$POD
   
-  # Login to create home folders
+  echo "Login to notebook to create home folders for ad_admin1 and ad_user1"
   
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
     exec -n \$TENANT_NS \$POD -- sudo su - ad_admin1
@@ -253,18 +261,18 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
     exec -n \$TENANT_NS \$POD -- sudo su - ad_user1
   
-  # Copy example files to notebook pod  
+  echo "Copying example files to notebook pods"
   
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp train.ipynb \$TENANT_NS/\$POD:/home/ad_admin1/mlflow-train.ipynb
+    cp --container app train.ipynb \$TENANT_NS/\$POD:/home/ad_admin1/mlflow-train.ipynb
     
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp wine-quality.csv \$TENANT_NS/\$POD:/home/ad_admin1/wine-quality.csv
+    cp --container app wine-quality.csv \$TENANT_NS/\$POD:/home/ad_admin1/wine-quality.csv
 
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp train.ipynb \$TENANT_NS/\$POD:/home/ad_user1/mlflow-train.ipynb
+    cp --container app train.ipynb \$TENANT_NS/\$POD:/home/ad_user1/mlflow-train.ipynb
     
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp wine-quality.csv \$TENANT_NS/\$POD:/home/ad_user1/wine-quality.csv
+    cp --container app wine-quality.csv \$TENANT_NS/\$POD:/home/ad_user1/wine-quality.csv
 
 EOF1
