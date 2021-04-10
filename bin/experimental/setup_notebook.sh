@@ -212,8 +212,8 @@ EOF_YAML
 EOF1
 
 
-cat static/mlflow/train.ipynb | ./bin/ssh_rdp_linux_server.sh "cat > train.ipynb"
-cat static/mlflow/wine-quality.csv | ./bin/ssh_rdp_linux_server.sh "cat > wine-quality.csv"
+cat static/datatap.ipynb | ./bin/ssh_rdp_linux_server.sh "cat > datatap.ipynb"
+cat static/wine-quality.csv | ./bin/ssh_rdp_linux_server.sh "cat > wine-quality.csv"
 
 
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
@@ -264,13 +264,13 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   echo "Copying example files to notebook pods"
   
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp --container app train.ipynb \$TENANT_NS/\$POD:/home/ad_admin1/mlflow-train.ipynb
+    cp --container app datatap.ipynb \$TENANT_NS/\$POD:/home/ad_admin1/datatap.ipynb
     
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
     cp --container app wine-quality.csv \$TENANT_NS/\$POD:/home/ad_admin1/wine-quality.csv
 
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp --container app train.ipynb \$TENANT_NS/\$POD:/home/ad_user1/mlflow-train.ipynb
+    cp --container app datatap.ipynb \$TENANT_NS/\$POD:/home/ad_user1/datatap.ipynb
     
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
     cp --container app wine-quality.csv \$TENANT_NS/\$POD:/home/ad_user1/wine-quality.csv
