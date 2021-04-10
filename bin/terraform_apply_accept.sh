@@ -13,12 +13,12 @@ if [[ ! -f  "./generated/controller.prv_key" ]]; then
 fi
 
 terraform apply -var-file=etc/bluedata_infra.tfvars \
-   -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true "$@" && \
+   -var="client_cidr_block=$(curl -s http://ipinfo.io/ip)/32" -auto-approve=true "$@" && \
 terraform output -json > generated/output.json && \
 ./scripts/post_refresh_or_apply.sh
 
 source ./scripts/variables.sh
 if [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "Linux" ]]; then
    # Display RDP Endpoint and Credentials
-   ./generated/rdp_credentials.sh
+   ./bin/rdp_credentials.sh
 fi

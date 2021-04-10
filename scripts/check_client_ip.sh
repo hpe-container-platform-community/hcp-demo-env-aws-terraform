@@ -7,7 +7,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/variables.sh"
 
-CURR_CLIENT_CIDR_BLOCK="$(curl -s http://ifconfig.me/ip)/32"
+CURR_CLIENT_CIDR_BLOCK="$(curl -s http://ipinfo.io/ip)/32"
 
 if [[ "$CLIENT_CIDR_BLOCK" = "$CURR_CLIENT_CIDR_BLOCK" ]];
 then

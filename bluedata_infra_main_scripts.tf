@@ -400,7 +400,7 @@ resource "local_file" "whatismyip" {
 
   content = <<-EOF
      #!/bin/bash
-     echo $(curl -s http://ifconfig.me/ip)/32
+     echo $(curl -s http://ipinfo.io/ip)/32
   EOF
 }
 

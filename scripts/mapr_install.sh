@@ -129,7 +129,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${AD_PU
    echo REPO_DIR=\$REPO_DIR
 
    rm -rf \$REPO_DIR
-   git clone https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform-mapr-ansible \$REPO_DIR
+   git clone https://github.com/snowch/hcp-demo-env-aws-terraform-mapr-ansible \$REPO_DIR
 
    sed -i 's/cluster_name: demo.mapr.com/cluster_name: ${MAPR_CLUSTER_NAME}/g' \$REPO_DIR/group_vars/all
    sed -i '26i\ \ when: inventory_hostname == groups["mapr-spark-yarn"][0]' \$REPO_DIR/roles/mapr-spark-yarn-install/tasks/main.yml

@@ -22,7 +22,7 @@ subnet_cidr_block  = "10.1.0.0/24"
 # This project requirs a client cidr block to be set to allow access to the aws vpc from your client machine
 # Most users will set the client cidr block automatically using the terraform CLI, e.g.
 #
-# `terraform apply ... -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" ...`
+# `terraform apply ... -var="client_cidr_block=$(curl -s http://ipinfo.io/ip)/32" ...`
 #
 # The above approach retrieves the internet IP of your gateway connection to the internet.
 # The benefit of using the CLI is that if you change networks frequently (e.g. mobile users), you can simply

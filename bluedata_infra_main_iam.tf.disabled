@@ -108,7 +108,7 @@ resource "local_file" "non_terraform_user_scripts_update_firewal" {
     AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
     AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
-    MY_IP="$(curl -s http://ifconfig.me/ip)/32"
+    MY_IP="$(curl -s http://ipinfo.io/ip)/32"
 
     # Add My IP to Network ACL
 
