@@ -46,12 +46,12 @@ set -u
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 20 --output text)
 
-echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[kubeflow] | timeout=1800s"
+echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[kubeflow,picasso-compute] | timeout=1800s"
 CLUSTER_ID=$(hpecp k8scluster create \
   --name c1 \
   --k8s-version "$K8S_VERSION" \
   --k8shosts-config "$K8S_HOST_CONFIG" \
-  --addons ["kubeflow"] \
+  --addons '["kubeflow","picasso-compute"]' \
   --ext_id_svr_bind_pwd "5ambaPwd@" \
   --ext_id_svr_user_attribute "sAMAccountName" \
   --ext_id_svr_bind_type "search_bind" \
@@ -70,8 +70,8 @@ echo "$CLUSTER_ID"
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 3600
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
 
-echo "Adding addon [kubeflow] | timeout=1800s"
-hpecp k8scluster add-addons --id $CLUSTER_ID --addons [kubeflow]
+echo 'Adding addon ["kubeflow","picasso-compute"] | timeout=1800s'
+hpecp k8scluster add-addons --id $CLUSTER_ID --addons '["kubeflow","picasso-compute"]'
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1800
 echo "Addon successfully added"
 
