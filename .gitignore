@@ -3,6 +3,7 @@
 
 *.log
 *-logs.tar.gz
+generated/log-
 
 terraform.tfstate
 terraform.tfstate.backup
