@@ -14,7 +14,7 @@ set -u
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
-export CLUSTER_ID=$1
+export TENANT_ID=$1
 
 # use the project's HPECP CLI config file
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"
@@ -27,4 +27,11 @@ then
   exit 1
 fi
 
-hpecp k8scluster delete --id $CLUSTER_ID --wait-for-delete-sec 1800 # 30 minutes
+hpecp k8scluster delete --id $CLUSTER_ID
+
+echo '
+Delete submitted.  To check progress run:
+
+export HPECP_CONFIG_FILE="./generated/hpecp.conf"
+hpecp k8scluster list
+'
