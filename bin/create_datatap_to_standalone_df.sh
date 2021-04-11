@@ -94,7 +94,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 	maprlogin generateticket -type servicewithimpersonation -user ${MAPR_USER} -out maprfuseticket
 ENDSSH
 MAPRFUSETICKET=$(ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOSTS_PUB_IPS[0]} cat maprfuseticket)
-# echo MAPRFUSETICKET:${MAPRFUSETICKET}
+#echo MAPRFUSETICKET=${MAPRFUSETICKET}
 
 print_term_width '-'
 echo "Saving mapr ticket to EPIC controller to ${TENANT_KEYTAB_TCKT_FILE}"

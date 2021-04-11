@@ -1,9 +1,22 @@
 #!/usr/bin/env bash
 
-DEFAULT_TENANT_ID=2 # 2 = EPIC Demo Tenant
-DEFAULT_MAPR_VMNT=/
+set -e
+set -o pipefail
 
-TENANT_ID=${1:-$DEFAULT_TENANT_ID}
+if [[ -z $1 ]]; then
+  echo Usage: $0 TENANT_ID [ DEFAULT_MAPR_VMNT ]
+  echo Where: TENANT_ID = /api/v1/tenant/[0-9]*
+  exit 1
+fi
+
+set -u
+
+./scripts/check_prerequisites.sh
+source ./scripts/variables.sh
+
+TENANT_ID=$(basename $1)
+
+DEFAULT_MAPR_VMNT=/
 MAPR_VMNT=${2:-$DEFAULT_MAPR_VMNT} 
 
 set -e # abort on error

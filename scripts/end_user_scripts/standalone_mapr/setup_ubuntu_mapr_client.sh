@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+exec > >(tee -i generated/log-$(basename $0).txt)
+exec 2>&1
+
 set -e # abort on error
 set -u # abort on undefined variable
 

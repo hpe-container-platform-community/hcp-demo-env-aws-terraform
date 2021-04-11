@@ -1,4 +1,7 @@
-#!/bin/bash 
+#!/bin/bash
+
+exec > >(tee -i generated/log-$(basename $0).txt)
+exec 2>&1
 
 set -e
 set -u

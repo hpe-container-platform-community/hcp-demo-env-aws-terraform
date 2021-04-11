@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+exec > >(tee -i generated/log-$(basename $0).txt)
+exec 2>&1
+
 CLUSTER_ID=$1
 
 if [[ -z $CLUSTER_ID ]]; then
