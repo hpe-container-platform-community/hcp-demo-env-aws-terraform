@@ -45,11 +45,13 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   export AD_USER_SECRET_HASH=\$(python3 -c "import hashlib; print(hashlib.md5('\$AD_USER_ID-ad_user1'.encode('utf-8')).hexdigest())")
   export AD_USER_KC_SECRET="hpecp-kc-secret-\$AD_USER_SECRET_HASH"
 
+  set +e
   kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) -n \$TENANT_NS get secret \$AD_USER_KC_SECRET
   if [[ $? == 0 ]]; then
     echo "Secret \$AD_USER_KC_SECRET exists - removing"
     kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) -n \$TENANT_NS delete secret \$AD_USER_KC_SECRET
   fi
+  set -e
 
 cat > ~/.hpecp_tenant.conf <<CAT_EOF
 [default]

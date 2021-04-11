@@ -29,10 +29,9 @@ fi
 
 export CLUSTER_ID=$(hpecp tenant list --query "[?_links.self.href == '$TENANT_ID'] | [0] | [_links.k8scluster]" --output text)
 
+hpecp tenant delete --id $TENANT_ID --wait-for-delete-sec 1800 # 30 minutes
+
 if [[ $CLUSTER_ID =~ ^\/api\/v2\/k8scluster\/[0-9]* ]];
 then
-  hpecp tenant delete --id $TENANT_ID --wait-for-delete-sec 1800 # 30 minutes
   hpecp k8scluster delete --id $CLUSTER_ID --wait-for-delete-sec 1800 # 30 minutes
-else
-  echo ""
 fi
