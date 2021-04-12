@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
+exec > >(tee -i generated/log-$(basename $0).txt)
+exec 2>&1
+
 if [[ -z $1 ]]; then
   echo Usage: $0 HOST:PORT
   exit 1
 fi
+
+echo "Running script: $0 $@"
 
 export HOST=$1
 echo HOST=$HOST

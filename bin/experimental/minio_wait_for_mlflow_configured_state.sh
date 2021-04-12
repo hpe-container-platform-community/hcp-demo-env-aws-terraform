@@ -1,5 +1,8 @@
 #!/bin/bash 
 
+exec > >(tee -i generated/log-$(basename $0).txt)
+exec 2>&1
+
 set -e
 
 if [[ -z $1 || -z $2 ]]; then
@@ -8,6 +11,8 @@ if [[ -z $1 || -z $2 ]]; then
 fi
 
 set -u
+
+echo "Running script: $0 $@"
 
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh

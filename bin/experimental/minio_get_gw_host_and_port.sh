@@ -1,5 +1,8 @@
 #!/bin/bash 
 
+exec > >(tee -i generated/log-$(basename $0).txt)
+exec 2>&1
+
 set -e
 
 if [[ -z $1 || -z $2 ]]; then

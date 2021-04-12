@@ -12,6 +12,19 @@ if [[ ! -d generated ]]; then
    exit 1
 fi
 
+set +u
+
+MASTER_IDS="${@:1:1}"  # FIRST ARGUMENT
+WORKER_IDS=("${@:2}")  # REMAINING ARGUMENTS
+
+if [[ $MASTER_IDS =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]] && [[ ${WORKER_IDS[0]} =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]]; 
+then
+   echo "Running script: $0 $@"
+else
+   echo "Usage: $0 /api/v2/worker/k8shost/[0-9] /api/v2/worker/k8shost/[0-9] [ ... /api/v2/worker/k8shost/NNN ]"
+   exit 1
+fi
+
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
@@ -23,24 +36,11 @@ export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 # Test CLI is able to connect
 echo "Platform ID: $(hpecp license platform-id)"
 
-set +u
-
 MLFLOW_CLUSTER_NAME=mlflow
+echo MLFLOW_CLUSTER_NAME=$MLFLOW_CLUSTER_NAME
+
 AD_SERVER_PRIVATE_IP=$AD_PRV_IP
-
-MASTER_IDS="${@:1:1}"  # FIRST ARGUMENT
-WORKER_IDS=("${@:2}")  # REMAINING ARGUMENTS
-
-echo "${MASTER_IDS}"
-echo "${WORKER_IDS[@]}"
-
-if [[ $MASTER_IDS =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]] && [[ ${WORKER_IDS[0]} =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]]; 
-then
-   echo 
-else
-   echo "Usage: $0 /api/v2/worker/k8shost/[0-9] /api/v2/worker/k8shost/[0-9] [ ... /api/v2/worker/k8shost/NNN ]"
-   exit 1
-fi
+echo AD_SERVER_PRIVATE_IP=$AD_SERVER_PRIVATE_IP
 
 K8S_HOST_CONFIG="$(echo $MASTER_IDS | sed 's/ /:master,/g'):master,$(echo ${WORKER_IDS[@]} | sed 's/ /:worker,/g'):worker"
 echo K8S_HOST_CONFIG=$K8S_HOST_CONFIG
@@ -68,7 +68,7 @@ CLUSTER_ID=$(hpecp k8scluster create \
   --ext_id_svr_port 636 \
   --external-groups '["CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com","CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"]')
 
-echo "$CLUSTER_ID"
+echo CLUSTER_ID=$CLUSTER_ID
 
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 3600
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
@@ -82,6 +82,7 @@ echo "Creating tenant"
 TENANT_ID=$(hpecp tenant create --name "k8s-tenant-1" --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s --features '{ ml_project: true }' --quota-cores 1000)
 hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 1800
 echo "K8S tenant created successfully - ID: ${TENANT_ID}"
+echo TENANT_ID=$TENANT_ID
 
 TENANT_NS=$(hpecp tenant get $TENANT_ID | grep "^namespace: " | cut -d " " -f 2)
 echo TENANT_NS=$TENANT_NS
@@ -98,7 +99,7 @@ echo "Configured tenant with AD groups Admins=DemoTenantAdmins... and Members=De
 
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
 
-  set -x
+set -x
    
 ###
 ### MLFLOW Secret
