@@ -1,25 +1,8 @@
 
-# locals {
-#   wkr_instance_types = [
-#     "m5.4xlarge",
-#     "m5.8xlarge",
-#     "m5.8xlarge",
-#     "m5.8xlarge",
-#     "m5.8xlarge",
-#     "m5.8xlarge",
-#     "m5.8xlarge",
-#     "m5.8xlarge",
-#     "m5.4xlarge",
-#     "m5.4xlarge",
-#     "m5.4xlarge",
-#   ]
-# }
-
 resource "aws_instance" "workers" {
   count                  = var.worker_count
   ami                    = var.EC2_CENTOS7_AMIS[var.region]
-  instance_type          = var.wkr_instance_type
-  # instance_type          = local.wkr_instance_types[count.index]
+  instance_type          = var.wkr_instance_types != null ? var.wkr_instance_types[count.index] : var.wkr_instance_type
   key_name               = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     module.network.security_group_allow_all_from_client_ip,

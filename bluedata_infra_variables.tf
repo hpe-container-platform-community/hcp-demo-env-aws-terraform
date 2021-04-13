@@ -144,7 +144,14 @@ variable "gpu_worker_has_disk_for_df" {
 
 variable "gtw_instance_type" { default = "m4.2xlarge" }
 variable "ctr_instance_type" { default = "m4.2xlarge" }
-variable "wkr_instance_type" { default = "m4.2xlarge" }
+variable "wkr_instance_type" { 
+  type    = string
+  default = "m4.2xlarge"
+}
+variable "wkr_instance_types" { 
+  type    = list
+  default = null
+}
 variable "nfs_instance_type" { default = "t2.small" }
 variable "ad_instance_type" { default = "t2.small" }
 variable "rdp_instance_type" { default = "t2.xlarge" }

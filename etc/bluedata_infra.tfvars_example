@@ -87,7 +87,7 @@ epic_dl_url_presign_options = "--region eu-west-1"
 
 gtw_instance_type = "m5.4xlarge" 
 ctr_instance_type = "m5.4xlarge"
-wkr_instance_type = "m5.4xlarge"
+wkr_instance_type = "m5.4xlarge" # or provide wkr_instance_types = []
 nfs_instance_type = "t2.small"
 ad_instance_type  = "t2.small"
 rdp_instance_type = "t2.xlarge"
