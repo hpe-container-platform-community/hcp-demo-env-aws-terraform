@@ -9,6 +9,11 @@ project_id         = "<<your-name>>-hcp"   # Change your project name.
                                            # E.g. csnow-hcp-demo (with no spaces) 
                                            # ** project_id maximum length is 18 chars **
 
+# If you want to allow other clients to have full network access to this environment, add them here.
+# These IPs need a suffix such as /32 for specific IP address.  Use https://ifconfig.me to find your IP
+
+additional_client_ip_list = []  # E.g. [ "1.1.1.1/32","2.2.2.2/32" ]
+
 worker_count       = 3                     # How many hosts do you want for EPIC or K8S (without GPUs)?
 
 gpu_worker_count   = 0                     # How many hosts do you want for EPIC or K8S (with GPUs)?
