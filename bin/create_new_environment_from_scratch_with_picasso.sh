@@ -11,7 +11,7 @@ set -o pipefail
 MASTER_HOSTS_INDEX='0:3'
 
 # select the remaining ECP worker host hosts from terraform as the k8s workers
-WORKER_HOSTS_INDEX='3:9'
+WORKER_HOSTS_INDEX='3:8'
 
 pip3 install --quiet --upgrade --user hpecp
 
@@ -64,9 +64,11 @@ AD_SERVER_PRIVATE_IP=$(terraform output ad_server_private_ip)
 K8S_HOST_CONFIG="$(echo $MASTER_IDS | sed 's/ /:master,/g'):master,$(echo $WORKER_IDS | sed 's/ /:worker,/g'):worker"
 echo K8S_HOST_CONFIG=$K8S_HOST_CONFIG
 
+EXTERNAL_GROUPS=$(echo '["CN=AD_ADMIN_GROUP,CN=Users,DC=samdom,DC=example,DC=com","CN=AD_MEMBER_GROUP,CN=Users,DC=samdom,DC=example,DC=com"]' | sed s/AD_ADMIN_GROUP/${AD_ADMIN_GROUP}/g | sed s/AD_MEMBER_GROUP/${AD_MEMBER_GROUP}/g)
+
 echo "Creating k8s cluster with version ${K8S_VERSION}"
 CLUSTER_ID=$(hpecp k8scluster create \
-   --name c1 \
+   --name dfcluster \
    --k8s-version $K8S_VERSION \
    --k8shosts-config "$K8S_HOST_CONFIG" \
    --ext_id_svr_bind_pwd "5ambaPwd@" \
@@ -80,7 +82,7 @@ CLUSTER_ID=$(hpecp k8scluster create \
    --ext_id_svr_verify_peer false \
    --ext_id_svr_type "Active Directory" \
    --ext_id_svr_port 636 \
-   --external-groups '["CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com","CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com"]' \
+   --external-groups "$EXTERNAL_GROUPS" \
    --datafabric true \
    --datafabric-name=dfdemo)
    
@@ -98,5 +100,4 @@ hpecp k8scluster list
 hpecp config get | grep  bds_global_
 
 
-
-# TODO https://docs.containerplatform.hpe.com/52/reference/hpe-ezmeral-data-fabric-admini/Creating_a_New_Data_Fabric_Cluster.html?hl=creating%2Cnew%2Cdata%2Cfabric%2Ccluster#v52_creating-a-new-data-fabric-cluster__step6
+# TODO https://docs.containerplatform.hpe.com/53/reference/hpe-ezmeral-data-fabric-admini/Creating_a_New_Data_Fabric_Cluster.html#v52_creating-a-new-data-fabric-cluster__step6
