@@ -52,13 +52,15 @@ fi
 print_header "Configure Active Directory on RDP Host"
 ./scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
 
-print_header "Add ad_admin1 to HCP Embedded DF"
-./bin/df-cluster-acl-ad_admin1.sh # add the ad_admin1 user to the cluster
-
-set +e # ignore errors
-print_header "Create Datatap to HCP Embedded DF"
-./scripts/end_user_scripts/embedded_mapr/3_setup_datatap_new.sh
-set -e
+if [[ "$EMBEDDED_DF" == "True" ]]; then
+   print_header "Add ad_admin1 to HCP Embedded DF"
+   ./bin/df-cluster-acl-ad_admin1.sh # add the ad_admin1 user to the cluster
+   
+   set +e # ignore errors
+   print_header "Create Datatap to HCP Embedded DF"
+   ./scripts/end_user_scripts/embedded_mapr/3_setup_datatap_new.sh
+   set -e
+fi
 
 print_header "Enable Virtual Nodes on Controller"
 ./bin/experimental/epic_enable_virtual_node_assignment.sh
