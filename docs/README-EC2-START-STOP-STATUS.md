@@ -8,14 +8,14 @@ Some scripts were generated for you to view the status of your EC2 instances man
 
 ------
 
-### Stopping instances - example
+### Stopping instances - (Former version) example
 
 ![stopping instances](./README-EC2-START-STOP-STATUS/stopping_instances.gif)
 
-### Starting instances - example
+### Starting instances - (Former version) example
 
 ![starting instances](./README-EC2-START-STOP-STATUS/starting_instances.gif)
 
-### Running instances - example
+### Running instances - (Former version) example
 
 ![running instances](./README-EC2-START-STOP-STATUS/running_instances.gif)
