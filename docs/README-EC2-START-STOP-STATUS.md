@@ -2,9 +2,9 @@
 
 Some scripts were generated for you to view the status of your EC2 instances managed by this terraform project.
 
-- `./generated/cli_stop_ec2_instances.sh` to stop your instances
-- `./generated/cli_start_ec2_instances.sh` to start your instances
-- `./generated/cli_running_ec2_instances.sh` to view running instances
+- `./bin/ec2_stop_all_instances.sh` to stop your instances
+- `./bin/ec2_start_all_instances.sh` to start your instances
+- `./bin/ec2_instance_status.sh` to view running instances
 
 ------
 
