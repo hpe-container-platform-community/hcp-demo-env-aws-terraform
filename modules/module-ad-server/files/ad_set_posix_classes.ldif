@@ -1,8 +1,8 @@
 ##############################
-###### DemoTenantAdmins ######
+###### AD_ADMIN_GROUP ######
 ##############################
 
-dn: cn=DemoTenantAdmins,cn=Users,DC=samdom,DC=example,DC=com
+dn: cn=AD_ADMIN_GROUP,cn=Users,DC=samdom,DC=example,DC=com
 changetype: modify
 add:objectclass
 objectclass: posixGroup
@@ -282,10 +282,10 @@ add: givenName
 givenName: ADAdmin10
 
 #############################
-###### DemoTenantUsers ######
+###### AD_MEMBER_GROUP ######
 #############################
 
-dn: cn=DemoTenantUsers,cn=Users,DC=samdom,DC=example,DC=com
+dn: cn=AD_MEMBER_GROUP,cn=Users,DC=samdom,DC=example,DC=com
 changetype: modify
 add:objectclass
 objectclass: posixGroup

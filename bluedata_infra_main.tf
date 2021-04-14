@@ -139,6 +139,8 @@ module "ad_server" {
   ad_ec2_ami        = var.EC2_CENTOS7_AMIS[var.region]
   ad_instance_type  = var.ad_instance_type
   ad_server_enabled = var.ad_server_enabled
+  ad_admin_group    = var.ad_admin_group
+  ad_member_group   = var.ad_member_group
   key_name          = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     module.network.security_group_allow_all_from_client_ip,

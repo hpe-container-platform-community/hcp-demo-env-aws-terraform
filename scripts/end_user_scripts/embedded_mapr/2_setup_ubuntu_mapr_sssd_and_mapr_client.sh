@@ -44,7 +44,7 @@ DOMAIN="samdom.example.com"
 		ldap_tls_reqcert = never
 		ldap_user_member_of = memberOf
 		ldap_access_order = filter
-		ldap_access_filter = (|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))
+		ldap_access_filter = (|(memberOf=CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com))
 		ldap_id_mapping = False
 		ldap_schema = ad
 		ldap_user_gid_number = gidNumber
@@ -109,7 +109,7 @@ DOMAIN="samdom.example.com"
 	sudo pamtester login ad_user1 open_session
 	sudo id ad_user1
 	sudo getent passwd ad_user1
-	sudo getent group DemoTenantUsers
+	sudo getent group ${AD_MEMBER_GROUP}
 	
 	echo 'Done setting up SSSD.'
 SSH_EOF
@@ -158,7 +158,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${C
 
 	# ignore errors, e.g. if run multiple times - TODO: check if ACL exists before running
 	bdmapr maprcli acl edit \
-			-cluster hcp.mapr.cluster -type cluster -group DemoTenantUsers:login,cv || true
+			-cluster hcp.mapr.cluster -type cluster -group ${AD_MEMBER_GROUP}:login,cv || true
 
 	bdmapr maprcli acl show -type cluster
 SSH_EOF

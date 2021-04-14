@@ -28,3 +28,9 @@ variable "subnet_id" {
 variable "deployment_uuid" { 
     type = string
 }
+variable "ad_admin_group" {
+    type = string
+}
+variable "ad_member_group" {
+    type = string
+}

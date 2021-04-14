@@ -10,10 +10,10 @@ set -o pipefail # abort on subprocess failure
 source "./scripts/variables.sh"
 source "./scripts/functions.sh"
 
-if [[ "$EMBEDDED_DF" == "False" ]]; then
-   echo "Aborting. This script is only supported on clusters with embedded DF".
-   exit 1
-fi
+# if [[ "$EMBEDDED_DF" == "False" ]]; then
+#    echo "Aborting. This script is only supported on clusters with embedded DF".
+#    exit 1
+# fi
 
 WORKER_HOST_IPS=("$@")
 echo "Inside script: '$0' with parameters: ${WORKER_HOST_IPS[@]}"

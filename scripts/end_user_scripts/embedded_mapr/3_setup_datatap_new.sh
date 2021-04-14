@@ -12,6 +12,9 @@ if [[ "$AD_SERVER_ENABLED" == False ]]; then
    exit
 fi
 
+echo AD_ADMIN_GROUP=${AD_ADMIN_GROUP}
+echo AD_MEMBER_GROUP=${AD_MEMBER_GROUP}
+
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
 	set -eu
 
@@ -85,11 +88,11 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		"external_user_groups": [
 		    {
 			"role": "/api/v1/role/2",
-			"group":"CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
+			"group":"CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com"
 		    },
 		    {
 			"role": "/api/v1/role/3",
-			"group": "CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
+			"group": "CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com"
 		    }
 		]
 	}

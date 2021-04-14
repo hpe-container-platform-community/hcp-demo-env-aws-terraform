@@ -53,6 +53,10 @@ resource "aws_instance" "ad_server" {
         sudo yum install -y -q docker openldap-clients
         sudo service docker start
         sudo systemctl enable docker
+        sed -i s/AD_ADMIN_GROUP/${var.ad_admin_group}/g /home/centos/ad_user_setup.sh
+        sed -i s/AD_MEMBER_GROUP/${var.ad_member_group}/g /home/centos/ad_user_setup.sh
+        sed -i s/AD_ADMIN_GROUP/${var.ad_admin_group}/g /home/centos/ad_set_posix_classes.ldif
+        sed -i s/AD_MEMBER_GROUP/${var.ad_member_group}/g /home/centos/ad_set_posix_classes.ldif
         . /home/centos/run_ad.sh
         sleep 120
         . /home/centos/ldif_modify.sh

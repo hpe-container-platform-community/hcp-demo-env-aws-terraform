@@ -67,7 +67,7 @@ fi
 		ldap_tls_reqcert = never
 		ldap_user_member_of = memberOf
 		ldap_access_order = filter
-		ldap_access_filter = (|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))
+		ldap_access_filter = (|(memberOf=CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com))
 		ldap_id_mapping = False
 		ldap_schema = ad
 		ldap_user_gid_number = gidNumber
@@ -132,7 +132,7 @@ fi
 	sudo pamtester login ad_user1 open_session
 	sudo id ad_user1
 	sudo getent passwd ad_user1
-	sudo getent group DemoTenantUsers
+	sudo getent group ${AD_MEMBER_GROUP}
 	
 	echo 'Done setting up SSSD.'
 SSH_EOF
@@ -169,7 +169,7 @@ for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do
 		ldap_tls_reqcert = never
 		ldap_user_member_of = memberOf
 		ldap_access_order = filter
-		ldap_access_filter = (|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))
+		ldap_access_filter = (|(memberOf=CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com))
 		ldap_id_mapping = False
 		ldap_schema = ad
 		ldap_user_gid_number = gidNumber
@@ -234,7 +234,7 @@ for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do
 	sudo pamtester login ad_user1 open_session
 	sudo id ad_user1
 	sudo getent passwd ad_user1
-	sudo getent group DemoTenantUsers
+	sudo getent group ${AD_MEMBER_GROUP}
 	
 	echo 'Done setting up SSSD.'
 SSH_EOF
@@ -252,7 +252,7 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MA
 			-cluster ${MAPR_CLUSTER_NAME} -type cluster -user ad_admin1:fc
 
 	maprcli acl edit \
-			-cluster ${MAPR_CLUSTER_NAME} -type cluster -group DemoTenantUsers:login,cv
+			-cluster ${MAPR_CLUSTER_NAME} -type cluster -group ${AD_MEMBER_GROUP}:login,cv
 
 	maprcli acl show -type cluster
 SSH_EOF

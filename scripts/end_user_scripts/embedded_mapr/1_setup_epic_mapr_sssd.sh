@@ -12,6 +12,9 @@ if [[ "$AD_SERVER_ENABLED" == False ]]; then
    exit
 fi
 
+echo AD_ADMIN_GROUP=${AD_ADMIN_GROUP}
+echo AD_MEMBER_GROUP=${AD_MEMBER_GROUP}
+
 source "$SCRIPT_DIR/verify_ad_server_config.sh"
 
 AD_PRIVATE_IP=$AD_PRV_IP
@@ -54,7 +57,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${C
 			ldap_tls_reqcert = never
 			ldap_user_member_of = memberOf
 			ldap_access_order = filter
-			ldap_access_filter = (|(memberOf=CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com))
+			ldap_access_filter = (|(memberOf=CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com)(memberOf=CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com))
 			ldap_id_mapping = False
 			ldap_schema = ad
 			ldap_user_gid_number = gidNumber
@@ -114,7 +117,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${C
 		pamtester login ad_user1 open_session
 		id ad_user1
 		getent passwd ad_user1
-		getent group DemoTenantUsers
+		getent group ${AD_MEMBER_GROUP}
 		
 	DOCKER_EOF
 
@@ -123,7 +126,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -tt -T centos@${C
 			-cluster hcp.mapr.cluster -type cluster -user ad_admin1:fc
 
 	bdmapr maprcli acl edit \
-			-cluster hcp.mapr.cluster -type cluster -group DemoTenantUsers:login,cv
+			-cluster hcp.mapr.cluster -type cluster -group ${AD_MEMBER_GROUP}:login,cv
 
 	bdmapr maprcli acl show -type cluster
 

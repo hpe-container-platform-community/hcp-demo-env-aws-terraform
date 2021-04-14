@@ -145,8 +145,8 @@ variable "gpu_worker_has_disk_for_df" {
 variable "gtw_instance_type" { default = "m4.2xlarge" }
 variable "ctr_instance_type" { default = "m4.2xlarge" }
 variable "wkr_instance_type" { 
-  type    = string
-  default = "m4.2xlarge"
+  type = string
+  default = "m4.2xlarge" 
 }
 variable "wkr_instance_types" { 
   type    = list
@@ -165,6 +165,8 @@ variable "selinux_disabled" { default = false }
 
 variable "nfs_server_enabled" { default = false }
 variable "ad_server_enabled" { default = true }
+variable "ad_member_group" { default = "DemoTenantUsers" }
+variable "ad_admin_group" { default = "DemoTenantAdmins" }
 
 variable "dns_zone_name" {
   default = "samdom.example.com"

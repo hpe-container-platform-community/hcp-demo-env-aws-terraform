@@ -11,7 +11,7 @@ set -o pipefail
 MASTER_HOSTS_INDEX='0:3'
 
 # select the remaining ECP worker host hosts from terraform as the k8s workers
-WORKER_HOSTS_INDEX='3:'
+WORKER_HOSTS_INDEX='3:9'
 
 pip3 install --quiet --upgrade --user hpecp
 
@@ -80,9 +80,11 @@ CLUSTER_ID=$(hpecp k8scluster create \
    --ext_id_svr_verify_peer false \
    --ext_id_svr_type "Active Directory" \
    --ext_id_svr_port 636 \
-   --external-groups '["CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com","CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"]' \
+   --external-groups '["CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com","CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com"]' \
    --datafabric true \
    --datafabric-name=dfdemo)
+   
+echo CLUSTER_ID=$CLUSTER_ID
 
 echo CONTROLLER URL: $(terraform output controller_public_url)
 

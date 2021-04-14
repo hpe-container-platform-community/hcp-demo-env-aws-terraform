@@ -262,6 +262,9 @@ else
    AD_INSTANCE_ID=""
 fi
 
+AD_MEMBER_GROUP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_member_group"]["value"])')
+AD_ADMIN_GROUP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_admin_group"]["value"])')
+
 NFS_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["nfs_server_enabled"]["value"])')
 
 if [[ "$NFS_SERVER_ENABLED" == "True" ]]; then

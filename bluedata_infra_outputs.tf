@@ -309,6 +309,14 @@ output "ad_server_enabled" {
   value = var.ad_server_enabled
 }
 
+output "ad_admin_group" {
+  value = var.ad_admin_group
+}
+
+output "ad_member_group" {
+  value = var.ad_member_group
+}
+
 // RDP Server Output
 
 output "rdp_server_enabled" {
