@@ -103,4 +103,4 @@ hpecp k8scluster list
 hpecp config get | grep  bds_global_
 
 
-./bin/register_picasso.sh $CLUSTER_ID
+#./bin/register_picasso.sh $CLUSTER_ID

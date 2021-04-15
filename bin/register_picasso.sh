@@ -38,10 +38,27 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
   echo yes | /opt/bluedata/bundles/hpe-cp-*/startscript.sh --action configure_dftenants
 ENDSSH
 
+
+#
+# FIXME - this is not working :(
+#
+
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+  sudo yum install -y expect
+  
   set =x
   export LOG_FILE_PATH=/tmp/register_k8s_register.log
   export MASTER_NODE_IP="${FIRST_MASTER_IP}"
   
-  /opt/bluedata/bundles/hpe-cp-*/startscript.sh --action register_dftenants
+  export SCRIPTNAME=\$(ls /opt/bluedata/bundles/hpe-cp-*/startscript.sh)
+  
+expect <<EOF
+  
+   spawn \$SCRIPTNAME --action register_dftenants
+   
+   expect "Enter Site Admin username: " { send "admin\r" }
+   expect "Enter Site Admin password: " { send "admin123\r" }
+   expect eof
+EOF
+
 ENDSSH

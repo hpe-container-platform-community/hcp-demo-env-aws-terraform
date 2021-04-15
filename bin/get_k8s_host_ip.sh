@@ -9,6 +9,8 @@ if [[ -z $1 ]]; then
   exit 1
 fi
 
+WORKER_ID=$1
+
 set -u
 
 source ./scripts/check_prerequisites.sh
