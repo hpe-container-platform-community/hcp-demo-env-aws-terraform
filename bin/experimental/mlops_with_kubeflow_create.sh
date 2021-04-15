@@ -17,7 +17,7 @@ set +u
 MASTER_IDS="${@:1:1}"  # FIRST ARGUMENT
 WORKER_IDS=("${@:2}")  # REMAINING ARGUMENTS
 
-if [[ $MASTER_IDS =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]] && [[ ${WORKER_IDS[0]} =~ ^\/api\/v2\/worker\/k8shost\/[0-9]$ ]]; 
+if [[ $MASTER_IDS =~ ^\/api\/v2\/worker\/k8shost\/[0-9]*$ ]] && [[ ${WORKER_IDS[0]} =~ ^\/api\/v2\/worker\/k8shost\/[0-9]*$ ]]; 
 then
    echo "Running script: $0 $@"
 else
@@ -36,6 +36,8 @@ export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 # Test CLI is able to connect
 echo "Platform ID: $(hpecp license platform-id)"
 
+K8S_CLUSTER_NAME=kfcluster
+
 MLFLOW_CLUSTER_NAME=mlflow
 echo MLFLOW_CLUSTER_NAME=$MLFLOW_CLUSTER_NAME
 
@@ -49,9 +51,11 @@ set -u
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 20 --output text)
 
+EXTERNAL_GROUPS=$(echo '["CN=AD_ADMIN_GROUP,CN=Users,DC=samdom,DC=example,DC=com","CN=AD_MEMBER_GROUP,CN=Users,DC=samdom,DC=example,DC=com"]' | sed s/AD_ADMIN_GROUP/${AD_ADMIN_GROUP}/g | sed s/AD_MEMBER_GROUP/${AD_MEMBER_GROUP}/g)
+
 echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[kubeflow,picasso-compute] | timeout=1800s"
 CLUSTER_ID=$(hpecp k8scluster create \
-  --name c1 \
+  --name $K8S_CLUSTER_NAME \
   --k8s-version "$K8S_VERSION" \
   --k8shosts-config "$K8S_HOST_CONFIG" \
   --addons '["kubeflow","picasso-compute"]' \
@@ -66,7 +70,7 @@ CLUSTER_ID=$(hpecp k8scluster create \
   --ext_id_svr_verify_peer false \
   --ext_id_svr_type "Active Directory" \
   --ext_id_svr_port 636 \
-  --external-groups '["CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com","CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com"]')
+  --external-groups "${EXTERNAL_GROUPS}")
 
 echo CLUSTER_ID=$CLUSTER_ID
 
