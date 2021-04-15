@@ -14,4 +14,4 @@ set -u
 source ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
-hpecp k8sworker list -query "[?_links.self.href == '/api/v2/worker/k8shost/7'] | [0] | [ipaddr]" -o text
+hpecp k8sworker list -query "[?_links.self.href == '${WORKER_ID}'] | [0] | [ipaddr]" -o text

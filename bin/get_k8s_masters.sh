@@ -14,4 +14,4 @@ set -u
 source ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
-hpecp k8scluster list --query "[?_links.self.href == '/api/v2/k8scluster/1'] | [0] | [k8shosts_config] | [0] | [?role == 'master'] | [*][node]" -o text
+hpecp k8scluster list --query "[?_links.self.href == '${CLUSTER_ID}'] | [0] | [k8shosts_config] | [0] | [?role == 'master'] | [*][node]" -o text
