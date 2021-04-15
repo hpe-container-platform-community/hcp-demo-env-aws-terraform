@@ -103,4 +103,4 @@ hpecp k8scluster list
 hpecp config get | grep  bds_global_
 
 
-# TODO https://docs.containerplatform.hpe.com/53/reference/hpe-ezmeral-data-fabric-admini/Creating_a_New_Data_Fabric_Cluster.html#v52_creating-a-new-data-fabric-cluster__step6
+./bin/register_picasso.sh $CLUSTER_ID
