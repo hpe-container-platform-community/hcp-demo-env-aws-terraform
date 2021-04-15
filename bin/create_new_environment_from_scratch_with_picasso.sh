@@ -36,6 +36,9 @@ fi
 # create AWS infra and install  ECP
 ./bin/create_new_environment_from_scratch.sh
 
+source "./scripts/variables.sh"
+source "./scripts/functions.sh"
+
 # perform post ECP installation setup (add gateways, etc)
 bash etc/postcreate_core.sh_template
 
