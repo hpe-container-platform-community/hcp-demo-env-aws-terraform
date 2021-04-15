@@ -102,5 +102,16 @@ hpecp k8scluster list
 
 hpecp config get | grep  bds_global_
 
+if hpecp k8scluster list | grep ready
+then
+     ./bin/register_picasso.sh $CLUSTER_ID
+else
+     THE_DATE=$(date +"%Y-%m-%dT%H:%M:%S%z")
+     ./bin/ssh_controller.sh sudo tar czf - /var/log/bluedata/ > ${THE_DATE}-controller-logs.tar.gz
+    
+     for i in "${!WRKR_PUB_IPS[@]}"; do
+       ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" centos@${WRKR_PUB_IPS[$i]} sudo tar czf - /var/log/bluedata/ > ${THE_DATE}-${WRKR_PUB_IPS[$i]}-logs.tar.gz
+     done
+     exit 1
+ fi
 
-#./bin/register_picasso.sh $CLUSTER_ID
