@@ -11,7 +11,6 @@ az                 = "eu-west-2a"
 #
 
 project_id         = "csnow-scratch" # ** Max len 18 chars **
-user               = "csnow"
 
 #
 # Before setting the vpc cidr block, manually verify the vpc cidr doesn't already exist in your region
@@ -23,7 +22,7 @@ subnet_cidr_block  = "10.1.0.0/24"
 # This project requirs a client cidr block to be set to allow access to the aws vpc from your client machine
 # Most users will set the client cidr block automatically using the terraform CLI, e.g.
 #
-# `terraform apply ... -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" ...`
+# `terraform apply ... -var="client_cidr_block=$(curl -s http://ipinfo.io/ip)/32" ...`
 #
 # The above approach retrieves the internet IP of your gateway connection to the internet.
 # The benefit of using the CLI is that if you change networks frequently (e.g. mobile users), you can simply
@@ -47,6 +46,9 @@ additional_client_ip_list = []  # E.g. [ "1.1.1.1/24","2.2.2.2/32" ]
 # specify how many BlueData workers you want
 worker_count = 3
 
+# Set to true to install HPE CP with embedded DF (mapr)
+embedded_df = true
+
 # specify how many MAPR instances you want (0 or 3)
 mapr_cluster_1_count         = 0                     # How many hosts do you want for MAPR CLUSTER 1? (0 or 3)
 mapr_cluster_1_name          = "demo1.mapr.com"
@@ -58,7 +60,7 @@ mapr_cluster_2_name          = "demo2.mapr.com"
 
 gtw_instance_type  = "m4.4xlarge" # Paris: "m5.4xlarge"
 ctr_instance_type  = "m4.4xlarge" # Paris: "m5.4xlarge"
-wkr_instance_type  = "m4.4xlarge" # Paris: "m5.4xlarge"
+wkr_instance_type  = "m4.4xlarge" # Paris: "m5.4xlarge" # or provide wkr_instance_types = []
 nfs_instance_type  = "t2.small"
 ad_instance_type   = "t2.small"
 rdp_instance_type  = "t2.xlarge"

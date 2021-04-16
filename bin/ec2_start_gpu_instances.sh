@@ -7,7 +7,7 @@ aws --region $REGION --profile $PROFILE ec2 start-instances \
     --output table \
     --query "StartingInstances[*].{ID:InstanceId,State:CurrentState.Name}"
 
-CURR_CLIENT_CIDR_BLOCK="$(curl -s http://ifconfig.me/ip)/32"
+CURR_CLIENT_CIDR_BLOCK="$(curl -s http://ipinfo.io/ip)/32"
 
 # check if the client IP address has changed
 if [[ "$CLIENT_CIDR_BLOCK" = "$CURR_CLIENT_CIDR_BLOCK" ]]; then

@@ -45,7 +45,7 @@ if [[ ! -f  "./generated/controller.prv_key" ]]; then
    chmod 600 "./generated/controller.prv_key"
 fi
 
-terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ifconfig.me/ip)/32" -auto-approve=true
+terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ipinfo.io/ip)/32" -auto-approve=true
 
 echo "Sleeping for 60s to give services a chance to startup"
 sleep 60

@@ -1,7 +1,8 @@
+
 resource "aws_instance" "workers" {
   count                  = var.worker_count
   ami                    = var.EC2_CENTOS7_AMIS[var.region]
-  instance_type          = var.wkr_instance_type
+  instance_type          = var.wkr_instance_types != null ? var.wkr_instance_types[count.index] : var.wkr_instance_type
   key_name               = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     module.network.security_group_allow_all_from_client_ip,
@@ -12,12 +13,18 @@ resource "aws_instance" "workers" {
   root_block_device {
     volume_type = "gp2"
     volume_size = 400
+    tags = {
+      Name = "${var.project_id}-worker-${count.index + 1}-root-ebs"
+      Project = var.project_id
+      user = local.user
+      deployment_uuid = random_uuid.deployment_uuid.result
+    }
   }
 
   tags = {
-    Name = "${var.project_id}-instance-worker-${count.index + 1}"
+    Name = "${var.project_id}-worker-${count.index + 1}"
     Project = var.project_id
-    user = var.user
+    user = local.user
     deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
@@ -49,7 +56,7 @@ resource "aws_ebs_volume" "worker-ebs-volumes-sdb" {
   tags = {
     Name = "${var.project_id}-worker-${count.index + 1}-ebs-sdb"
     Project = var.project_id
-    user = var.user
+    user = local.user
     deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
@@ -75,7 +82,7 @@ resource "aws_ebs_volume" "worker-ebs-volumes-sdc" {
   tags = {
     Name = "${var.project_id}-worker-${count.index + 1}-ebs-sdc"
     Project = var.project_id
-    user = var.user
+    user = local.user
     deployment_uuid = random_uuid.deployment_uuid.result
   }
 }

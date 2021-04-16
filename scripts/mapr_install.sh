@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+exec > >(tee -i generated/log-$(basename $0).txt)
+exec 2>&1
+
 CLUSTER_ID=$1
 
 if [[ -z $CLUSTER_ID ]]; then
@@ -41,25 +44,30 @@ echo MAPR_CLUSTER_HOSTS_PUB_IPS=${MAPR_CLUSTER_HOSTS_PUB_IPS}
 # Test SSH connectivity to EC2 instances from local machine
 ###############################################################################
 
-echo "Testing connectivity to $AD_PUB_IP"
-ping -c 5 $AD_PUB_IP || {
-    echo "$(tput setaf 1)Aborting. Could not ping Active Directory host."
-    echo " - This script requires connectivity to the Active Directory host"
-    echo " - You may need to disconnect from your corporate VPN, and/or"
-    echo " - You may need to run ./bin/terraform_apply.sh$(tput sgr0)"
-    exit 1
-}
-
-for HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do
-    echo "Testing connectivity to $HOST"
-    ping -c 5 $HOST || {
-        echo "$(tput setaf 1)Aborting. Could not ping host $HOST."
-        echo " - This script requires connectivity to the HPE CP Controller"
+if [[ -z C9_HOST ]];
+then
+    echo "Testing connectivity to $AD_PUB_IP"
+    ping -c 5 $AD_PUB_IP || {
+        echo "$(tput setaf 1)Aborting. Could not ping Active Directory host."
+        echo " - This script requires connectivity to the Active Directory host"
         echo " - You may need to disconnect from your corporate VPN, and/or"
         echo " - You may need to run ./bin/terraform_apply.sh$(tput sgr0)"
         exit 1
     }
-done
+    
+    for HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do
+        echo "Testing connectivity to $HOST"
+        ping -c 5 $HOST || {
+            echo "$(tput setaf 1)Aborting. Could not ping host $HOST."
+            echo " - This script requires connectivity to the HPE CP Controller"
+            echo " - You may need to disconnect from your corporate VPN, and/or"
+            echo " - You may need to run ./bin/terraform_apply.sh$(tput sgr0)"
+            exit 1
+        }
+    done
+else
+    echo "Skipping ping test from Cloud 9 environment"
+fi
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${AD_PUB_IP} "sudo yum install -y git"
 
@@ -124,7 +132,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${AD_PU
    echo REPO_DIR=\$REPO_DIR
 
    rm -rf \$REPO_DIR
-   git clone https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform-mapr-ansible \$REPO_DIR
+   git clone https://github.com/snowch/hcp-demo-env-aws-terraform-mapr-ansible \$REPO_DIR
 
    sed -i 's/cluster_name: demo.mapr.com/cluster_name: ${MAPR_CLUSTER_NAME}/g' \$REPO_DIR/group_vars/all
    sed -i '26i\ \ when: inventory_hostname == groups["mapr-spark-yarn"][0]' \$REPO_DIR/roles/mapr-spark-yarn-install/tasks/main.yml
@@ -181,3 +189,4 @@ for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do
     ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" \
             -T ubuntu@${MAPR_CLUSTER_HOST} "sudo -u mapr bash -c 'cat > /home/mapr/.ssh/authorized_keys'" < generated/controller.pub_key ;
 done
+

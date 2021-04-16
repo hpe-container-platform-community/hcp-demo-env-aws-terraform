@@ -10,7 +10,7 @@ print_header "Installing HPECP CLI to local machine"
 export HPECP_CONFIG_FILE=generated/hpecp.conf
 export HPECP_LOG_CONFIG_FILE=${PWD}/generated/hpecp_cli_logging.conf
 pip3 uninstall -y hpecp || true # uninstall if exists
-pip3 install --user --upgrade hpecp
+pip3 install --user --upgrade --quiet hpecp
 
 HPECP_VERSION=$(hpecp config get --query 'objects.[bds_global_version]' --output text)
 echo "HPECP Version: ${HPECP_VERSION}"
@@ -49,16 +49,21 @@ if [[ $HPECP_VERSION == "5.0"* ]]; then
    ./scripts/end_user_scripts/embedded_mapr/1_setup_epic_mapr_sssd.sh
 fi
 
-print_header "Configure Active Directory on RDP Host"
-./scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
+if [[ "$EMBEDDED_DF" == "True" ]]; then
+   print_header "Configure Active Directory on RDP Host"
+   ./scripts/end_user_scripts/embedded_mapr/2_setup_ubuntu_mapr_sssd_and_mapr_client.sh
 
-print_header "Add ad_admin1 to HCP Embedded DF"
-./bin/df-cluster-acl-ad_admin1.sh # add the ad_admin1 user to the cluster
+   print_header "Add ad_admin1 to HCP Embedded DF"
+   ./bin/df-cluster-acl-ad_admin1.sh # add the ad_admin1 user to the cluster
+   
+   set +e # ignore errors
+   print_header "Create Datatap to HCP Embedded DF"
+   ./scripts/end_user_scripts/embedded_mapr/3_setup_datatap_new.sh
+   set -e
+fi
 
-set +e # ignore errors
-print_header "Create Datatap to HCP Embedded DF"
-./scripts/end_user_scripts/embedded_mapr/3_setup_datatap_new.sh
-set -e
+
+
 
 print_header "Enable Virtual Nodes on Controller"
 ./bin/experimental/epic_enable_virtual_node_assignment.sh

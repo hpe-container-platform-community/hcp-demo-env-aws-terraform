@@ -12,6 +12,12 @@ resource "aws_instance" "ad_server" {
   root_block_device {
     volume_type = "gp2"
     volume_size = 400
+    tags = {
+      Name = "${var.project_id}-ad-server-root-ebs"
+      Project = var.project_id
+      user = var.user
+      deployment_uuid = var.deployment_uuid
+    }
   }
 
   tags = {
@@ -47,6 +53,10 @@ resource "aws_instance" "ad_server" {
         sudo yum install -y -q docker openldap-clients
         sudo service docker start
         sudo systemctl enable docker
+        sed -i s/AD_ADMIN_GROUP/${var.ad_admin_group}/g /home/centos/ad_user_setup.sh
+        sed -i s/AD_MEMBER_GROUP/${var.ad_member_group}/g /home/centos/ad_user_setup.sh
+        sed -i s/AD_ADMIN_GROUP/${var.ad_admin_group}/g /home/centos/ad_set_posix_classes.ldif
+        sed -i s/AD_MEMBER_GROUP/${var.ad_member_group}/g /home/centos/ad_set_posix_classes.ldif
         . /home/centos/run_ad.sh
         sleep 120
         . /home/centos/ldif_modify.sh

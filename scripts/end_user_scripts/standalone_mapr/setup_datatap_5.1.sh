@@ -1,9 +1,22 @@
 #!/usr/bin/env bash
 
-DEFAULT_TENANT_ID=2 # 2 = EPIC Demo Tenant
-DEFAULT_MAPR_VMNT=/demo_tenant_admins
+set -e
+set -o pipefail
 
-TENANT_ID=${1:-$DEFAULT_TENANT_ID}
+if [[ -z $1 ]]; then
+  echo Usage: $0 TENANT_ID [ DEFAULT_MAPR_VMNT ]
+  echo Where: TENANT_ID = /api/v1/tenant/[0-9]*
+  exit 1
+fi
+
+set -u
+
+./scripts/check_prerequisites.sh
+source ./scripts/variables.sh
+
+TENANT_ID=$(basename $1)
+
+DEFAULT_MAPR_VMNT=/
 MAPR_VMNT=${2:-$DEFAULT_MAPR_VMNT} 
 
 set -e # abort on error
@@ -45,6 +58,8 @@ echo MAPR_CLUSTER_NAME=${MAPR_CLUSTER_NAME}
 echo MAPR_DTAP_NAME=${MAPR_DTAP_NAME}
 echo TENANT_KEYTAB_DIR=${TENANT_KEYTAB_DIR}
 echo TENANT_KEYTAB_TCKT_FILE=${TENANT_KEYTAB_TCKT_FILE}
+echo AD_ADMIN_GROUP=${AD_ADMIN_GROUP}
+echo AD_MEMBER_GROUP=${AD_MEMBER_GROUP}
 
 print_term_width '-'
 echo "Setting up mapr acls and volumes"
@@ -60,20 +75,20 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 			-cluster ${MAPR_CLUSTER_NAME} -type cluster -user ad_admin1:fc
 
 	maprcli acl edit \
-			-cluster ${MAPR_CLUSTER_NAME} -type cluster -group DemoTenantAdmins:login,cv
+			-cluster ${MAPR_CLUSTER_NAME} -type cluster -group ${AD_ADMIN_GROUP}:login,cv
 
-	maprcli acl show -type cluster
+	# maprcli acl show -type cluster
 	
-	# note: ignore errors so script can be idempotent
-	maprcli volume create \
-			-name ${MAPR_VOL} -path ${MAPR_VMNT} || echo "^ Ignoring error ^"
+	# # note: ignore errors so script can be idempotent
+	# maprcli volume create \
+	# 		-name ${MAPR_VOL} -path ${MAPR_VMNT} || echo "^ Ignoring error ^"
 
-	maprcli acl set \
-			-type volume -name ${MAPR_VOL} -user ad_admin1:fc
+	# maprcli acl set \
+	# 		-type volume -name ${MAPR_VOL} -user ad_admin1:fc
 
-	#hadoop fs -chgrp DemoTenantAdmins /demo_tenant_admins
+	# #hadoop fs -chgrp ${AD_ADMIN_GROUP} /demo_tenant_admins
 
-	hadoop fs -chmod 777 /demo_tenant_admins
+	# hadoop fs -chmod 777 /demo_tenant_admins
 ENDSSH
 
 print_term_width '-'
@@ -138,11 +153,11 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		"external_user_groups": [
 		    {
 			"role": "/api/v1/role/2",
-			"group":"CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
+			"group":"CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com"
 		    },
 		    {
 			"role": "/api/v1/role/3",
-			"group": "CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
+			"group": "CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com"
 		    }
 		]
 	}

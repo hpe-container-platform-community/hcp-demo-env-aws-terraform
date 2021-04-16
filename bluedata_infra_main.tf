@@ -9,6 +9,12 @@ data "aws_availability_zone" "main" {
   name = var.az
 }
 
+data "aws_caller_identity" "current" {}
+
+locals {
+  user = basename(data.aws_caller_identity.current.arn)
+}
+
 resource "aws_key_pair" "main" {
   key_name   = "${var.project_id}-keypair"
   public_key = file("${path.module}/generated/controller.pub_key")
@@ -38,7 +44,7 @@ resource "local_file" "cli_logging_config_file" {
 module "network" {
   source                    = "./modules/module-network"
   project_id                = var.project_id
-  user                      = var.user
+  user                      = local.user
   deployment_uuid           = random_uuid.deployment_uuid.result
   client_cidr_block         = var.client_cidr_block
   additional_client_ip_list = var.additional_client_ip_list
@@ -62,7 +68,7 @@ module "controller" {
   source                    = "./modules/module-controller"
   create_eip                = var.create_eip_controller
   project_id                = var.project_id
-  user                      = var.user
+  user                      = local.user
   deployment_uuid           = random_uuid.deployment_uuid.result
   ssh_prv_key_path          = "${path.module}/generated/controller.prv_key"
   client_cidr_block         = var.client_cidr_block
@@ -86,7 +92,7 @@ module "gateway" {
   source                    = "./modules/module-gateway"
   create_eip                = var.create_eip_gateway
   project_id                = var.project_id
-  user                      = var.user
+  user                      = local.user
   deployment_uuid           = random_uuid.deployment_uuid.result
   ssh_prv_key_path          = "${path.module}/generated/controller.prv_key"
   client_cidr_block         = var.client_cidr_block
@@ -110,7 +116,7 @@ module "gateway" {
 module "nfs_server" {
   source             = "./modules/module-nfs-server"
   project_id         = var.project_id
-  user               = var.user
+  user               = local.user
   deployment_uuid    = random_uuid.deployment_uuid.result
   ssh_prv_key_path   = "${path.module}/generated/controller.prv_key"
   nfs_ec2_ami        = var.EC2_CENTOS7_AMIS[var.region]
@@ -127,12 +133,14 @@ module "nfs_server" {
 module "ad_server" {
   source            = "./modules/module-ad-server"
   project_id        = var.project_id
-  user              = var.user
+  user              = local.user
   deployment_uuid   = random_uuid.deployment_uuid.result
   ssh_prv_key_path  = "${path.module}/generated/controller.prv_key"
   ad_ec2_ami        = var.EC2_CENTOS7_AMIS[var.region]
   ad_instance_type  = var.ad_instance_type
   ad_server_enabled = var.ad_server_enabled
+  ad_admin_group    = var.ad_admin_group
+  ad_member_group   = var.ad_member_group
   key_name          = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     module.network.security_group_allow_all_from_client_ip,
@@ -144,7 +152,7 @@ module "ad_server" {
 module "rdp_server" {
   source             = "./modules/module-rdp-server"
   project_id         = var.project_id
-  user               = var.user
+  user               = local.user
   deployment_uuid    = random_uuid.deployment_uuid.result
   ssh_prv_key_path   = "${path.module}/generated/controller.prv_key"
   rdp_ec2_ami        = var.EC2_WIN_RDP_AMIS[var.region]
@@ -162,7 +170,7 @@ module "rdp_server" {
 module "rdp_server_linux" {
   source                = "./modules/module-rdp-server-linux"
   project_id            = var.project_id
-  user                  = var.user
+  user                  = local.user
   deployment_uuid       = random_uuid.deployment_uuid.result
   az                    = var.az
   create_eip            = var.create_eip_rdp_linux_server

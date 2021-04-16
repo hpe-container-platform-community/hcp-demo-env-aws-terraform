@@ -55,6 +55,11 @@ VPC_CIDR_BLOCK=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(s
 USER_TAG=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["user"]["value"])')
 [ "$USER_TAG" ] || ( echo "ERROR: USER_TAG is empty" && exit 1 )
 
+USER=$USER_TAG
+
+PROJECT_ID=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["project_id"]["value"])')
+[ "PROJECT_ID" ] || ( echo "ERROR: PROJECT_ID is empty" && exit 1 )
+
 PROFILE=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["aws_profile"]["value"])')
 [ "$PROFILE" ] || ( echo "ERROR: PROFILE is empty" && exit 1 )
 
@@ -80,6 +85,9 @@ CREATE_EIP_GATEWAY=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.lo
 #echo CREATE_EIP_GATEWAY=${CREATE_EIP_GATEWAY}
 
 INSTALL_WITH_SSL="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["install_with_ssl"]["value"])')"
+
+EMBEDDED_DF="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["embedded_df"]["value"])')"
+
 
 CA_KEY="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ca_key"]["value"])')"
 CA_CERT="$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ca_cert"]["value"])')"
@@ -253,6 +261,9 @@ if [[ "$AD_SERVER_ENABLED" == "True" ]]; then
 else
    AD_INSTANCE_ID=""
 fi
+
+AD_MEMBER_GROUP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_member_group"]["value"])')
+AD_ADMIN_GROUP=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["ad_admin_group"]["value"])')
 
 NFS_SERVER_ENABLED=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (obj["nfs_server_enabled"]["value"])')
 

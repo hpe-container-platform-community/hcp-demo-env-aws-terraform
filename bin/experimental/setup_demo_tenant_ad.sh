@@ -35,11 +35,11 @@ hpecp httpclient put "/api/v1/tenant/2?external_user_groups" --json-file <(echo 
 	"external_user_groups": [
 	    {
 		"role": "/api/v1/role/2",
-		"group":"CN=DemoTenantAdmins,CN=Users,DC=samdom,DC=example,DC=com"
+		"group":"CN=AD_ADMIN_GROUP,CN=Users,DC=samdom,DC=example,DC=com"
 	    },
 	    {
 		"role": "/api/v1/role/3",
-		"group": "CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com"
+		"group": "CN=AD_MEMBER_GROUP,CN=Users,DC=samdom,DC=example,DC=com"
 	    }
 	]
-}')
+}' | sed s/AD_ADMIN_GROUP/${AD_ADMIN_GROUP}/g | sed s/AD_MEMBER_GROUP/${AD_MEMBER_GROUP}/g)

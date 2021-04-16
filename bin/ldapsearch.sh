@@ -15,8 +15,8 @@ show_help() {
    echo "# Retrieve the ad_admin1 record"
    echo "$0 -q 'CN=ad_admin1'"   
    echo
-   echo "# Retrieve all 'user' records in group DemoTenantUsers"
-   echo "$0 -q '(&(memberOf=CN=DemoTenantUsers,CN=Users,DC=samdom,DC=example,DC=com)(objectClass=user))'"
+   echo "# Retrieve all 'user' records in group ${AD_ADMIN_GROUP}"
+   echo "$0 -q '(&(memberOf=CN=${AD_ADMIN_GROUP},CN=Users,DC=samdom,DC=example,DC=com)(objectClass=user))'"
    print_term_width '='
 }
 

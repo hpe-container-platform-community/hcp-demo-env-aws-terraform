@@ -155,6 +155,20 @@ for WRKR in ${WRKR_PUB_IPS[@]}; do
          echo "Disabling SELINUX on the worker host $WRKR"
          ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux"
       fi
+      
+      ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} <<EOF
+      sudo su -
+cat << ENDCAT > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+ENDCAT
+EOF
+
 
       ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum update -y -q"
       # if the reboot causes ssh to terminate with an error, ignore it
@@ -280,7 +294,12 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
    set -u
    # do initial configuration
    KERB_OPTION="-k no"
-   LOCAL_TENANT_STORAGE=""
+
+   if [[ "$EMBEDDED_DF" == "True" ]]; then
+      LOCAL_TENANT_STORAGE=""
+   else
+      LOCAL_TENANT_STORAGE="--no-local-tenant-storage"
+   fi
    LOCAL_FS_TYPE=""
    WORKER_LIST=""
    CLUSTER_IP=""

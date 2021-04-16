@@ -5,7 +5,7 @@ terraform {
 
     arguments = [
       "-var-file=./etc/bluedata_infra.tfvars",
-      "-var=client_cidr_block=${run_cmd("curl", "-s", "http://ifconfig.me/ip")}/32" 
+      "-var=client_cidr_block=${run_cmd("curl", "-s", "http://ipinfo.io/ip")}/32" 
     ]
   }
 

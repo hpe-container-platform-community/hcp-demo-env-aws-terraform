@@ -4,7 +4,7 @@ resource "aws_iam_user" "iam_user" {
   tags = {
     Name = "${var.project_id}-iam-user"
     Project = var.project_id
-    user = var.user
+    user = local.user
     deployment_uuid = random_uuid.deployment_uuid.result
   }
 }
@@ -35,7 +35,7 @@ resource "aws_iam_user_policy" "start_stop_ec2_instances" {
               "Condition": {
                   "StringEquals": {
                       "ec2:ResourceTag/Project": "${var.project_id}",
-                      "ec2:ResourceTag/user": "${var.user}"
+                      "ec2:ResourceTag/user": "${local.user}"
                   }
               }
           }
@@ -108,7 +108,7 @@ resource "local_file" "non_terraform_user_scripts_update_firewal" {
     AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
     AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
 
-    MY_IP="$(curl -s http://ifconfig.me/ip)/32"
+    MY_IP="$(curl -s http://ipinfo.io/ip)/32"
 
     # Add My IP to Network ACL
 

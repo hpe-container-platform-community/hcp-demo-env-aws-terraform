@@ -3,7 +3,11 @@ output "project_dir" {
 }
 
 output "user" {
-  value = var.user
+  value = local.user
+}
+
+output "project_id" {
+  value = var.project_id
 }
 
 output "aws_profile" {
@@ -150,6 +154,10 @@ output "workers_private_dns" {
 
 output "worker_count" {
   value = [var.worker_count]
+}
+
+output "embedded_df" {
+  value = var.embedded_df
 }
 
 /// GPU workers
@@ -299,6 +307,14 @@ output "ad_server_ssh_command" {
 
 output "ad_server_enabled" {
   value = var.ad_server_enabled
+}
+
+output "ad_admin_group" {
+  value = var.ad_admin_group
+}
+
+output "ad_member_group" {
+  value = var.ad_member_group
 }
 
 // RDP Server Output
