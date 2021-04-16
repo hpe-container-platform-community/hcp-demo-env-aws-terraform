@@ -4,7 +4,9 @@ source "./scripts/variables.sh"
 
 
 THE_DATE=$(date +"%Y-%m-%dT%H-%M-%S%z")
-   
+
+set +e
+
 ./bin/ssh_controller.sh sudo tar czf - /var/log/bluedata/ > ./generated/${THE_DATE}-controller-logs.tar.gz
        
 for i in "${!WRKR_PUB_IPS[@]}"; do
