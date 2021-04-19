@@ -3,6 +3,7 @@
 set -e
 set -o pipefail
 
+# See here for more information: https://github.com/antonbabenko/terraform-cost-estimation
 
 echo -n "Checking jq version ... "
 if ! command -v jq >/dev/null 2>&1 || ! jq --version | grep 'jq-1.6.*'; then
@@ -13,8 +14,13 @@ fi
 
 curl -sLO https://raw.githubusercontent.com/antonbabenko/terraform-cost-estimation/master/terraform.jq
 
+
+STATE=$(terraform state pull |  jq -cf terraform.jq)
 echo
-terraform state pull |  jq -cf terraform.jq | curl -s -X POST -H "Content-Type: application/json" -d @- https://cost.modules.tf/
+echo "Sending data to https://cost.modules.tf/"
+echo "DATA: ${STATE}"
+echo
+echo ${STATE} | curl -s -X POST -H "Content-Type: application/json" -d @- https://cost.modules.tf/
 echo
 
 
