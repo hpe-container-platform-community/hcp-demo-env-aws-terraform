@@ -14,5 +14,5 @@ terraform output -json > generated/output.json
 source ./scripts/variables.sh
 if [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]]; then
    # Display RDP Endpoint and Credentials
-   ./generated/rdp_credentials.sh
+   ./bin/rdp_credentials.sh
 fi
