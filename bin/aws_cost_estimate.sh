@@ -11,7 +11,6 @@ if ! command -v jq >/dev/null 2>&1 || ! jq --version | grep 'jq-1.6.*'; then
    exit 1
 fi
 
-
 read -r -p "This script will send you state data to https://cost.modules.tf - Are you sure? [y/N] " response
 case "$response" in
     [yY][eE][sS]|[yY]) 
@@ -21,6 +20,8 @@ case "$response" in
         exit 1
         ;;
 esac
+
+curl -sLO https://raw.githubusercontent.com/antonbabenko/terraform-cost-estimation/master/terraform.jq
 
 echo
 terraform state pull |  jq -cf terraform.jq | curl -s -X POST -H "Content-Type: application/json" -d @- https://cost.modules.tf/
