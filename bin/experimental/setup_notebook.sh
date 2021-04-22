@@ -14,6 +14,8 @@ set -u
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
+echo "Running script: $0 $@"
+
 # use the project's HPECP CLI config file
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 
@@ -29,27 +31,65 @@ echo MLFLOW_CLUSTER_NAME=$MLFLOW_CLUSTER_NAME
 export TRAINING_CLUSTER_NAME=trainingengineinstance
 echo TRAINING_CLUSTER_NAME=$TRAINING_CLUSTER_NAME
 
+export AD_USER_NAME=ad_user1
+echo AD_USER_NAME=$AD_USER_NAME
+
+export AD_USER_PASS=pass123
+echo AD_USER_PASS=$AD_USER_PASS
+
+
+export CLUSTER_ID=$(hpecp tenant list --query "[?_links.self.href == '$TENANT_ID'] | [0] | [_links.k8scluster]" --output text)
+echo CLUSTER_ID=$CLUSTER_ID
+
+export TENANT_NS=$(hpecp tenant list --query "[?_links.self.href == '$TENANT_ID'] | [0] | [namespace]" --output text)
+echo TENANT_NS=$TENANT_NS
+
+# login as the ad_user1 user so that the user account gets added and an ID created (e.g. /api/v1/user/22)
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
 
   set -e
   set -u 
   set -o pipefail
 
-  export CLUSTER_ID=\$(hpecp tenant list --query "[?_links.self.href == '$TENANT_ID'] | [0] | [_links.k8scluster]" --output text)
-  echo CLUSTER_ID=\$CLUSTER_ID
-  
-  export TENANT_NS=\$(hpecp tenant list --query "[?_links.self.href == '$TENANT_ID'] | [0] | [namespace]" --output text)
-  echo TENANT_NS=\$TENANT_NS
-  
-  export AD_USER_ID=\$(hpecp user list --query "[?label.name=='ad_user1'] | [0] | [_links.self.href]" --output text | cut -d '/' -f 5)
-  export AD_USER_SECRET_HASH=\$(python3 -c "import hashlib; print(hashlib.md5('\$AD_USER_ID-ad_user1'.encode('utf-8')).hexdigest())")
-  export AD_USER_KC_SECRET="hpecp-kc-secret-\$AD_USER_SECRET_HASH"
+cat > ~/.hpecp_tenant.conf <<CAT_EOF
+[default]
+api_host = ${CTRL_PRV_IP}
+api_port = 8080
+use_ssl = ${INSTALL_WITH_SSL}
+verify_ssl = False
+warn_ssl = False
+
+[tenant]
+tenant = $TENANT_ID
+username = $AD_USER_NAME
+password = $AD_USER_PASS
+CAT_EOF
+
+cat ~/.hpecp_tenant.conf
+	
+PROFILE=tenant HPECP_CONFIG_FILE=~/.hpecp_tenant.conf hpecp tenant k8skubeconfig
+
+EOF1
+
+export AD_USER_ID=$(hpecp user list --query "[?label.name=='$AD_USER_NAME'] | [0] | [_links.self.href]" --output text | cut -d '/' -f 5 | sed '/^$/d')
+export AD_USER_SECRET_HASH=$(python3 -c "import hashlib; print(hashlib.md5('$AD_USER_ID-$AD_USER_NAME'.encode('utf-8')).hexdigest())")
+export AD_USER_KC_SECRET="hpecp-kc-secret-$AD_USER_SECRET_HASH"
+
+echo AD_USER_ID=$AD_USER_ID
+echo AD_USER_KC_SECRET=$AD_USER_KC_SECRET
+
+
+ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
+
+  set -e
+  set -u 
+  set -o pipefail
 
   set +e
-  kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) -n \$TENANT_NS get secret \$AD_USER_KC_SECRET
-  if [[ $? == 0 ]]; then
-    echo "Secret \$AD_USER_KC_SECRET exists - removing"
-    kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) -n \$TENANT_NS delete secret \$AD_USER_KC_SECRET
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS get secret $AD_USER_KC_SECRET
+  if [[ \$? == 0 ]]; then
+    echo "Secret $AD_USER_KC_SECRET exists - removing"
+    kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS delete secret $AD_USER_KC_SECRET
   fi
   set -e
 
@@ -63,8 +103,8 @@ warn_ssl = False
 
 [tenant]
 tenant = $TENANT_ID
-username = ad_user1
-password = pass123
+username = $AD_USER_NAME
+password = $AD_USER_PASS
 CAT_EOF
 
 cat ~/.hpecp_tenant.conf
@@ -83,12 +123,12 @@ export DATA_BASE64=\$(base64 -w 0 <<END
   "apiVersion": "v1",
   "metadata": {
     "labels": {
-      "kubedirector.hpe.com/username": "ad_user1",
-      "kubedirector.hpe.com/userid": "\$AD_USER_ID",
+      "kubedirector.hpe.com/username": "$AD_USER_NAME",
+      "kubedirector.hpe.com/userid": "$AD_USER_ID",
       "kubedirector.hpe.com/secretType": "kubeconfig"
     },
-    "namespace": "\$TENANT_NS",
-    "name": "\$AD_USER_KC_SECRET"
+    "namespace": "$TENANT_NS",
+    "name": "$AD_USER_KC_SECRET"
   }
 }
 END
@@ -96,7 +136,7 @@ END
 
 echo DATA_BASE64=\$DATA_BASE64
 
-hpecp httpclient post \$CLUSTER_ID/kubectl <(echo -n '{"data":"'\$DATA_BASE64'","op":"create"}')
+hpecp httpclient post $CLUSTER_ID/kubectl <(echo -n '{"data":"'\$DATA_BASE64'","op":"create"}')
 
 
 ###
@@ -104,13 +144,13 @@ hpecp httpclient post \$CLUSTER_ID/kubectl <(echo -n '{"data":"'\$DATA_BASE64'",
 ###
 
 echo "Launching Training Cluster"
-cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) -n \$TENANT_NS apply -f -
+cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS apply -f -
 
 apiVersion: "kubedirector.hpe.com/v1beta1"
 kind: "KubeDirectorCluster"
 metadata: 
   name: "$TRAINING_CLUSTER_NAME"
-  namespace: "\$TENANT_NS"
+  namespace: "$TENANT_NS"
   labels: 
     description: ""
 spec: 
@@ -119,7 +159,7 @@ spec:
   appCatalog: "local"
   connections: 
     secrets: 
-      - \$AD_USER_KC_SECRET
+      - $AD_USER_KC_SECRET
   roles: 
     - 
       id: "LoadBalancer"
@@ -173,15 +213,17 @@ EOF_YAML
 ### Jupyter Notebook
 ###
 
-echo "Launching Jupyter Notebook as 'ad_user1' user"
-cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) -n \$TENANT_NS apply -f -
+export AD_USER_ID=$AD_USER_ID
+
+echo "Launching Jupyter Notebook as '$AD_USER_NAME' user ($AD_USER_ID)"
+cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS apply -f -
 apiVersion: "kubedirector.hpe.com/v1beta1"
 kind: "KubeDirectorCluster"
 metadata: 
   name: "$NB_CLUSTER_NAME"
-  namespace: "\$TENANT_NS"
+  namespace: "$TENANT_NS"
   labels: 
-    "kubedirector.hpe.com/createdBy": "\$AD_USER_ID"
+    "kubedirector.hpe.com/createdBy": "$AD_USER_ID"
 spec: 
   app: "jupyter-notebook"
   appCatalog: "local"
@@ -192,7 +234,7 @@ spec:
     secrets: 
       - hpecp-ext-auth-secret
       - mlflow-sc
-      - \$AD_USER_KC_SECRET
+      - $AD_USER_KC_SECRET
   roles: 
     - 
       id: "controller"
@@ -224,23 +266,13 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   set -u 
   set -o pipefail
 
-  export CLUSTER_ID=\$(hpecp tenant list --query "[?_links.self.href == '$TENANT_ID'] | [0] | [_links.k8scluster]" --output text)
-  echo CLUSTER_ID=\$CLUSTER_ID
-  
-  export TENANT_NS=\$(hpecp tenant list --query "[?_links.self.href == '$TENANT_ID'] | [0] | [namespace]" --output text)
-  echo TENANT_NS=\$TENANT_NS
-  
-  export AD_USER_ID\=$(hpecp user list --query "[?label.name=='ad_user1'] | [0] | [_links.self.href]" --output text | cut -d '/' -f 5)
-  export AD_USER_SECRET_HASH=\$(python3 -c "import hashlib; print(hashlib.md5('\$AD_USER_ID-ad_user1'.encode('utf-8')).hexdigest())")
-  export AD_USER_KC_SECRET="hpecp-kc-secret-\$AD_USER_SECRET_HASH"
-
   echo Waiting for Notebook to have state==configured
   
   COUNTER=0
   while [ \$COUNTER -lt 30 ]; 
   do
-    STATE=\$(kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-                get kubedirectorcluster -n \$TENANT_NS $NB_CLUSTER_NAME -o 'jsonpath={.status.state}')
+    STATE=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+                get kubedirectorcluster -n $TENANT_NS $NB_CLUSTER_NAME -o 'jsonpath={.status.state}')
     echo STATE=\$STATE
     [[ \$STATE == "configured" ]] && break
     sleep 1m
@@ -249,32 +281,38 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
 
   # Retrieve the notebook pod
 
-  POD=\$(kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    get pod -l kubedirector.hpe.com/kdcluster=$NB_CLUSTER_NAME -n \$TENANT_NS -o 'jsonpath={.items..metadata.name}')
+  POD=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    get pod -l kubedirector.hpe.com/kdcluster=$NB_CLUSTER_NAME -n $TENANT_NS -o 'jsonpath={.items..metadata.name}')
     
-  echo TENANT_NS=\$TENANT_NS
+  echo TENANT_NS=$TENANT_NS
   echo POD=\$POD
   
   echo "Login to notebook to create home folders for ad_admin1 and ad_user1"
   
-  kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    exec -n \$TENANT_NS \$POD -- sudo su - ad_admin1
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    exec -n $TENANT_NS \$POD -- sudo su - ad_admin1
     
-  kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    exec -n \$TENANT_NS \$POD -- sudo su - ad_user1
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    exec -n $TENANT_NS \$POD -- sudo su - ad_user1
   
   echo "Copying example files to notebook pods"
   
-  kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp --container app datatap.ipynb \$TENANT_NS/\$POD:/home/ad_admin1/datatap.ipynb
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    cp --container app datatap.ipynb $TENANT_NS/\$POD:/home/ad_admin1/datatap.ipynb
     
-  kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp --container app wine-quality.csv \$TENANT_NS/\$POD:/home/ad_admin1/wine-quality.csv
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    cp --container app wine-quality.csv $TENANT_NS/\$POD:/home/ad_admin1/wine-quality.csv
 
-  kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp --container app datatap.ipynb \$TENANT_NS/\$POD:/home/ad_user1/datatap.ipynb
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    cp --container app datatap.ipynb $TENANT_NS/\$POD:/home/ad_user1/datatap.ipynb
     
-  kubectl --kubeconfig <(hpecp k8scluster --id \$CLUSTER_ID admin-kube-config) \
-    cp --container app wine-quality.csv \$TENANT_NS/\$POD:/home/ad_user1/wine-quality.csv
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    cp --container app wine-quality.csv $TENANT_NS/\$POD:/home/ad_user1/wine-quality.csv
+
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    exec -n $TENANT_NS \$POD -- sudo -E -u ad_user1 /opt/miniconda/bin/pip3 install --quiet pytest nbval
+     
+  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+  #   exec -n $TENANT_NS \$POD -- sudo -E -i -u ad_user1 PATH=/opt/miniconda/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/bdfs:/opt/bluedata/hadoop-2.8.5/bin/ /home/ad_user1/.local/bin/py.test --nbval /home/ad_user1/datatap.ipynb
 
 EOF1
