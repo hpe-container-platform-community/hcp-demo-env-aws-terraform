@@ -393,7 +393,7 @@ EOF
 if [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]]; then
    echo "*****************************************************************"
    echo "BlueData installation completed successfully with an RDP server"
-   echo "Please run ./generated/rdp_credentials.sh for connection details."
+   echo "Please run ./bin/rdp_credentials.sh for connection details."
    echo "*****************************************************************"
 
    cat "$LOG_FILE" | \

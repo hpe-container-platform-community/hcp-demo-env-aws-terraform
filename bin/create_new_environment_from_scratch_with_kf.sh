@@ -1,8 +1,5 @@
 #!/bin/bash
 
-exec > >(tee -i generated/log-$(basename $0).txt)
-exec 2>&1
-
 set -u
 set -e
 set -o pipefail
@@ -36,6 +33,8 @@ KF_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $KF_HOSTS_IN
 echo KF_HOSTS="$KF_HOSTS"
 bash etc/postcreate_core.sh_template
 ./scripts/mlops_kubeflow_setup.sh $KF_HOSTS
+
+TENANT_ID=$(hpecp tenant list --query "[?tenant_type == 'k8s' && label.name == 'k8s-tenant-1'] | [0] | [_links.self.href]" --output text)
 
 
 if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; 

@@ -73,12 +73,12 @@ source "./scripts/variables.sh"
 if [[ "$RDP_SERVER_ENABLED" == True && "$RDP_SERVER_OPERATING_SYSTEM" == "LINUX" ]]; then
    print_term_width '-'
    echo "BlueData installation completed successfully with an RDP server"
-   echo "Please run ./generated/rdp_credentials.sh for connection details."
+   echo "Please run ./bin/ec2_instance_status.sh for connection details."
    print_term_width '-'
 fi
 
 print_term_width '-'
-echo "Run ./generated/get_public_endpoints.sh for all connection details."
+echo "Run ./bin/get_public_endpoints.sh for all connection details."
 print_term_width '-'
 
 print_term_width '='
