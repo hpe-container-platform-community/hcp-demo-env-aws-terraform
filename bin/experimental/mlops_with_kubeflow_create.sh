@@ -84,7 +84,7 @@ echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
 # echo "Addon successfully added"
 
 echo "Creating tenant"
-TENANT_ID=$(hpecp tenant create --name "k8s-tenant-1" --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s --features '{ ml_project: true }' --quota-cores 1000)
+TENANT_ID=$(hpecp tenant create --name "k8s-tenant-1" --description "MLOPS Example" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s --features '{ ml_project: true }' --quota-cores 1000)
 hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 1800
 echo "K8S tenant created successfully - ID: ${TENANT_ID}"
 echo TENANT_ID=$TENANT_ID
