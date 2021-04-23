@@ -256,9 +256,13 @@ EOF_YAML
 
 EOF1
 
+./bin/ssh_rdp_linux_server.sh rm -rf static/
+./bin/ssh_rdp_linux_server.sh mkdir static/
 
-cat static/datatap.ipynb | ./bin/ssh_rdp_linux_server.sh "cat > datatap.ipynb"
-cat static/wine-quality.csv | ./bin/ssh_rdp_linux_server.sh "cat > wine-quality.csv"
+for FILE in $(ls -1 static/*)
+do
+  cat $FILE | ./bin/ssh_rdp_linux_server.sh "cat > $FILE"
+done
 
 
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
@@ -301,20 +305,51 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   #   cp --container app wine-quality.csv $TENANT_NS/\$POD:/bd-fs-mnt/project_repo/misc/wine-quality.csv
     
   echo "Copying example files to notebook pods"
-    
-  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    cp --container app datatap.ipynb $TENANT_NS/\$POD:/home/\${TENANT_USER}/datatap.ipynb
-    
-  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    cp --container app wine-quality.csv $TENANT_NS/\$POD:/home/\${TENANT_USER}/wine-quality.csv
-    
-  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    exec -c app -n $TENANT_NS \$POD -- chown ad_user1:domain\\ users /home/\${TENANT_USER}/datatap.ipynb /home/\${TENANT_USER}/wine-quality.csv
-    
+  
+  for FILE in \$(ls -1 ./static/*)
+  do
+    BASEFILE=\$(basename \$FILE)
+    kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+      cp --container app \$FILE $TENANT_NS/\$POD:/home/\${TENANT_USER}/\${BASEFILE}
+      
+    kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+      exec -c app -n $TENANT_NS \$POD -- chown ad_user1:domain\\ users /home/\${TENANT_USER}/\${BASEFILE}
+   
+    if [[ "\${BASEFILE##*.}" == ".sh" ]]; then
+      kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+        exec -c app -n $TENANT_NS \$POD -- chmod +x /home/\${TENANT_USER}/\${BASEFILE}
+    fi
+  done
+   
   echo "Adding pytest and nbval python libraries for testing"
 
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     exec -c app -n $TENANT_NS \$POD -- sudo -E -u \${TENANT_USER} /opt/miniconda/bin/pip3 install --quiet --no-warn-script-location pytest nbval
+
+  echo "Setup HPECP CLI as admin user"
+  
+  cat > ~/.hpecp_tenant.conf_tmp <<CAT_EOF
+[default]
+api_host = ${CTRL_PRV_IP}
+api_port = 8080
+use_ssl = ${INSTALL_WITH_SSL}
+verify_ssl = False
+warn_ssl = False
+username = admin
+password = admin123
+CAT_EOF
+  
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    cp --container app ~/.hpecp_tenant.conf_tmp $TENANT_NS/\$POD:/home/\${TENANT_USER}/.hpecp.conf
+
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    exec -c app -n $TENANT_NS \$POD -- chown ad_user1:root /home/\${TENANT_USER}/.hpecp.conf
+
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    exec -c app -n $TENANT_NS \$POD -- chmod 600 /home/\${TENANT_USER}/.hpecp.conf
+  
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    exec -c app -n $TENANT_NS \$POD -- sudo -E -u \${TENANT_USER} /opt/miniconda/bin/pip3 install --quiet --no-warn-script-location hpecp
     
   # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
   #   exec -n $TENANT_NS \$POD -- sudo -E -i -u \${TENANT_USER} PATH=/opt/miniconda/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/bdfs:/opt/bluedata/hadoop-2.8.5/bin/ /home/ad_user1/.local/bin/py.test --nbval /home/ad_user1/datatap.ipynb
