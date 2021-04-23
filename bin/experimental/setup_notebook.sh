@@ -13,8 +13,9 @@ set -u
 
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
+source ./scripts/functions.sh
 
-echo "Running script: $0 $@"
+print_header "Running script: $0 $@"
 
 # use the project's HPECP CLI config file
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"
@@ -287,37 +288,35 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   echo TENANT_NS=$TENANT_NS
   echo POD=\$POD
   
-  echo "Login to notebook to create home folders for ad_admin1 and ad_user1"
+  TENANT_USER=ad_user1
   
-  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    exec -c app -n $TENANT_NS \$POD -- sudo su - ad_admin1
+  echo "Login to notebook to create home folders for \${TENANT_USER}"
     
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    exec -c app -n $TENANT_NS \$POD -- sudo su - ad_user1
+    exec -c app -n $TENANT_NS \$POD -- sudo su - \${TENANT_USER}
   
   echo "Copying example files to project repo"
   
-  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    cp --container app wine-quality.csv $TENANT_NS/\$POD:/bd-fs-mnt/project_repo/misc/wine-quality.csv
+  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+  #   cp --container app wine-quality.csv $TENANT_NS/\$POD:/bd-fs-mnt/project_repo/misc/wine-quality.csv
     
   echo "Copying example files to notebook pods"
     
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    cp --container app datatap.ipynb $TENANT_NS/\$POD:/home/ad_admin1/datatap.ipynb
+    cp --container app datatap.ipynb $TENANT_NS/\$POD:/home/\${TENANT_USER}/datatap.ipynb
     
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    cp --container app wine-quality.csv $TENANT_NS/\$POD:/home/ad_admin1/wine-quality.csv
-
-  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    cp --container app datatap.ipynb $TENANT_NS/\$POD:/home/ad_user1/datatap.ipynb
+    cp --container app wine-quality.csv $TENANT_NS/\$POD:/home/\${TENANT_USER}/wine-quality.csv
     
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    cp --container app wine-quality.csv $TENANT_NS/\$POD:/home/ad_user1/wine-quality.csv
+    exec -c app -n $TENANT_NS \$POD -- chown ad_user1:domain\\ users /home/\${TENANT_USER}/datatap.ipynb /home/\${TENANT_USER}/wine-quality.csv
+    
+  echo "Adding pytest and nbval python libraries for testing"
 
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    exec -c app -n $TENANT_NS \$POD -- sudo -E -u ad_user1 /opt/miniconda/bin/pip3 install --quiet pytest nbval
-     
+    exec -c app -n $TENANT_NS \$POD -- sudo -E -u \${TENANT_USER} /opt/miniconda/bin/pip3 install --quiet --no-warn-script-location pytest nbval
+    
   # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-  #   exec -n $TENANT_NS \$POD -- sudo -E -i -u ad_user1 PATH=/opt/miniconda/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/bdfs:/opt/bluedata/hadoop-2.8.5/bin/ /home/ad_user1/.local/bin/py.test --nbval /home/ad_user1/datatap.ipynb
+  #   exec -n $TENANT_NS \$POD -- sudo -E -i -u \${TENANT_USER} PATH=/opt/miniconda/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/bdfs:/opt/bluedata/hadoop-2.8.5/bin/ /home/ad_user1/.local/bin/py.test --nbval /home/ad_user1/datatap.ipynb
 
 EOF1
