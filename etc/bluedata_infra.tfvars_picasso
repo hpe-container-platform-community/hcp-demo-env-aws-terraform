@@ -5,50 +5,36 @@
 profile            = "default"             # You shouldn't need to change this
 region             = "eu-west-3"           # Change to your preferred region - ensure you have enough spare VPCs in your region.
 az                 = "eu-west-3a"          # Change to your preferred AZ
-project_id         = "<<your-name>>-hcp"   # Change your project name. 
+project_id         = "csnow-picasso-hcp"   # Change your project name. 
                                            # E.g. csnow-hcp-demo (with no spaces) 
                                            # ** project_id maximum length is 18 chars **
 
 # If you want to allow other clients to have full network access to this environment, add them here.
 # These IPs need a suffix such as /32 for specific IP address.  Use https://ifconfig.me to find your IP
 
-additional_client_ip_list = [
-    # E.g. "1.1.1.1/32","2.2.2.2/32"
-]  
+additional_client_ip_list = [ 
+    "109.151.172.140/32", # chris
+    "69.181.200.188/32", # skyler
+] 
 
-worker_count       = 3                     # How many hosts do you want for EPIC or K8S (without GPUs)?
+worker_count       = 8                     # How many hosts do you want for EPIC or K8S (without GPUs)?
 
-# MLOPS EXAMPLE (e.g. for use with ./bin/create_new_environment_from_scratch_with_kf.sh)
-# 
-# worker_count       = 4
-# wkr_instance_types = [
-# 
-#     # MLOPS master
-#         "m5.2xlarge",
-#     
-#     # MLOPS workers
-#         "m5.4xlarge",
-#         "m5.4xlarge",
-#         "m5.4xlarge",
-# ]
+wkr_instance_types = [
 
-# PICASSO EXAMPLE (e.g. for use with ./bin/create_new_environment_from_scratch_with_picasso.sh)
-# 
-# worker_count       = 8
-# wkr_instance_types = [
-# 
-#     # picasso masters
-#         "m5.4xlarge",
-#         "m5.4xlarge",
-#         "m5.4xlarge",
-#     
-#     # picasso workers
-#         "m5.8xlarge",
-#         "m5.8xlarge",
-#         "m5.8xlarge",
-#         "m5.8xlarge",
-#         "m5.8xlarge",
-# ]
+    # picasso masters
+    
+    "m5.4xlarge",
+    "m5.4xlarge",
+    "m5.4xlarge",
+    
+    # picasso workers
+    
+    "m5.8xlarge",
+    "m5.8xlarge",
+    "m5.8xlarge",
+    "m5.8xlarge",
+    "m5.8xlarge",
+]
 
 gpu_worker_count   = 0                     # How many hosts do you want for EPIC or K8S (with GPUs)?
 gpu_worker_instance_type = "g4dn.xlarge"   # Specify the GPU worker host instance type 
@@ -56,7 +42,7 @@ gpu_worker_has_disk_for_df = false         # Should the GPU worker hsot have a p
 
 # Set to true to install HPE CP with embedded DF (mapr)
 
-embedded_df = true
+embedded_df = false
 
 #
 # NOTE: you have to manually install GPU drivers on GPU workers before adding to HPE CP
@@ -105,10 +91,10 @@ epic_options = "--skipeula --default-password admin123"   # epic >= 5.2
 
 # This is a private bucket
 # When using private buckets set the epic_dl_url to your s3 url else use a https url
-epic_dl_url = "s3://csnow-bins/hpe-cp-rhel-release-5.2-3020.bin"
+epic_dl_url = "https://bdk8s.s3.us-east-2.amazonaws.com/5.3/3031/hpe-cp-rhel-release-5.3-3031.bin"
 
 # set to true for private buckets (s3://...) otherwise set to false
-epid_dl_url_needs_presign = true 
+epid_dl_url_needs_presign = false 
 
 # you may need to set this if you are deploying your instances in a different region to the s3 bucket on your install binary
 epic_dl_url_presign_options = "--region eu-west-1" 
@@ -121,7 +107,7 @@ epic_dl_url_presign_options = "--region eu-west-1"
 
 gtw_instance_type = "m5.4xlarge" 
 ctr_instance_type = "m5.4xlarge"
-wkr_instance_type = "m5.4xlarge" # or provide wkr_instance_types = []
+wkr_instance_type = "m5.4xlarge"
 nfs_instance_type = "t2.small"
 ad_instance_type  = "t2.small"
 rdp_instance_type = "t2.xlarge"
