@@ -1,4 +1,6 @@
 resource "aws_iam_user" "iam_user" {
+
+  count = var.create_iam_user ? 1 : 0
   name = "${var.project_id}-iam-user-${random_uuid.deployment_uuid.result}"
 
   tags = {
@@ -10,14 +12,16 @@ resource "aws_iam_user" "iam_user" {
 }
 
 resource "aws_iam_access_key" "start_stop_ec2_instances_access_key" {
-  user = aws_iam_user.iam_user.name
+  count = var.create_iam_user ? 1 : 0
+  user = aws_iam_user.iam_user[count.index].name
 }
 
-data "aws_caller_identity" "current" {}
+//data "aws_caller_identity" "current" {}
 
 resource "aws_iam_user_policy" "start_stop_ec2_instances" {
+  count = var.create_iam_user ? 1 : 0
   name = "${var.project_id}-start-stop-ec2-instances"
-  user = aws_iam_user.iam_user.name
+  user = aws_iam_user.iam_user[count.index].name
 
   policy = <<-EOF
   {
@@ -45,8 +49,9 @@ resource "aws_iam_user_policy" "start_stop_ec2_instances" {
 }
 
 resource "aws_iam_user_policy" "describe_ec2_instances" {
+  count = var.create_iam_user ? 1 : 0
   name = "${var.project_id}-describe-ec2-instances"
-  user = aws_iam_user.iam_user.name
+  user = aws_iam_user.iam_user[count.index].name
 
   policy = <<-EOF
   {
@@ -59,7 +64,13 @@ resource "aws_iam_user_policy" "describe_ec2_instances" {
                   "ec2:DescribeInstanceStatus",
                   "ec2:DescribeInstances"
               ],
-              "Resource": "*"
+              "Resource": "arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/*",
+              "Condition": {
+                  "StringEquals": {
+                      "ec2:ResourceTag/Project": "${var.project_id}",
+                      "ec2:ResourceTag/user": "${local.user}"
+                  }
+              }
           }
       ]
   }
@@ -68,8 +79,10 @@ resource "aws_iam_user_policy" "describe_ec2_instances" {
 
 
 resource "aws_iam_user_policy" "allow_from_my_ip" {
+
+  count = var.create_iam_user ? 1 : 0
   name = "${var.project_id}-allow-from-my-ip"
-  user = aws_iam_user.iam_user.name
+  user = aws_iam_user.iam_user[count.index].name
 
   policy = <<-EOF
   {
@@ -83,9 +96,9 @@ resource "aws_iam_user_policy" "allow_from_my_ip" {
                   "ec2:CreateNetworkAclEntry",
                   "ec2:AuthorizeSecurityGroupIngress"
               ],
-              "Resource": "*",
+              "Resource": "${module.network.vpc_main_arn}",
               "Condition": {
-                "ArnEquals" : { "aws:PrincipalArn" : [ "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}" ] } 
+                "ArnEquals" : { "aws:PrincipalArn" : [ "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user[count.index].name}" ] } 
               }
           }
       ]
@@ -94,19 +107,20 @@ resource "aws_iam_user_policy" "allow_from_my_ip" {
 }
 
 resource "local_file" "non_terraform_user_scripts_update_firewal" {
+  count = var.create_iam_user ? 1 : 0
   filename = "${path.module}/generated/non_terraform_user/update_firewall_script.sh"
   content =  <<-EOF
     #!/bin/bash
 
     set -e
 
-    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user[count.index].name}"
     # The IAM user only has permissions to run this script.
 
     # The ACCESS and SECRET key for the IAM user are below:
 
-    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
-    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].secret}"
 
     MY_IP="$(curl -s http://ipinfo.io/ip)/32"
 
@@ -141,10 +155,10 @@ resource "local_file" "non_terraform_user_scripts_update_firewal" {
             --rule-number 110
     fi
 
-    SG=$(aws ec2 --region us-west-2 \
+    SG=$(aws ec2 --region ${var.region} \
             --profile default \
             describe-security-groups \
-            --group-id sg-07d4994a5829c4ba8 \
+            --group-id ${module.network.security_group_allow_all_from_client_ip} \
             --query 'SecurityGroups[*].IpPermissions[*].IpRanges[*].CidrIp | [] | [] | [? contains(@, ` "$${MY_IP}"`)] | [?length(@) == `1`]')
 
     if [[ "$${SG}" != "[]" ]]; then
@@ -159,19 +173,20 @@ resource "local_file" "non_terraform_user_scripts_update_firewal" {
 }
 
 resource "local_file" "non_terraform_user_scripts_start_instances" {
+  count = var.create_iam_user ? 1 : 0
   filename = "${path.module}/generated/non_terraform_user/start_instances.sh"
   content =  <<-EOF
     #!/bin/bash
 
     set -e
 
-    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user[count.index].name}"
     # The IAM user only has permissions to run this script.
 
     # The ACCESS and SECRET key for the IAM user are below:
 
-    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
-    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].secret}"
 
     # Start EC2 instances - after starting your instances, run the command below to check for the new 
     aws --region ${var.region} --profile ${var.profile} ec2 start-instances --instance-ids ${local.instance_ids}
@@ -179,19 +194,20 @@ resource "local_file" "non_terraform_user_scripts_start_instances" {
 }
 
 resource "local_file" "non_terraform_user_scripts_stop_instances" {
+  count = var.create_iam_user ? 1 : 0
   filename = "${path.module}/generated/non_terraform_user/stop_instances.sh"
   content =  <<-EOF
     #!/bin/bash
 
     set -e
 
-    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user[count.index].name}"
     # The IAM user only has permissions to run this script.
 
     # The ACCESS and SECRET key for the IAM user are below:
 
-    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
-    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].secret}"
 
     # Stop EC2 instances 
     aws --region ${var.region} --profile ${var.profile} ec2 stop-instances --instance-ids ${local.instance_ids}
@@ -199,19 +215,20 @@ resource "local_file" "non_terraform_user_scripts_stop_instances" {
 }
 
 resource "local_file" "non_terraform_user_scripts_status_instances" {
+  count = var.create_iam_user ? 1 : 0
   filename = "${path.module}/generated/non_terraform_user/instance_status.sh"
   content =  <<-EOF
     #!/bin/bash
 
     set -e
 
-    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user[count.index].name}"
     # The IAM user only has permissions to run this script.
 
     # The ACCESS and SECRET key for the IAM user are below:
 
-    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
-    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].secret}"
 
     # EC2 instances status
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instance-status --instance-ids ${local.instance_ids} --include-all-instances --output table --query "InstanceStatuses[*].{ID:InstanceId,State:InstanceState.Name}"
@@ -219,19 +236,20 @@ resource "local_file" "non_terraform_user_scripts_status_instances" {
 }
 
 resource "local_file" "non_terraform_user_scripts_rdp_info" {
+  count = var.create_iam_user ? 1 : 0
   filename = "${path.module}/generated/non_terraform_user/rdp_info.sh"
   content =  <<-EOF
     #!/bin/bash
 
     set -e
 
-    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user[count.index].name}"
     # The IAM user only has permissions to run this script.
 
     # The ACCESS and SECRET key for the IAM user are below:
 
-    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
-    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].secret}"
 
     # RDP Server Info
     IFS=,
@@ -249,19 +267,20 @@ resource "local_file" "non_terraform_user_scripts_rdp_info" {
 }
 
 resource "local_file" "non_terraform_user_scripts_controller_info" {
+  count = var.create_iam_user ? 1 : 0
   filename = "${path.module}/generated/non_terraform_user/controller_info.sh"
   content =  <<-EOF
     #!/bin/bash
 
     set -e
 
-    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user.name}"
+    # An IAM user was created for this script: "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${aws_iam_user.iam_user[count.index].name}"
     # The IAM user only has permissions to run this script.
 
     # The ACCESS and SECRET key for the IAM user are below:
 
-    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
-    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].secret}"
 
     # Controller Server Public IP Address 
     aws --region ${var.region} --profile ${var.profile} ec2 describe-instances --instance-ids ${module.controller.id != null ? module.controller.id : ""} --output json --query "Reservations[*].Instances[*].[PublicIpAddress]"
@@ -269,11 +288,11 @@ resource "local_file" "non_terraform_user_scripts_controller_info" {
 }
 
 resource "local_file" "non_terraform_user_scripts_variables" {
-
+  count = var.create_iam_user ? 1 : 0
   filename = "${path.module}/generated/non_terraform_user/variables.txt"
   content =  <<-EOF
-    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.id}"
-    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key.secret}"
+    AWS_ACCESS_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].id}"
+    AWS_SECRET_KEY="${aws_iam_access_key.start_stop_ec2_instances_access_key[count.index].secret}"
     AWS_REGION="${var.region}"
     RDP_INSTANCE_ID=${module.rdp_server_linux.instance_id != null ? module.rdp_server_linux.instance_id : ""}
     CONTROLLER_INSTANCE_ID=${module.controller.id != null ? module.controller.id : ""}

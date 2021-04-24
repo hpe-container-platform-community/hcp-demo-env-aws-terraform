@@ -8,6 +8,8 @@ variable "additional_client_ip_list" { default = [] }
 variable "vpc_cidr_block" { }
 variable "subnet_cidr_block" { }
 
+variable "create_iam_user" { default = "false" }
+
 variable "EC2_CENTOS7_AMIS" {
   # Find more at https://console.aws.amazon.com/ec2/home?region=us-east-1#Images:visibility=public-images;search=aws-marketplace/CentOS%20Linux%207%20x86_64%20HVM%20EBS%20ENA%201805_01-b7ee8a69-ee97-4a49-9e68-afaee216db2e-ami-77ec9308.4
   default = { 
