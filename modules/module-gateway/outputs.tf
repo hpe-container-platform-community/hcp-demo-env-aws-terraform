@@ -1,6 +1,9 @@
 output "id" {
   value = aws_instance.gateway.id
 }
+output "arn" {
+  value = aws_instance.gateway.arn
+}
 output "private_ip" {
   value = aws_instance.gateway.private_ip
 }

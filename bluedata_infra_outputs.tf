@@ -139,6 +139,9 @@ output "controller_private_dns" {
 output "workers_instance_id" {
   value = [aws_instance.workers.*.id]
 }
+output "workers_instance_arn" {
+  value = [aws_instance.workers.*.arn]
+}
 output "workers_public_ip" {
   value = [aws_instance.workers.*.public_ip]
 }
@@ -165,6 +168,9 @@ output "embedded_df" {
 output "workers_gpu_instance_id" {
   value = [aws_instance.workers_gpu.*.id]
 }
+output "workers_gpu_instance_arn" {
+  value = [aws_instance.workers_gpu.*.arn]
+}
 output "workers_gpu_public_ip" {
   value = [aws_instance.workers_gpu.*.public_ip]
 }
@@ -186,6 +192,9 @@ output "gpu_worker_count" {
 
 output "mapr_cluster_1_hosts_instance_id" {
   value = [aws_instance.mapr_cluster_1_hosts.*.id]
+}
+output "mapr_cluster_1_hosts_instance_arn" {
+  value = [aws_instance.mapr_cluster_1_hosts.*.arn]
 }
 output "mapr_cluster_1_hosts_public_ip" {
   value = [aws_instance.mapr_cluster_1_hosts.*.public_ip]
@@ -216,6 +225,9 @@ output "mapr_cluster_1_name" {
 
 output "mapr_cluster_2_hosts_instance_id" {
   value = [aws_instance.mapr_cluster_2_hosts.*.id]
+}
+output "mapr_cluster_2_hosts_instance_arn" {
+  value = [aws_instance.mapr_cluster_2_hosts.*.arn]
 }
 output "mapr_cluster_2_hosts_public_ip" {
   value = [aws_instance.mapr_cluster_2_hosts.*.public_ip]

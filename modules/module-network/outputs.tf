@@ -38,6 +38,10 @@ output "network_acl_id" {
   value = aws_network_acl.main.id
 }
 
+output "network_acl_arn" {
+  value = aws_network_acl.main.arn
+}
+
 output "sg_allow_all_from_specified_ips" {
   value = aws_security_group.allow_all_from_specified_ips.id
 }

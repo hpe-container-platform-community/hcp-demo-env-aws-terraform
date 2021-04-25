@@ -3,6 +3,10 @@ output "id" {
   value = aws_instance.controller.id
 }
 
+output "arn" {
+  value = aws_instance.controller.arn
+}
+
 output "public_ip" {
   value = var.create_eip ? aws_eip.controller[0].public_ip : aws_instance.controller.public_ip
 }

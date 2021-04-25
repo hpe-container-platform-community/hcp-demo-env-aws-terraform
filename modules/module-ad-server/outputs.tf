@@ -13,3 +13,7 @@ output "ssh_command" {
 output "instance_id" {
   value = var.ad_server_enabled && length(aws_instance.ad_server) > 0 ? aws_instance.ad_server[0].id : null
 }
+
+output "instance_arn" {
+  value = var.ad_server_enabled && length(aws_instance.ad_server) > 0 ? aws_instance.ad_server[0].arn : null
+}
