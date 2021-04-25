@@ -299,3 +299,23 @@ resource "local_file" "non_terraform_user_scripts_variables" {
     export INSTALL_WITH_SSL=${var.install_with_ssl}
   EOF
 }
+
+resource "null_resource" "non_terraform_user_ssh_private_key" {
+  count = var.create_iam_user ? 1 : 0
+  provisioner "local-exec" {
+    command = "[[ -d generated/non_terraform_user ]] || mkdir generated/non_terraform_user && cat ${var.ssh_prv_key_path} > generated/non_terraform_user/ssh_private_key.pem"
+  }
+}
+
+resource "local_file" "non_terraform_user_ssh_controller" {
+  count = var.create_iam_user ? 1 : 0
+  filename = "${path.module}/generated/non_terraform_user/ssh_controller.sh"
+  content =  <<-EOF
+    #!/bin/bash
+
+    chmod 600 ssh_private_key.pem
+    chown $USER ssh_private_key.pem
+    
+    ssh -i ./ssh_private_key.pem centos@${module.controller.public_ip}
+  EOF
+}
