@@ -1,12 +1,20 @@
 #!/bin/bash 
 
 set -e
-set -u
 
 if [[ ! -d generated ]]; then
    echo "This file should be executed from the project directory"
    exit 1
 fi
+
+if [[ -z $1 ]]; then
+  echo Usage: $0 CLUSTER_NAME
+  exit 1
+fi
+
+export CLUSTER_NAME=$1
+
+set -u
 
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
@@ -20,19 +28,6 @@ export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 echo "Platform ID: $(hpecp license platform-id)"
 
 set +u
-
-# CLUSTER_ID="$1"  # FIRST ARGUMENT
-
-# echo "${MASTER_IDS}"
-# echo "${WORKER_IDS[@]}"
-
-# if [[ $CLUSTER_ID =~ ^\/api\/v2\/k8scluster\/[0-9]$ ]]; 
-# then
-#   echo 
-# else
-#   echo "Usage: $0 /api/v2/k8scluster/[0-9]"
-#   exit 1
-# fi
 
 echo -n "Enter aws_access_key_id: "
 read -s AWS_ACCESS_KEY_ID
@@ -172,11 +167,10 @@ EOF
         sudo cp velero-v1.5.4-linux-amd64/velero /usr/local/bin/
     fi
     
-    CLUSTERNAME=c1
-    KUBECONFIG=~/kubeconfig_c1.conf
-    ./get_admin_kubeconfig.sh \$CLUSTERNAME > \$KUBECONFIG
+    KUBECONFIG=~/kubeconfig_$CLUSTER_NAME.conf
+    ./get_admin_kubeconfig.sh $CLUSTER_NAME > \$KUBECONFIG
     
-    export KUBECONFIG=~/kubeconfig_c1.conf
+    export KUBECONFIG=~/kubeconfig_$CLUSTER_NAME.conf
     
     velero install \
         --provider aws \

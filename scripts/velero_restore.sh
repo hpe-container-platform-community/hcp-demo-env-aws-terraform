@@ -1,12 +1,20 @@
 #!/bin/bash 
 
 set -e
-set -u
 
 if [[ ! -d generated ]]; then
    echo "This file should be executed from the project directory"
    exit 1
 fi
+
+if [[ -z $1 ]]; then
+  echo Usage: $0 CLUSTER_NAME
+  exit 1
+fi
+
+export CLUSTER_NAME=$1
+
+set -u
 
 ./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
@@ -16,13 +24,12 @@ ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" ubuntu@$RDP_
 
     set -x
 
-    CLUSTERNAME=c1
-    KUBECONFIG=~/kubeconfig_c1.conf
-    ./get_admin_kubeconfig.sh \$CLUSTERNAME > \$KUBECONFIG
+    KUBECONFIG=~/kubeconfig_$CLUSTER_NAME.conf
+    ./get_admin_kubeconfig.sh \$CLUSTER_NAME > \$KUBECONFIG
     
-    export KUBECONFIG=~/kubeconfig_c1.conf
+    export KUBECONFIG=~/kubeconfig_$CLUSTER_NAME.conf
     
-    velero create backup c1 --wait
+    velero create backup $CLUSTER_NAME --wait
     
 ENDSSH
 
