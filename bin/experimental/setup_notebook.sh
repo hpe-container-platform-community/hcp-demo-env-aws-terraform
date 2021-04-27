@@ -161,6 +161,7 @@ spec:
   connections: 
     secrets: 
       - $AD_USER_KC_SECRET
+      - hpecp-ext-auth-secret
   roles: 
     - 
       id: "LoadBalancer"
