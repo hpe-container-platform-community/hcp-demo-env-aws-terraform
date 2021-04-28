@@ -37,6 +37,8 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   POD=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     get pod -l kubedirector.hpe.com/kdcluster=trainingengineinstance,kubedirector.hpe.com/role=LoadBalancer -n $TENANT_NS -o 'jsonpath={.items..metadata.name}')
 
+  set -x
+
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     exec -c app -n $TENANT_NS \$POD -- systemctl restart haproxy 
 

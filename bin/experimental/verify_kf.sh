@@ -57,7 +57,7 @@ pods_templates = [
     "istio-security-post-install-",
     "istio-sidecar-injector-",
     "istio-telemetry-",
-    "kfserving-ingressgateway-",
+    #"kfserving-ingressgateway-",
     "prometheus-",
     "admission-webhook-deployment-",
     "application-controller-stateful-set-",
@@ -70,7 +70,7 @@ pods_templates = [
     "katib-ui-",
     "kfserving-controller-manager-",
     "minio-",
-    "ml-pipeline-ml-pipeline-visualizationserver-",
+    #"ml-pipeline-ml-pipeline-visualizationserver-",
     "ml-pipeline-persistenceagent-",
     "ml-pipeline-scheduledworkflow-",
     "ml-pipeline-ui-",
@@ -107,6 +107,7 @@ for pod in pods:
                 break
 
 print()
+print("Pods not having status 'Running' or 'Succeeded':")
 print(pods_templates)
 
 sys.exit(len(pods_templates))
