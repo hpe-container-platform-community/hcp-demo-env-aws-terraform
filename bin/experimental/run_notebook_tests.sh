@@ -47,10 +47,6 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
 
     POD=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
       get pod -l kubedirector.hpe.com/kdcluster=$NB_CLUSTER_NAME -n $TENANT_NS -o 'jsonpath={.items..metadata.name}')
-
-    TOKEN=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-      exec -c app -n $TENANT_NS \$POD \
-      -- /usr/bin/bash -c 'cd /home/notebook; export PATH=\$PATH:/opt/miniconda/bin; /opt/miniconda/bin/jupyterhub token ad_user1')
       
       kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
         exec -c app -n $TENANT_NS \$POD \
