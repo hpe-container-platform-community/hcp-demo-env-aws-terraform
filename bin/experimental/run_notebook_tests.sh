@@ -56,6 +56,7 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
         exec -c app -n $TENANT_NS \$POD \
         -- /usr/bin/bash -c 'cd /home/notebook; export PATH=\$PATH:/opt/miniconda/bin; pytest --nbval /home/ad_user1/datatap.ipynb'
 
+      # FIXME this is failing because hadoop CLI can't be found - fix PATH to be same as inside jupyter session
       kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
         exec -c app -n $TENANT_NS \$POD \
         -- /usr/bin/bash -c 'cd /home/notebook; export PATH=\$PATH:/opt/miniconda/bin; pytest --nbval /home/ad_user1/training-cluster-connection-test.ipynb'
