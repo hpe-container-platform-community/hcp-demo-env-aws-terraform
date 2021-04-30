@@ -55,13 +55,22 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
       kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
         exec -c app -n $TENANT_NS \$POD \
         -- /usr/bin/bash -c 'cd /home/notebook; export PATH=\$PATH:/opt/miniconda/bin; /opt/miniconda/bin/pip3 install pytest nbval'
-      
-      kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-        exec -c app -n $TENANT_NS \$POD \
-        -- /usr/bin/bash -c 'cd /home/notebook; export PATH=\$PATH:/opt/miniconda/bin; pytest --nbval /home/ad_user1/datatap.ipynb'
+        
+      THE_PATH=/opt/miniconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/bin:/opt/bdfs:/opt/bluedata/hadoop-2.8.5/bin/:/home/ad_user1/.local/bin:/home/ad_user1/bin
+      THE_JAVA_HOME=/etc/alternatives/jre
 
       kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
         exec -c app -n $TENANT_NS \$POD \
-        -- /usr/bin/bash -c 'cd /home/notebook; export PATH=\$PATH:/opt/miniconda/bin; pytest --nbval /home/ad_user1/training-cluster-connection-test.ipynb'
+        -- /usr/bin/bash -c "sudo su - ad_user1; cd /home/notebook; export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval /home/ad_user1/datatap.ipynb"
+        
+      RETURN_VALUE=\$?
+      echo RETURN_VALUE=\$RETURN_VALUE
+
+      kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+        exec -c app -n $TENANT_NS \$POD \
+        -- /usr/bin/bash -c "sudo su - ad_user1; cd /home/notebook; export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval /home/ad_user1/training-cluster-connection-test.ipynb"
+        
+      echo RETURN_VALUE=\$?
+      echo RETURN_VALUE=\$RETURN_VALUE
 
 EOF1
