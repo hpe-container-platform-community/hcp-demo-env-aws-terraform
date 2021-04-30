@@ -3,6 +3,7 @@
 exec > >(tee -i generated/log-$(basename $0).txt)
 exec 2>&1
 
+set -x
 set -u
 set -e
 set -o pipefail
@@ -28,7 +29,12 @@ then
    exit 1
 fi
 
-
+BIN_NAME=hpe-cp-rhel-release-5.3-3031.bin
+if ! grep ^epic_dl_url.*${BIN_NAME} etc/bluedata_infra.tfvars;
+then
+  echo "this script is only tested on ${BIN_NAME}"
+  exit 1
+fi
 
 # start from a clean slate - remove all trace of previous runs
 ./bin/terraform_destroy_accept.sh

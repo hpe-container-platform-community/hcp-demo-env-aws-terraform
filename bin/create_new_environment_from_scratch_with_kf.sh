@@ -16,6 +16,13 @@ then
   exit 1
 fi
 
+BIN_NAME=hpe-cp-rhel-release-5.3-3031.bin
+if ! grep ^epic_dl_url.*${BIN_NAME} etc/bluedata_infra.tfvars;
+then
+  echo "this script is only tested on ${BIN_NAME}"
+  exit 1
+fi
+
 # use the project's HPECP CLI config file
 export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 
@@ -32,6 +39,8 @@ KF_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $KF_HOSTS_IN
 
 echo KF_HOSTS="$KF_HOSTS"
 bash etc/postcreate_core.sh_template
+
+# This creates a k8s cluster with KF and the spark opertor and creates a tenant named 'k8s-tenant-1'
 ./scripts/mlops_kubeflow_setup.sh $KF_HOSTS
 
 TENANT_ID=$(hpecp tenant list --query "[?tenant_type == 'k8s' && label.name == 'k8s-tenant-1'] | [0] | [_links.self.href]" --output text)
