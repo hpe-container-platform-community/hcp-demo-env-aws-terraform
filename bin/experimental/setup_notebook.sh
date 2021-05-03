@@ -209,7 +209,19 @@ spec:
       podLabels: 
         hpecp.hpe.com/dtap: "hadoop2"
 EOF_YAML
-   
+
+echo Waiting for Training to have state==configured
+  
+  COUNTER=0
+  while [ \$COUNTER -lt 30 ]; 
+  do
+    STATE=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+                get kubedirectorcluster -n $TENANT_NS $TRAINING_CLUSTER_NAME -o 'jsonpath={.status.state}')
+    echo STATE=\$STATE
+    [[ \$STATE == "configured" ]] && break
+    sleep 1m
+    let COUNTER=COUNTER+1 
+  done
 
 ###
 ### Jupyter Notebook
