@@ -49,7 +49,7 @@ echo K8S_HOST_CONFIG=$K8S_HOST_CONFIG
 
 set -u
 
-K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 18 --output text)
+K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 20 --output text)
 echo K8S_VERSION=$K8S_VERSION
 
 EXTERNAL_GROUPS=$(echo '["CN=AD_ADMIN_GROUP,CN=Users,DC=samdom,DC=example,DC=com","CN=AD_MEMBER_GROUP,CN=Users,DC=samdom,DC=example,DC=com"]' | sed s/AD_ADMIN_GROUP/${AD_ADMIN_GROUP}/g | sed s/AD_MEMBER_GROUP/${AD_MEMBER_GROUP}/g)
@@ -78,10 +78,60 @@ echo CLUSTER_ID=$CLUSTER_ID
 hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 3600
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
 
-# echo 'Adding addon ["kubeflow","picasso-compute"] | timeout=1800s'
-# hpecp k8scluster add-addons --id $CLUSTER_ID --addons '["kubeflow","picasso-compute"]'
-# hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-secs 1800
-# echo "Addon successfully added"
+
+
+MASTER_IP=$(hpecp k8sworker get ${MASTER_IDS} | grep '^ipaddr:' | cut -d ' ' -f 2)
+echo MASTER_IP=$MASTER_IP
+
+for i in "${!WRKR_PRV_IPS[@]}"; do
+   if [[ "${WRKR_PRV_IPS[$i]}" = "${MASTER_IP}" ]]; then
+       INDEX="${i}";
+   fi
+done
+
+echo INDEX=$INDEX
+  
+ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}"  centos@${WRKR_PUB_IPS[$INDEX]} <<-EOF_MASTER
+
+    cat > /etc/bluedata/k8s-audit-policy.yaml <<END_AUDIT_POLICY
+apiVersion: audit.k8s.io/v1beta1
+kind: Policy
+rules:
+- level: RequestResponse
+  resources:
+  - group: ""
+    resources: ["namespaces"]
+- level: Metadata
+END_AUDIT_POLICY
+
+cat /etc/bluedata/k8s-audit-policy.yaml
+
+echo 'Restarting apiserver'
+sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml /tmp/
+sudo mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/kube-apiserver.yaml
+
+EOF_MASTER
+
+set -x
+sleep 180
+set +x
+  
+  
+ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
+
+  set -e
+  set -u 
+  set -o pipefail
+
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    set image deployment/hpecp-agent hpecp-agent="bluedata/hpecp-agent:donm-dev" -n hpecp
+  
+EOF1
+
+set -x
+sleep 180
+set +x
+
 
 echo "Creating tenant"
 TENANT_ID=$(hpecp tenant create --name "k8s-tenant-1" --description "MLOPS Example" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s --features '{ ml_project: true }' --quota-cores 1000)
@@ -178,3 +228,14 @@ echo MINIO_HOST_AND_PORT=$MINIO_HOST_AND_PORT
 echo "Creating minio bucket"
 ./bin/experimental/minio_create_bucket.sh "$MINIO_HOST_AND_PORT"
 
+echo "Verifying KubeFlow"
+./bin/experimental/verify_kf.sh $TENANT_ID
+
+echo "Testing Notebooks"
+./bin/experimental/run_notebook_tests.sh $TENANT_ID
+
+echo "Restarting trainingengine proxy"
+./bin/updates/restart_trainingengineinstance_haproxy.sh $TENANT_ID
+
+echo "Re-testing Notebooks"
+./bin/experimental/run_notebook_tests.sh $TENANT_ID

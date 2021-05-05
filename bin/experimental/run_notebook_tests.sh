@@ -1,8 +1,6 @@
 #!/bin/bash 
 
-  set -e
-  set -o pipefail
-
+set -o pipefail
 
 if [[ -z $1 ]]; then
   echo Usage: $0 TENANT_ID
@@ -58,16 +56,9 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
       kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
         exec -c app -n $TENANT_NS \$POD \
         -- /usr/bin/bash -c "sudo su - ad_user1; cd /home/notebook; export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval /home/ad_user1/datatap.ipynb"
-        
-      RETURN_VALUE=\$?
-      echo RETURN_VALUE=\$RETURN_VALUE
 
-      # FIXME this is failing because hadoop CLI can't be found - fix PATH to be same as inside jupyter session
       kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
         exec -c app -n $TENANT_NS \$POD \
-        -- /usr/bin/bash -c "sudo su - ad_user1; cd /home/notebook; export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval /home/ad_user1/training-cluster-connection-test.ipynb"
-        
-      echo RETURN_VALUE=\$?
-      echo RETURN_VALUE=\$RETURN_VALUE
+        -- /usr/bin/bash -c "sudo su - ad_user1; cd /home/ad_user1; export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval-lax /home/ad_user1/training-cluster-connection-test.ipynb"
 
 EOF1

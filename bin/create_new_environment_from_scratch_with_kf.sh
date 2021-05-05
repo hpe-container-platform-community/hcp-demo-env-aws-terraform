@@ -16,7 +16,7 @@ then
   exit 1
 fi
 
-BIN_NAME=hpe-cp-rhel-release-5.3-3031.bin
+BIN_NAME=hpe-cp-rhel-release-5.3
 if ! grep ^epic_dl_url.*${BIN_NAME} etc/bluedata_infra.tfvars;
 then
   echo "this script is only tested on ${BIN_NAME}"
