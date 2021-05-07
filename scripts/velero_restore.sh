@@ -29,7 +29,7 @@ ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" ubuntu@$RDP_
     
     export KUBECONFIG=~/kubeconfig_$CLUSTER_NAME.conf
     
-    velero create backup $CLUSTER_NAME --wait
+    velero restore create --from-backup $CLUSTER_NAME
     
 ENDSSH
 
