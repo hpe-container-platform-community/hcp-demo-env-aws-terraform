@@ -77,8 +77,8 @@ print_header "Setup two hosts as K8s workers"
 print_header "Create k8s cluster and tenant"
 ./bin/experimental/04_k8scluster_create.sh
 
-print_header "Add KD Spark Cluster"
-./bin/experimental/05_kubedirector_spark_create.sh
+#print_header "Add KD Spark Cluster"
+#./bin/experimental/05_kubedirector_spark_create.sh
 
 WORKER_HOST_3_IP=${WRKR_PRV_IPS[2]}
 
@@ -102,11 +102,11 @@ fi
 # such as site lockdown may have to wait a long time for the installs
 # You can install just spark231 or everything
 
-print_header "Add EPIC TensorFlow113CPU Cluster"
-./bin/experimental/epic_catalog_image_install_by_name.sh TensorFlow113CPU
+#print_header "Add EPIC TensorFlow113CPU Cluster"
+#./bin/experimental/epic_catalog_image_install_by_name.sh TensorFlow113CPU
 
-print_header "Add EPIC CentOS 7.x Cluster"
-./bin/experimental/epic_catalog_image_install_by_name.sh "CentOS 7.x"
+#print_header "Add EPIC CentOS 7.x Cluster"
+#./bin/experimental/epic_catalog_image_install_by_name.sh "CentOS 7.x"
 
 # uncommment below to install all images
 #./bin/experimental/epic_catalog_image_install_all.sh
