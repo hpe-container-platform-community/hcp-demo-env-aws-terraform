@@ -25,7 +25,7 @@ ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" ubuntu@$RDP_
     set -x
 
     KUBECONFIG=~/kubeconfig_$CLUSTER_NAME.conf
-    ./get_admin_kubeconfig.sh \$CLUSTER_NAME > \$KUBECONFIG
+    ./get_admin_kubeconfig.sh $CLUSTER_NAME > \$KUBECONFIG
     
     export KUBECONFIG=~/kubeconfig_$CLUSTER_NAME.conf
     
