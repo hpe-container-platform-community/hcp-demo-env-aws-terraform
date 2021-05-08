@@ -9,6 +9,7 @@ source "$SCRIPT_DIR/../../scripts/variables.sh"
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} <<-SSH_EOF
 	set -e
+	set -x
 
 	[[ -d /home/centos/.pyenv ]] && exit 0    # we have already been installed
 
@@ -26,7 +27,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	pyenv virtualenv 3.6.10 my-3.6.10
 	pyenv activate my-3.6.10
 
-	pip install --upgrade --quiet pip
-	pip install --upgrade --quiet hpecp
+	/home/centos/.pyenv/versions/my-3.6.10/bin/pip install --upgrade --quiet pip
+	/home/centos/.pyenv/versions/my-3.6.10/bin/pip install --upgrade --quiet hpecp
 
 SSH_EOF
