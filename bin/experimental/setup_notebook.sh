@@ -314,9 +314,6 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   
   echo "Copying example files to project repo"
   
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-  #   cp --container app wine-quality.csv $TENANT_NS/\$POD:/bd-fs-mnt/project_repo/misc/wine-quality.csv
-    
   echo "Copying example files to notebook pods"
   
   for FILE in \$(ls -1 ./static/*)
@@ -337,7 +334,7 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   echo "Adding pytest and nbval python libraries for testing"
 
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    exec -c app -n $TENANT_NS \$POD -- sudo -E -u \${TENANT_USER} /opt/miniconda/bin/pip3 install --quiet --no-warn-script-location pytest nbval
+    exec -c app -n $TENANT_NS \$POD -- sudo -E -u \${TENANT_USER} /opt/miniconda/bin/pip3 install --user --quiet --no-warn-script-location pytest nbval
 
   echo "Setup HPECP CLI as admin user"
   
@@ -362,9 +359,6 @@ CAT_EOF
     exec -c app -n $TENANT_NS \$POD -- chmod 600 /home/\${TENANT_USER}/.hpecp.conf
   
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    exec -c app -n $TENANT_NS \$POD -- sudo -E -u \${TENANT_USER} /opt/miniconda/bin/pip3 install --quiet --no-warn-script-location hpecp
+    exec -c app -n $TENANT_NS \$POD -- sudo -E -u \${TENANT_USER} /opt/miniconda/bin/pip3 install --user --quiet --no-warn-script-location hpecp
     
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-  #   exec -n $TENANT_NS \$POD -- sudo -E -i -u \${TENANT_USER} PATH=/opt/miniconda/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/bdfs:/opt/bluedata/hadoop-2.8.5/bin/ /home/ad_user1/.local/bin/py.test --nbval /home/ad_user1/datatap.ipynb
-
 EOF1

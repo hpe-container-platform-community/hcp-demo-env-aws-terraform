@@ -48,17 +48,25 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
       
       kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
         exec -c app -n $TENANT_NS \$POD \
-        -- /usr/bin/bash -c 'cd /home/notebook; export PATH=\$PATH:/opt/miniconda/bin; /opt/miniconda/bin/pip3 install pytest nbval'
+        -- sudo -E -u ad_user1 /usr/bin/bash -c 'export PATH=\$PATH:/opt/miniconda/bin; /opt/miniconda/bin/pip3 install --quiet --user pytest nbval'
         
       THE_PATH=/opt/miniconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/bin:/opt/bdfs:/opt/bluedata/hadoop-2.8.5/bin/:/home/ad_user1/.local/bin:/home/ad_user1/bin
       THE_JAVA_HOME=/etc/alternatives/jre
 
       kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
         exec -c app -n $TENANT_NS \$POD \
-        -- /usr/bin/bash -c "sudo su - ad_user1; cd /home/notebook; export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval /home/ad_user1/datatap.ipynb"
+        -- sudo -E -u ad_user1 /usr/bin/bash -c  "export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval /home/ad_user1/datatap.ipynb"
 
       kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
         exec -c app -n $TENANT_NS \$POD \
-        -- /usr/bin/bash -c "sudo su - ad_user1; cd /home/ad_user1; export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval-lax /home/ad_user1/training-cluster-connection-test.ipynb"
+        -- sudo -E -u ad_user1 /usr/bin/bash -c "export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval-lax /home/ad_user1/training-cluster-connection-test.ipynb"
+
+      kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+        exec -c app -n $TENANT_NS \$POD \
+        -- sudo -E -u ad_user1 /usr/bin/bash -c "export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval-lax /home/ad_user1/setLivy.ipynb"
+
+      # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+      #   exec -c app -n $TENANT_NS \$POD \
+      #   -- sudo -E -u ad_user1 /usr/bin/bash -c "export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval-lax /home/ad_user1/examples/spark/pyspark_example.ipynb"
 
 EOF1
