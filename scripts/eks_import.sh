@@ -33,4 +33,11 @@ export EKS_TOKEN=$(cat generated/eks_token.base64)
 
 set -x
 
-hpecp k8scluster import-cluster eks $CLUSTER_NAME $CLUSTER_DESC $POD_DNS_DOMAIN $EKS_SERVER $EKS_CA_CERT $EKS_TOKEN
+hpecp k8scluster import-cluster \
+    --cluster-type eks \
+    --name $CLUSTER_NAME \
+    --description $CLUSTER_DESC \
+    --pod-dns-domain $POD_DNS_DOMAIN \
+    --server-url $EKS_SERVER \
+    --ca $EKS_CA_CERT \
+    --bearer-token $EKS_TOKEN
