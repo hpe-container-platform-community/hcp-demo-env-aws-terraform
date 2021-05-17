@@ -91,46 +91,46 @@ done
 
 echo INDEX=$INDEX
   
-ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}"  centos@${WRKR_PUB_IPS[$INDEX]} <<-EOF_MASTER
+# ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}"  centos@${WRKR_PUB_IPS[$INDEX]} <<-EOF_MASTER
 
-    cat > /etc/bluedata/k8s-audit-policy.yaml <<END_AUDIT_POLICY
-apiVersion: audit.k8s.io/v1beta1
-kind: Policy
-rules:
-- level: RequestResponse
-  resources:
-  - group: ""
-    resources: ["namespaces"]
-- level: Metadata
-END_AUDIT_POLICY
+#     cat > /etc/bluedata/k8s-audit-policy.yaml <<END_AUDIT_POLICY
+# apiVersion: audit.k8s.io/v1beta1
+# kind: Policy
+# rules:
+# - level: RequestResponse
+#   resources:
+#   - group: ""
+#     resources: ["namespaces"]
+# - level: Metadata
+# END_AUDIT_POLICY
 
-cat /etc/bluedata/k8s-audit-policy.yaml
+# cat /etc/bluedata/k8s-audit-policy.yaml
 
-echo 'Restarting apiserver'
-sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml /tmp/
-sudo mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/kube-apiserver.yaml
+# echo 'Restarting apiserver'
+# sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml /tmp/
+# sudo mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/kube-apiserver.yaml
 
-EOF_MASTER
+# EOF_MASTER
 
-set -x
-sleep 180
-set +x
+# set -x
+# sleep 180
+# set +x
   
   
-ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
+# ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
 
-  set -e
-  set -u 
-  set -o pipefail
+#   set -e
+#   set -u 
+#   set -o pipefail
 
-  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-    set image deployment/hpecp-agent hpecp-agent="bluedata/hpecp-agent:donm-dev" -n hpecp
+#   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+#     set image deployment/hpecp-agent hpecp-agent="bluedata/hpecp-agent:donm-dev" -n hpecp
   
-EOF1
+# EOF1
 
-set -x
-sleep 180
-set +x
+# set -x
+# sleep 180
+# set +x
 
 
 echo "Creating tenant"
@@ -236,6 +236,8 @@ echo "Testing Notebooks"
 
 echo "Restarting trainingengine proxy"
 ./bin/updates/restart_trainingengineinstance_haproxy.sh $TENANT_ID
+
+sleep 10
 
 echo "Re-testing Notebooks"
 ./bin/experimental/run_notebook_tests.sh $TENANT_ID
