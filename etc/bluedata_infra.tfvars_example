@@ -147,3 +147,6 @@ create_eip_rdp_linux_server = false
 #####################################################################
 # For a full list of settings, see 'bluedata_infra.tfvars_template' #
 #####################################################################
+
+# TIP: Parameters given to this script are passed to 'terraform apply'
+#      Example: ./bin/terraform_apply.sh -var='ad_server_enabled=false'
