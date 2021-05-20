@@ -64,17 +64,17 @@ variable "EC2_WIN_RDP_AMIS" {
 variable "EC2_LIN_RDP_AMIS" {
   // https://aws.amazon.com/marketplace/pp/B07LBG6YGB?ref=cns_srchrow
   default = { 
-    us-east-1      = "ami-08cf3d19c50987ffc" # N.Virginia
-    us-east-2      = "ami-022a505199d19fbe4" # Ohio
-    us-west-1      = "ami-0849ceb9ac3066e90" # N.California
-    us-west-2      = "ami-016fcfe2d5ccf859a" # Oregon
-    ap-southeast-1 = "ami-07dd34d19c20168bf" # Singapore
+    us-east-1      = "ami-009a1990c909367e6" # N.Virginia
+    us-east-2      = "ami-019399e9349e4e468" # Ohio
+    us-west-1      = "ami-077af8ef25b856d91" # N.California
+    us-west-2      = "ami-08402b04e312d056c" # Oregon
+    ap-southeast-1 = "ami-030efc4ccdc159ea6" # Singapore
     eu-central-1   = "ami-03dbefae8333132eb" # Frankfurt
     eu-west-1      = "ami-06a4237b5ad3df8ab" # Ireland 
-    eu-west-2      = "ami-05748056eed47d81b" # London
-    eu-west-3      = "ami-0c432dc2d9e9a1420" # Paris
-    eu-north-1     = "ami-01a16aeb746ea52eb" # Stockholm
-    ca-central-1   = "ami-02b791c5ee1dc0751" # Canada
+    eu-west-2      = "ami-05445e3ee29659931" # London
+    eu-west-3      = "ami-0aa2d4577e73e16cc" # Paris
+    eu-north-1     = "ami-0d1087ff408c45456" # Stockholm
+    ca-central-1   = "ami-0a417d04a877ebc08" # Canada
   } 
 } 
 
