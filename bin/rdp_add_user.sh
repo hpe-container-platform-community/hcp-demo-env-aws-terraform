@@ -25,5 +25,7 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   sudo usermod -G sudo $USERNAME
   
   echo $USERNAME:$PASSWORD | sudo chpasswd
+  
+  sudo -u $USERNAME bash /etc/skel/ca-certs-setup.sh
 
 EOF1

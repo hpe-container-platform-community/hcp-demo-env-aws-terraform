@@ -42,6 +42,13 @@ data "template_file" "hcp_links_desktop_link" {
   }
 }
 
+data "template_file" "ca_certs_setup_script" {
+  template = file("${path.module}/Templates/ca-certs-setup.sh.tpl")
+  vars = {
+    controller_private_ip = var.controller_private_ip
+  }
+}
+
 
 
 resource "aws_instance" "rdp_server" {
@@ -108,7 +115,11 @@ resource "aws_instance" "rdp_server" {
       "rm terraform_0.12.24_linux_amd64.zip",
       "mkdir /home/ubuntu/Desktop",
       "sudo -H pip3 install --quiet hpecp",
-      "echo 'source <(hpecp autocomplete bash)' >>~/.bashrc"
+      "echo 'PATH=$PATH:/opt/conda/bin' >> ~/.bashrc",
+      "echo 'export PATH' >> ~/.bashrc",
+      "echo 'source <(hpecp autocomplete bash)' >>~/.bashrc",
+      "echo 'PATH=$PATH:/opt/conda/bin' >> ~/.profile",
+      "echo 'export PATH' >> ~/.profile"
     ]
   }
 
@@ -159,6 +170,18 @@ resource "aws_instance" "rdp_server" {
     content        = data.template_file.hcp_links_desktop_link.rendered
     destination   = "/home/ubuntu/Desktop/startup.desktop"
   }
+  
+  provisioner "file" {
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.rdp_server[0].public_ip
+      private_key = file(var.ssh_prv_key_path)
+      agent       = false
+    }
+    content        = data.template_file.ca_certs_setup_script.rendered
+    destination   = "/tmp/ca-certs-setup.sh"
+  }
 
   // 'enable' desktop icons 
   provisioner "remote-exec" {
@@ -185,20 +208,8 @@ resource "aws_instance" "rdp_server" {
       private_key = file(var.ssh_prv_key_path)
       agent       = false
     }
-    destination   = "/home/ubuntu/hcp-ca-cert.pem"
+    destination   = "/tmp/hcp-ca-cert.pem"
     content       = var.ca_cert
-  }
-
-  provisioner "file" {
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      host        = aws_instance.rdp_server[0].public_ip
-      private_key = file(var.ssh_prv_key_path)
-      agent       = false
-    }
-    source        = "${path.module}/ca-certs-setup.sh"
-    destination   = "/tmp/ca-certs-setup.sh"
   }
 
   provisioner "remote-exec" {
@@ -211,7 +222,9 @@ resource "aws_instance" "rdp_server" {
     }
     inline = [
       "chmod +x /tmp/ca-certs-setup.sh",
-      "/tmp/ca-certs-setup.sh ${var.controller_private_ip}",
+      "sudo cp /tmp/ca-certs-setup.sh /etc/skel/",
+      "sudo cp /tmp/hcp-ca-cert.pem /etc/skel/",
+      "/tmp/ca-certs-setup.sh"
     ]
   }
 
