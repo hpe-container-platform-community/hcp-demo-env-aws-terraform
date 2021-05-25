@@ -50,6 +50,8 @@ This will output the host IDS
 
 Fork https://github.com/riteshja/gatekeeper-library into your own GitHub account
 
+![fork repo](./README-POLICY-DEMO/fork_repo.png "fork repo")
+
 In the Ezmerel CP UI:
 
 ![add policies](./README-POLICY-DEMO/add_policies.png "add policies")
