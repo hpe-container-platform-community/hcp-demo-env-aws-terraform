@@ -62,11 +62,19 @@ In the Ezmerel CP UI:
 
 ![add policies](./README-POLICY-DEMO/add_policies2.png "add policies")
 
+- name: read-only-root-filesystem
+- path: library/pod-security-policy/read-only-root-filesystem
+
 #### Step 7 - add policies to cluster
 
 Naviate to your K8S cluster and click 'edit'.
 
 In the policy page, add your policy:
+
+![add policies](./README-POLICY-DEMO/add_policy_to_cluster.png "add policies")
+![add policies](./README-POLICY-DEMO/add_policy_to_cluster2.png "add policies")
+
+
 
 
 
