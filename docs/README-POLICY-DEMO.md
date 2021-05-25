@@ -82,6 +82,7 @@ TODO
 
 This should work:
 
+```
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod
@@ -96,9 +97,11 @@ spec:
     securityContext:
       readOnlyRootFilesystem: true
 EOF
+```
 
 This should fail:
 
+```
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod
@@ -113,7 +116,7 @@ spec:
     securityContext:
       readOnlyRootFilesystem: false
 EOF
-
+```
 
 
 
