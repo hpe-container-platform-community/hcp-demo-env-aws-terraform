@@ -50,11 +50,23 @@ This will output the host IDS
 
 Fork https://github.com/riteshja/gatekeeper-library into your own GitHub account
 
-In the Ezmerel CP UI, 
+In the Ezmerel CP UI:
 
 ![add policies](./README-POLICY-DEMO/add_policies.png "add policies")
 
+- add your github URL that your forked
+- add your github username and password
+- add a policy as follows:
 
-#### Step 7 - configure policies
+![add policies](./README-POLICY-DEMO/add_policies2.png "add policies")
+
+#### Step 7 - add policies to cluster
+
+Naviate to your K8S cluster and click 'edit'.
+
+In the policy page, add your policy:
+
+
+
 
 
