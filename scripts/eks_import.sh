@@ -41,3 +41,6 @@ hpecp k8scluster import-cluster \
     --server-url $EKS_SERVER \
     --ca $EKS_CA_CERT \
     --bearer-token $EKS_TOKEN
+    
+    
+watch hpecp k8scluster list
