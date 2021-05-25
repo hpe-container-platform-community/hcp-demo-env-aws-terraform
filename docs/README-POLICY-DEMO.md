@@ -74,8 +74,45 @@ In the policy page, add your policy:
 ![add policies](./README-POLICY-DEMO/add_policy_to_cluster.png "add policies")
 ![add policies](./README-POLICY-DEMO/add_policy_to_cluster2.png "add policies")
 
+##### Step 8 - verify argo CD build
 
+TODO
 
+##### Step 9 - Test policies
+
+This should work:
+
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-readonlyrootfilesystem-allowed
+  labels:
+    app: nginx-readonlyrootfilesystem
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    securityContext:
+      readOnlyRootFilesystem: true
+EOF
+
+This should fail:
+
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-readonlyrootfilesystem-disallowed
+  labels:
+    app: nginx-readonlyrootfilesystem
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    securityContext:
+      readOnlyRootFilesystem: false
+EOF
 
 
 
