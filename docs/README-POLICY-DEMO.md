@@ -93,6 +93,13 @@ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut
 
 See https://docs.containerplatform.hpe.com/53/reference/kubernetes/Logging_in_to_ArgoCD.html
 
+![view argo](./README-POLICY-DEMO/view_argo.png "view argo")
+
+click on the tile to get the following:
+
+![view argo2](./README-POLICY-DEMO/view_argo2.png "view argo2")
+
+
 ##### Step 9 - Test policies
 
 Create a tenant and try creating some pods in the tenant.
