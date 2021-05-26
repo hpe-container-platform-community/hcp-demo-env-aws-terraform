@@ -76,9 +76,19 @@ In the policy page, add your policy:
 
 ##### Step 8 - verify argo CD build
 
-TODO
+Click the Argo CD Endpoint link. The Argo login page is displayed.
+Enter a Username. The default user is admin.
+Enter a Password. The default password is the name of the argocd server pod. To obtain the server pod name, use this command:
+
+```
+kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
+```
+
+See https://docs.containerplatform.hpe.com/53/reference/kubernetes/Logging_in_to_ArgoCD.html
 
 ##### Step 9 - Test policies
+
+Create a tenant and try creating some pods in the tenant.
 
 This should work:
 
@@ -99,7 +109,7 @@ spec:
 EOF
 ```
 
-This should fail:
+This should fail (i.e. be rejected)
 
 ```
 kubectl apply -f - <<EOF
