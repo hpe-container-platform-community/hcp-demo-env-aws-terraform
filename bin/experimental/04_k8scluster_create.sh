@@ -19,18 +19,19 @@ export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 # Test CLI is able to connect
 echo "Platform ID: $(hpecp license platform-id)"
 
-AVAIL_K8S_WORKERS=($(hpecp k8sworker list --query "sort_by(@, &_links.self.href) | [?status == 'ready'][_links.self.href]" --output text))
+MASTER_IDS="${@:1:1}"  # FIRST ARGUMENT
+WORKER_IDS=("${@:2}")  # REMAINING ARGUMENTS
 
-K8S_WORKER_1=${AVAIL_K8S_WORKERS[0]}
-K8S_WORKER_2=${AVAIL_K8S_WORKERS[1]}
-
-if [[ "$K8S_WORKER_1" == "" ]] || [[ "$K8S_WORKER_2" == "" ]];
-then 
-   echo "Required two K8S workers, but could not find two."
-   exit 1
+if [[ $MASTER_IDS =~ ^\/api\/v2\/worker\/k8shost\/[0-9]*$ ]] && [[ ${WORKER_IDS[0]} =~ ^\/api\/v2\/worker\/k8shost\/[0-9]*$ ]]; 
+then
+   echo "Running script: $0 $@"
 else
-   echo "Selecting first two available hosts: master='${K8S_WORKER_1}' and worker='${K8S_WORKER_2}'"
+   echo "Usage: $0 /api/v2/worker/k8shost/[0-9] /api/v2/worker/k8shost/[0-9] [ ... /api/v2/worker/k8shost/NNN ]"
+   exit 1
 fi
+
+K8S_HOST_CONFIG="$(echo $MASTER_IDS | sed 's/ /:master,/g'):master,$(echo ${WORKER_IDS[@]} | sed 's/ /:worker,/g'):worker"
+echo K8S_HOST_CONFIG=$K8S_HOST_CONFIG
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 17 --output text)
 
@@ -41,7 +42,7 @@ else
 fi
 
 echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | timeout=1800s"
-CLUSTER_ID=$(hpecp k8scluster create --name c1 $K8S_VERSION_OPT --k8shosts-config "$K8S_WORKER_1:master,$K8S_WORKER_2:worker" --addons [istio])
+CLUSTER_ID=$(hpecp k8scluster create --name c1 $K8S_VERSION_OPT --k8shosts-config "$K8S_HOST_CONFIG" --addons [istio])
 
 echo "$CLUSTER_ID"
 
