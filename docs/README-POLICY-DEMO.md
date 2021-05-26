@@ -57,7 +57,8 @@ In the Ezmerel CP UI:
 ![add policies](./README-POLICY-DEMO/add_policies.png "add policies")
 
 - add your github URL that your forked
-- add your github username and password
+- add your github username
+- add your github personal access token (IMPORTANT: github password doesn't work)
 - add a policy as follows:
 
 ![add policies](./README-POLICY-DEMO/add_policies2.png "add policies")
@@ -79,6 +80,12 @@ In the policy page, add your policy:
 Click the Argo CD Endpoint link. The Argo login page is displayed.
 Enter a Username. The default user is admin.
 Enter a Password. The default password is the name of the argocd server pod. To obtain the server pod name, use this command:
+
+```
+./bin/argo_get_password.sh YOUR_CLUSTER_NAME
+```
+
+or 
 
 ```
 kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
