@@ -123,7 +123,12 @@ spec:
 EOF
 ```
 
-- Shortcut: ` ./bin/kubectl_as_admin.sh c1 apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_allowed.yaml`
+**Shortcut:** 
+
+```
+CLUSTERNAME=c1
+./bin/kubectl_as_admin.sh $CLUSTERNAME apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_allowed.yaml`
+```
 
 This should fail (i.e. be rejected)
 
@@ -144,8 +149,11 @@ spec:
 EOF
 ```
 
-- Shortcut: ` ./bin/kubectl_as_admin.sh c1 apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_disallowed.yaml`
+**Shortcut:** 
 
-
+```
+CLUSTERNAME=c1
+./bin/kubectl_as_admin.sh $CLUSTERNAME apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_disallowed.yaml`
+```
 
 
