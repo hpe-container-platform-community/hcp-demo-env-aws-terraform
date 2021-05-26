@@ -123,6 +123,8 @@ spec:
 EOF
 ```
 
+- Shortcut: ` ./bin/kubectl_as_admin.sh c1 apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_allowed.yaml`
+
 This should fail (i.e. be rejected)
 
 ```
@@ -141,6 +143,9 @@ spec:
       readOnlyRootFilesystem: false
 EOF
 ```
+
+- Shortcut: ` ./bin/kubectl_as_admin.sh c1 apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_disallowed.yaml`
+
 
 
 
