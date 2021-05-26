@@ -97,9 +97,6 @@ for WRKR in ${WRKR_PUB_IPS_TO_ADD[@]}; do
    
    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum update -y -q"
    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum -y install kernel*"
-   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum -y install falco"
-   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo systemctl enable falco"
-   ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo systemctl start falco"
       
    # if the reboot causes ssh to terminate with an error, ignore it
    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
@@ -114,6 +111,16 @@ for WRKR in ${WRKR_PUB_IPS_TO_ADD[@]}; do
     while ! nc -w5 -z ${WRKR} 22; do printf "." -n ; done;
     echo 'Worker has rebooted'
 done
+
+set +u
+for WRKR in ${WRKR_PUB_IPS[@]}; do 
+{
+      ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum -y install falco"
+      ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo systemctl enable falco"
+      ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo systemctl start falco"
+}&
+
+wait
 
 cat << EOF
 
