@@ -102,7 +102,7 @@ click on the tile to get the following:
 
 ##### Step 9 - Test policies
 
-Create a tenant and try creating some pods in the tenant.
+Create a tenant and try creating some pods in the tenant using the web terminal
 
 This should work:
 
@@ -123,7 +123,7 @@ spec:
 EOF
 ```
 
-**Shortcut:** 
+**Shortcut from desktop/cloud9:** 
 
 ```
 CLUSTERNAME=c1
@@ -149,7 +149,7 @@ spec:
 EOF
 ```
 
-**Shortcut:** 
+**Shortcut from desktop/cloud9:** 
 
 ```
 CLUSTERNAME=c1
