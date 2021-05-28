@@ -16,21 +16,11 @@ additional_client_ip_list = [
     # E.g. "1.1.1.1/32","2.2.2.2/32"
 ]  
 
-worker_count       = 12
+# MLOPS EXAMPLE (e.g. for use with ./bin/create_new_environment_from_scratch_with_kf.sh)
+
+worker_count       = 4
 wkr_instance_types = [
  
-     # picasso masters
-         "m5.4xlarge",
-         "m5.4xlarge",
-         "m5.4xlarge",
-     
-     # picasso workers
-         "m5.8xlarge",
-         "m5.8xlarge",
-         "m5.8xlarge",
-         "m5.8xlarge",
-         "m5.8xlarge",
-
      # MLOPS master
          "m5.2xlarge",
      
@@ -39,7 +29,6 @@ wkr_instance_types = [
          "m5.4xlarge",
          "m5.4xlarge",
 ]
-
 
 gpu_worker_count   = 0                     # How many hosts do you want for EPIC or K8S (with GPUs)?
 gpu_worker_instance_type = "g4dn.xlarge"   # Specify the GPU worker host instance type 

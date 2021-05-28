@@ -16,7 +16,10 @@ additional_client_ip_list = [
     # E.g. "1.1.1.1/32","2.2.2.2/32"
 ]  
 
-worker_count       = 12
+
+# PICASSO EXAMPLE (e.g. for use with ./bin/create_new_environment_from_scratch_with_picasso.sh)
+
+worker_count       = 8
 wkr_instance_types = [
  
      # picasso masters
@@ -30,16 +33,7 @@ wkr_instance_types = [
          "m5.8xlarge",
          "m5.8xlarge",
          "m5.8xlarge",
-
-     # MLOPS master
-         "m5.2xlarge",
-     
-     # MLOPS workers
-         "m5.4xlarge",
-         "m5.4xlarge",
-         "m5.4xlarge",
 ]
-
 
 gpu_worker_count   = 0                     # How many hosts do you want for EPIC or K8S (with GPUs)?
 gpu_worker_instance_type = "g4dn.xlarge"   # Specify the GPU worker host instance type 
@@ -47,7 +41,7 @@ gpu_worker_has_disk_for_df = false         # Should the GPU worker hsot have a p
 
 # Set to true to install HPE CP with embedded DF (mapr)
 
-embedded_df = true
+embedded_df = false
 
 #
 # NOTE: you have to manually install GPU drivers on GPU workers before adding to HPE CP
