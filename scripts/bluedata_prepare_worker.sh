@@ -118,29 +118,7 @@ for WRKR in ${WRKR_PUB_IPS[@]}; do
       ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo yum -y install falco"
       ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo systemctl enable falco"
       ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "sudo systemctl start falco"
-}&
+} &
+done
 
 wait
-
-cat << EOF
-
-
-*********************************************************
-*      BlueData worker setup completed successfully     *
-*********************************************************
-
-Now login to your BlueData deployment and navigate to th Installation tab:
-
-   1. Add workers private ips "$(echo ${WRKR_PRV_IPS_TO_ADD[@]} | sed -e 's/ /,/g')"
-   2. Upload generated/controller.prv_key
-   3. Click Add hosts (enter site lock down when prompted)
-
-   # After a few minutes, you should see Gateway 'Installed' and Workers 'Bundle completed'
-
-   4. Select each Worker
-   5. Click 'Install'
-   6. Wait a few minutes
-
-
-EOF
-
