@@ -52,5 +52,20 @@ resource "aws_route53_record" "rdp" {
     records = [ var.rdp_private_ip ] 
 }
 
-// TODO add workers, gateway, RDP
+resource "aws_route53_record" "gateway" {
+    zone_id = aws_route53_zone.main.zone_id
+    name = "gateway.${var.dns_zone_name}"
+    type = "A"
+    ttl = "300"
+    records = [ var.gateway_private_ip ] 
+}
+
+resource "aws_route53_record" "workers" {
+    count = length(var.workers_private_ip)
+    zone_id = aws_route53_zone.main.zone_id
+    name = "worker.${count.index}.${var.dns_zone_name}"
+    type = "A"
+    ttl = "300"
+    records = [ var.workers_private_ip[count.index] ] 
+}
 

@@ -63,6 +63,8 @@ module "network" {
   ad_server_enabled     = var.ad_server_enabled
   ad_private_ip         = module.ad_server.private_ip
   rdp_private_ip        = module.rdp_server_linux.private_ip
+  gateway_private_ip    = module.gateway.private_ip
+  workers_private_ip    = aws_instance.workers.*.private_ip
 }
 
 module "controller" {

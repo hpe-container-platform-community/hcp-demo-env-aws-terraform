@@ -25,6 +25,12 @@ variable "dns_zone_name" {
 variable "controller_private_ip" {
     type = string
 }
+variable "gateway_private_ip" {
+    type = string
+}
+variable "workers_private_ip" {
+    type = list
+}
 variable "ad_server_enabled" {
     type = bool
 }
