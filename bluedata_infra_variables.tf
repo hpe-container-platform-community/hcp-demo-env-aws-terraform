@@ -174,7 +174,7 @@ variable "dns_zone_name" {
   default = "samdom.example.com"
 }
 
-variable "enable_route53_private_dns" { default = false }
+variable "enable_route53_private_dns" { default = true }
 
 variable "rdp_server_enabled" { default = true }
 

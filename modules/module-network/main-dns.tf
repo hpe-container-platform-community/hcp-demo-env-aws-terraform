@@ -1,5 +1,5 @@
 
-/* Prototype for ROUTE 53 internal IP addresses
+// Prototype for ROUTE 53 internal IP addresses
 
 
 resource "aws_vpc_dhcp_options" "mydhcp" {
@@ -43,7 +43,14 @@ resource "aws_route53_record" "ad" {
     records = [ var.ad_private_ip ] 
 }
 
-// TODO add workers, gateway, RDP
+resource "aws_route53_record" "rdp" {
+    count = var.rdp_linux_server_enabled ? 1 : 0
+    zone_id = aws_route53_zone.main.zone_id
+    name = "rdp.${var.dns_zone_name}"
+    type = "A"
+    ttl = "300"
+    records = [ var.rdp_private_ip ] 
+}
 
-*/
+// TODO add workers, gateway, RDP
 

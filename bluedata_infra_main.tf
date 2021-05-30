@@ -62,6 +62,7 @@ module "network" {
   controller_private_ip = module.controller.private_ip
   ad_server_enabled     = var.ad_server_enabled
   ad_private_ip         = module.ad_server.private_ip
+  rdp_private_ip        = module.rdp_server_linux.private_ip
 }
 
 module "controller" {
@@ -107,6 +108,7 @@ module "gateway" {
   security_group_ids = flatten([
     module.network.security_group_allow_all_from_client_ip,
     module.network.security_group_main_id,
+    //module.network.security_group_allow_custom_from_world_id,
     var.allow_ssh_from_world == true ? [module.network.security_group_allow_ssh_from_world_id] : []
   ])
   subnet_id = module.network.subnet_main_id

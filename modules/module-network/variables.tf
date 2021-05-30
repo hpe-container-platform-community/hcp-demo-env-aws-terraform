@@ -34,6 +34,9 @@ variable "ad_private_ip" {
 variable "rdp_network_interface_id" {
     type = string
 }
+variable "rdp_private_ip" {
+    type = string
+}
 variable "rdp_linux_server_enabled" {
     type = string
 }
