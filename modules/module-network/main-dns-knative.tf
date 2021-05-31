@@ -1,8 +1,10 @@
 // retrieve the ingress gateway host IPs with
 /*
 
-   kubectl get po -l istio=ingressgateway -n istio-system \
-     -o jsonpath='{.items[*].status.hostIP}'
+    kubectl get po -l istio=ingressgateway -n istio-system \
+      -o jsonpath='{.items[*].status.hostIP}'
+     
+    // e.g. 10.1.0.193 10.1.0.132 10.1.0.174
      
 */
 
@@ -17,7 +19,7 @@ resource "aws_route53_record" "knative" {
 }
 
 
-// now patch
+// now patch knative with the domain
 /*
 
 kubectl patch configmap/config-domain \
