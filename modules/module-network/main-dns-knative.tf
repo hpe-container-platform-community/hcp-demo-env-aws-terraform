@@ -14,8 +14,6 @@ resource "aws_route53_record" "knative" {
     type = "A"
     ttl = "300"
     records = [ "10.1.0.193","10.1.0.132","10.1.0.174" ] 
-    
-    multivalue_answer_routing_policy = true
 }
 
 
