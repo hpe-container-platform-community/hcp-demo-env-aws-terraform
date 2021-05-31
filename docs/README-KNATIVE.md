@@ -1,5 +1,8 @@
-- Add hosts with 'istio-ingressgateway=true'
-- Create a K8S cluster with istio addon
+### Prerequisites
+
+- Ensure you have the latest code `git pull`
+- Add hosts with `istio-ingressgateway=true`
+- Create a K8S cluster with `istio` addon
 
 ### Install KNATIVE
 
