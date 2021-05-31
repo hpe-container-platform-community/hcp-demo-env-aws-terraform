@@ -68,4 +68,3 @@ resource "aws_route53_record" "workers" {
     ttl = "300"
     records = [ var.workers_private_ip[count.index] ] 
 }
-
