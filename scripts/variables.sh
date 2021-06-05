@@ -43,6 +43,10 @@ PROJECT_DIR=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.
 #echo PROJECT_DIR="${PROJECT_DIR}"
 [ "$PROJECT_DIR" ] || ( echo "ERROR: PROJECT_DIR is empty" && exit 1 )
 
+ADDITIONAL_CLIENT_IP_LIST=$(echo $OUTPUT_JSON | python3 -c 'import json,sys;obj=json.load(sys.stdin);print (*obj["additional_client_ip_list"]["value"])')
+#echo ADDITIONAL_CLIENT_IP_LIST="${ADDITIONAL_CLIENT_IP_LIST}"
+[ "$ADDITIONAL_CLIENT_IP_LIST" ] || ( echo "ERROR: ADDITIONAL_CLIENT_IP_LIST is empty" && exit 1 )
+
 LOG_FILE="${PROJECT_DIR}"/generated/bluedata_install_output.txt
 # [[ -f "$LOG_FILE" ]] && mv -f "$LOG_FILE" "${LOG_FILE}".old
 

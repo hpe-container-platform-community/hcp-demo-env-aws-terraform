@@ -21,6 +21,16 @@ echo Web Url:   "https://$RDP_PUB_IP (Chrome is recommended)"
 echo RDP URL:   "rdp://full%20address=s:$RDP_PUB_IP:3389&username=s:ubuntu"
 echo Username:  "ubuntu"
 echo Password:  "$RDP_INSTANCE_ID"
+echo
+echo NOTE: The following IP addresses are whitelisted:
+echo
+for IP in $ADDITIONAL_CLIENT_IP_LIST
+do
+echo "      $IP"
+done
+echo
+echo "The whitelist is managed by 'additional_client_ip_list' in 'etc/bluedata_infra.tfvars' "
+echo "(run ./bin/terraform_apply.sh after changing)"
 echo 
 echo ========================================================================================
 echo
