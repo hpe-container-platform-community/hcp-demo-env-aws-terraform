@@ -127,7 +127,7 @@ EOF
 
 ```
 CLUSTERNAME=c1
-./bin/kubectl_as_admin.sh $CLUSTERNAME apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_allowed.yaml`
+./bin/kubectl_as_admin.sh $CLUSTERNAME apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_allowed.yaml
 ```
 
 This should fail (i.e. be rejected)
@@ -153,7 +153,7 @@ EOF
 
 ```
 CLUSTERNAME=c1
-./bin/kubectl_as_admin.sh $CLUSTERNAME apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_disallowed.yaml`
+./bin/kubectl_as_admin.sh $CLUSTERNAME apply -f https://raw.githubusercontent.com/snowch/gatekeeper-library/master/library/pod-security-policy/read-only-root-filesystem/samples/psp-readonlyrootfilesystem/example_disallowed.yaml
 ```
 
 
