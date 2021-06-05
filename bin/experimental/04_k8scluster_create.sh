@@ -41,8 +41,26 @@ else
    K8S_VERSION_OPT="--k8s-version $K8S_VERSION"
 fi
 
+EXTERNAL_GROUPS=$(echo '["CN=AD_ADMIN_GROUP,CN=Users,DC=samdom,DC=example,DC=com","CN=AD_MEMBER_GROUP,CN=Users,DC=samdom,DC=example,DC=com"]' | sed s/AD_ADMIN_GROUP/${AD_ADMIN_GROUP}/g | sed s/AD_MEMBER_GROUP/${AD_MEMBER_GROUP}/g)
+
 echo "Creating k8s cluster with version ${K8S_VERSION} and addons=[istio] | timeout=1800s"
-CLUSTER_ID=$(hpecp k8scluster create --name c1 $K8S_VERSION_OPT --k8shosts-config "$K8S_HOST_CONFIG" --addons [istio])
+CLUSTER_ID=$(hpecp k8scluster create \
+  --name c1 \
+  $K8S_VERSION_OPT \
+  --k8shosts-config "$K8S_HOST_CONFIG" \
+  --addons [istio] \
+  --ext_id_svr_bind_pwd "5ambaPwd@" \
+  --ext_id_svr_user_attribute "sAMAccountName" \
+  --ext_id_svr_bind_type "search_bind" \
+  --ext_id_svr_bind_dn "cn=Administrator,CN=Users,DC=samdom,DC=example,DC=com" \
+  --ext_id_svr_host "${AD_PRV_IP}" \
+  --ext_id_svr_group_attribute "memberOf" \
+  --ext_id_svr_security_protocol "ldaps" \
+  --ext_id_svr_base_dn "CN=Users,DC=samdom,DC=example,DC=com" \
+  --ext_id_svr_verify_peer false \
+  --ext_id_svr_type "Active Directory" \
+  --ext_id_svr_port 636 \
+  --external-groups "${EXTERNAL_GROUPS}")
 
 echo "$CLUSTER_ID"
 
