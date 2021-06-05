@@ -31,6 +31,14 @@ done
 echo
 echo "The whitelist is managed by 'additional_client_ip_list' in 'etc/bluedata_infra.tfvars' "
 echo "(run ./bin/terraform_apply.sh after changing)"
+echo
+echo "You can also access the ECP gateway directly at: " 
+if [[ "$INSTALL_WITH_SSL" == True ]];
+then
+echo "https://$GATW_PUB_IP"
+else
+echo "http://$GATWL_PRV_IP"
+fi
 echo 
 echo ========================================================================================
 echo
