@@ -65,7 +65,8 @@ done
 ###############################################################################
 
 
-for WRKR in ${WRKR_PUB_IPS_TO_ADD[@]}; do 
+for WRKR in ${WRKR_PUB_IPS_TO_ADD[@]}; do
+{
    if [[ "$SELINUX_DISABLED" == "True" ]];
    then
       echo "Disabling SELINUX on the worker host $WRKR"
@@ -87,7 +88,10 @@ for WRKR in ${WRKR_PUB_IPS_TO_ADD[@]}; do
       
    # if the reboot causes ssh to terminate with an error, ignore it
    ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${WRKR} "nohup sudo reboot </dev/null &" || true
+} &
 done
+
+wait
 
 #
 # Wait for Workers to come online after reboot
