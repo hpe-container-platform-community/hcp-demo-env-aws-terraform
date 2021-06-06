@@ -5,6 +5,12 @@ set -o pipefail
 
 if [[ -z $1 ]]; then
   echo Usage: $0 CLUSTERNAME
+  echo
+  echo Examples:
+  echo --------
+  echo $0 kfcluster get pods -A
+  echo $0 dfcluster exec admincli-0 -n dfdemo -- edf
+  echo $0 dfcluster exec admincli-0 -n dfdemo -- edf check all
   exit 1
 fi
 

@@ -68,7 +68,7 @@ hpecp k8scluster wait-for-status --id $CLUSTER_ID --status [ready] --timeout-sec
 echo "K8S cluster created successfully - ID: ${CLUSTER_ID}"
 
 echo "Creating tenant"
-TENANT_ID=$(hpecp tenant create --name "k8s-tenant-1" --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s)
+TENANT_ID=$(hpecp tenant create --name "c1-tenant-1" --description "dev tenant" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s)
 hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 1800
 echo "K8S tenant created successfully - ID: ${TENANT_ID}"
 
