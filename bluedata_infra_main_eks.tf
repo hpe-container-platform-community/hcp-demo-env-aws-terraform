@@ -359,6 +359,7 @@ output "eks-ca-certificate" {
 }
 
 output "eks-bearer-token" {
+  sensitive = true
   value = var.create_eks_cluster ? base64encode(data.aws_eks_cluster_auth.example[0].token) : ""
 }
 
