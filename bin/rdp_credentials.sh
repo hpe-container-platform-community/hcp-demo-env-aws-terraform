@@ -22,17 +22,18 @@ echo RDP URL:   "rdp://full%20address=s:$RDP_PUB_IP:3389&username=s:ubuntu"
 echo Username:  "ubuntu"
 echo Password:  "$RDP_INSTANCE_ID"
 echo
+if [[ $ADDITIONAL_CLIENT_IP_LIST != "" ]]; then
 echo NOTE: The following IP addresses are whitelisted:
 echo
-for IP in $ADDITIONAL_CLIENT_IP_LIST
-do
+  for IP in $ADDITIONAL_CLIENT_IP_LIST; do
 echo "      $IP"
-done
+  done
 echo
 echo "The whitelist is managed by 'additional_client_ip_list' in 'etc/bluedata_infra.tfvars' "
 echo "(run ./bin/terraform_apply.sh after changing)"
+fi
 echo
-echo "You can also access the ECP gateway directly at: " 
+echo "You can access the ECP gateway directly at: " 
 if [[ "$INSTALL_WITH_SSL" == True ]];
 then
 echo "https://$GATW_PUB_IP"
