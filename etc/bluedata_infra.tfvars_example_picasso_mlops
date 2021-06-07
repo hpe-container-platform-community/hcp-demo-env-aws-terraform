@@ -63,7 +63,7 @@ mapr_cluster_2_name          = "demo2.mapr.com"
 # You can specify an EKS cluster here
 
 create_eks_cluster = false
-eks_instance_type     = "t2.micro" # E.g. "t3.2xlarge"
+eks_instance_type     = "t3.2xlarge"
 eks_scaling_config_desired_size = 1    # must be >= 1
 eks_scaling_config_max_size     = 1    # must be >= 1
 eks_scaling_config_min_size     = 1    # must be >= 1
