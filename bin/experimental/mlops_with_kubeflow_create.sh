@@ -152,68 +152,8 @@ hpecp tenant add-external-user-group --tenant-id "$TENANT_ID" --group "$MEMBER_G
 
 echo "Configured tenant with AD groups Admins=${AD_ADMIN_GROUP}... and Members=${AD_MEMBER_GROUP}..."
 
-ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
-
-set -x
-   
-###
-### MLFLOW Secret
-###
-
-echo "Creating MLFLOW secret"
-cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS apply -f -
-apiVersion: v1 
-data: 
-  MLFLOW_ARTIFACT_ROOT: czM6Ly9tbGZsb3c= #s3://mlflow 
-  AWS_ACCESS_KEY_ID: YWRtaW4= #admin 
-  AWS_SECRET_ACCESS_KEY: YWRtaW4xMjM= #admin123 
-kind: Secret
-metadata: 
-  name: mlflow-sc 
-  labels: 
-    kubedirector.hpe.com/secretType: mlflow 
-type: Opaque 
-EOF_YAML
-
-###
-### MLFLOW Cluster
-###
-
-echo "Launching MLFLOW Cluster"
-cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS apply -f -
-apiVersion: "kubedirector.hpe.com/v1beta1"
-kind: "KubeDirectorCluster"
-metadata: 
-  name: "$MLFLOW_CLUSTER_NAME"
-  namespace: "$TENANT_NS"
-  labels: 
-    description: "mlflow"
-spec: 
-  app: "mlflow"
-  namingScheme: "CrNameRole"
-  appCatalog: "local"
-  connections:
-    secrets:
-      - mlflow-sc
-  roles: 
-    - 
-      id: "controller"
-      members: 1
-      resources: 
-        requests: 
-          cpu: "2"
-          memory: "4Gi"
-          nvidia.com/gpu: "0"
-        limits: 
-          cpu: "2"
-          memory: "4Gi"
-          nvidia.com/gpu: "0"
-      #Note: "if the application is based on hadoop3 e.g. using StreamCapabilities interface, then change the below dtap label to 'hadoop3', otherwise for most applications use the default 'hadoop2'"
-      podLabels: 
-        hpecp.hpe.com/dtap: "hadoop2"
-EOF_YAML
-
-EOF1
+echo "Setting up MLFLOW cluster"
+./bin/experimental/mlflow_cluster_create.sh $TENANT_ID
 
 echo "Setting up Notebook"
 ./bin/experimental/setup_notebook.sh $TENANT_ID
