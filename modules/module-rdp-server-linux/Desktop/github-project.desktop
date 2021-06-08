@@ -3,6 +3,6 @@
 Encoding=UTF-8
 Name=Github Project Page
 Type=Link
-URL=https://github.com/bluedata-community/bluedata-demo-env-aws-terraform
+URL=https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform
 Icon=firefox
 Exec=firefox -private-window
