@@ -69,9 +69,9 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
         exec -c app -n $TENANT_NS \$POD \
         -- sudo -E -u ad_user1 /usr/bin/bash -c "export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval-lax /home/ad_user1/setLivy.ipynb"
 
-      kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-        exec -c app -n $TENANT_NS \$POD \
-        -- sudo -E -u ad_user1 /usr/bin/bash -c "export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval-lax /home/ad_user1/examples/model_explainability/lime_example.ipynb"
+      # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+      #  exec -c app -n $TENANT_NS \$POD \
+      #  -- sudo -E -u ad_user1 /usr/bin/bash -c "export PATH=\$THE_PATH; export JAVA_HOME=\$THE_JAVA_HOME; pytest --nbval-lax /home/ad_user1/examples/model_explainability/lime_example.ipynb"
 
       # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
       #   exec -c app -n $TENANT_NS \$POD \
