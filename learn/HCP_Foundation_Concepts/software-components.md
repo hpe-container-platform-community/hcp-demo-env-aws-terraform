@@ -8,11 +8,11 @@ HPE Container Platform has a diffent software components that you need to unders
 
 ## Pre-requisites
 
-- Bookmark http://docs.bluedata.com!
+- Bookmark https://docs.containerplatform.hpe.com/home!
 
 ## Learning Content
 
-- READ: http://docs.bluedata.com/50_software-components
+- READ: https://docs.containerplatform.hpe.com/53/reference/universal-concepts/Software_Components.html
 
 ## Learning Summary
 
