@@ -10,7 +10,7 @@ This document containers a recommended path for learning key HPE Container Platf
 
 - A thirst for knowledge is important - we cover a lot of topics!
 - AWS account for running a demo environment
-- Bookmark and regularly refer to http://docs.bluedata.com
+- Bookmark and regularly refer to https://docs.containerplatform.hpe.com/home
 
 ## Product Overview
 
@@ -34,7 +34,7 @@ This document containers a recommended path for learning key HPE Container Platf
 
 ### AWS Demo environment lifecycle
 
-This section is only required for users using the [HPE CP AWS Demo Environment Terraform project](https://github.com/bluedata-community/bluedata-demo-env-aws-terraform)
+This section is only required for users using the [HPE CP AWS Demo Environment Terraform project](https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform)
 
 - [Provision AWS demo environment](../README.md) [2 hours]
 - [Starting/Stopping/Status of AWS demo environment](../docs/README-EC2-START-STOP-STATUS.md) [30 mins]
