@@ -69,7 +69,7 @@ variable "EC2_LIN_RDP_AMIS" {
     us-west-1      = "ami-077af8ef25b856d91" # N.California
     us-west-2      = "ami-08402b04e312d056c" # Oregon
     ap-southeast-1 = "ami-030efc4ccdc159ea6" # Singapore
-    eu-central-1   = "ami-03dbefae8333132eb" # Frankfurt
+    eu-central-1   = "ami-06d9c83ef2e37956e" # Frankfurt
     eu-west-1      = "ami-06a4237b5ad3df8ab" # Ireland 
     eu-west-2      = "ami-05445e3ee29659931" # London
     eu-west-3      = "ami-0aa2d4577e73e16cc" # Paris
