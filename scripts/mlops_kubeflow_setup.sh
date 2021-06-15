@@ -52,6 +52,8 @@ fi
 print_header "Setup hosts as K8s workers"
 echo Using the following WORKER_HOST_IPS="${WORKER_HOST_IPS[@]}"
 ./bin/experimental/03_k8sworkers_add.sh "${WORKER_HOST_IPS[@]}"
+
+# TODO - https://github.com/hpe-container-platform-community/hcp-demo-env-aws-terraform/issues/29
 QUERY="[*] | @[?contains('${WORKER_HOST_IPS[@]}', ipaddr)] | [*][_links.self.href]" 
 WORKER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
 
