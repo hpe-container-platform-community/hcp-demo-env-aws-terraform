@@ -113,11 +113,14 @@ EOF_YAML
 
 if [[ "$ACTION" == "apply" ]]; then
 
+  while [[ \$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    get pods -l app=gitea -n $TENANT_NS -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+
   POD=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS get pods -l app=gitea --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
   echo POD=\$POD
   
-  while [[ \$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS \
-    get pods \$POD -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  # while [[ \$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS \
+  #   get pods \$POD -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   
   EXTERNAL_URL=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS get service gitea-service \
     -o 'jsonpath={..annotations.hpecp-internal-gateway/3000}')
@@ -136,10 +139,26 @@ if [[ "$ACTION" == "apply" ]]; then
     curl -s -d \$URL_DATA http://localhost:3000
 
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'gitea admin user create --username "administrator" --password "admin123" --email "admin@samdom.example.com" --admin --must-change-password=false'
+
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
     su git -c 'gitea admin user create --username "ad_admin1" --password "pass123" --email "ad_admin1@samdom.example.com" --must-change-password=false'
 
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
     su git -c 'gitea admin user create --username "ad_user1" --password "pass123" --email "ad_user1@samdom.example.com" --must-change-password=false'
+
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'rm -rf /tmp/gatekeeper-library'
+    
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'gitea dump-repo --git_service github --clone_addr https://github.com/riteshja/gatekeeper-library --units issues,labels --repo_dir /tmp/gatekeeper-library'
+
+  # WORKAROUND FOR: [F] Failed to restore repository: open /tmp/gatekeeper-library/topic.yml: no such file or directory
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'touch /tmp/gatekeeper-library/topic.yml'
+
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'gitea restore-repo --repo_dir /tmp/gatekeeper-library --owner_name administrator --units issues,labels --repo_name gatekeeper-library'
 
 fi
 
