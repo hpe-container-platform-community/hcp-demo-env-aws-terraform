@@ -37,14 +37,20 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   \"repository_username\": \"administrator\",
   \"repository_password\": \"admin123\"
 }
-") || true
+") || true # ignore conflicts
+
+
+REPO_ID=\$(
+  hpecp httpclient get /api/v2/gitops_repo \
+      | python3 -c "import json,sys;obj=json.load(sys.stdin);[ print(t['_links']['self']['href']) for t in obj['_embedded']['gitops_repos'] if t['repository_url'] == 'http://\$EXTERNAL_URL/administrator/gatekeeper-library']"
+)
+echo REPO_ID=\$REPO_ID
 
 #####
 
- export LOG_LEVEL=DEBUG
- hpecp httpclient post /api/v2/gitops_app <(echo "
+ LOG_LEVEL=DEBUG hpecp httpclient post /api/v2/gitops_app <(echo "
 {
-     \"gitops_repo\": \"/api/v2/gitops_repo/4\",
+     \"gitops_repo\": \"\$REPO_ID\",
      \"app_source\": {
            \"path\": \"library/pod-security-policy/read-only-root-filesystem\",
            \"target_revision\": \"HEAD\"
