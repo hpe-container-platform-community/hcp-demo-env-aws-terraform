@@ -248,6 +248,7 @@ spec:
       - $MLFLOW_CLUSTER_NAME
       - $TRAINING_CLUSTER_NAME
     secrets: 
+      - hpecp-sc-secret-gitea-ad-user1-nb
       - hpecp-ext-auth-secret
       - mlflow-sc
       - $AD_USER_KC_SECRET
@@ -314,24 +315,22 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     exec -c app -n $TENANT_NS \$POD -- sudo su - \${TENANT_USER}
   
-  echo "Copying example files to project repo"
-  
   echo "Copying example files to notebook pods"
   
-  for FILE in \$(ls -1 ./static/*)
-  do
-    BASEFILE=\$(basename \$FILE)
-    kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-      cp --container app \$FILE $TENANT_NS/\$POD:/home/\${TENANT_USER}/\${BASEFILE}
+  # for FILE in \$(ls -1 ./static/*)
+  # do
+  #   BASEFILE=\$(basename \$FILE)
+  #   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+  #     cp --container app \$FILE $TENANT_NS/\$POD:/home/\${TENANT_USER}/\${BASEFILE}
       
-    kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-      exec -c app -n $TENANT_NS \$POD -- chown ad_user1:domain\\ users /home/\${TENANT_USER}/\${BASEFILE}
+  #   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+  #     exec -c app -n $TENANT_NS \$POD -- chown ad_user1:domain\\ users /home/\${TENANT_USER}/\${BASEFILE}
    
-    if [[ "\${BASEFILE##*.}" == ".sh" ]]; then
-      kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
-        exec -c app -n $TENANT_NS \$POD -- chmod +x /home/\${TENANT_USER}/\${BASEFILE}
-    fi
-  done
+  #   if [[ "\${BASEFILE##*.}" == ".sh" ]]; then
+  #     kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+  #       exec -c app -n $TENANT_NS \$POD -- chmod +x /home/\${TENANT_USER}/\${BASEFILE}
+  #   fi
+  # done
    
   echo "Adding pytest and nbval python libraries for testing"
 
