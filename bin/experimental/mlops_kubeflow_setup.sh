@@ -76,4 +76,4 @@ done
 echo Using the following IDS="${IDS[@]}"
 
 print_header "Create MLOPS cluster and tenant"
-./bin/experimental/mlops_with_kubeflow_create.sh $IDS
+./bin/experimental/mlops_with_kubeflow_create.sh ${IDS[@]}
