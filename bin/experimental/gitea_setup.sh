@@ -147,33 +147,33 @@ if [[ "$ACTION" == "apply" ]]; then
   kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
     su git -c 'gitea admin user create --username "ad_user1" --password "pass123" --email "ad_user1@samdom.example.com" --must-change-password=false' || true
 
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
-  #   su git -c 'rm -rf /tmp/gatekeeper-library'
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'rm -rf /tmp/gatekeeper-library'
     
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
-  #   su git -c 'gitea dump-repo --git_service github --clone_addr https://github.com/riteshja/gatekeeper-library --units issues,labels --repo_dir /tmp/gatekeeper-library'
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'gitea dump-repo --git_service github --clone_addr https://github.com/riteshja/gatekeeper-library --units issues,labels --repo_dir /tmp/gatekeeper-library'
 
-  # # WORKAROUND FOR: [F] Failed to restore repository: open /tmp/gatekeeper-library/topic.yml: no such file or directory
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
-  #   su git -c 'touch /tmp/gatekeeper-library/topic.yml'
+  # WORKAROUND FOR: [F] Failed to restore repository: open /tmp/gatekeeper-library/topic.yml: no such file or directory
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'touch /tmp/gatekeeper-library/topic.yml'
 
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
-  #   su git -c 'gitea restore-repo --repo_dir /tmp/gatekeeper-library --owner_name administrator --units issues,labels --repo_name gatekeeper-library' || true
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'gitea restore-repo --repo_dir /tmp/gatekeeper-library --owner_name administrator --units issues,labels --repo_name gatekeeper-library' || true
 
 ###### ad_user1 repo
 
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
-  #   su git -c 'rm -rf /tmp/jupyter-demo'
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'rm -rf /tmp/jupyter-demo'
 
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
-  #   su git -c 'gitea dump-repo --git_service github --clone_addr https://github.com/snowch/jupyter-demo --units issues,labels --repo_dir /tmp/jupyter-demo'
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'gitea dump-repo --git_service github --clone_addr https://github.com/snowch/jupyter-demo --units issues,labels --repo_dir /tmp/jupyter-demo'
 
-  # # WORKAROUND FOR: [F] Failed to restore repository: open /tmp/gatekeeper-library/topic.yml: no such file or directory
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
-  #   su git -c 'touch /tmp/jupyter-demo/topic.yml'
+  # WORKAROUND FOR: [F] Failed to restore repository: open /tmp/gatekeeper-library/topic.yml: no such file or directory
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'touch /tmp/jupyter-demo/topic.yml'
 
-  # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
-  #   su git -c 'gitea restore-repo --repo_dir /tmp/jupyter-demo --owner_name ad_user1 --units issues,labels --repo_name jupyter-demo' || true
+  kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) exec -n $TENANT_NS \$POD -- \
+    su git -c 'gitea restore-repo --repo_dir /tmp/jupyter-demo --owner_name ad_user1 --units issues,labels --repo_name jupyter-demo' || true
 
 
 cat <<EOF_YAML | kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) -n $TENANT_NS $ACTION -f -
