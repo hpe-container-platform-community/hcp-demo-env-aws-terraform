@@ -134,10 +134,10 @@ if [[  "$RDP_SERVER_ENABLED" == "True" && "$RDP_SERVER_OPERATING_SYSTEM" = "LINU
 		EOF1
 	fi
 
-	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF
-		sudo cp /var/lib/snapd/desktop/applications/gedit_gedit.desktop /usr/share/applications/gedit.desktop
-		xdg-mime default gedit.desktop text/plain
-	EOF
+	# ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF
+	# 	sudo cp /var/lib/snapd/desktop/applications/gedit_gedit.desktop /usr/share/applications/gedit.desktop
+	# 	xdg-mime default gedit.desktop text/plain
+	# EOF
 
 	if [[ "$WORKER_COUNT" != "0" ]]; then
     	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} "echo ${WRKR_PRV_IPS[@]} > ~/Desktop/HCP_WORKER_HOSTS.txt"
