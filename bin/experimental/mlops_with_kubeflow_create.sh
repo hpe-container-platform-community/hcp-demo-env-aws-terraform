@@ -152,6 +152,9 @@ hpecp tenant add-external-user-group --tenant-id "$TENANT_ID" --group "$MEMBER_G
 
 echo "Configured tenant with AD groups Admins=${AD_ADMIN_GROUP}... and Members=${AD_MEMBER_GROUP}..."
 
+echo "Setting up Gitea server"
+./bin/experimental/gitea_setup.sh $TENANT_ID apply
+
 echo "Setting up MLFLOW cluster"
 ./bin/experimental/mlflow_cluster_create.sh $TENANT_ID
 
@@ -171,13 +174,13 @@ echo "Creating minio bucket"
 echo "Verifying KubeFlow"
 ./bin/experimental/verify_kf.sh $TENANT_ID
 
-echo "Testing Notebooks"
-./bin/experimental/run_notebook_tests.sh $TENANT_ID
+# echo "Testing Notebooks"
+# ./bin/experimental/run_notebook_tests.sh $TENANT_ID
 
-echo "Restarting trainingengine proxy"
-./bin/updates/restart_trainingengineinstance_haproxy.sh $TENANT_ID
+# echo "Restarting trainingengine proxy"
+# ./bin/updates/restart_trainingengineinstance_haproxy.sh $TENANT_ID
 
-sleep 10
+# sleep 10
 
-echo "Re-testing Notebooks"
-./bin/experimental/run_notebook_tests.sh $TENANT_ID
+# echo "Re-testing Notebooks"
+# ./bin/experimental/run_notebook_tests.sh $TENANT_ID

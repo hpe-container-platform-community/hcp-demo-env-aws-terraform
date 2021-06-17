@@ -100,7 +100,9 @@ resource "aws_instance" "rdp_server" {
       "sudo sed -i 's/1/0/g' /etc/apt/apt.conf.d/20auto-upgrades",
       "sudo apt -qq update",
       "sudo apt -qq install -y firefox",
-      "sudo snap install gedit",
+      //"sudo snap install gedit",
+      
+      // KUBECTL
       "curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl",
       "chmod +x ./kubectl",
       "sudo mv ./kubectl /usr/local/bin/kubectl",
@@ -108,11 +110,22 @@ resource "aws_instance" "rdp_server" {
       "sudo bash -c 'kubectl completion bash >/etc/bash_completion.d/kubectl'",
       "echo 'alias k=kubectl' >>~/.bashrc",
       "echo 'complete -F __start_kubectl k' >>~/.bashrc",
+      
+      // TF
       "curl -L0 https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip > terraform_0.12.24_linux_amd64.zip",
       "unzip terraform_0.12.24_linux_amd64.zip",
       "chmod a+x terraform",
       "sudo mv terraform /usr/local/bin/",
       "rm terraform_0.12.24_linux_amd64.zip",
+      
+      // HELM
+      "curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -",
+      "sudo apt-get install apt-transport-https --yes",
+      "echo \"deb https://baltocdn.com/helm/stable/debian/ all main\" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list",
+      "sudo apt-get update",
+      "sudo apt-get install helm",
+      
+      
       "mkdir /home/ubuntu/Desktop",
       "sudo -H pip3 install --quiet hpecp",
       "echo 'PATH=$PATH:/opt/conda/bin' >> ~/.bashrc",

@@ -4,7 +4,9 @@ set -e
 set -o pipefail
 
 if [[ -z "$1" ]]; then
-  echo "Usage: $0 TENANT_ID "
+  echo "Usage: $0 TENANT_ID"
+  echo "Where:"
+  echo "       TENANT_ID = tenant where gitea is deployed"
   exit 1
 fi
 
