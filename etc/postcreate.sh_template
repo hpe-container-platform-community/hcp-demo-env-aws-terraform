@@ -91,8 +91,9 @@ if [[ "$MAPR_CLUSTER1_COUNT" == "3" ]]; then
    # Only run this on a 5.1 or lower installer.  Do not run this on 5.1.1+
    #./scripts/end_user_scripts/patch_datatap_5.1.1.sh
 
-   print_header "Setup Datatap to external MAPR cluster 1"
-   ./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh
+   # Causes error as script requires TENANT_ID and script is also broken when TENANT_ID is provided (see comments)
+   #print_header "Setup Datatap to external MAPR cluster 1"
+   #./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh
 
    print_header "Setup Fuse mount on RDP host to external MAPR cluster 1"
    ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
