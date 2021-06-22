@@ -1,5 +1,10 @@
 // Usage: terraform <action> -var-file="etc/bluedata_infra.tfvars"
 
+# The required_version attribute specifies version 0.14.0 or later. In practice, we might use the = syntax to pin a specific version.
+terraform {
+  required_version = "> 0.14.0"
+}
+
 provider "aws" {
   profile = var.profile
   region  = var.region
