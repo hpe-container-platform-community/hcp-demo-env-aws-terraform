@@ -45,7 +45,9 @@ pip3 install --user --upgrade --quiet hpecp
 HPECP_VERSION=$(hpecp config get --query 'objects.[bds_global_version]' --output text)
 echo "HPECP Version: ${HPECP_VERSION}"
 
-if [[ "${HPECP_VERSION}" != "5.3" ]]; then
+if [[ "${HPECP_VERSION}" == 5.3* ]]; then
+   echo "${HPECP_VERSION} is ok!"
+else
    echo "This script only supports HPE CP version 5.3"
    exit 1
 fi
