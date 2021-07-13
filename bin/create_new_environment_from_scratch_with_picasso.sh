@@ -1,8 +1,5 @@
 #!/bin/bash
 
-exec > >(tee -i generated/log-$(basename $0).txt)
-exec 2>&1
-
 set -x
 set -u
 set -e
@@ -36,11 +33,11 @@ then
   exit 1
 fi
 
-# start from a clean slate - remove all trace of previous runs
-./bin/terraform_destroy_accept.sh
-
 # create AWS infra and install  ECP
 ./bin/create_new_environment_from_scratch.sh
+
+exec > >(tee -i generated/log-$(basename $0).txt)
+exec 2>&1
 
 source "./scripts/variables.sh"
 source "./scripts/functions.sh"
@@ -63,7 +60,7 @@ wait
 QUERY="[*] | @[?contains('${MASTER_HOSTS}', ipaddr)] | [*][_links.self.href] | [] | sort(@)"
 MASTER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
 
-QUERY="[*] | @[?contains('${WORKER_HOSTS}', ipaddr)] | [*][_links.self.href]| [] | sort(@)"
+QUERY="[*] | @[?contains('${WORKER_HOSTS}', ipaddr)] | [*][_links.self.href] | [] | sort(@)"
 WORKER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 20 --output text)

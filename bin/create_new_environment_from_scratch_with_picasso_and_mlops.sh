@@ -1,8 +1,5 @@
 #!/bin/bash
 
-exec > >(tee -i generated/log-$(basename $0).txt)
-exec 2>&1
-
 set -u
 set -e
 set -o pipefail
@@ -50,6 +47,10 @@ fi
 
 # create AWS infra and install  ECP
 ./bin/create_new_environment_from_scratch.sh
+
+exec > >(tee -i generated/log-$(basename $0).txt)
+exec 2>&1
+
 
 source "./scripts/variables.sh"
 source "./scripts/functions.sh"
