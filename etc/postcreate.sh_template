@@ -75,7 +75,7 @@ print_header "Setup two hosts as K8s workers"
 ./bin/experimental/03_k8sworkers_add.sh "${WORKER_HOST_1_IP}" "${WORKER_HOST_2_IP}" # add 2 EC2 hosts as k8s workers
 
 print_header "Create k8s cluster and tenant"
-./bin/experimental/04_k8scluster_create.sh
+./bin/experimental/04_k8scluster_create.sh "${WORKER_HOST_1_IP}" "${WORKER_HOST_2_IP}"
 
 #print_header "Add KD Spark Cluster"
 #./bin/experimental/05_kubedirector_spark_create.sh
