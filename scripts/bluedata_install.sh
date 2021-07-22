@@ -238,12 +238,12 @@ else
    CONFIG_GATEWAY_DNS=$GATW_PRV_DNS
 fi
 
-if [[ "${CREATE_EIP_CONTROLLER}" == "True" ]];
-then
-   CONFIG_CONTROLLER_IP=$CTRL_PUB_IP
-else
+# if [[ "${CREATE_EIP_CONTROLLER}" == "True" ]];
+# then
+#    CONFIG_CONTROLLER_IP=$CTRL_PUB_IP
+# else
    CONFIG_CONTROLLER_IP=$CTRL_PRV_IP
-fi
+# fi
 
 cat generated/ca-cert.pem | ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat > ~/minica.pem"
 cat generated/ca-key.pem  | ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} "cat > ~/minica-key.pem" 

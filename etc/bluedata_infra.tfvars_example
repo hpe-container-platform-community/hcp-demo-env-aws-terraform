@@ -8,6 +8,7 @@ az                 = "eu-west-3a"          # Change to your preferred AZ
 project_id         = "<<your-name>>-hcp"   # Change your project name. 
                                            # E.g. csnow-hcp-demo (with no spaces) 
                                            # ** project_id maximum length is 18 chars **
+                                           
 
 # If you want to allow other clients to have full network access to this environment, add them here.
 # These IPs need a suffix such as /32 for specific IP address.  Use https://ifconfig.me to find your IP
@@ -134,6 +135,9 @@ ad_server_enabled = true # Do not disable this unless you are doing a manual ins
 rdp_server_enabled = true # Do not disable this unless you are doing a manual installation
 rdp_server_operating_system = "LINUX"
 create_eip_rdp_linux_server = false
+
+create_eip_controller = false
+create_eip_gateway = false
 
 #####################################################################
 # For a full list of settings, see 'bluedata_infra.tfvars_template' #
