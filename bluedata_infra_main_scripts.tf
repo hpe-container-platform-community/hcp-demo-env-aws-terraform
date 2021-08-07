@@ -1,12 +1,12 @@
 
 resource "local_file" "ca-cert" {
   filename = "${path.module}/generated/ca-cert.pem"
-  content =  var.ca_cert
+  content =  data.local_file.ca_cert.content
 }
 
 resource "local_file" "ca-key" {
   filename = "${path.module}/generated/ca-key.pem"
-  content =  var.ca_key
+  content =  data.local_file.ca_key.content
 }
 
 

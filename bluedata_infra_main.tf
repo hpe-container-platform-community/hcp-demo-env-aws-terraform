@@ -41,8 +41,15 @@ resource "local_file" "cli_logging_config_file" {
   content =  data.template_file.cli_logging_config_template.rendered
 }
 
-
 // random_uuid.deployment_uuid.result
+
+data "local_file" "ca_cert" {
+  filename = "./generated/ca-cert.pem"
+}
+
+data "local_file" "ca_key" {
+  filename = "./generated/ca-key.pem"
+}
 
 /******************* modules ********************/
 
@@ -188,7 +195,7 @@ module "rdp_server_linux" {
   rdp_instance_type     = var.rdp_instance_type
   rdp_server_enabled    = var.rdp_server_enabled && var.rdp_server_operating_system == "LINUX"
   key_name              = aws_key_pair.main.key_name
-  ca_cert               = var.ca_cert
+  ca_cert               = data.local_file.ca_cert.content
   controller_private_ip = module.controller.private_ip
   vpc_security_group_ids = flatten([
     module.network.security_group_allow_all_from_client_ip,

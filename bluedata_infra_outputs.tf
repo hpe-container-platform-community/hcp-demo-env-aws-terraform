@@ -51,11 +51,11 @@ output "install_with_ssl" {
 }
 
 output "ca_cert" {
-  value = var.ca_cert
+  value = data.local_file.ca_cert.content
 }
 
 output "ca_key" {
-  value = var.ca_key
+  value = data.local_file.ca_key.content
 }
 
 output "epic_dl_url" {

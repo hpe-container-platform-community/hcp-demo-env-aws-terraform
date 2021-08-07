@@ -45,6 +45,16 @@ if [[ ! -f  "./generated/controller.prv_key" ]]; then
    chmod 600 "./generated/controller.prv_key"
 fi
 
+if [[ ! -f  "./generated/ca-key.pem" ]]; then
+   openssl genrsa -out "./generated/ca-key.pem" 2048
+   openssl req -x509 \
+      -new -nodes \
+      -key "./generated/ca-key.pem" \
+      -subj "/C=US/ST=CA/O=MyOrg, Inc./CN=mydomain.com" \
+      -sha256 -days 1024 \
+      -out "./generated/ca-cert.pem"
+fi
+
 exec > >(tee -i generated/log-$(basename $0).txt)
 exec 2>&1
 
