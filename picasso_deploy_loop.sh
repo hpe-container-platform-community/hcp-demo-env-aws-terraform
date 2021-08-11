@@ -21,4 +21,5 @@ do
           ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" centos@${WRKR_PUB_IPS[$i]} sudo tar czf - /var/log/bluedata/ > ${THE_DATE}-${WRKR_PUB_IPS[$i]}-logs.tar.gz
         done
     fi
+    ./bin/terraform_destroy_accept.sh
 done
