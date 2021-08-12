@@ -22,6 +22,6 @@ if [[ ! -f  "./generated/ca-key.pem" ]]; then
       -out "./generated/ca-cert.pem"
 fi
 
-terraform destroy -var-file=etc/bluedata_infra.tfvars \
+terraform destroy -var-file=<(cat etc/*.tfvars) \
    -var="client_cidr_block=$(curl -s http://ipinfo.io/ip)/32" -auto-approve=true && \
 rm -rf ./generated

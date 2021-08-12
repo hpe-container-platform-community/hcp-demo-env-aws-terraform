@@ -1,0 +1,7 @@
+#
+# NOTE: you have to manually install GPU drivers on GPU workers before adding to HPE CP
+#
+
+gpu_worker_count   = 0                     # How many hosts do you want for EPIC or K8S (with GPUs)?
+gpu_worker_instance_type = "g4dn.xlarge"   # Specify the GPU worker host instance type 
+gpu_worker_has_disk_for_df = false         # Should the GPU worker hsot have a persistent disk for Data Fabric? 

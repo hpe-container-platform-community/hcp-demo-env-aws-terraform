@@ -9,6 +9,9 @@ project_id         = "<<your-name>>-hcp"   # Change your project name.
                                            # E.g. csnow-hcp-demo (with no spaces) 
                                            # ** project_id maximum length is 18 chars **
 
+create_eip_gateway = true
+create_eip_controller = false
+
 # If you want to allow other clients to have full network access to this environment, add them here.
 # These IPs need a suffix such as /32 for specific IP address.  Use https://ifconfig.me to find your IP
 
@@ -19,7 +22,7 @@ additional_client_ip_list = [
 
 # for use with ./bin/create_new_environment_from_scratch_with_picasso_and_mlops.sh)
 
-worker_count       = 12
+worker_count       = 11
 wkr_instance_types = [
  
      # picasso masters
@@ -34,58 +37,16 @@ wkr_instance_types = [
          "m5.8xlarge",
          "m5.8xlarge",
 
-     # MLOPS master
-         "m5.2xlarge",
-     
      # MLOPS workers
          "m5.4xlarge",
          "m5.4xlarge",
          "m5.4xlarge",
+        
 ]
-
-gpu_worker_count   = 0                     # How many hosts do you want for EPIC or K8S (with GPUs)?
-gpu_worker_instance_type = "g4dn.xlarge"   # Specify the GPU worker host instance type 
-gpu_worker_has_disk_for_df = false         # Should the GPU worker hsot have a persistent disk for Data Fabric? 
 
 # Set to true to install HPE CP with embedded DF (mapr)
 
 embedded_df = false
-
-#
-# NOTE: you have to manually install GPU drivers on GPU workers before adding to HPE CP
-#
-
-mapr_cluster_1_count         = 0                     # How many hosts do you want for MAPR CLUSTER 1? (0 or 3)
-mapr_cluster_1_name          = "demo1.mapr.com"
-mapr_cluster_2_count         = 0                     # How many hosts do you want for MAPR CLUSTER 2? (0 or 3)
-mapr_cluster_2_name          = "demo2.mapr.com"
-
-# You can specify an EKS cluster here
-
-create_eks_cluster = false
-eks_instance_type     = "t3.2xlarge"
-eks_scaling_config_desired_size = 1    # must be >= 1
-eks_scaling_config_max_size     = 1    # must be >= 1
-eks_scaling_config_min_size     = 1    # must be >= 1
-eks_subnet2_cidr_block = "10.1.2.0/24" # you shouldn't need to change this
-eks_subnet3_cidr_block = "10.1.3.0/24" # you shouldn't need to change this
-eks_subnet2_az_suffix = "b"            # you shouldn't need to change this
-eks_subnet3_az_suffix = "c"            # you shouldn't need to change this
-
-# After terraform has created the EKS cluster, you can retrieve the endpoint details
-# for adding to the HPE CP UI using `terraform output`.   The variables are named:
-#
-#    eks-server-url
-#    eks-ca-certificate
-#    eks-bearer-token
-
-###########################################################################################
-# If you would like to run post installation setup scripts:                               #
-#                                                                                         #
-#    cp etc/postcreate.sh_template etc/postcreate.sh                                      #
-#                                                                                         #
-# ... then edit etc/postcreate.sh as required                                             #
-###########################################################################################
 
 ###########################################################################################
 # If you are not an HPE Container Platform Sales Engineers with an AWS account you do NOT #
@@ -105,40 +66,6 @@ epid_dl_url_needs_presign = true
 
 # you may need to set this if you are deploying your instances in a different region to the s3 bucket on your install binary
 epic_dl_url_presign_options = "--region eu-west-1" 
-
-##########################################################################
-# You MAY need to change these types if not available in your AWS region #
-# You can heck at: https://aws.amazon.com/ec2/pricing/on-demand/         #
-# See docs/README-TROUBLESHOOTING.MD#error-launching-source-instance.    #
-##########################################################################
-
-gtw_instance_type = "m5.4xlarge" 
-ctr_instance_type = "m5.4xlarge"
-wkr_instance_type = "m5.4xlarge" # or provide wkr_instance_types = []
-nfs_instance_type = "t2.small"
-ad_instance_type  = "t2.small"
-rdp_instance_type = "t3.xlarge"
-mapr_instance_type = "m5.4xlarge"
-
-##############################################################
-###### You probably won't need to change anything below ######
-##############################################################
-
-ssh_prv_key_path   = "./generated/controller.prv_key"
-ssh_pub_key_path   = "./generated/controller.pub_key"
-
-vpc_cidr_block     = "10.1.0.0/16"
-subnet_cidr_block  = "10.1.0.0/24"
-
-selinux_disabled = true
-ad_server_enabled = true # Do not disable this unless you are doing a manual installation
-
-rdp_server_enabled = true # Do not disable this unless you are doing a manual installation
-rdp_server_operating_system = "LINUX"
-create_eip_rdp_linux_server = false
-
-create_eip_controller = false
-create_eip_gateway = false
 
 #####################################################################
 # For a full list of settings, see 'bluedata_infra.tfvars_template' #

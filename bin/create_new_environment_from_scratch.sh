@@ -58,7 +58,8 @@ fi
 exec > >(tee -i generated/log-$(basename $0).txt)
 exec 2>&1
 
-terraform apply -var-file=etc/bluedata_infra.tfvars -var="client_cidr_block=$(curl -s http://ipinfo.io/ip)/32" -auto-approve=true
+terraform apply -var-file=<(cat etc/*.tfvars) \
+   -var="client_cidr_block=$(curl -s http://ipinfo.io/ip)/32" -auto-approve=true
 
 echo "Sleeping for 60s to give services a chance to startup"
 sleep 60
