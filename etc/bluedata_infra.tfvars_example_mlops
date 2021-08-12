@@ -38,32 +38,11 @@ wkr_instance_types = [
 embedded_df = true
 
 
-###########################################################################################
-# If you would like to run post installation setup scripts:                               #
-#                                                                                         #
-#    cp etc/postcreate.sh_template etc/postcreate.sh                                      #
-#                                                                                         #
-# ... then edit etc/postcreate.sh as required                                             #
-###########################################################################################
-
-###########################################################################################
-# If you are not an HPE Container Platform Sales Engineers with an AWS account you do NOT #
-# need to change the 'epic_dl_url*' settings, below                                       # 
-###########################################################################################
-
-# epic installer options
-# epic_options = "--skipeula"                             # epic < 5.2 
-epic_options = "--skipeula --default-password admin123"   # epic >= 5.2
-
-# This is a private bucket
-# When using private buckets set the epic_dl_url to your s3 url else use a https url
+# When using private buckets (s3://) set the epic_dl_url to your s3 url else use a https url
 epic_dl_url = "s3://csnow-bins/hpe-cp-rhel-release-5.3-3031.bin"
 
 # set to true for private buckets (s3://...) otherwise set to false
 epid_dl_url_needs_presign = true 
-
-# you may need to set this if you are deploying your instances in a different region to the s3 bucket on your install binary
-epic_dl_url_presign_options = "--region eu-west-1" 
 
 #####################################################################
 # For a full list of settings, see 'bluedata_infra.tfvars_template' #
