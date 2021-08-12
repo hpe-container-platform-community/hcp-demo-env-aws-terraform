@@ -6,7 +6,7 @@ set -o pipefail
 
 #####
 
-PICASSO_MASTER_HOSTS_INDEX='0:3'
+MASTER_HOSTS_INDEX='0:3'
 PICASSO_WORKER_HOSTS_INDEX='3:8'
 MLOPS_WORKER_HOSTS_INDEX='8:11'
 
@@ -16,7 +16,6 @@ MLOPS_WORKER_HOSTS_INDEX='8:11'
 #
 ################################################################################
 
-set -x
 set -u
 set -e
 set -o pipefail
@@ -64,7 +63,7 @@ bash etc/postcreate_core.sh_template
 ################################################################################
 
 # select the IP addresses of the k8s hosts
-MASTER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $PICASSO_MASTER_HOSTS_INDEX)
+MASTER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $MASTER_HOSTS_INDEX)
 PICASSO_WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $PICASSO_WORKER_HOSTS_INDEX)
 MLOPS_WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $MLOPS_WORKER_HOSTS_INDEX)
 
@@ -82,14 +81,18 @@ wait
 
 QUERY="[*] | @[?contains('${MASTER_HOSTS}', ipaddr)] | [*][_links.self.href] | [] | sort(@)"
 MASTER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
+echo MASTER_HOSTS=$MASTER_HOSTS
+echo MASTER_IDS=$MASTER_IDS
 
 QUERY="[*] | @[?contains('${PICASSO_WORKER_HOSTS}', ipaddr)] | [*][_links.self.href] | [] | sort(@)"
 PICASSO_WORKER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
-echo ${PICASSO_WORKER_IDS}
+echo PICASSO_WORKER_HOSTS=$PICASSO_WORKER_HOSTS
+echo PICASSO_WORKER_IDS=$PICASSO_WORKER_IDS
 
 QUERY="[*] | @[?contains('${MLOPS_WORKER_HOSTS}', ipaddr)] | [*][_links.self.href] | [] | sort(@)"
 MLOPS_WORKER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
-echo ${MLOPS_WORKER_IDS}
+echo MLOPS_WORKER_HOSTS=$MLOPS_WORKER_HOSTS
+echo MLOPS_WORKER_IDS=$MLOPS_WORKER_IDS
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 20 --output text)
 
