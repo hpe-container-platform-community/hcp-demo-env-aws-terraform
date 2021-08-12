@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "./scripts/variables.sh"
-
 trap ctrl_c INT
 
 function ctrl_c() {
@@ -16,6 +14,8 @@ do
    if hpecp k8scluster list | grep error
    then
         ./bin/ssh_controller.sh sudo tar czf - /var/log/bluedata/ > ${THE_DATE}-controller-logs.tar.gz
+        
+        source "./scripts/variables.sh"
        
         for i in "${!WRKR_PUB_IPS[@]}"; do
           ssh -o StrictHostKeyChecking=no -i "./generated/controller.prv_key" centos@${WRKR_PUB_IPS[$i]} sudo tar czf - /var/log/bluedata/ > ${THE_DATE}-${WRKR_PUB_IPS[$i]}-logs.tar.gz
