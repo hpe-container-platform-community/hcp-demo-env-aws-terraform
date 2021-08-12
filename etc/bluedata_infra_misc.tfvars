@@ -22,3 +22,6 @@ epic_dl_url_presign_options = "--region eu-west-1"
 # epic installer options
 # epic_options = "--skipeula"                             # epic < 5.2 
 epic_options = "--skipeula --default-password admin123"   # epic >= 5.2
+
+create_eip_gateway = true
+create_eip_controller = false
