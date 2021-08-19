@@ -42,6 +42,18 @@ then
   exit 1
 fi
 
+if [[ -f etc/postcreate.sh ]]; 
+then 
+    echo "please remove custom 'etc/postcreate.sh' file" 
+    exit 1
+fi
+
+if [[ -f etc/postcreate_core.sh ]]; 
+then 
+    echo "please remove custom 'etc/postcreate_core.sh' file" 
+    exit 1
+fi
+
 # create AWS infra and install  ECP
 ./bin/create_new_environment_from_scratch.sh
 
@@ -184,6 +196,8 @@ echo "Setting up Gitea server"
 
 echo "Setting up MLFLOW cluster"
 ./bin/experimental/mlflow_cluster_create.sh $TENANT_ID
+
+sleep 30
 
 echo "Setting up Notebook"
 ./bin/experimental/setup_notebook.sh $TENANT_ID
