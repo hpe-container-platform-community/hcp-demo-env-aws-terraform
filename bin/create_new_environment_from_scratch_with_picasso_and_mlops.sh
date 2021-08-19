@@ -191,26 +191,46 @@ hpecp tenant add-external-user-group --tenant-id "$TENANT_ID" --group "$MEMBER_G
 
 echo "Configured tenant with AD groups Admins=${AD_ADMIN_GROUP}... and Members=${AD_MEMBER_GROUP}..."
 
+function fail {
+  echo $1 >&2
+  exit 1
+}
+
+function retry {
+  local n=1
+  local max=5
+  local delay=15
+  while true; do
+    "$@" && break || {
+      if [[ $n -lt $max ]]; then
+        ((n++))
+        echo "Command failed. Attempt $n/$max:"
+        sleep $delay;
+      else
+        fail "The command has failed after $n attempts."
+      fi
+    }
+  done
+}
+
 echo "Setting up Gitea server"
-./bin/experimental/gitea_setup.sh $TENANT_ID apply
+retry ./bin/experimental/gitea_setup.sh $TENANT_ID apply
 
 echo "Setting up MLFLOW cluster"
-./bin/experimental/mlflow_cluster_create.sh $TENANT_ID
-
-sleep 30
+retry ./bin/experimental/mlflow_cluster_create.sh $TENANT_ID
 
 echo "Setting up Notebook"
-./bin/experimental/setup_notebook.sh $TENANT_ID
+retry ./bin/experimental/setup_notebook.sh $TENANT_ID
 
 echo "Waiting for mlflow KD app to have state==configured"
-./bin/experimental/minio_wait_for_mlflow_configured_state.sh $TENANT_ID mlflow
+retry ./bin/experimental/minio_wait_for_mlflow_configured_state.sh $TENANT_ID mlflow
 
 echo "Retrieving minio gateway host and port"
 MINIO_HOST_AND_PORT="$(./bin/experimental/minio_get_gw_host_and_port.sh $TENANT_ID mlflow)"
 echo MINIO_HOST_AND_PORT=$MINIO_HOST_AND_PORT
 
 echo "Creating minio bucket"
-./bin/experimental/minio_create_bucket.sh "$MINIO_HOST_AND_PORT"
+retry ./bin/experimental/minio_create_bucket.sh "$MINIO_HOST_AND_PORT"
 
 echo "Verifying KubeFlow"
 ./bin/experimental/verify_kf.sh $TENANT_ID

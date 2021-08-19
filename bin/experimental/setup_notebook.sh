@@ -137,7 +137,7 @@ END
 
 echo DATA_BASE64=\$DATA_BASE64
 
-export LOG_LEVEL=DEBUG
+#export LOG_LEVEL=DEBUG
 
 PROFILE=tenant HPECP_CONFIG_FILE=~/.hpecp_tenant.conf hpecp httpclient post $CLUSTER_ID/kubectl <(echo -n '{"data":"'\$DATA_BASE64'","op":"create"}')
 
