@@ -241,6 +241,15 @@ then
    ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
 fi
 
+if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
+then
+
+   print_header "Installing MAPR Cluster 2"
+   CLUSTER_ID=2
+   ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
+   ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
+fi
+
 ################################################################################
 #
 # RDP Credentials
