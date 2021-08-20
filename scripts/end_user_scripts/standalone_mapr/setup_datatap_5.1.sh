@@ -207,7 +207,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	docker run my-python-app hpecp httpclient put /api/v1/tenant/${TENANT_ID}?external_user_groups --json-file /root/tenant_ad_auth.json
 
 	# The datatap needs to be created as a tenant administrator, not as global admin, hence the profile
-	docker run -e PROFILE=tenant${TENANT_ID} my-python-app hpecp httpclient post /api/v1/dataconn --json-file datatap.json
+	docker run -e PROFILE=tenant${TENANT_ID} my-python-app hpecp httpclient post /api/v1/dataconn --json-file /root/datatap.json
 SSH_EOF
 
 print_term_width '-'
