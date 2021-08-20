@@ -41,19 +41,8 @@ wkr_instance_types = [
         
 ]
 
-# Set to true to install HPE CP with embedded DF (mapr)
 
 embedded_df = false
 
-# When using private buckets (s3://) set the epic_dl_url to your s3 url else use a https url
-epic_dl_url = "s3://csnow-bins/hpe-cp-rhel-release-5.3-3031.bin"
-
-# set to true for private buckets (s3://...) otherwise set to false
+epic_dl_url = "s3://csnow-bins/hpe-cp-rhel-release-5.3.2-3046.bin"
 epid_dl_url_needs_presign = true 
-
-#####################################################################
-# For a full list of settings, see 'bluedata_infra.tfvars_template' #
-#####################################################################
-
-# TIP: Parameters given to this script are passed to 'terraform apply'
-#      Example: ./bin/terraform_apply.sh -var='ad_server_enabled=false'
