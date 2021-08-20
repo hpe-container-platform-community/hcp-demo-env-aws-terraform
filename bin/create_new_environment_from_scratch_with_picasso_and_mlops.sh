@@ -255,10 +255,10 @@ then
    TENANT_ID=$(hpecp tenant list --query "[?tenant_type == 'k8s' && label.name == 'k8s-tenant-1'] | [0] | [_links.self.href]" --output text)
 
    print_header "Setup Datatap to external MAPR cluster 1"
-   ./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh $(basename $TENANT_ID)
+   retry ./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh $(basename $TENANT_ID)
 
    print_header "Setup Fuse mount on RDP host to external MAPR cluster 1"
-   ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
+   retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
 fi
 
 if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
