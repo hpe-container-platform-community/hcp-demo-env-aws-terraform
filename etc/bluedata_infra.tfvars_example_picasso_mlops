@@ -14,7 +14,11 @@ project_id         = "<<your-name>>-hcp"   # Change your project name.
 
 additional_client_ip_list = [
     # E.g. "1.1.1.1/32","2.2.2.2/32"
-]  
+]
+
+########################################################################
+# You probably won't will need to change the variables in this section #
+########################################################################
 
 
 # for use with ./bin/create_new_environment_from_scratch_with_picasso_and_mlops.sh)
