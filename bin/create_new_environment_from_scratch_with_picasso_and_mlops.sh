@@ -67,6 +67,39 @@ source "./scripts/functions.sh"
 # perform post ECP installation setup (add gateways, etc)
 bash etc/postcreate_core.sh_template
 
+################################################################################
+#
+# Standalone DF setup
+#
+################################################################################
+
+{
+    if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; 
+    then
+    
+       print_header "Installing MAPR Cluster 1"
+       CLUSTER_ID=1
+       ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
+       ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
+  
+       print_header "Setup Fuse mount on RDP host to external MAPR cluster 1"
+       retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
+    fi
+} &
+MAPR_CLUSTER1_INSTALL_PID=$!
+
+{
+    if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
+    then
+    
+       print_header "Installing MAPR Cluster 2"
+       CLUSTER_ID=2
+       ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
+       ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
+    fi
+} &
+MAPR_CLUSTER2_INSTALL_PID=$!
+
 
 ################################################################################
 #
@@ -79,17 +112,22 @@ MASTER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $MASTER_
 PICASSO_WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $PICASSO_WORKER_HOSTS_INDEX)
 MLOPS_WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $MLOPS_WORKER_HOSTS_INDEX)
 
-
 # Add ECP workers without tags
 ./bin/experimental/03_k8sworkers_add.sh $MASTER_HOSTS &
+MASTER_HOSTS_ADD_PID=$!
 
 # Add ECP workers with picasso tags
 ./bin/experimental/03_k8sworkers_add_with_picasso_tag.sh $PICASSO_WORKER_HOSTS &
+WORKER_DF_HOSTS_ADD_PID=$!
 
 # Add ECP workers without picasso tags
 ./bin/experimental/03_k8sworkers_add.sh $MLOPS_WORKER_HOSTS &
+WORKER_NON_DF_HOSTS_ADD_PID=$!
 
-wait
+wait $MASTER_HOSTS_ADD_PID
+wait $WORKER_DF_HOSTS_ADD_PID
+wait $WORKER_NON_DF_HOSTS_ADD_PID
+
 
 QUERY="[*] | @[?contains('${MASTER_HOSTS}', ipaddr)] | [*][_links.self.href] | [] | sort(@)"
 MASTER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
@@ -232,42 +270,28 @@ echo MINIO_HOST_AND_PORT=$MINIO_HOST_AND_PORT
 echo "Creating minio bucket"
 retry ./bin/experimental/minio_create_bucket.sh "$MINIO_HOST_AND_PORT"
 
+
+set -x
+
 echo "Verifying KubeFlow"
 ./bin/experimental/verify_kf.sh $TENANT_ID
 
 
-
 ################################################################################
 #
-# Standalone DF setup
+# Standalone DF DATATAP setup
 #
 ################################################################################
 
 
 if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; 
 then
+    wait $MAPR_CLUSTER1_INSTALL_PID
+    
+    print_header "Setup Datatap to external MAPR cluster 1"
+    TENANT_ID=$(hpecp tenant list --query "[?tenant_type == 'k8s' && label.name == 'k8s-tenant-1'] | [0] | [_links.self.href]" --output text)
 
-   print_header "Installing MAPR Cluster 1"
-   CLUSTER_ID=1
-   ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
-   ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
-
-   TENANT_ID=$(hpecp tenant list --query "[?tenant_type == 'k8s' && label.name == 'k8s-tenant-1'] | [0] | [_links.self.href]" --output text)
-
-   print_header "Setup Datatap to external MAPR cluster 1"
-   retry ./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh $(basename $TENANT_ID)
-
-   print_header "Setup Fuse mount on RDP host to external MAPR cluster 1"
-   retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
-fi
-
-if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
-then
-
-   print_header "Installing MAPR Cluster 2"
-   CLUSTER_ID=2
-   ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
-   ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
+    retry ./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh $(basename $TENANT_ID)
 fi
 
 ################################################################################
