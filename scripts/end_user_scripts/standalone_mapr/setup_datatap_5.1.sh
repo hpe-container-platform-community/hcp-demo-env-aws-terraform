@@ -207,7 +207,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		}
 	JSON_EOF
 	cat datatap.json
-	PROFILE=tenant2 hpecp httpclient post /api/v1/dataconn --json-file datatap.json
+	PROFILE=${TENANT_ID} hpecp httpclient post /api/v1/dataconn --json-file datatap.json
 SSH_EOF
 
 print_term_width '-'
