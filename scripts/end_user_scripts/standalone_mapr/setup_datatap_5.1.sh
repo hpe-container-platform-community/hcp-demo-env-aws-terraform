@@ -117,17 +117,25 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	sudo chmod 660 ${TENANT_KEYTAB_TCKT_FILE}
 	sudo ls -l ${TENANT_KEYTAB_TCKT_FILE}
 
-	command -v hpecp >/dev/null 2>&1 || { 
-		echo >&2 "Ensure you have run: bin/experimental/install_hpecp_cli.sh"
-		exit 1; 
-	}
 
-	set +u
-	pyenv activate my-3.6.10 # installed by bin/experimental/install_hpecp_cli.sh
-	set -u	
-		
-	# First we need 'admin' to setup the Demo Tenant authentication AD groups
-	cat > ~/.hpecp.conf <<-CAT_EOF
+	rm -rf ~/hpecp_docker
+	mkdir ~/hpecp_docker
+	cd ~/hpecp_docker
+	
+	cat > Dockerfile <<-CAT_EOF
+		FROM python:3
+		WORKDIR /usr/src/app
+		COPY requirements.txt ./
+		COPY .hpecp.conf /root/.hpecp.conf
+		COPY tenant_ad_auth.json /root/tenant_ad_auth.json
+		COPY datatap.json /root/datatap.json
+		RUN pip install --no-cache-dir -r requirements.txt
+		COPY . .	
+	CAT_EOF
+
+	echo hpecp > requirements.txt
+	
+	cat > .hpecp.conf <<-CAT_EOF
 		[default]
 		api_host = ${CTRL_PRV_IP}
 		api_port = 8080
@@ -136,19 +144,18 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		warn_ssl = False
 		username = admin
 		password = admin123
+
+		[tenant${TENANT_ID}]
+		tenant   = /api/v1/tenant/${TENANT_ID}
+		username = ad_admin1
+		password = pass123
 	CAT_EOF
-
-	# set the log level for the HPE CP CLI 
-	export LOG_LEVEL=INFO
-		
-	# test connectivity to HPE CP with the CLI
-	hpecp license platform-id
-
+	
 	# setup AD user for tenant Administrator
 	# NOTE:
 	#  - /api/v1/role/2 = Admins
 	#  - /api/v1/role/3 = Members
-	cat >tenant_ad_auth.json<<-JSON_EOF
+	cat > tenant_ad_auth.json<<-JSON_EOF
 	{
 		"external_user_groups": [
 		    {
@@ -162,23 +169,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		]
 	}
 	JSON_EOF
-	hpecp httpclient put /api/v1/tenant/${TENANT_ID}?external_user_groups --json-file tenant_ad_auth.json
-
-	# The datatap needs to be created as a tenant administrator, not as global admin
-	cat > ~/.hpecp.conf <<-CAT_EOF
-		[default]
-		api_host = ${CTRL_PRV_IP}
-		api_port = 8080
-		use_ssl = ${INSTALL_WITH_SSL}
-		verify_ssl = False
-		warn_ssl = False
-
-		[tenant2]
-		tenant   = /api/v1/tenant/${TENANT_ID}
-		username = ad_admin1
-		password = pass123
-	CAT_EOF
-
+	
 	cat >datatap.json<<-JSON_EOF
 		{
 		  "bdfs_root": {
@@ -206,8 +197,17 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		  }
 		}
 	JSON_EOF
-	cat datatap.json
-	PROFILE=${TENANT_ID} hpecp httpclient post /api/v1/dataconn --json-file datatap.json
+	
+	docker build -t my-python-app .
+	cd ~
+		
+	# test connectivity to HPE CP with the CLI
+	docker run -e LOG_LEVEL=DEBUG my-python-app hpecp license platform-id
+
+	docker run my-python-app hpecp httpclient put /api/v1/tenant/${TENANT_ID}?external_user_groups --json-file /root/tenant_ad_auth.json
+
+	# The datatap needs to be created as a tenant administrator, not as global admin, hence the profile
+	docker run -e PROFILE=tenant${TENANT_ID} my-python-app hpecp httpclient post /api/v1/dataconn --json-file datatap.json
 SSH_EOF
 
 print_term_width '-'
