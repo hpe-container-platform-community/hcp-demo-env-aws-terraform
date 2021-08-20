@@ -11,7 +11,7 @@ fi
 
 set -u
 
-source ./scripts/check_prerequisites.sh
+./scripts/check_prerequisites.sh
 source ./scripts/variables.sh
 
 TENANT_ID=$(basename $1)
@@ -21,6 +21,11 @@ MAPR_VMNT=${2:-$DEFAULT_MAPR_VMNT}
 
 set -e # abort on error
 set -u # abort on undefined variable
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+source "$SCRIPT_DIR/../../variables.sh"
+source "$SCRIPT_DIR/functions.sh"
 
 if [[ "$AD_SERVER_ENABLED" == False ]]; then
    echo "Skipping script '$0' because AD Server is not enabled"
@@ -70,7 +75,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 			-cluster ${MAPR_CLUSTER_NAME} -type cluster -user ad_admin1:fc
 
 	maprcli acl edit \
-			-cluster ${MAPR_CLUSTER_NAME} -type cluster -group DemoTenantAdmins:login,cv
+			-cluster ${MAPR_CLUSTER_NAME} -type cluster -group ${AD_ADMIN_GROUP}:login,cv
 
 	# maprcli acl show -type cluster
 	
@@ -81,7 +86,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 	# maprcli acl set \
 	# 		-type volume -name ${MAPR_VOL} -user ad_admin1:fc
 
-	# #hadoop fs -chgrp DemoTenantAdmins /demo_tenant_admins
+	# #hadoop fs -chgrp ${AD_ADMIN_GROUP} /demo_tenant_admins
 
 	# hadoop fs -chmod 777 /demo_tenant_admins
 ENDSSH
@@ -96,7 +101,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_
 	maprlogin generateticket -type servicewithimpersonation -user ${MAPR_USER} -out maprfuseticket
 ENDSSH
 MAPRFUSETICKET=$(ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER1_HOSTS_PUB_IPS[0]} cat maprfuseticket)
-#echo MAPRFUSETICKET=${MAPRFUSETICKET}
+# echo MAPRFUSETICKET:${MAPRFUSETICKET}
 
 print_term_width '-'
 echo "Saving mapr ticket to EPIC controller to ${TENANT_KEYTAB_TCKT_FILE}"
@@ -112,17 +117,25 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	sudo chmod 660 ${TENANT_KEYTAB_TCKT_FILE}
 	sudo ls -l ${TENANT_KEYTAB_TCKT_FILE}
 
-	command -v hpecp >/dev/null 2>&1 || { 
-		echo >&2 "Ensure you have run: bin/experimental/install_hpecp_cli.sh"
-		exit 1; 
-	}
 
-	set +u
-	pyenv activate my-3.6.10 # installed by bin/experimental/install_hpecp_cli.sh
-	set -u	
-		
-	# First we need 'admin' to setup the Demo Tenant authentication AD groups
-	cat > ~/.hpecp.conf <<-CAT_EOF
+	rm -rf ~/hpecp_docker
+	mkdir ~/hpecp_docker
+	cd ~/hpecp_docker
+	
+	cat > Dockerfile <<-CAT_EOF
+		FROM python:3
+		WORKDIR /usr/src/app
+		COPY requirements.txt ./
+		COPY .hpecp.conf /root/.hpecp.conf
+		COPY tenant_ad_auth.json /root/tenant_ad_auth.json
+		COPY datatap.json /root/datatap.json
+		RUN pip install --no-cache-dir -r requirements.txt
+		COPY . .	
+	CAT_EOF
+
+	echo hpecp > requirements.txt
+	
+	cat > .hpecp.conf <<-CAT_EOF
 		[default]
 		api_host = ${CTRL_PRV_IP}
 		api_port = 8080
@@ -131,19 +144,18 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		warn_ssl = False
 		username = admin
 		password = admin123
+
+		[tenant${TENANT_ID}]
+		tenant   = /api/v1/tenant/${TENANT_ID}
+		username = ad_admin1
+		password = pass123
 	CAT_EOF
-
-	# set the log level for the HPE CP CLI 
-	export LOG_LEVEL=INFO
-		
-	# test connectivity to HPE CP with the CLI
-	hpecp license platform-id
-
+	
 	# setup AD user for tenant Administrator
 	# NOTE:
 	#  - /api/v1/role/2 = Admins
 	#  - /api/v1/role/3 = Members
-	cat >tenant_ad_auth.json<<-JSON_EOF
+	cat > tenant_ad_auth.json<<-JSON_EOF
 	{
 		"external_user_groups": [
 		    {
@@ -157,23 +169,7 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		]
 	}
 	JSON_EOF
-	hpecp httpclient put /api/v1/tenant/${TENANT_ID}?external_user_groups --json-file tenant_ad_auth.json
-
-	# The datatap needs to be created as a tenant administrator, not as global admin
-	cat > ~/.hpecp.conf <<-CAT_EOF
-		[default]
-		api_host = ${CTRL_PRV_IP}
-		api_port = 8080
-		use_ssl = ${INSTALL_WITH_SSL}
-		verify_ssl = False
-		warn_ssl = False
-
-		[tenant2]
-		tenant   = /api/v1/tenant/${TENANT_ID}
-		username = ad_admin1
-		password = pass123
-	CAT_EOF
-
+	
 	cat >datatap.json<<-JSON_EOF
 		{
 		  "bdfs_root": {
@@ -201,8 +197,17 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 		  }
 		}
 	JSON_EOF
-	cat datatap.json
-	PROFILE=${TENANT_ID} hpecp httpclient post /api/v1/dataconn --json-file datatap.json
+	
+	docker build -t my-python-app .
+	cd ~
+		
+	# test connectivity to HPE CP with the CLI
+	docker run -e LOG_LEVEL=INFO my-python-app hpecp license platform-id
+
+	docker run -e LOG_LEVEL=INFO my-python-app hpecp httpclient put /api/v1/tenant/${TENANT_ID}?external_user_groups --json-file /root/tenant_ad_auth.json
+
+	# The datatap needs to be created as a tenant administrator, not as global admin, hence the profile
+	docker run -e LOG_LEVEL=INFO -e PROFILE=tenant${TENANT_ID} my-python-app hpecp httpclient post /api/v1/dataconn --json-file /root/datatap.json
 SSH_EOF
 
 print_term_width '-'
