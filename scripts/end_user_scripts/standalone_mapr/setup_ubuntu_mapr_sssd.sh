@@ -13,6 +13,7 @@ fi
 
 set -e # abort on error
 set -u # abort on undefined variable
+set +x
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
@@ -268,21 +269,25 @@ done
 print_term_width '-'
 for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[@]}; do 
     echo "Waiting for host ${MAPR_CLUSTER_HOST} to accept ssh connections"
-    while ! nc -w5 -z ${MAPR_CLUSTER_HOST} 22; do printf "." -n ; sleep 1; done;
+    { set +x; while ! nc -w5 -z ${MAPR_CLUSTER_HOST} 22; do printf "." -n ; sleep 1; done; }
     echo 'Host is back online.'
 done
 
+set +x
 # Only verify connectivity to CLDB from the first host
 for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[0]}; do 
 	print_term_width '-'
 	echo "Verifing CLDB is online:"
 	print_term_width '-'
 	for i in {1..3000}; do
-		ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} \
-			"echo mapr | maprlogin password -user mapr -cluster ${MAPR_CLUSTER_NAME}" \
-			&& break # if maprlogin command was successful, exit loop
-
-		sleep 1
+		{ 
+			set +x
+			ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} \
+				"echo mapr | maprlogin password -user mapr -cluster ${MAPR_CLUSTER_NAME}" \
+				&& break # if maprlogin command was successful, exit loop
+	
+			sleep 1
+		}
 	done
 	echo "maprlogin was successful - CLDB is assumed to be online"
 	print_term_width '-'

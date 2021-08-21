@@ -10,6 +10,7 @@ MASTER_HOSTS_INDEX='0:3'
 PICASSO_WORKER_HOSTS_INDEX='3:8'
 MLOPS_WORKER_HOSTS_INDEX='8:11'
 
+
 ################################################################################
 #
 # General setup
@@ -73,32 +74,27 @@ bash etc/postcreate_core.sh_template
 #
 ################################################################################
 
-{
-    if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; 
-    then
-    
+
+if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; 
+then
+    {
        print_header "Installing MAPR Cluster 1"
        CLUSTER_ID=1
-       ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
-       ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
-  
-       print_header "Setup Fuse mount on RDP host to external MAPR cluster 1"
-       retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
-    fi
-} &
-MAPR_CLUSTER1_INSTALL_PID=$!
+       ./scripts/mapr_install.sh ${CLUSTER_ID} || true; # ignore errors
+    } &
+    MAPR_CLUSTER1_INSTALL_PID=$!
+fi
 
-{
-    if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
-    then
-    
+
+if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
+then
+    {
        print_header "Installing MAPR Cluster 2"
        CLUSTER_ID=2
-       ./scripts/mapr_install.sh ${CLUSTER_ID} || true # ignore errors
-       ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID} || true # ignore errors
-    fi
-} &
-MAPR_CLUSTER2_INSTALL_PID=$!
+       ./scripts/mapr_install.sh ${CLUSTER_ID} || true; # ignore errors
+    } &
+    MAPR_CLUSTER2_INSTALL_PID=$!  
+fi
 
 
 ################################################################################
@@ -226,30 +222,7 @@ hpecp tenant add-external-user-group --tenant-id "$TENANT_ID" --group "$ADMIN_GR
 MEMBER_GROUP="CN=${AD_MEMBER_GROUP},CN=Users,DC=samdom,DC=example,DC=com"
 MEMBER_ROLE=$(hpecp role list  --query "[?label.name == 'Member'][_links.self.href] | [0][0]" --output json | tr -d '"')
 hpecp tenant add-external-user-group --tenant-id "$TENANT_ID" --group "$MEMBER_GROUP" --role-id "$MEMBER_ROLE"
-
 echo "Configured tenant with AD groups Admins=${AD_ADMIN_GROUP}... and Members=${AD_MEMBER_GROUP}..."
-
-function fail {
-  echo $1 >&2
-  exit 1
-}
-
-function retry {
-  local n=1
-  local max=5
-  local delay=15
-  while true; do
-    "$@" && break || {
-      if [[ $n -lt $max ]]; then
-        ((n++))
-        echo "Command failed. Attempt $n/$max:"
-        sleep $delay;
-      else
-        fail "The command has failed after $n attempts."
-      fi
-    }
-  done
-}
 
 echo "Setting up Gitea server"
 retry ./bin/experimental/gitea_setup.sh $TENANT_ID apply
@@ -270,9 +243,6 @@ echo MINIO_HOST_AND_PORT=$MINIO_HOST_AND_PORT
 echo "Creating minio bucket"
 retry ./bin/experimental/minio_create_bucket.sh "$MINIO_HOST_AND_PORT"
 
-
-set -x
-
 echo "Verifying KubeFlow"
 ./bin/experimental/verify_kf.sh $TENANT_ID
 
@@ -288,10 +258,26 @@ if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]];
 then
     wait $MAPR_CLUSTER1_INSTALL_PID
     
+    CLUSTER_ID=1
+    print_header "Setup sssd for MAPR Cluster 1"
+    retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID}
+  
+    print_header "Setup Fuse mount on RDP host to external MAPR cluster 1"
+    retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
+
     print_header "Setup Datatap to external MAPR cluster 1"
     TENANT_ID=$(hpecp tenant list --query "[?tenant_type == 'k8s' && label.name == 'k8s-tenant-1'] | [0] | [_links.self.href]" --output text)
-
     retry ./scripts/end_user_scripts/standalone_mapr/setup_datatap_5.1.sh $(basename $TENANT_ID)
+fi
+
+
+if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
+then
+    wait $MAPR_CLUSTER2_INSTALL_PID
+    
+    CLUSTER_ID=2
+    print_header "Setup sssd for MAPR Cluster 2"
+    retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID}
 fi
 
 ################################################################################

@@ -202,12 +202,12 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 	cd ~
 		
 	# test connectivity to HPE CP with the CLI
-	docker run -e LOG_LEVEL=DEBUG my-python-app hpecp license platform-id
+	docker run -e LOG_LEVEL=INFO my-python-app hpecp license platform-id
 
-	docker run -e LOG_LEVEL=DEBUG my-python-app hpecp httpclient put /api/v1/tenant/${TENANT_ID}?external_user_groups --json-file /root/tenant_ad_auth.json
+	docker run -e LOG_LEVEL=INFO my-python-app hpecp httpclient put /api/v1/tenant/${TENANT_ID}?external_user_groups --json-file /root/tenant_ad_auth.json
 
 	# The datatap needs to be created as a tenant administrator, not as global admin, hence the profile
-	docker run -e LOG_LEVEL=DEBUG -e PROFILE=tenant${TENANT_ID} my-python-app hpecp httpclient post /api/v1/dataconn --json-file /root/datatap.json
+	docker run -e LOG_LEVEL=INFO -e PROFILE=tenant${TENANT_ID} my-python-app hpecp httpclient post /api/v1/dataconn --json-file /root/datatap.json
 SSH_EOF
 
 print_term_width '-'
