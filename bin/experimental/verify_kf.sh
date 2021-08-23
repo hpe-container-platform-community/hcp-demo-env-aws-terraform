@@ -107,10 +107,15 @@ for pod in pods:
                 break
 
 print()
-print("Pods not having status 'Running' or 'Succeeded':")
-print(pods_templates)
 
-sys.exit(len(pods_templates))
+if len(pods_templates) > 0:
+    print("Aborting. Pods not having status 'Running' or 'Succeeded':")
+    print(pods_templates)
+    print("Please add a comment to JIRA to record your failure 'https://jira-pro.its.hpecorp.net:8443/browse/EZESC-824'")
+    sys.exit(1)
+else:
+    print("All pods started ok")
+    sys.exit(0)
 
 EOF1
 

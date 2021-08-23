@@ -289,6 +289,10 @@ for MAPR_CLUSTER_HOST in ${MAPR_CLUSTER_HOSTS_PUB_IPS[0]}; do
 			sleep 1
 		}
 	done
+	ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${MAPR_CLUSTER_HOST} \
+				"echo mapr | maprlogin password -user mapr -cluster ${MAPR_CLUSTER_NAME}" \
+				|| { echo "maprlogin errror, quitting."; exit 1; }
+				
 	echo "maprlogin was successful - CLDB is assumed to be online"
 	print_term_width '-'
 done

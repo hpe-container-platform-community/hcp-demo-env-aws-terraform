@@ -89,7 +89,7 @@ resource "null_resource" "yum_update_workers_gpu" {
 resource "aws_ebs_volume" "worker-gpu-ebs-volumes-sdb" {
   count             = local.gpu_worker_count
   availability_zone = var.az
-  size              = 1024
+  size              = 500
   type              = "gp2"
 
   tags = {
@@ -115,7 +115,7 @@ resource "aws_volume_attachment" "worker-gpu-volume-attachment-sdb" {
 resource "aws_ebs_volume" "worker-gpu-ebs-volumes-sdc" {
   count             = local.gpu_worker_has_disk_for_df == true ?   local.gpu_worker_count : 0
   availability_zone = var.az
-  size              = 1024
+  size              = 500
   type              = "gp2"
 
   tags = {

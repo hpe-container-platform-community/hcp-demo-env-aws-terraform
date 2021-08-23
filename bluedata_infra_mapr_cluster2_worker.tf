@@ -33,7 +33,7 @@ resource "aws_instance" "mapr_cluster_2_hosts" {
 resource "aws_ebs_volume" "mapr-cluster-2-host-ebs-volumes-sdd" {
   count             = var.mapr_cluster_2_count
   availability_zone = var.az
-  size              = 1024
+  size              = 500
   type              = "gp2"
 
   tags = {
@@ -59,7 +59,7 @@ resource "aws_volume_attachment" "mapr-cluster-2-host-volume-attachment-sdd" {
 resource "aws_ebs_volume" "mapr-cluster-2-host-ebs-volumes-sde" {
   count             = var.mapr_cluster_2_count
   availability_zone = var.az
-  size              = 1024
+  size              = 500
   type              = "gp2"
 
   tags = {
@@ -85,7 +85,7 @@ resource "aws_volume_attachment" "mapr-cluster-2-host-volume-attachment-sde" {
 resource "aws_ebs_volume" "mapr-cluster-2-host-ebs-volumes-sdf" {
   count             = var.mapr_cluster_2_count
   availability_zone = var.az
-  size              = 1024
+  size              = 500
   type              = "gp2"
 
   tags = {

@@ -50,7 +50,7 @@ resource "null_resource" "yum_update_workers" {
 resource "aws_ebs_volume" "worker-ebs-volumes-sdb" {
   count             = var.worker_count
   availability_zone = var.az
-  size              = 1024
+  size              = 500
   type              = "gp2"
 
   tags = {
@@ -76,7 +76,7 @@ resource "aws_volume_attachment" "worker-volume-attachment-sdb" {
 resource "aws_ebs_volume" "worker-ebs-volumes-sdc" {
   count             = var.worker_count
   availability_zone = var.az
-  size              = 1024
+  size              = 500
   type              = "gp2"
 
   tags = {

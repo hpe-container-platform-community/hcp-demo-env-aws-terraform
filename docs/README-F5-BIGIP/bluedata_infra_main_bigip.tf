@@ -77,7 +77,7 @@ resource "aws_instance" "bigip" {
 
 resource "aws_ebs_volume" "bigip-ebs-volumes-sdb" {
   availability_zone = var.az
-  size              = 1024
+  size              = 500
   type              = "gp2"
 
   tags = {

@@ -86,15 +86,16 @@ then
 fi
 
 
-if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
-then
-    {
-       print_header "Installing MAPR Cluster 2"
-       CLUSTER_ID=2
-       ./scripts/mapr_install.sh ${CLUSTER_ID} || true; # ignore errors
-    } &
-    MAPR_CLUSTER2_INSTALL_PID=$!  
-fi
+# FIXME: this is unreliable
+# if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
+# then
+#     {
+#       print_header "Installing MAPR Cluster 2"
+#       CLUSTER_ID=2
+#       ./scripts/mapr_install.sh ${CLUSTER_ID} || true; # ignore errors
+#     } &
+#     MAPR_CLUSTER2_INSTALL_PID=$!  
+# fi
 
 
 ################################################################################
@@ -271,14 +272,15 @@ then
 fi
 
 
-if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
-then
-    wait $MAPR_CLUSTER2_INSTALL_PID
+# FIXME: this is unreliable
+# if [[ "$MAPR_CLUSTER2_COUNT" != "0" ]]; 
+# then
+#     wait $MAPR_CLUSTER2_INSTALL_PID
     
-    CLUSTER_ID=2
-    print_header "Setup sssd for MAPR Cluster 2"
-    retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID}
-fi
+#     CLUSTER_ID=2
+#     print_header "Setup sssd for MAPR Cluster 2"
+#     retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID}
+# fi
 
 ################################################################################
 #
