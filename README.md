@@ -34,7 +34,7 @@ git clone https://github.com/hpe-container-platform-community/hcp-demo-env-aws-t
 cd hcp-demo-env-aws-terraform
 
 # create a copy 
-cp ./etc/bluedata_infra.tfvars_example ./etc/bluedata_infra.tfvars
+cp ./etc/bluedata_infra.tfvars_example_picasso_mlops ./etc/bluedata_infra.tfvars
 
 # edit to reflect your requirements
 vi ./etc/bluedata_infra.tfvars 
@@ -49,22 +49,10 @@ For many more configuration options, see `etc/bluedata_infra.tfvars_template`.
 
 ---
 
-**Recommended** - Define setup actions to run after environment is created
-
-The [etc/postcreate.sh_template](etc/postcreate.sh_template) script contains further setup actions that you can apply to your environment.
-
-```
-cp ./etc/postcreate.sh_template ./etc/postcreate.sh
-```
-
-Edit the script `./etc/postcreate.sh` with your required customisations.
-
----
-
 We are now ready to automate the environment setup ...
 
 ```
-./bin/create_new_environment_from_scratch.sh
+./bin/create_new_environment_from_scratch_with_picasso_and_mlops.sh
 ```
 
 ![create from scratch](./docs/README/create_from_scratch.gif)
