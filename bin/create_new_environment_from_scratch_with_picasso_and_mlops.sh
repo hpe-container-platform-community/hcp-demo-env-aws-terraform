@@ -78,9 +78,15 @@ bash etc/postcreate_core.sh_template
 if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; 
 then
     {
-       print_header "Installing MAPR Cluster 1"
-       CLUSTER_ID=1
-       ./scripts/mapr_install.sh ${CLUSTER_ID} || true; # ignore errors
+        print_header "Installing MAPR Cluster 1"
+        CLUSTER_ID=1
+        ./scripts/mapr_install.sh ${CLUSTER_ID} || true; # ignore errors
+       
+        print_header "Setup sssd for MAPR Cluster 1"
+        retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID}
+      
+        print_header "Setup Fuse mount on RDP host to external MAPR cluster 1"
+        retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
     } &
     MAPR_CLUSTER1_INSTALL_PID=$!
 fi
@@ -258,13 +264,6 @@ echo "Verifying KubeFlow"
 if [[ "$MAPR_CLUSTER1_COUNT" != "0" ]]; 
 then
     wait $MAPR_CLUSTER1_INSTALL_PID
-    
-    CLUSTER_ID=1
-    print_header "Setup sssd for MAPR Cluster 1"
-    retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_sssd.sh ${CLUSTER_ID}
-  
-    print_header "Setup Fuse mount on RDP host to external MAPR cluster 1"
-    retry ./scripts/end_user_scripts/standalone_mapr/setup_ubuntu_mapr_client.sh
 
     print_header "Setup Datatap to external MAPR cluster 1"
     TENANT_ID=$(hpecp tenant list --query "[?tenant_type == 'k8s' && label.name == 'k8s-tenant-1'] | [0] | [_links.self.href]" --output text)
