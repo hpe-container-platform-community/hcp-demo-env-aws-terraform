@@ -16,8 +16,8 @@ resource "aws_eks_node_group" "example" {
   }
 
   subnet_ids      = [
-    aws_subnet.main2.id, 
-    aws_subnet.main3.id
+    aws_subnet.main2[count.index].id, 
+    aws_subnet.main3[count.index].id
     ]
 
   scaling_config {
@@ -78,8 +78,8 @@ resource "aws_eks_node_group" "example2" {
   }
 
   subnet_ids      = [
-    aws_subnet.main2.id, 
-    aws_subnet.main3.id
+    aws_subnet.main2[count.index].id, 
+    aws_subnet.main3[count.index].id
     ]
 
   scaling_config {
@@ -107,6 +107,7 @@ resource "aws_eks_node_group" "example2" {
 ////////////////////////////////////
 
 resource "aws_subnet" "main2" {
+  count = var.create_eks_cluster ? 1 : 0
   vpc_id                  = module.network.vpc_main_id
   cidr_block              = var.eks_subnet2_cidr_block
   availability_zone       = "${var.region}${var.eks_subnet2_az_suffix}"
@@ -122,6 +123,7 @@ resource "aws_subnet" "main2" {
 }
 
 resource "aws_subnet" "main3" {
+  count = var.create_eks_cluster ? 1 : 0
   vpc_id                  = module.network.vpc_main_id
   cidr_block              = var.eks_subnet3_cidr_block
   availability_zone       = "${var.region}${var.eks_subnet3_az_suffix}"
@@ -137,20 +139,23 @@ resource "aws_subnet" "main3" {
 }
 
 resource "aws_route_table_association" "main2" {
-  subnet_id      = aws_subnet.main2.id
+  count = var.create_eks_cluster ? 1 : 0
+  subnet_id      = aws_subnet.main2[count.index].id
   route_table_id = module.network.route_main_id
 }
 
 resource "aws_route_table_association" "main3" {
-  subnet_id      = aws_subnet.main3.id
+  count = var.create_eks_cluster ? 1 : 0
+  subnet_id      = aws_subnet.main3[count.index].id
   route_table_id = module.network.route_main_id
 }
 
 resource "aws_network_acl" "main-eks" {
+  count = var.create_eks_cluster ? 1 : 0
   vpc_id      = module.network.vpc_main_id
   subnet_ids = [       
-    aws_subnet.main2.id, 
-    aws_subnet.main3.id
+    aws_subnet.main2[count.index].id, 
+    aws_subnet.main3[count.index].id
     ]
 
   tags = {
@@ -162,8 +167,10 @@ resource "aws_network_acl" "main-eks" {
 }
 
 resource "aws_network_acl_rule" "eks_allow_all_from_client_ips" {
+  count = var.create_eks_cluster ? 1 : 0
+  
   # allow client machine to have full access to all hosts
-  network_acl_id = aws_network_acl.main-eks.id
+  network_acl_id = aws_network_acl.main-eks[0].id
 
   rule_number = 100
   egress      = false
@@ -176,9 +183,9 @@ resource "aws_network_acl_rule" "eks_allow_all_from_client_ips" {
 
 resource "aws_network_acl_rule" "eks_allow_all_from_specific_ips" {
   # allow specified machines to have full access to all hosts
-  network_acl_id = aws_network_acl.main-eks.id
+  network_acl_id = aws_network_acl.main-eks[0].id
 
-  count       = length(var.additional_client_ip_list)
+  count       = var.create_eks_cluster ? length(var.additional_client_ip_list) : 0
   rule_number = 110 + count.index
   egress      = false
   protocol    = "-1"
@@ -189,8 +196,10 @@ resource "aws_network_acl_rule" "eks_allow_all_from_specific_ips" {
 }
 
 resource "aws_network_acl_rule" "eks_allow_internet_access_from_instances" {
+  count = var.create_eks_cluster ? 1 : 0
+  
   # allow internet access from instances 
-  network_acl_id = aws_network_acl.main-eks.id
+  network_acl_id = aws_network_acl.main-eks[0].id
   rule_number = "150"
   egress      = false
   protocol    = "tcp"
@@ -201,7 +210,9 @@ resource "aws_network_acl_rule" "eks_allow_internet_access_from_instances" {
 }
 
 resource "aws_network_acl_rule" "eks_allow_ssh" {
-  network_acl_id = aws_network_acl.main-eks.id
+  count = var.create_eks_cluster ? 1 : 0
+  
+  network_acl_id = aws_network_acl.main-eks[0].id
   rule_number = "160"
   egress      = false
   protocol    = "tcp"
@@ -212,7 +223,9 @@ resource "aws_network_acl_rule" "eks_allow_ssh" {
 }
 
 resource "aws_network_acl_rule" "eks_allow_all_in_subnet" {
-  network_acl_id = aws_network_acl.main-eks.id
+  count = var.create_eks_cluster ? 1 : 0
+  
+  network_acl_id = aws_network_acl.main-eks[0].id
   rule_number = "171"
   egress      = false
   protocol    = "-1"
@@ -225,8 +238,10 @@ resource "aws_network_acl_rule" "eks_allow_all_in_subnet" {
 // egress
 
 resource "aws_network_acl_rule" "eks_allow_response_traffic_from_hosts_to_internet" {
+  count = var.create_eks_cluster ? 1 : 0
+  
   # allow internet access from instances 
-  network_acl_id = aws_network_acl.main-eks.id
+  network_acl_id = aws_network_acl.main-eks[0].id
   rule_number = "120"
   egress      = true
   protocol    = "-1"
@@ -245,8 +260,8 @@ resource "aws_eks_cluster" "example" {
 
   vpc_config {
     subnet_ids = [
-      aws_subnet.main2.id, 
-      aws_subnet.main3.id
+      aws_subnet.main2[count.index].id, 
+      aws_subnet.main3[count.index].id
     ]
     security_group_ids = [
       module.network.security_group_allow_all_from_client_ip,
