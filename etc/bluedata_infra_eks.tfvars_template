@@ -1,6 +1,6 @@
 # You can specify an EKS cluster here
 
-create_eks_cluster = false
+create_eks_cluster = true
 eks_instance_type     = "t3.2xlarge"
 eks_scaling_config_desired_size = 1    # must be >= 1
 eks_scaling_config_max_size     = 1    # must be >= 1
@@ -16,3 +16,7 @@ eks_subnet3_az_suffix = "c"            # you shouldn't need to change this
 #    eks-server-url
 #    eks-ca-certificate
 #    eks-bearer-token
+#
+# You can display these variable values with: ./scripts/eks_setup.sh
+#
+# Alternatively, you can automate importing your eks cluster with: ./scripts/eks_imports.sh
