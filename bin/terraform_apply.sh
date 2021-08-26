@@ -27,6 +27,7 @@ if [[ ! -f  "./generated/ca-key.pem" ]]; then
       -subj "/C=US/ST=CA/O=MyOrg, Inc./CN=mydomain.com" \
       -sha256 -days 1024 \
       -out "./generated/ca-cert.pem"
+   chmod 660 "./generated/ca-key.pem"
 fi
 
 terraform apply -var-file=<(cat etc/*.tfvars) \
