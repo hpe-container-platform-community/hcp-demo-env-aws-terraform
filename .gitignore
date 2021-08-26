@@ -30,3 +30,6 @@ etc/postcreate.sh
 credentials-velero
 velero-policy.json
 terraform.jq
+etc/bluedata_infra_eks.tfvars
+etc/bluedata_infra_gpu_workers.tfvars
+etc/bluedata_infra_mapr.tfvars
