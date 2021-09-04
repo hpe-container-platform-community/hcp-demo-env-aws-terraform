@@ -7,6 +7,7 @@ set -o pipefail
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/variables.sh"
+source "$SCRIPT_DIR/functions.sh"
 
 if [[ "${EPIC_DL_URL_NEEDS_PRESIGN}" == "True" ]]
 then
@@ -250,13 +251,13 @@ cat generated/ca-key.pem  | ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_
 
 echo "SSHing into Controller ${CTRL_PUB_IP}"
 
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+retry ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
    set -eu
 
    sudo yum install -y -q wget
 
    # manually install epel due to https://stackoverflow.com/questions/62359639/unable-to-install-packages-via-yum-in-aws-errno-1-repomd-xml-does-not-match
-   wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+   wget -c https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
    sudo yum install -y -q epel-release-latest-7.noarch.rpm || echo "Ignoring error installing epel"
 
 
@@ -316,7 +317,7 @@ EOF
 
 ENDSSH
 
-ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
+retry ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
    set -e
 
    set -u

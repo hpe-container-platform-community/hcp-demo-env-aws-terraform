@@ -44,9 +44,15 @@ for WRKR in ${WRKR_IDS[@]}; do
     echo "Waiting for ${WRKR} to have state 'storage_pending'"
     hpecp k8sworker wait-for-status ${WRKR} --status  "['storage_pending']" --timeout-secs 1800
     echo "Setting ${WRKR} storage"
-    PERSISTENT_DISK=$(hpecp k8sworker get ${WRKR} --output json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print([ storage["info"]["ConsistentName"] for storage in obj["sysinfo"]["storage"] if storage["name"] == "/dev/nvme1n1" ][0])')
+    PERSISTENT_DISK=$(hpecp k8sworker get ${WRKR} --output json \
+        | python3 -c 'import json,sys;obj=json.load(sys.stdin);print([storage["info"]["ConsistentName"] for storage in obj["sysinfo"]["storage"] if storage["info"]["Mountpoint"] == ""][0])')
     echo PERSISTENT_DISK=${PERSISTENT_DISK}
-    hpecp k8sworker set-storage --id ${WRKR} --persistent-disks=${PERSISTENT_DISK} --ephemeral-disks=/dev/nvme2n1
+    
+    EPHEMERAL_DISK=$(hpecp k8sworker get ${WRKR} --output json \
+        | python3 -c 'import json,sys;obj=json.load(sys.stdin);print([storage["info"]["ConsistentName"] for storage in obj["sysinfo"]["storage"] if storage["info"]["Mountpoint"] == ""][1])')
+    echo EPHEMERAL_DISK=${EPHEMERAL_DISK}
+    hpecp k8sworker set-storage --id ${WRKR} --persistent-disks=${PERSISTENT_DISK} --ephemeral-disks=${EPHEMERAL_DISK} 
+    
     echo "Waiting for worker ${WRKR} to have state 'ready'"
     hpecp k8sworker wait-for-status ${WRKR} --status  "['ready']" --timeout-secs 1800
 } &
