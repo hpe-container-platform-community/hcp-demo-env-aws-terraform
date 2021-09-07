@@ -63,6 +63,7 @@ module "network" {
   subnet_cidr_block         = var.subnet_cidr_block
   vpc_cidr_block            = var.vpc_cidr_block
   aws_zone_id               = data.aws_availability_zone.main.zone_id
+  aws_region                = var.region
   dns_zone_name             = var.dns_zone_name
 
   // required for softther vpn

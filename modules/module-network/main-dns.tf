@@ -3,7 +3,7 @@
 
 
 resource "aws_vpc_dhcp_options" "mydhcp" {
-    domain_name = var.dns_zone_name
+    domain_name = "${var.aws_region}.compute.internal"
     domain_name_servers = ["AmazonProvidedDNS"]
     tags = {
         Name = "${var.project_id}-vpc-dhcp-options"
