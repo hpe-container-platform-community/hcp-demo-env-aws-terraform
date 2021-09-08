@@ -7,6 +7,9 @@ variable "user" {
 variable "aws_zone_id" {
     type = string
 }
+variable "aws_region" {
+    type = string
+}
 variable "client_cidr_block" {
     type = string
 }
