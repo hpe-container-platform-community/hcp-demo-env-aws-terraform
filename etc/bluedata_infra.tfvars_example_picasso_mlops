@@ -31,21 +31,21 @@ wkr_instance_types = [
     ### Start Picasso + MLOPS Cluster ###
     
          # picasso masters
-             "m4.4xlarge",
-             "m4.4xlarge",
-             "m4.4xlarge",
+             "r5a.xlarge",
+             "r5a.xlarge",
+             "r5a.xlarge",
          
          # picasso workers
-             "m4.4xlarge",
+             "m4.4xlarge",  
              "m4.4xlarge",
              "m4.4xlarge",
              "m4.4xlarge",
              "m4.4xlarge",
     
          # MLOPS workers
-             "m4.4xlarge",
-             "m4.4xlarge",
-             "m4.4xlarge",
+             "m5a.4xlarge",
+             "m5a.4xlarge",
+             "m5a.4xlarge",
          
     ### End Picasso + MLOPS Cluster ###
 ]
