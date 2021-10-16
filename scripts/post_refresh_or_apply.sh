@@ -42,8 +42,8 @@ display_usage() {
 	echo "Usage: \$0 clustername"
 	echo
 	echo "Example:"
-	echo "  CLUSTERNAME=your_cluster_name"
-	echo "  kubectl --kubeconfig <(\$0 \\\$CLUSTERNAME) get pods --all-namespaces"
+	echo "  export CLUSTERNAME=your_cluster_name"
+	echo "  alias kubectl='kubectl --kubeconfig <(\$0 \\\$CLUSTERNAME)'"
 } 
 
 if [[  \$# -lt 1 ]]; then
@@ -67,7 +67,7 @@ display_usage() {
 	echo "Usage: \$0 clustername"
 	echo
 	echo "Example:"
-	echo "  CLUSTERNAME=your_cluster_name"
+	echo "  export CLUSTERNAME=your_cluster_name"
 	echo "  kubectl --insecure-skip-tls-verify --kubeconfig <(\$0 \\\$CLUSTERNAME) get pods --all-namespaces"
 } 
 
