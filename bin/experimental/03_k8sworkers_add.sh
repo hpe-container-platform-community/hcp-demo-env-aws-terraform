@@ -21,9 +21,9 @@ export HPECP_CONFIG_FILE="./generated/hpecp.conf"
 # Test CLI is able to connect
 echo "Platform ID: $(hpecp license platform-id)"
 
-echo "Fetching 'falco' tag ID"
-FALCO_TAG_ID=$(hpecp httpclient get /api/v2/tag | python3 -c 'import json,sys;obj=json.load(sys.stdin);[ print(t["_links"]["self"]["href"]) for t in obj["_embedded"]["tags"] if t["label"]["name"] == "falco"]')
-echo FALCO_TAG_ID=$FALCO_TAG_ID
+# echo "Fetching 'falco' tag ID"
+# FALCO_TAG_ID=$(hpecp httpclient get /api/v2/tag | python3 -c 'import json,sys;obj=json.load(sys.stdin);[ print(t["_links"]["self"]["href"]) for t in obj["_embedded"]["tags"] if t["label"]["name"] == "falco"]')
+# echo FALCO_TAG_ID=$FALCO_TAG_ID
 
 echo "Fetching 'istio-ingressgateway' tag ID"
 ISTIO_INGRESS_GW_TAG_ID=$(hpecp httpclient get /api/v2/tag | python3 -c 'import json,sys;obj=json.load(sys.stdin);[ print(t["_links"]["self"]["href"]) for t in obj["_embedded"]["tags"] if t["label"]["name"] == "istio-ingressgateway"]')
@@ -34,7 +34,7 @@ echo "Adding workers"
 WRKR_IDS=()
 for WRKR in ${HOST_IPS[@]}; do
     echo "   worker $WRKR"
-    CMD="hpecp k8sworker create-with-ssh-key --ip ${WRKR} --ssh-key-file ./generated/controller.prv_key --tags ${FALCO_TAG_ID}:true,${ISTIO_INGRESS_GW_TAG_ID}:true"
+    CMD="hpecp k8sworker create-with-ssh-key --ip ${WRKR} --ssh-key-file ./generated/controller.prv_key --tags ${ISTIO_INGRESS_GW_TAG_ID}:true"
     WRKR_ID="$($CMD)"
     echo "       id $WRKR_ID"
     WRKR_IDS+=($WRKR_ID)
