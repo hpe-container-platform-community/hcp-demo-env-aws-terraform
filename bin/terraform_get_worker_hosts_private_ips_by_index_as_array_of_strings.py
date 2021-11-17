@@ -29,5 +29,5 @@ obj=json.load(stream)
 
 
 
-print('[' + ','.join('"{0}"'.format(w) for w in obj[0][KF_HOSTS_INDEX]) + ']')
+print('[' + ','.join("'{0}'".format(w) for w in obj[0][KF_HOSTS_INDEX]) + ']')
 

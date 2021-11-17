@@ -111,9 +111,13 @@ fi
 ################################################################################
 
 # select the IP addresses of the k8s hosts
-MASTER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index_as_array_of_strings.py $MASTER_HOSTS_INDEX)
-PICASSO_WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index_as_array_of_strings.py $PICASSO_WORKER_HOSTS_INDEX)
-MLOPS_WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index_as_array_of_strings.py $MLOPS_WORKER_HOSTS_INDEX)
+MASTER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $MASTER_HOSTS_INDEX)
+PICASSO_WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $PICASSO_WORKER_HOSTS_INDEX)
+MLOPS_WORKER_HOSTS=$(./bin/terraform_get_worker_hosts_private_ips_by_index.py $MLOPS_WORKER_HOSTS_INDEX)
+
+MASTER_HOSTS_AS_ARRAY=$(./bin/terraform_get_worker_hosts_private_ips_by_index_as_array_of_strings.py $MASTER_HOSTS_INDEX)
+PICASSO_WORKER_HOSTS_AS_ARRAY=$(./bin/terraform_get_worker_hosts_private_ips_by_index_as_array_of_strings.py $PICASSO_WORKER_HOSTS_INDEX)
+MLOPS_WORKER_HOSTS_AS_ARRAY=$(./bin/terraform_get_worker_hosts_private_ips_by_index_as_array_of_strings.py $MLOPS_WORKER_HOSTS_INDEX)
 
 # Add ECP workers without tags
 ./bin/experimental/03_k8sworkers_add.sh $MASTER_HOSTS &
@@ -132,19 +136,19 @@ wait $WORKER_DF_HOSTS_ADD_PID
 wait $WORKER_NON_DF_HOSTS_ADD_PID
 
 
-QUERY="[*] | @[?contains(${MASTER_HOSTS}, ipaddr)] | [*][_links.self.href] | [] | sort(@)"
+QUERY="[*] | @[?contains(${MASTER_HOSTS_AS_ARRAY}, ipaddr)] | [*][_links.self.href] | [] | sort(@)"
 MASTER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
-echo MASTER_HOSTS=$MASTER_HOSTS
+echo MASTER_HOSTS_AS_ARRAY=$MASTER_HOSTS_AS_ARRAY
 echo MASTER_IDS=$MASTER_IDS
 
-QUERY="[*] | @[?contains(${PICASSO_WORKER_HOSTS}, ipaddr)] | [*][_links.self.href] | [] | sort(@)"
+QUERY="[*] | @[?contains(${PICASSO_WORKER_HOSTS_AS_ARRAY}, ipaddr)] | [*][_links.self.href] | [] | sort(@)"
 PICASSO_WORKER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
-echo PICASSO_WORKER_HOSTS=$PICASSO_WORKER_HOSTS
+echo PICASSO_WORKER_HOSTS_AS_ARRAY=$PICASSO_WORKER_HOSTS_AS_ARRAY
 echo PICASSO_WORKER_IDS=$PICASSO_WORKER_IDS
 
-QUERY="[*] | @[?contains(${MLOPS_WORKER_HOSTS}, ipaddr)] | [*][_links.self.href] | [] | sort(@)"
+QUERY="[*] | @[?contains(${MLOPS_WORKER_HOSTS_AS_ARRAY}, ipaddr)] | [*][_links.self.href] | [] | sort(@)"
 MLOPS_WORKER_IDS=$(hpecp k8sworker list --query "${QUERY}" --output text | tr '\n' ' ')
-echo MLOPS_WORKER_HOSTS=$MLOPS_WORKER_HOSTS
+echo MLOPS_WORKER_HOSTS_AS_ARRAY=$MLOPS_WORKER_HOSTS_AS_ARRAY
 echo MLOPS_WORKER_IDS=$MLOPS_WORKER_IDS
 
 K8S_VERSION=$(hpecp k8scluster k8s-supported-versions --major-filter 1 --minor-filter 20 --output text)
