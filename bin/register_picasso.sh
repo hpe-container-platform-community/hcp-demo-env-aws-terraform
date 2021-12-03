@@ -22,16 +22,36 @@ echo MASTERS=${MASTERS[@]}
 FIRST_MASTER_IP=$(./bin/get_k8s_host_ip.sh ${MASTERS[0]})
 echo FIRST_MASTER_IP=$FIRST_MASTER_IP
 
+
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-  set =x
+  set -x
+  set -e
+  
   export LOG_FILE_PATH=/tmp/register_k8s_prepare.log 
   export MASTER_NODE_IP="${FIRST_MASTER_IP}" 
   
-  /opt/bluedata/bundles/hpe-cp-*/startscript.sh --action prepare_dftenants
+  function retry {
+    local n=1
+    local max=20
+    local delay=30
+    while true; do
+      "\$@" && break || {
+        if [[ \$n -lt \$max ]]; then
+          ((n++))
+          echo "Command failed. Attempt \$n/\$max:"
+          sleep \$delay;
+        else
+          fail "The command has failed after \$n attempts."
+        fi
+    }
+    done
+  }
+
+  retry /opt/bluedata/bundles/hpe-cp-*/startscript.sh --action prepare_dftenants
 ENDSSH
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-  set =x
+  set -x
   export LOG_FILE_PATH=/tmp/register_k8s_configure.log
   export MASTER_NODE_IP="${FIRST_MASTER_IP}"
   
@@ -39,23 +59,14 @@ ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_
 ENDSSH
 
 ssh -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T centos@${CTRL_PUB_IP} << ENDSSH
-  sudo yum install -y expect
-  
   set -x
-  export SCRIPTNAME=\$(ls /opt/bluedata/bundles/hpe-cp-*/startscript.sh)
-  export MASTER_NODE_IP=${FIRST_MASTER_IP}
   export LOG_FILE_PATH=/tmp/register_k8s_register.log
+  export SILENT_MODE=true 
+  export SITE_ADMIN_USER=admin 
   
-  
-expect <<EOF
-
-   set timeout 1800
-  
-   spawn \$SCRIPTNAME --action register_dftenants
-   
-   expect ".*Enter Site Admin username: " { send "admin\r" }
-   expect "admin\r\nEnter Site Admin password: " { send "admin123\r" }
-   expect eof
-EOF
+  # FIXME !!! hardcoded password !!!
+  export SITE_ADMIN_PASS=admin123 
+  export MASTER_NODE_IP="${FIRST_MASTER_IP}"
+  /opt/bluedata/bundles/hpe-cp-*/startscript.sh --action register_dftenants
 
 ENDSSH
