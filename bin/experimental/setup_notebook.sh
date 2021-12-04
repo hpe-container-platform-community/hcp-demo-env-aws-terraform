@@ -45,6 +45,9 @@ echo CLUSTER_ID=$CLUSTER_ID
 export TENANT_NS=$(hpecp tenant list --query "[?_links.self.href == '$TENANT_ID'] | [0] | [namespace]" --output text)
 echo TENANT_NS=$TENANT_NS
 
+export HPECP_VERSION=$(hpecp config get --query 'objects.[bds_global_version]' --output text)
+echo HPECP_VERSION=$HPECP_VERSION
+
 # login as the ad_user1 user so that the user account gets added and an ID created (e.g. /api/v1/user/22)
 ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RDP_PUB_IP} <<-EOF1
 
@@ -212,6 +215,7 @@ spec:
         hpecp.hpe.com/dtap: "hadoop2"
 EOF_YAML
 
+date
 echo Waiting for Training to have state==configured
   
   COUNTER=0
@@ -224,6 +228,7 @@ echo Waiting for Training to have state==configured
     sleep 1m
     let COUNTER=COUNTER+1 
   done
+  date
 
 ###
 ### Jupyter Notebook
@@ -256,6 +261,7 @@ spec:
     - 
       id: "controller"
       members: 1
+      serviceAccountName: "ecp-tenant-member-sa"
       resources: 
         requests: 
           cpu: "2"
@@ -266,8 +272,8 @@ spec:
           memory: "4Gi"
           nvidia.com/gpu: "0"
       storage: 
-        size: "20Gi"
-        storageClassName: "dfdemo"
+        # size: "20Gi"
+        # storageClassName: "dfdemo"
 	  
       #Note: "if the application is based on hadoop3 e.g. using StreamCapabilities interface, then change the below dtap label to 'hadoop3', otherwise for most applications use the default 'hadoop2'"
       podLabels: 
@@ -291,10 +297,11 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
   set -u 
   set -o pipefail
 
+  date
   echo Waiting for Notebook to have state==configured
   
   COUNTER=0
-  while [ \$COUNTER -lt 30 ]; 
+  while [ \$COUNTER -lt 180 ]; 
   do
     STATE=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
                 get kubedirectorcluster -n $TENANT_NS $NB_CLUSTER_NAME -o 'jsonpath={.status.state}')
@@ -303,14 +310,45 @@ ssh -q -o StrictHostKeyChecking=no -i "${LOCAL_SSH_PRV_KEY_PATH}" -T ubuntu@${RD
     sleep 1m
     let COUNTER=COUNTER+1 
   done
-
+  date
+  
+  ###########
   # Retrieve the notebook pod
+  ###########
 
   POD=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
     get pod -l kubedirector.hpe.com/kdcluster=$NB_CLUSTER_NAME -n $TENANT_NS -o 'jsonpath={.items..metadata.name}')
     
   echo TENANT_NS=$TENANT_NS
   echo POD=\$POD
+  
+  ###########
+  ## Setup notebook service-account-token
+  ###########
+  
+  if [[ "$HPECP_VERSION" == *"5.4"*  ]]; then
+  
+    set -x
+    
+    SECRET_NAME=\$(kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+       get secret -n $TENANT_NS --field-selector type=kubernetes.io/service-account-token | grep '\-sa\-' | cut -f 1 -d' ')
+    echo SECRET_NAME=\$SECRET_NAME
+    
+    # Extract and decode
+    kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+        get secret -n $TENANT_NS \$SECRET_NAME -o yaml | grep " token:" | awk '{print \$2}' | base64 -d > token
+    
+    # FIXME
+    
+    # Put the token file in your nb pod
+    # kubectl --kubeconfig <(hpecp k8scluster --id $CLUSTER_ID admin-kube-config) \
+    #   cp token -c app \$POD:/var/run/secrets/kubernetes.io/serviceaccount/token -n $TENANT_NS
+      
+  fi
+
+  ###########  
+  # create home folders
+  ###########
   
   TENANT_USER=ad_user1
   

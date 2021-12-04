@@ -265,8 +265,9 @@ echo MINIO_HOST_AND_PORT=$MINIO_HOST_AND_PORT
 echo "Creating minio bucket"
 retry ./bin/experimental/minio_create_bucket.sh "$MINIO_HOST_AND_PORT"
 
-echo "Verifying KubeFlow"
-./bin/experimental/verify_kf.sh $TENANT_ID
+
+# echo "Verifying KubeFlow "
+# ./bin/experimental/verify_kf.sh $TENANT_ID
 
 
 ################################################################################
