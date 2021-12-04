@@ -161,7 +161,8 @@ echo K8S_HOST_CONFIG=$K8S_HOST_CONFIG
 EXTERNAL_GROUPS=$(echo '["CN=AD_ADMIN_GROUP,CN=Users,DC=samdom,DC=example,DC=com","CN=AD_MEMBER_GROUP,CN=Users,DC=samdom,DC=example,DC=com"]' \
     | sed s/AD_ADMIN_GROUP/${AD_ADMIN_GROUP}/g \
     | sed s/AD_MEMBER_GROUP/${AD_MEMBER_GROUP}/g)
-
+    
+    
 echo "Creating k8s cluster with version ${K8S_VERSION}"
 CLUSTER_ID=$(hpecp k8scluster create \
    --name dfcluster \
@@ -220,7 +221,15 @@ fi
 
 
 echo "Creating tenant"
-TENANT_ID=$(hpecp tenant create --name "k8s-tenant-1" --description "MLOPS Example" --k8s-cluster-id $CLUSTER_ID  --tenant-type k8s --features '{ ml_project: true }' --quota-cores 1000)
+TENANT_ID=$(hpecp tenant create \
+    --name "k8s-tenant-1" \
+    --description "MLOPS Example" \
+    --k8s-cluster-id $CLUSTER_ID  \
+    --tenant-type k8s \
+    --specified-namespace-name k8s-tenant-1 \
+    --features '{ ml_project: true }' \
+    --quota-cores 1000)
+    
 hpecp tenant wait-for-status --id $TENANT_ID --status [ready] --timeout-secs 1800
 echo "K8S tenant created successfully - ID: ${TENANT_ID}"
 echo TENANT_ID=$TENANT_ID
