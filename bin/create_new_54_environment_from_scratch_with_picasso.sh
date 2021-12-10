@@ -168,7 +168,7 @@ CLUSTER_ID=$(hpecp k8scluster create \
    --name dfcluster \
    --k8s-version $K8S_VERSION \
    --k8shosts-config "$K8S_HOST_CONFIG" \
-   --addons '["spark-operator", "kubeflow", "istio"]' \
+   --addons '["spark-operator"]' \
    --ext_id_svr_bind_pwd "5ambaPwd@" \
    --ext_id_svr_user_attribute "sAMAccountName" \
    --ext_id_svr_bind_type "search_bind" \
